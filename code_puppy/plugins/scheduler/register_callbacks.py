@@ -2,7 +2,7 @@
 
 Registers the /scheduler command (and aliases /sched, /cron) via the
 custom_command and custom_command_help callback hooks, keeping all
-scheduler UI out of core puppy.
+scheduler UI out of the core application.
 """
 
 from typing import Any, List, Optional, Tuple

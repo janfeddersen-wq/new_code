@@ -1,4 +1,4 @@
-"""Antigravity OAuth Plugin callbacks for Code Puppy CLI.
+"""Antigravity OAuth Plugin callbacks for the application CLI.
 
 Provides OAuth authentication for Antigravity models and registers
 the 'antigravity' model type handler.

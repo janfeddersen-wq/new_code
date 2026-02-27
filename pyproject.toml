@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "code-puppy"
-version = "0.0.424"
-description = "Code generation agent"
+name = "newcode"
+version = "0.1.0"
+description = "AI-powered code generation agent - a fedstew fork of code-puppy"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [
@@ -41,7 +41,8 @@ dev-dependencies = [
     "pexpect>=4.9.0",
 ]
 authors = [
-    {name = "Michael Pfaffenberger"}
+    {name = "Jan Feddersen"},
+    {name = "Michael Pfaffenberger (original code-puppy author)"}
 ]
 license = {text = "MIT"}
 classifiers = [
@@ -55,13 +56,13 @@ classifiers = [
 ]
 
 [project.urls]
-repository = "https://github.com/mpfaffenberger/code_puppy"
-HomePage = "https://github.com/mpfaffenberger/code_puppy"
-
+repository = "https://github.com/janfeddersen-wq/new_code"
+HomePage = "https://github.com/janfeddersen-wq/new_code"
+Upstream = "https://github.com/mpfaffenberger/code_puppy"
 
 [project.scripts]
-code-puppy = "code_puppy.main:main_entry"
-pup = "code_puppy.main:main_entry"
+newcode = "code_puppy.main:main_entry"
+nc = "code_puppy.main:main_entry"
 
 [tool.logfire]
 ignore_no_config = true

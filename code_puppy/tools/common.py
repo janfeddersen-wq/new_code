@@ -1030,7 +1030,7 @@ def get_user_approval(
     content: Text | str,
     preview: str | None = None,
     border_style: str = "dim white",
-    puppy_name: str | None = None,
+    agent_name: str | None = None,
 ) -> tuple[bool, str | None]:
     """Show a beautiful approval panel with arrow-key selector.
 
@@ -1039,7 +1039,7 @@ def get_user_approval(
         content: Main content to display (Rich Text object or string)
         preview: Optional preview content (like a diff)
         border_style: Border color/style for the panel
-        puppy_name: Name of the assistant (defaults to config value)
+        agent_name: Name of the assistant (defaults to config value)
 
     Returns:
         Tuple of (confirmed: bool, user_feedback: str | None)
@@ -1050,10 +1050,10 @@ def get_user_approval(
 
     from code_puppy.tools.command_runner import set_awaiting_user_input
 
-    if puppy_name is None:
-        from code_puppy.config import get_puppy_name
+    if agent_name is None:
+        from code_puppy.config import get_agent_name
 
-        puppy_name = get_puppy_name().title()
+        agent_name = get_agent_name().title()
 
     # Build panel content
     if isinstance(content, str):
@@ -1130,7 +1130,7 @@ def get_user_approval(
             [
                 "✓ Approve",
                 "✗ Reject",
-                f"💬 Reject with feedback (tell {puppy_name} what to change)",
+                f"💬 Reject with feedback (tell {agent_name} what to change)",
             ],
         )
 
@@ -1142,7 +1142,7 @@ def get_user_approval(
             # User wants to provide feedback
             confirmed = False
             emit_info("")
-            emit_info(f"Tell {puppy_name} what to change:")
+            emit_info(f"Tell {agent_name} what to change:")
             user_feedback = Prompt.ask(
                 "[bold green]➤[/bold green]",
                 default="",
@@ -1171,12 +1171,12 @@ def get_user_approval(
         sys.stdout.flush()
         sys.stderr.flush()
 
-    # Show result BEFORE resuming spinners (no puppy litter!)
+    # Show result BEFORE resuming spinners
     emit_info("")
     if not confirmed:
         if user_feedback:
             emit_error("Rejected with feedback!")
-            emit_warning(f'Telling {puppy_name}: "{user_feedback}"')
+            emit_warning(f'Telling {agent_name}: "{user_feedback}"')
         else:
             emit_error("Rejected.")
     else:
@@ -1198,7 +1198,7 @@ async def get_user_approval_async(
     content: Text | str,
     preview: str | None = None,
     border_style: str = "dim white",
-    puppy_name: str | None = None,
+    agent_name: str | None = None,
 ) -> tuple[bool, str | None]:
     """Async version of get_user_approval - show a beautiful approval panel with arrow-key selector.
 
@@ -1207,7 +1207,7 @@ async def get_user_approval_async(
         content: Main content to display (Rich Text object or string)
         preview: Optional preview content (like a diff)
         border_style: Border color/style for the panel
-        puppy_name: Name of the assistant (defaults to config value)
+        agent_name: Name of the assistant (defaults to config value)
 
     Returns:
         Tuple of (confirmed: bool, user_feedback: str | None)
@@ -1217,10 +1217,10 @@ async def get_user_approval_async(
 
     from code_puppy.tools.command_runner import set_awaiting_user_input
 
-    if puppy_name is None:
-        from code_puppy.config import get_puppy_name
+    if agent_name is None:
+        from code_puppy.config import get_agent_name
 
-        puppy_name = get_puppy_name().title()
+        agent_name = get_agent_name().title()
 
     # Build panel content
     if isinstance(content, str):
@@ -1297,7 +1297,7 @@ async def get_user_approval_async(
             [
                 "✓ Approve",
                 "✗ Reject",
-                f"💬 Reject with feedback (tell {puppy_name} what to change)",
+                f"💬 Reject with feedback (tell {agent_name} what to change)",
             ],
         )
 
@@ -1309,7 +1309,7 @@ async def get_user_approval_async(
             # User wants to provide feedback
             confirmed = False
             emit_info("")
-            emit_info(f"Tell {puppy_name} what to change:")
+            emit_info(f"Tell {agent_name} what to change:")
             user_feedback = Prompt.ask(
                 "[bold green]➤[/bold green]",
                 default="",
@@ -1338,12 +1338,12 @@ async def get_user_approval_async(
         sys.stdout.flush()
         sys.stderr.flush()
 
-    # Show result BEFORE resuming spinners (no puppy litter!)
+    # Show result BEFORE resuming spinners
     emit_info("")
     if not confirmed:
         if user_feedback:
             emit_error("Rejected with feedback!")
-            emit_warning(f'Telling {puppy_name}: "{user_feedback}"')
+            emit_warning(f'Telling {agent_name}: "{user_feedback}"')
         else:
             emit_error("Rejected.")
     else:

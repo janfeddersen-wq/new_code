@@ -202,7 +202,7 @@ class TestGetUserApproval:
     ):
         from code_puppy.tools.common import get_user_approval
 
-        approved, feedback = get_user_approval("Test", "content", puppy_name="Rex")
+        approved, feedback = get_user_approval("Test", "content", agent_name="Rex")
         assert approved is True
         assert feedback is None
 
@@ -216,7 +216,7 @@ class TestGetUserApproval:
     ):
         from code_puppy.tools.common import get_user_approval
 
-        approved, feedback = get_user_approval("Test", "content", puppy_name="Rex")
+        approved, feedback = get_user_approval("Test", "content", agent_name="Rex")
         assert approved is False
 
     @patch(
@@ -234,7 +234,7 @@ class TestGetUserApproval:
         from code_puppy.tools.common import get_user_approval
 
         MockPrompt.ask.return_value = "fix it"
-        approved, feedback = get_user_approval("Test", "content", puppy_name="Rex")
+        approved, feedback = get_user_approval("Test", "content", agent_name="Rex")
         assert approved is False
         assert feedback == "fix it"
 
@@ -249,7 +249,7 @@ class TestGetUserApproval:
     ):
         from code_puppy.tools.common import get_user_approval
 
-        approved, feedback = get_user_approval("Test", "content", puppy_name="Rex")
+        approved, feedback = get_user_approval("Test", "content", agent_name="Rex")
         assert approved is False
 
     @patch("code_puppy.tools.common.arrow_select", return_value="\u2713 Approve")
@@ -266,7 +266,7 @@ class TestGetUserApproval:
             "Test",
             "content",
             preview="--- a/x\n+++ b/x\n@@ -1 +1 @@\n-old\n+new",
-            puppy_name="Rex",
+            agent_name="Rex",
         )
         assert approved is True
 
@@ -280,7 +280,7 @@ class TestGetUserApproval:
     ):
         from code_puppy.tools.common import get_user_approval
 
-        approved, _ = get_user_approval("Test", Text("hello"), puppy_name="Rex")
+        approved, _ = get_user_approval("Test", Text("hello"), agent_name="Rex")
         assert approved is True
 
     @patch("code_puppy.tools.common.arrow_select", return_value="\u2713 Approve")
@@ -311,7 +311,7 @@ class TestGetUserApprovalAsync:
         from code_puppy.tools.common import get_user_approval_async
 
         approved, feedback = await get_user_approval_async(
-            "Test", "content", puppy_name="Rex"
+            "Test", "content", agent_name="Rex"
         )
         assert approved is True
 
@@ -326,7 +326,7 @@ class TestGetUserApprovalAsync:
     ):
         from code_puppy.tools.common import get_user_approval_async
 
-        approved, _ = await get_user_approval_async("Test", "content", puppy_name="Rex")
+        approved, _ = await get_user_approval_async("Test", "content", agent_name="Rex")
         assert approved is False
 
     @pytest.mark.asyncio
@@ -343,7 +343,7 @@ class TestGetUserApprovalAsync:
 
         MockPrompt.ask.return_value = "fix"
         approved, feedback = await get_user_approval_async(
-            "Test", "content", puppy_name="Rex"
+            "Test", "content", agent_name="Rex"
         )
         assert approved is False
         assert feedback == "fix"
@@ -360,7 +360,7 @@ class TestGetUserApprovalAsync:
     ):
         from code_puppy.tools.common import get_user_approval_async
 
-        approved, _ = await get_user_approval_async("Test", "content", puppy_name="Rex")
+        approved, _ = await get_user_approval_async("Test", "content", agent_name="Rex")
         assert approved is False
 
     @pytest.mark.asyncio
@@ -378,7 +378,7 @@ class TestGetUserApprovalAsync:
             "Test",
             "content",
             preview="--- a/x\n+++ b/x\n@@ -1 +1 @@\n-old\n+new",
-            puppy_name="Rex",
+            agent_name="Rex",
         )
         assert approved is True
 

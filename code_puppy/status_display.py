@@ -160,7 +160,7 @@ class StatusDisplay:
         # Use expanded panel with more visible formatting
         return Panel(
             status_text,
-            title="[bold blue]Code Puppy Status[/bold blue]",
+            title="[bold blue]Agent Status[/bold blue]",
             border_style="bright_blue",
             expand=False,
             padding=(1, 2),
@@ -183,7 +183,7 @@ class StatusDisplay:
 
         # Create a highly visible status text
         return Text.assemble(
-            Text(f"⏳ {rate_text} 🐾", style="bold cyan"),
+            Text(f"⏳ {rate_text}", style="bold cyan"),
             Text(f" {message}", style="yellow"),
         )
 

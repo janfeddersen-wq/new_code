@@ -1,4 +1,4 @@
-"""CLI runner for Code Puppy.
+"""CLI runner for the code agent.
 
 Contains the main application logic, interactive mode, and entry point.
 """
@@ -53,8 +53,8 @@ plugins.load_plugin_callbacks()
 
 
 async def main():
-    """Main async entry point for Code Puppy CLI."""
-    parser = argparse.ArgumentParser(description="Code Puppy - A code generation agent")
+    """Main async entry point for the CLI."""
+    parser = argparse.ArgumentParser(description="A code generation agent")
     parser.add_argument(
         "--version",
         "-v",
@@ -78,7 +78,7 @@ async def main():
         "--agent",
         "-a",
         type=str,
-        help="Specify which agent to use (e.g., --agent code-puppy)",
+        help="Specify which agent to use (e.g., --agent code-agent)",
     )
     parser.add_argument(
         "--model",
@@ -114,15 +114,14 @@ async def main():
     initialize_command_history_file()
     from code_puppy.messaging import emit_error, emit_system_message
 
-    # Show the awesome Code Puppy logo when entering interactive mode
+    # Show the banner when entering interactive mode
     # This happens when: no -p flag (prompt-only mode) is used
-    # The logo should appear for both `code-puppy` and `code-puppy -i`
     if not args.prompt:
         try:
             import pyfiglet
 
             intro_lines = pyfiglet.figlet_format(
-                "CODE PUPPY", font="ansi_shadow"
+                "CODE AGENT", font="ansi_shadow"
             ).split("\n")
 
             # Simple blue to green gradient (top to bottom)
@@ -142,7 +141,7 @@ async def main():
             # Print directly to console to avoid the 'dim' style from emit_system_message
             display_console.print("\n".join(lines))
         except ImportError:
-            emit_system_message("🐶 Code Puppy is Loading...")
+            emit_system_message("Loading...")
 
         # Truecolor warning moved to interactive_mode() so it prints LAST
         # after all the help stuff - max visibility for the ugly red box!
@@ -211,7 +210,7 @@ async def main():
     except ImportError:
         pass  # uvx_detection module not available, ignore
 
-    # Load API keys from puppy.cfg into environment variables
+    # Load API keys from config into environment variables
     from code_puppy.config import load_api_keys_to_environment
 
     load_api_keys_to_environment()
@@ -294,7 +293,7 @@ async def main():
             "DBOS_APP_VERSION", f"{current_version}-{int(time.time() * 1000)}"
         )
         dbos_config: DBOSConfig = {
-            "name": "dbos-code-puppy",
+            "name": "dbos-code-agent",
             "system_database_url": DBOS_DATABASE_URL,
             "run_admin_server": False,
             "conductor_key": os.environ.get(
@@ -303,7 +302,7 @@ async def main():
             "log_level": os.environ.get(
                 "DBOS_LOG_LEVEL", "ERROR"
             ),  # Default to ERROR level to suppress verbose logs
-            "application_version": dbos_app_version,  # Match DBOS app version to Code Puppy version
+            "application_version": dbos_app_version,  # Match DBOS app version
         }
         try:
             DBOS(config=dbos_config)
@@ -430,7 +429,7 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
                 )
                 get_message_bus().emit(response_msg)
 
-                emit_success("🐶 Continuing in Interactive Mode")
+                emit_success("Continuing in Interactive Mode")
                 emit_system_message(
                     "Your command and response are preserved in the conversation history."
                 )

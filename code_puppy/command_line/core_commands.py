@@ -1,4 +1,4 @@
-"""Command handlers for Code Puppy - CORE commands.
+"""Command handlers for CORE commands.
 
 This module contains @register_command decorated handlers that are automatically
 discovered by the command registry system.
@@ -666,7 +666,7 @@ def handle_mcp_command(command: str) -> bool:
 
 @register_command(
     name="api",
-    description="Manage the Code Puppy API server",
+    description="Manage the API server",
     usage="/api [start|stop|status]",
     category="core",
     detailed_help="Start, stop, or check status of the local FastAPI server for GUI integration.",

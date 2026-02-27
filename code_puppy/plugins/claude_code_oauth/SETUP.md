@@ -1,11 +1,11 @@
 # Claude Code OAuth Plugin Setup Guide
 
-This guide walks you through using the Claude Code OAuth plugin inside Code Puppy.
+This guide walks you through using the Claude Code OAuth plugin.
 
 ## Quick Start
 
 1. Ensure the plugin files live under `code_puppy/plugins/claude_code_oauth/`
-2. Restart Code Puppy so it loads the plugin
+2. Restart the application so it loads the plugin
 3. Run `/claude-code-auth` and follow the prompts
 
 ## Why No Client Registration?
@@ -90,4 +90,4 @@ It verifies imports, configuration values, and filesystem expectations without h
 - PKCE protects the flow even without a client secret
 - HTTPS endpoints are enforced for all requests
 
-Enjoy hacking with Claude Code straight from Code Puppy! 🐶💻
+Enjoy hacking with Claude Code straight from the application!

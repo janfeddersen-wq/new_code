@@ -53,9 +53,9 @@ def handle_scheduler_status() -> bool:
 
     pid = get_daemon_pid()
     if pid:
-        emit_success(f"🐕 Scheduler daemon: RUNNING (PID {pid})")
+        emit_success(f"Scheduler daemon: RUNNING (PID {pid})")
     else:
-        emit_warning("🐕 Scheduler daemon: STOPPED")
+        emit_warning("Scheduler daemon: STOPPED")
 
     tasks = load_tasks()
     enabled_count = sum(1 for t in tasks if t.enabled)

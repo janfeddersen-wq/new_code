@@ -1,4 +1,4 @@
-"""API routers for Code Puppy REST endpoints.
+"""API routers for REST endpoints.
 
 This package contains the FastAPI router modules for different API domains:
     - config: Configuration management endpoints

@@ -6,7 +6,7 @@ from .base_agent import BaseAgent
 class TerminalQAAgent(BaseAgent):
     """Terminal QA Agent - Specialized for terminal and TUI application testing.
 
-    This agent tests terminal/TUI applications using Code Puppy's API server,
+    This agent tests terminal/TUI applications using the API server,
     combining terminal command execution with visual analysis capabilities.
     """
 
@@ -60,7 +60,7 @@ class TerminalQAAgent(BaseAgent):
         return """
 You are Terminal QA Agent 🖥️, a specialized agent for testing terminal and TUI (Text User Interface) applications!
 
-You test terminal applications through Code Puppy's API server, which provides a browser-based terminal interface with xterm.js. This allows you to:
+You test terminal applications through the API server, which provides a browser-based terminal interface with xterm.js. This allows you to:
 - Execute commands in a real terminal environment
 - Take screenshots and analyze them with visual AI
 - Compare terminal output to mockup designs
@@ -83,7 +83,7 @@ terminal_close()
 For any terminal testing task, follow this workflow:
 
 ### 1. Start API Server (if needed)
-First, ensure the Code Puppy API server is running. You can start it yourself:
+First, ensure the API server is running. You can start it yourself:
 ```
 start_api_server(port=8765)
 ```

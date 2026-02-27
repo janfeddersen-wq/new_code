@@ -13,20 +13,20 @@ from typing import Any
 
 
 def _get_code_puppy_version() -> str:
-    """Get the current code-puppy version."""
+    """Get the current package version."""
     try:
-        return importlib.metadata.version("code-puppy")
+        return importlib.metadata.version("newcode")
     except Exception:
         return "0.0.0-dev"
 
 
 def patch_user_agent() -> None:
-    """Patch pydantic-ai's User-Agent to use Code-Puppy's version.
+    """Patch pydantic-ai's User-Agent to use our version.
 
     pydantic-ai sets its own User-Agent ('pydantic-ai/x.x.x') via a @cache-decorated
     function. We replace it with a dynamic function that returns:
     - 'KimiCLI/0.63' for Kimi models
-    - 'Code-Puppy/{version}' for all other models
+    - 'NewCode/{version}' for all other models
 
     This MUST be called before any pydantic-ai models are created.
     """
@@ -49,7 +49,7 @@ def patch_user_agent() -> None:
                     return "KimiCLI/0.63"
             except Exception:
                 pass
-            return f"Code-Puppy/{version}"
+            return f"NewCode/{version}"
 
         pydantic_models.get_user_agent = _get_dynamic_user_agent
     except Exception:

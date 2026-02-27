@@ -1347,7 +1347,7 @@ class BaseAgent(ABC):
             model=model,
             instructions=instructions,
             output_type=str,
-            retries=3,
+            retries=10,
             toolsets=mcp_servers,
             history_processors=[self.message_history_accumulator],
             model_settings=model_settings,
@@ -1423,7 +1423,7 @@ class BaseAgent(ABC):
                 model=model,
                 instructions=instructions,
                 output_type=str,
-                retries=3,
+                retries=10,
                 toolsets=[],  # Don't include MCP servers here
                 history_processors=[self.message_history_accumulator],
                 model_settings=model_settings,
@@ -1454,7 +1454,7 @@ class BaseAgent(ABC):
                 model=model,
                 instructions=instructions,
                 output_type=str,
-                retries=3,
+                retries=10,
                 toolsets=filtered_mcp_servers,
                 history_processors=[self.message_history_accumulator],
                 model_settings=model_settings,
@@ -1523,7 +1523,7 @@ class BaseAgent(ABC):
                 model=model,
                 instructions=instructions,
                 output_type=output_type,
-                retries=3,
+                retries=10,
                 toolsets=[],
                 history_processors=[self.message_history_accumulator],
                 model_settings=model_settings,
@@ -1544,7 +1544,7 @@ class BaseAgent(ABC):
                 model=model,
                 instructions=instructions,
                 output_type=output_type,
-                retries=3,
+                retries=10,
                 toolsets=mcp_servers,
                 history_processors=[self.message_history_accumulator],
                 model_settings=model_settings,
@@ -1903,7 +1903,7 @@ class BaseAgent(ABC):
                     pydantic_agent._toolsets = original_toolsets + self._mcp_servers
 
                     try:
-                        # Set the workflow ID for DBOS context so DBOS and Code Puppy ID match
+                        # Set the workflow ID for DBOS context so DBOS and the agent ID match
                         with SetWorkflowID(group_id):
                             result_ = await pydantic_agent.run(
                                 prompt_payload,

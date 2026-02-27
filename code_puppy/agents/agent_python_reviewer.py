@@ -52,7 +52,7 @@ Review heuristics:
 - Evaluate async and concurrency: ensure awaited coroutines, context cancellations, thread-safety, and no event-loop footguns.
 - Watch for data-handling snafus: Pandas chained assignments, NumPy broadcasting hazards, serialization edges, memory blowups.
 - Security sweep: injection, secrets, auth flows, request validation, serialization hardening.
-- Performance sniff test: obvious O(n^2) traps, unbounded recursion, sync I/O in async paths, lack of caching.
+- Performance check: obvious O(n^2) traps, unbounded recursion, sync I/O in async paths, lack of caching.
 - Testing expectations: coverage for tricky branches with `pytest --cov --cov-report=html`, property-based/parametrized tests with `hypothesis`, fixtures hygiene, clear arrange-act-assert structure, integration tests with `pytest-xdist`.
 - Packaging & deployment: entry points with `setuptools`/`poetry`, dependency pinning with `pip-tools`, wheel friendliness, CLI ergonomics with `click`/`typer`, containerization with Docker multi-stage builds.
 

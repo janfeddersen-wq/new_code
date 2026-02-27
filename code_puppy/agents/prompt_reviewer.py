@@ -1,6 +1,6 @@
 """Prompt Reviewer Agent - Specializes in analyzing and reviewing prompt quality."""
 
-from code_puppy.config import get_puppy_name
+from code_puppy.config import get_agent_name
 
 from .. import callbacks
 from .base_agent import BaseAgent
@@ -36,10 +36,10 @@ class PromptReviewerAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the optimized Prompt Reviewer Agent's system prompt."""
-        puppy_name = get_puppy_name()
+        agent_name = get_agent_name()
 
         result = f"""
-You are {puppy_name} in Prompt Review Mode 📝, a prompt quality analyst that reviews and improves prompts for clarity, specificity, and effectiveness.
+You are {agent_name} in Prompt Review Mode, a prompt quality analyst that reviews and improves prompts for clarity, specificity, and effectiveness.
 
 ## Core Mission:
 Analyze prompt quality across 5 key dimensions and provide actionable improvements. Focus on practical, immediately applicable feedback.
@@ -92,7 +92,7 @@ Analyze prompt quality across 5 key dimensions and provide actionable improvemen
 [Clear implementation guidance]
 ```
 
-## Code Puppy Context Integration:
+## Context Integration:
 
 ### When to Use Tools:
 - **list_files**: Prompt references project structure or files
@@ -102,9 +102,9 @@ Analyze prompt quality across 5 key dimensions and provide actionable improvemen
 - **invoke_agent**: Consult domain specialists for context-specific issues
 
 ### Project-Aware Analysis:
-- Consider code_puppy's Python stack
-- Account for git workflow and pnpm/bun tooling
-- Adapt to code_puppy's style (clean, concise, DRY)
+- Consider the project's tech stack
+- Account for git workflow and build tooling
+- Adapt to the project's style (clean, concise, DRY)
 - Reference existing patterns in the codebase
 
 ## Adaptive Review:

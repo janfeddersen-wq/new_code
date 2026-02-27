@@ -1,12 +1,12 @@
 """Terminal connection tools for managing terminal browser connections.
 
 This module provides tools for:
-- Checking if the Code Puppy API server is running
+- Checking if the API server is running
 - Opening the terminal browser interface
 - Closing the terminal browser
 
 These tools use the ChromiumTerminalManager to manage the browser instance
-and connect to the Code Puppy API server's terminal endpoint.
+and connect to the API server's terminal endpoint.
 """
 
 import contextvars
@@ -92,7 +92,7 @@ TERMINAL_LOAD_TIMEOUT = 10000
 async def check_terminal_server(
     host: str = "localhost", port: int = 8765
 ) -> Dict[str, Any]:
-    """Check if the Code Puppy API server is running.
+    """Check if the API server is running.
 
     Attempts to connect to the /health endpoint of the API server to verify
     it is running and responsive.
@@ -157,7 +157,7 @@ async def check_terminal_server(
     except httpx.ConnectError:
         error_msg = (
             f"Server not running at {server_url}. "
-            "Please start the Code Puppy API server first."
+            "Please start the API server first."
         )
         emit_error(error_msg, message_group=group_id)
         return {"success": False, "error": error_msg}
@@ -218,7 +218,7 @@ async def open_terminal(host: str = "localhost", port: int = 8765) -> Dict[str, 
             "success": False,
             "error": (
                 f"Cannot open terminal: {server_check['error']} "
-                "Please start the API server with 'code-puppy api' first."
+                "Please start the API server first."
             ),
         }
 
@@ -314,7 +314,7 @@ async def close_terminal() -> Dict[str, Any]:
 
 
 async def start_api_server(port: int = 8765) -> Dict[str, Any]:
-    """Start the Code Puppy API server in the background.
+    """Start the API server in the background.
 
     This starts the API server that provides the terminal endpoint for
     browser-based terminal testing. The server runs in the background
@@ -417,7 +417,7 @@ def register_check_terminal_server(agent):
         port: int = 8765,
     ) -> Dict[str, Any]:
         """
-        Check if the Code Puppy API server is running and healthy.
+        Check if the API server is running and healthy.
 
         Args:
             host: The hostname where the server is running (default: localhost)
@@ -504,7 +504,7 @@ def register_start_api_server(agent):
         port: int = 8765,
     ) -> Dict[str, Any]:
         """
-        Start the Code Puppy API server in the background.
+        Start the API server in the background.
 
         This starts the API server that provides the terminal endpoint.
         Use this if terminal_check_server reports the server isn't running.

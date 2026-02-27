@@ -83,7 +83,7 @@ jobs:
       - name: Install dev dependencies (ruff)
         run: pip install ruff
 
-      - name: Install code_puppy
+      - name: Install package
         run: pip install .
 
       - name: Lint with ruff

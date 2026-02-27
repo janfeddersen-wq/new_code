@@ -1,5 +1,5 @@
 """
-Claude Code OAuth Plugin for Code Puppy.
+Claude Code OAuth Plugin for the application.
 
 Provides OAuth authentication for Claude Code models and registers
 the 'claude_code' model type handler.
@@ -150,7 +150,7 @@ def _await_callback(context: OAuthContext) -> Optional[str]:
     emit_info(f"Listening for callback on {redirect_uri}")
     emit_info(
         "If Claude redirects you to the console callback page, copy the full URL "
-        "and paste it back into Code Puppy."
+        "and paste it back into the application."
     )
 
     if not event.wait(timeout=timeout):

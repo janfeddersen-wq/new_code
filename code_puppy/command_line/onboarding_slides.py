@@ -1,6 +1,6 @@
 """Slide content for the onboarding wizard.
 
-🐶 Lean, mean, ADHD-friendly slides. 5 slides max!
+Concise, 5-slide onboarding flow.
 """
 
 from typing import List, Tuple
@@ -42,11 +42,11 @@ def get_nav_footer() -> str:
 
 
 def get_gradient_banner() -> str:
-    """Generate the gradient CODE PUPPY banner."""
+    """Generate the gradient CODE AGENT banner."""
     try:
         import pyfiglet
 
-        lines = pyfiglet.figlet_format("CODE PUPPY", font="ansi_shadow").split("\n")
+        lines = pyfiglet.figlet_format("CODE AGENT", font="ansi_shadow").split("\n")
         colors = ["bright_blue", "bright_cyan", "bright_green"]
         result = []
         for i, line in enumerate(lines):
@@ -55,7 +55,7 @@ def get_gradient_banner() -> str:
                 result.append(f"[{color}]{line}[/{color}]")
         return "\n".join(result)
     except ImportError:
-        return "[bold bright_cyan]═══ CODE PUPPY 🐶 ═══[/bold bright_cyan]"
+        return "[bold bright_cyan]═══ CODE AGENT ═══[/bold bright_cyan]"
 
 
 # ============================================================================
@@ -67,7 +67,7 @@ def slide_welcome() -> str:
     """Slide 1: Welcome - quick intro."""
     content = get_gradient_banner()
     content += "\n\n"
-    content += "[bold white]Welcome! 🐶[/bold white]\n\n"
+    content += "[bold white]Welcome![/bold white]\n\n"
     content += "[cyan]Quick setup:[/cyan]\n"
     content += "  1. Pick your model provider\n"
     content += "  2. Optional: MCP servers\n"
@@ -136,7 +136,7 @@ def slide_use_cases() -> str:
     """Slide 4: When to use which agent - THE IMPORTANT ONE."""
     content = "[bold cyan]🎯 When to Use What[/bold cyan]\n\n"
 
-    content += "[bold yellow]🐶 Code Puppy (default)[/bold yellow]\n"
+    content += "[bold yellow]Code Agent (default)[/bold yellow]\n"
     content += "  [green]USE FOR:[/green] Direct coding tasks\n"
     content += "  • Fix this bug\n"
     content += "  • Add a feature to this file\n"
@@ -174,6 +174,6 @@ def slide_done(trigger_oauth: str | None) -> str:
         content += f"[bold cyan]→ {trigger_oauth.title()} OAuth next![/bold cyan]\n\n"
 
     content += "[dim]Re-run anytime: [/dim][cyan]/tutorial[/cyan]\n"
-    content += "\n[bold yellow]Press Enter to start coding! 🐶[/bold yellow]"
+    content += "\n[bold yellow]Press Enter to start coding![/bold yellow]"
     content += get_nav_footer()
     return content

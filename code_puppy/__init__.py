@@ -1,6 +1,6 @@
 import importlib.metadata
 
-# Biscuit was here! 🐶
+# Version detection
 try:
     _detected_version = importlib.metadata.version("code-puppy")
     # Ensure we never end up with None or empty string

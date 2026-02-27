@@ -12,7 +12,7 @@ class QAExpertAgent(BaseAgent):
 
     @property
     def display_name(self) -> str:
-        return "QA Expert 🐾"
+        return "QA Expert"
 
     @property
     def description(self) -> str:

@@ -1,4 +1,4 @@
-"""MCP (Model Context Protocol) management system for Code Puppy.
+"""MCP (Model Context Protocol) management system for the agent.
 
 Note: Be careful not to create circular imports with config_wizard.py.
 config_wizard.py imports ServerConfig and get_mcp_manager directly from

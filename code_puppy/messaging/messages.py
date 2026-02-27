@@ -1,4 +1,4 @@
-"""Structured message models for Code Puppy's messaging system.
+"""Structured message models for the messaging system.
 
 Pydantic models that decouple message content from presentation.
 NO Rich markup or formatting should be embedded in any string fields.

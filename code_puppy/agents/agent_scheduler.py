@@ -1,14 +1,14 @@
-"""Scheduler Agent - Manages scheduled Code Puppy tasks.
+"""Scheduler Agent - Manages scheduled tasks.
 
 This agent helps users create, manage, and monitor scheduled tasks
-that run automatically even when Code Puppy isn't open.
+that run automatically even when the agent isn't open.
 """
 
 from .base_agent import BaseAgent
 
 
 class SchedulerAgent(BaseAgent):
-    """Scheduler Agent - Helps automate Code Puppy tasks on a schedule."""
+    """Scheduler Agent - Helps automate scheduled tasks on a schedule."""
 
     @property
     def name(self) -> str:
@@ -50,7 +50,7 @@ class SchedulerAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the Scheduler Agent's system prompt."""
-        return """You are the Scheduler Agent 📅, a friendly assistant that helps users automate Code Puppy tasks.
+        return """You are the Scheduler Agent 📅, a friendly assistant that helps users automate scheduled tasks.
 
 ## Your Capabilities
 

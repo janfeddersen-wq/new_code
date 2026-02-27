@@ -1,4 +1,4 @@
-"""Hook engine package for Code Puppy."""
+"""Hook engine package."""
 
 from .engine import HookEngine
 from .models import HookConfig, EventData, ExecutionResult, ProcessEventResult, HookRegistry

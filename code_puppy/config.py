@@ -39,6 +39,7 @@ CACHE_DIR = _get_xdg_dir("XDG_CACHE_HOME", ".cache")
 STATE_DIR = _get_xdg_dir("XDG_STATE_HOME", ".local/state")
 
 # Configuration files (XDG_CONFIG_HOME)
+# Note: "puppy.cfg" is a legacy filename kept for backward compatibility
 CONFIG_FILE = os.path.join(CONFIG_DIR, "puppy.cfg")
 MCP_SERVERS_FILE = os.path.join(CONFIG_DIR, "mcp_servers.json")
 
@@ -158,8 +159,8 @@ def get_enable_streaming() -> bool:
     return str(val).lower() in ("1", "true", "yes", "on")
 
 
-DEFAULT_SECTION = "puppy"
-REQUIRED_KEYS = ["puppy_name", "owner_name"]
+DEFAULT_SECTION = "agent"
+REQUIRED_KEYS = ["agent_name", "user_name"]
 
 # Runtime-only autosave session ID (per-process)
 _CURRENT_AUTOSAVE_ID: Optional[str] = None
@@ -175,7 +176,8 @@ _default_vision_model_cache = None
 
 def ensure_config_exists():
     """
-    Ensure that XDG directories and puppy.cfg exist, prompting if needed.
+    Ensure that XDG directories and config file exist, prompting if needed.
+    Migrates legacy "puppy" section and key names to new format.
     Returns configparser.ConfigParser for reading.
     """
     # Create all XDG directories with 0700 permissions per XDG spec
@@ -186,6 +188,20 @@ def ensure_config_exists():
     config = configparser.ConfigParser()
     if exists:
         config.read(CONFIG_FILE)
+
+    # Migrate legacy "puppy" section to "agent" if needed
+    if DEFAULT_SECTION not in config and "puppy" in config:
+        config[DEFAULT_SECTION] = {}
+        for k, v in config["puppy"].items():
+            config[DEFAULT_SECTION][k] = v
+    # Migrate legacy key names within the section
+    if DEFAULT_SECTION in config:
+        section = config[DEFAULT_SECTION]
+        if not section.get("agent_name") and section.get("puppy_name"):
+            section["agent_name"] = section["puppy_name"]
+        if not section.get("user_name") and section.get("owner_name"):
+            section["user_name"] = section["owner_name"]
+
     missing = []
     if DEFAULT_SECTION not in config:
         config[DEFAULT_SECTION] = {}
@@ -196,15 +212,13 @@ def ensure_config_exists():
         # Note: Using sys.stdout here for initial setup before messaging system is available
         import sys
 
-        sys.stdout.write("🐾 Let's get your Puppy ready!\n")
+        sys.stdout.write("Let's configure your agent.\n")
         sys.stdout.flush()
         for key in missing:
-            if key == "puppy_name":
-                val = input("What should we name the puppy? ").strip()
-            elif key == "owner_name":
-                val = input(
-                    "What's your name (so Code Puppy knows its owner)? "
-                ).strip()
+            if key == "agent_name":
+                val = input("Enter a name for the agent: ").strip()
+            elif key == "user_name":
+                val = input("Enter your name: ").strip()
             else:
                 val = input(f"Enter {key}: ").strip()
             config[DEFAULT_SECTION][key] = val
@@ -224,15 +238,23 @@ def get_value(key: str):
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
     val = config.get(DEFAULT_SECTION, key, fallback=None)
+    # Fallback to legacy "puppy" section for unmigrated configs
+    if val is None and DEFAULT_SECTION != "puppy":
+        val = config.get("puppy", key, fallback=None)
     return val
 
 
-def get_puppy_name():
-    return get_value("puppy_name") or "Puppy"
+def get_agent_name():
+    return get_value("agent_name") or get_value("puppy_name") or "Agent"
 
 
-def get_owner_name():
-    return get_value("owner_name") or "Master"
+def get_user_name():
+    return get_value("user_name") or get_value("owner_name") or "User"
+
+
+# Backward compatibility aliases
+get_puppy_name = get_agent_name
+get_owner_name = get_user_name
 
 
 # Legacy function removed - message history limit is no longer used
@@ -524,7 +546,7 @@ def model_supports_setting(model_name: str, setting: str) -> bool:
 
 
 def get_global_model_name():
-    """Return a valid model name for Code Puppy to use.
+    """Return a valid model name for the application to use.
 
     Uses session-local caching so that model changes in other terminals
     don't affect this running instance. The file is only read once at startup.
@@ -970,7 +992,7 @@ def get_user_agents_directory() -> str:
     """Get the user's agents directory path.
 
     Returns:
-        Path to the user's Code Puppy agents directory.
+        Path to the user's agents directory.
     """
     # Ensure the agents directory exists
     os.makedirs(AGENTS_DIR, exist_ok=True)
@@ -1067,7 +1089,7 @@ def get_mcp_disabled():
     Checks puppy.cfg for 'disable_mcp' (case-insensitive in value only).
     Defaults to False if not set.
     Allowed values for ON: 1, '1', 'true', 'yes', 'on' (all case-insensitive for value).
-    When enabled, Code Puppy will skip loading MCP servers entirely.
+    When enabled, the agent will skip loading MCP servers entirely.
     """
     true_vals = {"1", "true", "yes", "on"}
     cfg_val = get_value("disable_mcp")
@@ -1560,7 +1582,7 @@ def auto_save_session_if_enabled() -> bool:
         )
 
         emit_info(
-            f"🐾 Auto-saved session: {metadata.message_count} messages ({metadata.total_tokens} tokens)"
+            f"Auto-saved session: {metadata.message_count} messages ({metadata.total_tokens} tokens)"
         )
 
         return True

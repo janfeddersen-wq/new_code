@@ -79,12 +79,12 @@ See `docs/HOOKS.md` for the full user-facing guide.
 
 ## Tool Name Compatibility
 
-Hooks can be written using **either** the provider's tool name **or** code_puppy's
-internal tool name — the matcher treats them as equivalent.
+Hooks can be written using **either** the provider's tool name **or** the application's
+internal tool name -- the matcher treats them as equivalent.
 
-### Claude Code → code_puppy
+### Claude Code to NewCode
 
-| Claude Code (`matcher`) | code_puppy internal | Notes |
+| Claude Code (`matcher`) | NewCode internal | Notes |
 |-------------------------|---------------------|-------|
 | `Bash`            | `agent_run_shell_command` | Shell execution |
 | `Glob`            | `list_files`              | File glob / directory listing |

@@ -6,7 +6,7 @@ This module provides tools for:
 - Waiting for terminal output patterns
 
 These tools use the ChromiumTerminalManager to manage the browser instance
-and interact with the xterm.js terminal in the Code Puppy API.
+and interact with the xterm.js terminal in the API.
 """
 
 import asyncio

@@ -1079,10 +1079,10 @@ async def run_shell_command(
                 error="Another command is currently awaiting confirmation",
             )
 
-        # Get puppy name for personalized messages
-        from code_puppy.config import get_puppy_name
+        # Get agent name for personalized messages
+        from code_puppy.config import get_agent_name
 
-        puppy_name = get_puppy_name().title()
+        agent_name = get_agent_name().title()
 
         # Build panel content
         panel_content = Text()
@@ -1101,7 +1101,7 @@ async def run_shell_command(
             content=panel_content,
             preview=None,
             border_style="dim white",
-            puppy_name=puppy_name,
+            agent_name=agent_name,
         )
 
         # Release lock after approval

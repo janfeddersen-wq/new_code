@@ -665,7 +665,7 @@ class TestGetUserApproval:
                     with patch("code_puppy.tools.common.emit_info"):
                         with patch("code_puppy.tools.common.emit_success"):
                             confirmed, feedback = get_user_approval(
-                                "Test", "content", puppy_name="Biscuit"
+                                "Test", "content", agent_name="Biscuit"
                             )
         assert confirmed is True
         assert feedback is None
@@ -679,7 +679,7 @@ class TestGetUserApproval:
                     with patch("code_puppy.tools.common.emit_info"):
                         with patch("code_puppy.tools.common.emit_error"):
                             confirmed, feedback = get_user_approval(
-                                "Test", "content", puppy_name="Biscuit"
+                                "Test", "content", agent_name="Biscuit"
                             )
         assert confirmed is False
         assert feedback is None
@@ -701,7 +701,7 @@ class TestGetUserApproval:
                             with patch("code_puppy.tools.common.emit_error"):
                                 with patch("code_puppy.tools.common.emit_warning"):
                                     confirmed, feedback = get_user_approval(
-                                        "Test", "content", puppy_name="Biscuit"
+                                        "Test", "content", agent_name="Biscuit"
                                     )
         assert confirmed is False
         assert feedback == "fix the thing"
@@ -719,7 +719,7 @@ class TestGetUserApproval:
                         with patch("code_puppy.tools.common.emit_info"):
                             with patch("code_puppy.tools.common.emit_error"):
                                 confirmed, feedback = get_user_approval(
-                                    "Test", "content", puppy_name="Biscuit"
+                                    "Test", "content", agent_name="Biscuit"
                                 )
         assert confirmed is False
         assert feedback is None
@@ -735,7 +735,7 @@ class TestGetUserApproval:
                     with patch("code_puppy.tools.common.emit_info"):
                         with patch("code_puppy.tools.common.emit_error"):
                             confirmed, feedback = get_user_approval(
-                                "Test", "content", puppy_name="Biscuit"
+                                "Test", "content", agent_name="Biscuit"
                             )
         assert confirmed is False
 
@@ -748,7 +748,7 @@ class TestGetUserApproval:
                     with patch("code_puppy.tools.common.emit_info"):
                         with patch("code_puppy.tools.common.emit_error"):
                             confirmed, feedback = get_user_approval(
-                                "Test", "content", puppy_name="Biscuit"
+                                "Test", "content", agent_name="Biscuit"
                             )
         assert confirmed is False
 
@@ -768,7 +768,7 @@ class TestGetUserApproval:
                                     "Test",
                                     "content",
                                     preview="-old\n+new",
-                                    puppy_name="Biscuit",
+                                    agent_name="Biscuit",
                                 )
         assert confirmed is True
 
@@ -781,7 +781,7 @@ class TestGetUserApproval:
                     with patch("code_puppy.tools.common.emit_info"):
                         with patch("code_puppy.tools.common.emit_success"):
                             confirmed, _ = get_user_approval(
-                                "Test", Text("rich content"), puppy_name="Biscuit"
+                                "Test", Text("rich content"), agent_name="Biscuit"
                             )
         assert confirmed is True
 
@@ -820,7 +820,7 @@ class TestGetUserApprovalAsync:
                     with patch("code_puppy.tools.common.emit_info"):
                         with patch("code_puppy.tools.common.emit_success"):
                             confirmed, feedback = await get_user_approval_async(
-                                "Test", "content", puppy_name="Biscuit"
+                                "Test", "content", agent_name="Biscuit"
                             )
         assert confirmed is True
         assert feedback is None
@@ -839,7 +839,7 @@ class TestGetUserApprovalAsync:
                     with patch("code_puppy.tools.common.emit_info"):
                         with patch("code_puppy.tools.common.emit_error"):
                             confirmed, _ = await get_user_approval_async(
-                                "Test", "content", puppy_name="Biscuit"
+                                "Test", "content", agent_name="Biscuit"
                             )
         assert confirmed is False
 
@@ -862,7 +862,7 @@ class TestGetUserApprovalAsync:
                             with patch("code_puppy.tools.common.emit_error"):
                                 with patch("code_puppy.tools.common.emit_warning"):
                                     confirmed, feedback = await get_user_approval_async(
-                                        "Test", "content", puppy_name="Biscuit"
+                                        "Test", "content", agent_name="Biscuit"
                                     )
         assert confirmed is False
         assert feedback == "change X"
@@ -885,7 +885,7 @@ class TestGetUserApprovalAsync:
                         with patch("code_puppy.tools.common.emit_info"):
                             with patch("code_puppy.tools.common.emit_error"):
                                 confirmed, feedback = await get_user_approval_async(
-                                    "Test", "content", puppy_name="Biscuit"
+                                    "Test", "content", agent_name="Biscuit"
                                 )
         assert confirmed is False
         assert feedback is None
@@ -904,7 +904,7 @@ class TestGetUserApprovalAsync:
                     with patch("code_puppy.tools.common.emit_info"):
                         with patch("code_puppy.tools.common.emit_error"):
                             confirmed, _ = await get_user_approval_async(
-                                "Test", "content", puppy_name="Biscuit"
+                                "Test", "content", agent_name="Biscuit"
                             )
         assert confirmed is False
 
@@ -929,7 +929,7 @@ class TestGetUserApprovalAsync:
                                     "Test",
                                     "content",
                                     preview="-old\n+new",
-                                    puppy_name="Biscuit",
+                                    agent_name="Biscuit",
                                 )
         assert confirmed is True
 
@@ -947,7 +947,7 @@ class TestGetUserApprovalAsync:
                     with patch("code_puppy.tools.common.emit_info"):
                         with patch("code_puppy.tools.common.emit_success"):
                             confirmed, _ = await get_user_approval_async(
-                                "Test", Text("rich"), puppy_name="Biscuit"
+                                "Test", Text("rich"), agent_name="Biscuit"
                             )
         assert confirmed is True
 

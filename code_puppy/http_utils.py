@@ -1,5 +1,5 @@
 """
-HTTP utilities module for code-puppy.
+HTTP utilities module.
 
 This module provides functions for creating properly configured HTTP clients.
 """

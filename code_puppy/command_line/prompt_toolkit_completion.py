@@ -45,7 +45,7 @@ from code_puppy.command_line.utils import list_directory
 from code_puppy.config import (
     COMMAND_HISTORY_FILE,
     get_config_keys,
-    get_puppy_name,
+    get_agent_name,
     get_value,
 )
 
@@ -515,12 +515,12 @@ class SlashCompleter(Completer):
 def get_prompt_with_active_model(base: str = ">>> "):
     from code_puppy.agents.agent_manager import get_current_agent
 
-    puppy = get_puppy_name()
+    name_display = get_agent_name()
     global_model = get_active_model() or "(default)"
 
     # Get current agent information
     current_agent = get_current_agent()
-    agent_display = current_agent.display_name if current_agent else "code-puppy"
+    agent_display = current_agent.display_name if current_agent else "code-agent"
 
     # Check if current agent has a pinned model
     agent_model = None
@@ -546,8 +546,8 @@ def get_prompt_with_active_model(base: str = ">>> "):
         cwd_display = cwd
     return FormattedText(
         [
-            ("bold", "🐶 "),
-            ("class:puppy", f"{puppy}"),
+            ("bold", "▸ "),
+            ("class:agent-name", f"{name_display}"),
             ("", " "),
             ("class:agent", f"[{agent_display}] "),
             ("class:model", model_display + " "),
@@ -810,7 +810,7 @@ async def get_input_with_combined_completion(
         {
             # Keys must AVOID the 'class:' prefix – that prefix is used only when
             # tagging tokens in `FormattedText`. See prompt_toolkit docs.
-            "puppy": "bold ansibrightcyan",
+            "agent-name": "bold ansibrightcyan",
             "owner": "bold ansibrightblue",
             "agent": "bold ansibrightblue",
             "model": "bold ansibrightcyan",

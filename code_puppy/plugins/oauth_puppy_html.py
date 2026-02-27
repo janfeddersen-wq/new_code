@@ -1,4 +1,4 @@
-"""Shared HTML templates drenched in ridiculous puppy-fueled OAuth theatrics."""
+"""Shared HTML templates for OAuth callback pages."""
 
 from __future__ import annotations
 
@@ -12,15 +12,15 @@ GEMINI_LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Goo
 
 
 def oauth_success_html(service_name: str, extra_message: Optional[str] = None) -> str:
-    """Return an over-the-top puppy celebration HTML page with artillery effects."""
+    """Return an animated success HTML page for OAuth completion."""
     clean_service = service_name.strip() or "OAuth"
-    detail = f"<p class='detail'>🐾 {extra_message} 🐾</p>" if extra_message else ""
+    detail = f"<p class='detail'>{extra_message}</p>" if extra_message else ""
     projectile, rival_url, rival_alt, target_modifier = _service_targets(clean_service)
     target_classes = "target" if not target_modifier else f"target {target_modifier}"
     return (
         "<!DOCTYPE html>"
         "<html lang='en'><head><meta charset='utf-8'>"
-        "<title>Puppy Paw-ty Success</title>"
+        "<title>OAuth Success</title>"
         "<style>"
         "html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#111827 45%,#1f2937 100%);color:#e5e7eb;}"
         "body{display:flex;align-items:center;justify-content:center;}"
@@ -54,15 +54,13 @@ def oauth_success_html(service_name: str, extra_message: Optional[str] = None) -
         "<div class='confetti'>"
         + "".join(
             f"<span style='left:{left}%;top:{top}%;animation-delay:{delay}s;'>{emoji}</span>"
-            for left, top, delay, emoji in _SUCCESS_PUPPIES
+            for left, top, delay, emoji in _SUCCESS_EMOJIS
         )
         + "</div>"
-        f"<h1>🐶⚡ {clean_service} OAuth Complete ⚡🐶</h1>"
-        "<p class='mega'>Puppy squad delivered the token payload without mercy.</p>"
+        f"<h1>&#x2705; {clean_service} OAuth Complete</h1>"
+        "<p class='mega'>Authentication token received successfully.</p>"
         f"{detail}"
-        f"<p>💣 Puppies are bombarding the {rival_alt} defenses! 💣</p>"
-        "<p>🚀 This window will auto-close faster than a corgi zoomie. 🚀</p>"
-        "<p class='mega'>Keep the artillery firing – the rivals never stood a chance.</p>"
+        "<p>This window will close automatically.</p>"
         f"<div class='{target_classes}'><img src='{rival_url}' alt='{rival_alt}'></div>"
         "<div class='artillery'>" + _build_artillery(projectile) + "</div>"
         "</div>"
@@ -72,15 +70,15 @@ def oauth_success_html(service_name: str, extra_message: Optional[str] = None) -
 
 
 def oauth_failure_html(service_name: str, reason: str) -> str:
-    """Return a dramatic puppy-tragedy HTML page for OAuth sadness."""
+    """Return an error HTML page for OAuth failure."""
     clean_service = service_name.strip() or "OAuth"
-    clean_reason = reason.strip() or "Something went wrong with the treats"
+    clean_reason = reason.strip() or "An unexpected error occurred"
     projectile, rival_url, rival_alt, target_modifier = _service_targets(clean_service)
     target_classes = "target" if not target_modifier else f"target {target_modifier}"
     return (
         "<!DOCTYPE html>"
         "<html lang='en'><head><meta charset='utf-8'>"
-        "<title>Puppy Tears</title>"
+        "<title>OAuth Error</title>"
         "<style>"
         "html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(160deg,#101827 0%,#0b1120 100%);color:#e2e8f0;}"
         "body{display:flex;align-items:center;justify-content:center;}"
@@ -110,17 +108,15 @@ def oauth_failure_html(service_name: str, reason: str) -> str:
         "<div class='tearstorm'>"
         + "".join(
             f"<span style='left:{left}%;top:{top}%;animation-delay:{delay}s;'>{emoji}</span>"
-            for left, top, delay, emoji in _FAILURE_PUPPIES
+            for left, top, delay, emoji in _FAILURE_EMOJIS
         )
         + "</div>"
-        f"<h1>💔🐶 {clean_service} OAuth Whoopsie 💔</h1>"
-        "<p class='howl'>😭 Puppy artillery jammed! Someone cut the firing wire.</p>"
+        f"<h1>&#x274C; {clean_service} OAuth Failed</h1>"
+        "<p class='howl'>Authentication could not be completed.</p>"
         f"<p>{clean_reason}</p>"
-        "<p>💧 A thousand doggy eyes are welling up. Try again from Code Puppy! 💧</p>"
-        f"<p>Re-calibrate the {projectile} barrage and slam it into the {rival_alt} wall.</p>"
+        "<p>Please try again from the application.</p>"
         "<div class='buttons'>"
-        "<a href='https://codepuppy.dev' target='_blank'>Adopt more puppies</a>"
-        "<a href='https://github.com/code-puppy/code_puppy' target='_blank'>Send treats</a>"
+        "<a href='https://github.com/janfeddersen-wq/new_code' target='_blank'>Documentation</a>"
         "</div>"
         "<div class='battlefield'>"
         + _build_artillery(projectile, shells_only=True)
@@ -131,59 +127,59 @@ def oauth_failure_html(service_name: str, reason: str) -> str:
     )
 
 
-_SUCCESS_PUPPIES = (
-    (5, 12, 0.0, "🐶"),
-    (18, 28, 0.2, "🐕"),
-    (32, 6, 1.1, "🐩"),
-    (46, 18, 0.5, "🦮"),
-    (62, 9, 0.8, "🐕‍🦺"),
-    (76, 22, 1.3, "🐶"),
-    (88, 14, 0.4, "🐺"),
-    (12, 48, 0.6, "🐕"),
-    (28, 58, 1.7, "🦴"),
-    (44, 42, 0.9, "🦮"),
-    (58, 52, 1.5, "🐾"),
-    (72, 46, 0.3, "🐩"),
-    (86, 54, 1.1, "🐕‍🦺"),
-    (8, 72, 0.7, "🐶"),
-    (24, 80, 1.2, "🐩"),
-    (40, 74, 0.2, "🐕"),
-    (56, 66, 1.6, "🦮"),
-    (70, 78, 1.0, "🐕‍🦺"),
-    (84, 70, 1.4, "🐾"),
-    (16, 90, 0.5, "🐶"),
-    (32, 92, 1.9, "🦴"),
-    (48, 88, 1.1, "🐺"),
-    (64, 94, 1.8, "🐩"),
-    (78, 88, 0.6, "🐕"),
-    (90, 82, 1.3, "🐾"),
+_SUCCESS_EMOJIS = (
+    (5, 12, 0.0, "&#x2728;"),
+    (18, 28, 0.2, "&#x2705;"),
+    (32, 6, 1.1, "&#x1F389;"),
+    (46, 18, 0.5, "&#x2728;"),
+    (62, 9, 0.8, "&#x1F4AB;"),
+    (76, 22, 1.3, "&#x2705;"),
+    (88, 14, 0.4, "&#x2728;"),
+    (12, 48, 0.6, "&#x1F389;"),
+    (28, 58, 1.7, "&#x1F4AB;"),
+    (44, 42, 0.9, "&#x2728;"),
+    (58, 52, 1.5, "&#x2705;"),
+    (72, 46, 0.3, "&#x1F389;"),
+    (86, 54, 1.1, "&#x1F4AB;"),
+    (8, 72, 0.7, "&#x2728;"),
+    (24, 80, 1.2, "&#x1F389;"),
+    (40, 74, 0.2, "&#x2705;"),
+    (56, 66, 1.6, "&#x2728;"),
+    (70, 78, 1.0, "&#x1F4AB;"),
+    (84, 70, 1.4, "&#x2705;"),
+    (16, 90, 0.5, "&#x2728;"),
+    (32, 92, 1.9, "&#x1F4AB;"),
+    (48, 88, 1.1, "&#x1F389;"),
+    (64, 94, 1.8, "&#x2728;"),
+    (78, 88, 0.6, "&#x2705;"),
+    (90, 82, 1.3, "&#x1F4AB;"),
 )
 
 
-_FAILURE_PUPPIES = (
-    (8, 6, 0.0, "🥺🐶"),
-    (22, 18, 0.3, "😢🐕"),
-    (36, 10, 0.6, "😿🐩"),
-    (50, 20, 0.9, "😭🦮"),
-    (64, 8, 1.2, "🥺🐕‍🦺"),
-    (78, 16, 1.5, "😢🐶"),
-    (12, 38, 0.4, "😭🐕"),
-    (28, 44, 0.7, "😿🐩"),
-    (42, 34, 1.0, "🥺🦮"),
-    (58, 46, 1.3, "😭🐕‍🦺"),
-    (72, 36, 1.6, "😢🐶"),
-    (86, 40, 1.9, "😭🐕"),
-    (16, 64, 0.5, "🥺🐩"),
-    (32, 70, 0.8, "😭🦮"),
-    (48, 60, 1.1, "😿🐕‍🦺"),
-    (62, 74, 1.4, "🥺🐶"),
-    (78, 68, 1.7, "😭🐕"),
-    (90, 72, 2.0, "😢🐩"),
-    (20, 88, 0.6, "🥺🦮"),
-    (36, 92, 0.9, "😭🐕‍🦺"),
-    (52, 86, 1.2, "😢🐶"),
-    (68, 94, 1.5, "😭🐕"),
-    (82, 90, 1.8, "😿🐩"),
+_FAILURE_EMOJIS = (
+    (8, 6, 0.0, "&#x26A0;"),
+    (22, 18, 0.3, "&#x274C;"),
+    (36, 10, 0.6, "&#x26A0;"),
+    (50, 20, 0.9, "&#x274C;"),
+    (64, 8, 1.2, "&#x26A0;"),
+    (78, 16, 1.5, "&#x274C;"),
+    (12, 38, 0.4, "&#x26A0;"),
+    (28, 44, 0.7, "&#x274C;"),
+    (42, 34, 1.0, "&#x26A0;"),
+    (58, 46, 1.3, "&#x274C;"),
+    (72, 36, 1.6, "&#x26A0;"),
+    (86, 40, 1.9, "&#x274C;"),
+    (16, 64, 0.5, "&#x26A0;"),
+    (32, 70, 0.8, "&#x274C;"),
+    (48, 60, 1.1, "&#x26A0;"),
+    (62, 74, 1.4, "&#x274C;"),
+    (78, 68, 1.7, "&#x26A0;"),
+    (90, 72, 2.0, "&#x274C;"),
+    (20, 88, 0.6, "&#x26A0;"),
+    (36, 92, 0.9, "&#x274C;"),
+    (52, 86, 1.2, "&#x26A0;"),
+    (68, 94, 1.5, "&#x274C;"),
+    (82, 90, 1.8, "&#x26A0;"),
 )
 
 
@@ -199,19 +195,19 @@ _STRAFE_SHELLS: Tuple[Tuple[float, float], ...] = (
 
 
 def _build_artillery(projectile: str, *, shells_only: bool = False) -> str:
-    """Return HTML spans for puppy artillery shells (and cannons when desired)."""
+    """Return HTML spans for animated shells (and cannons when desired)."""
     shell_markup = []
     for index, (top, delay) in enumerate(_STRAFE_SHELLS):
         duration = 2.3 + (index % 3) * 0.25
         shell_markup.append(
-            f"<span class='shell' style='top:{top}%;animation-delay:-{delay}s;animation-duration:{duration}s;'>{projectile}💥</span>"
+            f"<span class='shell' style='top:{top}%;animation-delay:-{delay}s;animation-duration:{duration}s;'>{projectile}</span>"
         )
     shells = "".join(shell_markup)
     if shells_only:
         return shells
 
     cannons = (
-        "<span class='cannon left'>🐶🧨</span><span class='cannon right'>🐕‍🦺🔥</span>"
+        "<span class='cannon left'>&#x1F680;</span><span class='cannon right'>&#x26A1;</span>"
     )
     return cannons + shells
 
@@ -220,9 +216,9 @@ def _service_targets(service_name: str) -> Tuple[str, str, str, str]:
     """Map service names to projectile emoji and rival logo metadata."""
     normalized = service_name.lower()
     if "anthropic" in normalized or "claude" in normalized:
-        return "🐕‍🦺🧨", CLAUDE_LOGO_URL, "Claude logo", ""
+        return "&#x26A1;", CLAUDE_LOGO_URL, "Claude logo", ""
     if "chat" in normalized or "gpt" in normalized:
-        return "🐶🚀", CHATGPT_LOGO_URL, "ChatGPT logo", "invert"
+        return "&#x1F680;", CHATGPT_LOGO_URL, "ChatGPT logo", "invert"
     if "gemini" in normalized or "google" in normalized:
-        return "🐶✨", GEMINI_LOGO_URL, "Gemini logo", ""
-    return "🐾💥", CHATGPT_LOGO_URL, "mystery logo", "invert"
+        return "&#x2728;", GEMINI_LOGO_URL, "Gemini logo", ""
+    return "&#x1F4AB;", CHATGPT_LOGO_URL, "mystery logo", "invert"

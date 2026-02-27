@@ -81,10 +81,10 @@ class SchedulerMenu:
         daemon_pid = get_daemon_pid()
         if daemon_pid:
             lines.append(
-                ("fg:ansigreen bold", f" 🐕 Daemon: RUNNING (PID {daemon_pid})")
+                ("fg:ansigreen bold", f" Daemon: RUNNING (PID {daemon_pid})")
             )
         else:
-            lines.append(("fg:ansired bold", " 🐕 Daemon: STOPPED"))
+            lines.append(("fg:ansired bold", " Daemon: STOPPED"))
         lines.append(("", "\n\n"))
 
         if not self.tasks:

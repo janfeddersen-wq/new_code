@@ -267,7 +267,7 @@ def register_scheduler_start_daemon(agent):
         """Start the scheduler daemon in the background.
 
         The daemon runs independently and will continue even after
-        Code Puppy exits. It checks for and runs scheduled tasks.
+        the application exits. It checks for and runs scheduled tasks.
         """
         from code_puppy.scheduler.daemon import get_daemon_pid, start_daemon_background
 

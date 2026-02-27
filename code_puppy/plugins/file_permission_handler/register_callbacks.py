@@ -517,7 +517,7 @@ If `user_feedback` is None/empty, the user rejected without guidance:
 - Implement the feedback and **try again**
 - Don't ask permission again - **just do it better**
 
-This system lets users guide you interactively! 🐶✨
+This system lets users guide the agent interactively.
 """
 
 

@@ -292,7 +292,7 @@ class ModelSettingsMenu:
 
         if self.view_mode == "models":
             # Header with page indicator
-            lines.append(("bold cyan", " 🐕 Select a Model to Configure"))
+            lines.append(("bold cyan", " Select a Model to Configure"))
             if self.total_pages > 1:
                 lines.append(
                     (

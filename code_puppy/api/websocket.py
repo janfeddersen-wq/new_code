@@ -1,4 +1,4 @@
-"""WebSocket endpoints for Code Puppy API.
+"""WebSocket endpoints for the API.
 
 Provides real-time communication channels:
 - /ws/events - Server-sent events stream

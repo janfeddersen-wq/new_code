@@ -1,6 +1,6 @@
 """Rich console renderer for structured messages.
 
-This module implements the presentation layer for Code Puppy's messaging system.
+This module implements the presentation layer for the messaging system.
 It consumes structured messages from the MessageBus and renders them using Rich.
 
 The renderer is responsible for ALL presentation decisions - the messages contain

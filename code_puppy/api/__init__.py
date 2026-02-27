@@ -1,6 +1,6 @@
-"""Code Puppy REST API module.
+"""REST API module.
 
-This module provides a FastAPI-based REST API for Code Puppy configuration,
+This module provides a FastAPI-based REST API for the application configuration,
 sessions, commands, and real-time WebSocket communication.
 
 Exports:

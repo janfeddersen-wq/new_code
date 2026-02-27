@@ -459,7 +459,7 @@ def register_invoke_agent(agent):
                     model=model,
                     instructions=instructions,
                     output_type=str,
-                    retries=3,
+                    retries=10,
                     toolsets=[],  # MCP servers added separately for DBOS
                     history_processors=[agent_config.message_history_accumulator],
                     model_settings=model_settings,
@@ -486,7 +486,7 @@ def register_invoke_agent(agent):
                     model=model,
                     instructions=instructions,
                     output_type=str,
-                    retries=3,
+                    retries=10,
                     toolsets=mcp_servers,
                     history_processors=[agent_config.message_history_accumulator],
                     model_settings=model_settings,

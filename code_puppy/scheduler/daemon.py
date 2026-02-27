@@ -1,4 +1,4 @@
-"""Scheduler daemon for Code Puppy.
+"""Scheduler daemon.
 
 Runs as a background process, checking for and executing scheduled tasks.
 Uses pure Python timing (no external scheduler dependencies).

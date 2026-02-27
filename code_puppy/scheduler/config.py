@@ -1,7 +1,7 @@
 """Scheduler configuration and task management.
 
 Handles ScheduledTask dataclass definition and JSON persistence
-for scheduled Code Puppy tasks.
+for scheduled tasks.
 """
 
 import json
@@ -22,7 +22,7 @@ SCHEDULER_LOG_DIR = os.path.join(DATA_DIR, "scheduler_logs")
 
 @dataclass
 class ScheduledTask:
-    """A scheduled Code Puppy task."""
+    """A scheduled task."""
 
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""

@@ -1,7 +1,7 @@
-"""Code Puppy Scheduler - Run scheduled prompts automatically.
+"""Scheduler - Run scheduled prompts automatically.
 
 This module provides a cross-platform scheduler daemon that executes
-Code Puppy prompts on configurable schedules (intervals, cron expressions).
+prompts on configurable schedules (intervals, cron expressions).
 
 Components:
     - config: Task definitions and JSON persistence

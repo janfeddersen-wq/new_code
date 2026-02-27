@@ -1,4 +1,4 @@
-"""Antigravity OAuth Plugin for Code Puppy.
+"""Antigravity OAuth Plugin for the application.
 
 Enables authentication with Google/Antigravity APIs to access Gemini and Claude models
 via Google credentials. Supports multi-account load balancing and automatic failover.

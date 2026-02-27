@@ -1,4 +1,4 @@
-"""Task executor for the Code Puppy scheduler.
+"""Task executor for the scheduler.
 
 Handles executing scheduled tasks by invoking code-puppy CLI
 with the configured prompt, model, and agent.

@@ -1,4 +1,4 @@
-"""Command handlers for Code Puppy - CONFIG commands.
+"""Command handlers for CONFIG commands.
 
 This module contains @register_command decorated handlers that are automatically
 discovered by the command registry system.
@@ -21,12 +21,12 @@ def get_commands_help():
 
 @register_command(
     name="show",
-    description="Show puppy config key-values",
+    description="Show configuration",
     usage="/show",
     category="config",
 )
 def handle_show_command(command: str) -> bool:
-    """Show current puppy configuration."""
+    """Show current configuration."""
     from rich.text import Text
 
     from code_puppy.agents import get_current_agent
@@ -41,7 +41,7 @@ def handle_show_command(command: str) -> bool:
         get_openai_verbosity,
         get_owner_name,
         get_protected_token_count,
-        get_puppy_name,
+        get_agent_name,
         get_resume_message_count,
         get_temperature,
         get_use_dbos,
@@ -52,7 +52,7 @@ def handle_show_command(command: str) -> bool:
     )
     from code_puppy.messaging import emit_info
 
-    puppy_name = get_puppy_name()
+    agent_name = get_agent_name()
     owner_name = get_owner_name()
     model = get_active_model()
     yolo_mode = get_yolo_mode()
@@ -67,9 +67,9 @@ def handle_show_command(command: str) -> bool:
     current_agent = get_current_agent()
     default_agent = get_default_agent()
 
-    status_msg = f"""[bold magenta]🐶 Puppy Status[/bold magenta]
+    status_msg = f"""[bold magenta]Configuration Status[/bold magenta]
 
-[bold]puppy_name:[/bold]            [cyan]{puppy_name}[/cyan]
+[bold]agent_name:[/bold]            [cyan]{agent_name}[/cyan]
 [bold]owner_name:[/bold]            [cyan]{owner_name}[/cyan]
 [bold]current_agent:[/bold]         [magenta]{current_agent.display_name}[/magenta]
 [bold]default_agent:[/bold]        [cyan]{default_agent}[/cyan]
@@ -173,7 +173,7 @@ def handle_verbosity_command(command: str) -> bool:
 
 @register_command(
     name="set",
-    description="Set puppy config (e.g., /set yolo_mode true)",
+    description="Set configuration value (e.g., /set yolo_mode true)",
     usage="/set <key> <value>",
     category="config",
 )
@@ -221,7 +221,7 @@ def handle_set_command(command: str) -> bool:
         if key == "enable_dbos":
             emit_info(
                 Text.from_markup(
-                    "[yellow]⚠️ DBOS configuration changed. Please restart Code Puppy for this change to take effect.[/yellow]"
+                    "[yellow]⚠️ DBOS configuration changed. Please restart the application for this change to take effect.[/yellow]"
                 )
             )
 
@@ -238,12 +238,12 @@ def handle_set_command(command: str) -> bool:
             value = normalized_value  # Use normalized value
             emit_info(
                 Text.from_markup(
-                    "[yellow]⚠️ cancel_agent_key changed. Please restart Code Puppy for this change to take effect.[/yellow]"
+                    "[yellow]⚠️ cancel_agent_key changed. Please restart the application for this change to take effect.[/yellow]"
                 )
             )
 
         set_config_value(key, value)
-        emit_success(f'Set {key} = "{value}" in puppy.cfg!')
+        emit_success(f'Set {key} = "{value}" in config!')
 
         # Reload the current agent to pick up the new config
         from code_puppy.agents import get_current_agent

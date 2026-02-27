@@ -5,7 +5,7 @@ Base spinner implementation to be extended for different UI modes.
 from abc import ABC, abstractmethod
 from threading import Lock
 
-from code_puppy.config import get_puppy_name
+from code_puppy.config import get_agent_name
 
 
 class SpinnerBase(ABC):
@@ -13,23 +13,24 @@ class SpinnerBase(ABC):
 
     # Shared spinner frames across implementations
     FRAMES = [
-        "(🐶    ) ",
-        "( 🐶   ) ",
-        "(  🐶  ) ",
-        "(   🐶 ) ",
-        "(    🐶) ",
-        "(   🐶 ) ",
-        "(  🐶  ) ",
-        "( 🐶   ) ",
-        "(🐶    ) ",
+        "(●     ) ",
+        "( ●    ) ",
+        "(  ●   ) ",
+        "(   ●  ) ",
+        "(    ● ) ",
+        "(     ●) ",
+        "(    ● ) ",
+        "(   ●  ) ",
+        "(  ●   ) ",
+        "( ●    ) ",
     ]
-    puppy_name = get_puppy_name().title()
+    agent_name = get_agent_name().title()
 
     # Default message when processing
-    THINKING_MESSAGE = f"{puppy_name} is thinking... "
+    THINKING_MESSAGE = f"{agent_name} is thinking... "
 
     # Message when waiting for user input
-    WAITING_MESSAGE = f"{puppy_name} is waiting... "
+    WAITING_MESSAGE = f"{agent_name} is waiting... "
 
     # Current message - starts with thinking by default
     MESSAGE = THINKING_MESSAGE

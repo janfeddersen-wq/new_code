@@ -5,11 +5,11 @@
 
 ## Overview
 
-This plugin demonstrates how to create custom commands using Code Puppy's callback system.
+This plugin demonstrates how to create custom commands using the application's callback system.
 
 **Important**: Custom commands use `register_callback()`, NOT `@register_command`.
 
-## Command Types in Code Puppy
+## Command Types
 
 ### 1. Built-in Commands (Core Functionality)
 - Use `@register_command` decorator
@@ -60,7 +60,7 @@ def _handle_custom_command(command: str, name: str):
         - str: Text to process as user input to the model
     """
     if name == "woof":
-        emit_info("🐶 Woof!")
+        emit_info("Plugin loaded")
         return True  # Handled, don't invoke model
         
     if name == "echo":
@@ -152,7 +152,7 @@ register_callback("custom_command", _handle_custom_command)
 ### Step 3: Test Your Plugin
 
 ```bash
-# Restart Code Puppy to load the plugin
+# Restart the application to load the plugin
 code-puppy
 
 # Try your command
@@ -184,7 +184,7 @@ Your `_handle_custom_command` function can return:
 ### ❌ DON'T:
 
 - **Don't use `@register_command`**: That's for built-in commands only
-- **Don't modify global state**: Use Code Puppy's config system
+- **Don't modify global state**: Use the application's config system
 - **Don't make blocking calls**: Keep commands fast and responsive
 - **Don't invoke the model directly**: Return strings instead
 - **Don't duplicate built-in commands**: Check existing commands first
@@ -218,7 +218,7 @@ emit_error("Something went wrong")
 ### Manual Testing
 
 ```bash
-# Start Code Puppy
+# Start the application
 code-puppy
 
 # Test your commands
@@ -272,7 +272,7 @@ def test_unknown_command():
 
 If you're unsure whether to create a custom command or a built-in command:
 
-- **Is it core Code Puppy functionality?** → Use `@register_command` (built-in)
+- **Is it core application functionality?** → Use `@register_command` (built-in)
   - Add to appropriate category file: `core_commands.py`, `session_commands.py`, or `config_commands.py`
 - **Is it plugin-specific?** → Use `register_callback()` (custom)
   - Create a plugin directory and use the callback system (like this example)
