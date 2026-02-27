@@ -46,7 +46,7 @@ class TestDBOSConfiguration:
         mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
 
         config = configparser.ConfigParser()
-        config["puppy"] = {}
+        config["agent"] = {}
         os.makedirs(mock_cfg_dir, exist_ok=True)
         with open(mock_cfg_file, "w") as f:
             config.write(f)
@@ -63,7 +63,7 @@ class TestDBOSConfiguration:
 
         os.makedirs(mock_cfg_dir, exist_ok=True)
         config = configparser.ConfigParser()
-        config["puppy"] = {"enable_dbos": truthy_value}
+        config["agent"] = {"enable_dbos": truthy_value}
         with open(mock_cfg_file, "w") as f:
             config.write(f)
 
@@ -79,7 +79,7 @@ class TestDBOSConfiguration:
 
         os.makedirs(mock_cfg_dir, exist_ok=True)
         config = configparser.ConfigParser()
-        config["puppy"] = {"enable_dbos": falsy_value}
+        config["agent"] = {"enable_dbos": falsy_value}
         with open(mock_cfg_file, "w") as f:
             config.write(f)
 
@@ -95,7 +95,7 @@ class TestSubagentVerbose:
         mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
 
         config = configparser.ConfigParser()
-        config["puppy"] = {}
+        config["agent"] = {}
         os.makedirs(mock_cfg_dir, exist_ok=True)
         with open(mock_cfg_file, "w") as f:
             config.write(f)
@@ -114,7 +114,7 @@ class TestSubagentVerbose:
 
         os.makedirs(mock_cfg_dir, exist_ok=True)
         config = configparser.ConfigParser()
-        config["puppy"] = {"subagent_verbose": truthy_value}
+        config["agent"] = {"subagent_verbose": truthy_value}
         with open(mock_cfg_file, "w") as f:
             config.write(f)
 
@@ -130,7 +130,7 @@ class TestSubagentVerbose:
 
         os.makedirs(mock_cfg_dir, exist_ok=True)
         config = configparser.ConfigParser()
-        config["puppy"] = {"subagent_verbose": falsy_value}
+        config["agent"] = {"subagent_verbose": falsy_value}
         with open(mock_cfg_file, "w") as f:
             config.write(f)
 
@@ -146,7 +146,7 @@ class TestAllowRecursion:
         mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
 
         config = configparser.ConfigParser()
-        config["puppy"] = {}
+        config["agent"] = {}
         os.makedirs(mock_cfg_dir, exist_ok=True)
         with open(mock_cfg_file, "w") as f:
             config.write(f)
@@ -159,7 +159,7 @@ class TestAllowRecursion:
         mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
 
         config = configparser.ConfigParser()
-        config["puppy"] = {"allow_recursion": "false"}
+        config["agent"] = {"allow_recursion": "false"}
         os.makedirs(mock_cfg_dir, exist_ok=True)
         with open(mock_cfg_file, "w") as f:
             config.write(f)
@@ -176,7 +176,7 @@ class TestAllowRecursion:
 
         os.makedirs(mock_cfg_dir, exist_ok=True)
         config = configparser.ConfigParser()
-        config["puppy"] = {"allow_recursion": truthy}
+        config["agent"] = {"allow_recursion": truthy}
         with open(mock_cfg_file, "w") as f:
             config.write(f)
 
@@ -192,7 +192,7 @@ class TestPuppyTokens:
         mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
 
         config = configparser.ConfigParser()
-        config["puppy"] = {"puppy_token": "secret-token-123"}
+        config["agent"] = {"puppy_token": "secret-token-123"}
         os.makedirs(mock_cfg_dir, exist_ok=True)
         with open(mock_cfg_file, "w") as f:
             config.write(f)
@@ -205,7 +205,7 @@ class TestPuppyTokens:
         mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
 
         config = configparser.ConfigParser()
-        config["puppy"] = {}
+        config["agent"] = {}
         os.makedirs(mock_cfg_dir, exist_ok=True)
         with open(mock_cfg_file, "w") as f:
             config.write(f)
@@ -218,7 +218,7 @@ class TestPuppyTokens:
         mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
 
         config = configparser.ConfigParser()
-        config["puppy"] = {}
+        config["agent"] = {}
         os.makedirs(mock_cfg_dir, exist_ok=True)
         with open(mock_cfg_file, "w") as f:
             config.write(f)
@@ -227,7 +227,7 @@ class TestPuppyTokens:
 
         saved_config = configparser.ConfigParser()
         saved_config.read(mock_cfg_file)
-        assert saved_config["puppy"]["puppy_token"] == "new-token-456"
+        assert saved_config["agent"]["puppy_token"] == "new-token-456"
 
 
 class TestXDGDirectoryHandling:
@@ -256,7 +256,7 @@ class TestConfigKeys:
         mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
 
         config = configparser.ConfigParser()
-        config["puppy"] = {}
+        config["agent"] = {}
         os.makedirs(mock_cfg_dir, exist_ok=True)
         with open(mock_cfg_file, "w") as f:
             config.write(f)
@@ -279,7 +279,7 @@ class TestConfigKeys:
         mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
 
         config = configparser.ConfigParser()
-        config["puppy"] = {"custom_key_1": "value1", "custom_key_2": "value2"}
+        config["agent"] = {"custom_key_1": "value1", "custom_key_2": "value2"}
         os.makedirs(mock_cfg_dir, exist_ok=True)
         with open(mock_cfg_file, "w") as f:
             config.write(f)

@@ -9,7 +9,7 @@ from code_puppy import config as cp_config
 # Define constants used in config.py to avoid direct import if they change
 CONFIG_DIR_NAME = ".code_puppy"
 CONFIG_FILE_NAME = "puppy.cfg"
-DEFAULT_SECTION_NAME = "puppy"
+DEFAULT_SECTION_NAME = "agent"
 
 
 @pytest.fixture
@@ -55,8 +55,8 @@ class TestEnsureConfigExists:
         monkeypatch.setattr(os, "makedirs", mock_makedirs)
 
         mock_input_values = {
-            "What should we name the puppy? ": "TestPuppy",
-            "What's your name (so Code Puppy knows its owner)? ": "TestOwner",
+            "Enter a name for the agent: ": "TestPuppy",
+            "Enter your name: ": "TestOwner",
         }
         mock_input = MagicMock(side_effect=lambda prompt: mock_input_values[prompt])
         monkeypatch.setattr("builtins.input", mock_input)
@@ -74,8 +74,8 @@ class TestEnsureConfigExists:
         # We can inspect the calls to that file-like object (m_open())
         # However, it's easier to check the returned config_parser object
         assert config_parser.sections() == [DEFAULT_SECTION_NAME]
-        assert config_parser.get(DEFAULT_SECTION_NAME, "puppy_name") == "TestPuppy"
-        assert config_parser.get(DEFAULT_SECTION_NAME, "owner_name") == "TestOwner"
+        assert config_parser.get(DEFAULT_SECTION_NAME, "agent_name") == "TestPuppy"
+        assert config_parser.get(DEFAULT_SECTION_NAME, "user_name") == "TestOwner"
 
     def test_config_dir_exists_file_does_not_prompts_and_creates(
         self, mock_config_paths, monkeypatch
@@ -93,8 +93,8 @@ class TestEnsureConfigExists:
         monkeypatch.setattr(os, "makedirs", mock_makedirs)
 
         mock_input_values = {
-            "What should we name the puppy? ": "DirExistsPuppy",
-            "What's your name (so Code Puppy knows its owner)? ": "DirExistsOwner",
+            "Enter a name for the agent: ": "DirExistsPuppy",
+            "Enter your name: ": "DirExistsOwner",
         }
         mock_input = MagicMock(side_effect=lambda prompt: mock_input_values[prompt])
         monkeypatch.setattr("builtins.input", mock_input)
@@ -107,8 +107,8 @@ class TestEnsureConfigExists:
         m_open.assert_called_once_with(mock_cfg_file, "w", encoding="utf-8")
 
         assert config_parser.sections() == [DEFAULT_SECTION_NAME]
-        assert config_parser.get(DEFAULT_SECTION_NAME, "puppy_name") == "DirExistsPuppy"
-        assert config_parser.get(DEFAULT_SECTION_NAME, "owner_name") == "DirExistsOwner"
+        assert config_parser.get(DEFAULT_SECTION_NAME, "agent_name") == "DirExistsPuppy"
+        assert config_parser.get(DEFAULT_SECTION_NAME, "user_name") == "DirExistsOwner"
 
     def test_config_file_exists_and_complete_no_prompt_no_write(
         self, mock_config_paths, monkeypatch
@@ -125,8 +125,8 @@ class TestEnsureConfigExists:
         # Mock configparser.ConfigParser instance and its methods
         mock_config_instance = configparser.ConfigParser()
         mock_config_instance[DEFAULT_SECTION_NAME] = {
-            "puppy_name": "ExistingPuppy",
-            "owner_name": "ExistingOwner",
+            "agent_name": "ExistingPuppy",
+            "user_name": "ExistingOwner",
         }
 
         def mock_read(file_path):
@@ -151,7 +151,7 @@ class TestEnsureConfigExists:
 
         assert returned_config_parser == mock_config_instance
         assert (
-            returned_config_parser.get(DEFAULT_SECTION_NAME, "puppy_name")
+            returned_config_parser.get(DEFAULT_SECTION_NAME, "agent_name")
             == "ExistingPuppy"
         )
 
@@ -165,8 +165,8 @@ class TestEnsureConfigExists:
 
         mock_config_instance = configparser.ConfigParser()
         mock_config_instance[DEFAULT_SECTION_NAME] = {
-            "puppy_name": "PartialPuppy"
-        }  # owner_name is missing
+            "agent_name": "PartialPuppy"
+        }  # user_name is missing
 
         def mock_read(file_path):
             pass
@@ -176,9 +176,9 @@ class TestEnsureConfigExists:
         monkeypatch.setattr(configparser, "ConfigParser", mock_cp)
 
         mock_input_values = {
-            "What's your name (so Code Puppy knows its owner)? ": "PartialOwnerFilled"
+            "Enter your name: ": "PartialOwnerFilled"
         }
-        # Only owner_name should be prompted
+        # Only user_name should be prompted
         mock_input = MagicMock(side_effect=lambda prompt: mock_input_values[prompt])
         monkeypatch.setattr("builtins.input", mock_input)
 
@@ -191,11 +191,11 @@ class TestEnsureConfigExists:
         mock_config_instance.read.assert_called_once_with(mock_cfg_file)
 
         assert (
-            returned_config_parser.get(DEFAULT_SECTION_NAME, "puppy_name")
+            returned_config_parser.get(DEFAULT_SECTION_NAME, "agent_name")
             == "PartialPuppy"
         )
         assert (
-            returned_config_parser.get(DEFAULT_SECTION_NAME, "owner_name")
+            returned_config_parser.get(DEFAULT_SECTION_NAME, "user_name")
             == "PartialOwnerFilled"
         )
 
@@ -246,25 +246,27 @@ class TestSimpleGetters:
     def test_get_puppy_name_exists(self, mock_get_value):
         mock_get_value.return_value = "MyPuppy"
         assert cp_config.get_puppy_name() == "MyPuppy"
-        mock_get_value.assert_called_once_with("puppy_name")
+        mock_get_value.assert_called_once_with("agent_name")
 
     @patch("code_puppy.config.get_value")
     def test_get_puppy_name_not_exists_uses_default(self, mock_get_value):
         mock_get_value.return_value = None
-        assert cp_config.get_puppy_name() == "Puppy"  # Default value
-        mock_get_value.assert_called_once_with("puppy_name")
+        assert cp_config.get_puppy_name() == "Agent"  # Default value
+        # get_agent_name calls get_value("agent_name") then get_value("puppy_name")
+        assert mock_get_value.call_count == 2
 
     @patch("code_puppy.config.get_value")
     def test_get_owner_name_exists(self, mock_get_value):
         mock_get_value.return_value = "MyOwner"
         assert cp_config.get_owner_name() == "MyOwner"
-        mock_get_value.assert_called_once_with("owner_name")
+        mock_get_value.assert_called_once_with("user_name")
 
     @patch("code_puppy.config.get_value")
     def test_get_owner_name_not_exists_uses_default(self, mock_get_value):
         mock_get_value.return_value = None
-        assert cp_config.get_owner_name() == "Master"  # Default value
-        mock_get_value.assert_called_once_with("owner_name")
+        assert cp_config.get_owner_name() == "User"  # Default value
+        # get_user_name calls get_value("user_name") then get_value("owner_name")
+        assert mock_get_value.call_count == 2
 
 
 class TestGetConfigKeys:

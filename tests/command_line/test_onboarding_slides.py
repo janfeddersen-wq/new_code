@@ -131,7 +131,7 @@ class TestSlideUseCases:
         result = slide_use_cases()
         assert isinstance(result, str)
         assert "Planning" in result
-        assert "Code Puppy" in result
+        assert "Code Agent" in result
 
 
 class TestSlideDone:

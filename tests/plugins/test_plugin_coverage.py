@@ -116,7 +116,7 @@ class TestExampleCustomCommand:
         entries = self._get_help()()
         assert len(entries) == 2
         names = [e[0] for e in entries]
-        assert "woof" in names
+        assert "hello" in names
         assert "echo" in names
 
     def test_empty_name_returns_none(self):
@@ -126,11 +126,11 @@ class TestExampleCustomCommand:
         assert self._get_handler()("unknown", "unknown") is None
 
     def test_woof_no_args(self):
-        result = self._get_handler()("woof", "woof")
-        assert result == "Tell me a dog fact"
+        result = self._get_handler()("hello", "hello")
+        assert result == "Tell me something interesting"
 
     def test_woof_with_text(self):
-        result = self._get_handler()("woof hello world", "woof")
+        result = self._get_handler()("hello hello world", "hello")
         assert result == "hello world"
 
     def test_echo_no_args(self):

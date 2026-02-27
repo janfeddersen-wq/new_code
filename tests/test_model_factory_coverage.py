@@ -978,7 +978,7 @@ class TestCerebrasModel:
                     call_args = mock_create_client.call_args
                     headers = call_args[1]["headers"]
                     assert (
-                        headers.get("X-Cerebras-3rd-Party-Integration") == "code-puppy"
+                        headers.get("X-Cerebras-3rd-Party-Integration") == "newcode"
                     )
 
     def test_cerebras_model_missing_api_key(self):

@@ -35,8 +35,8 @@ class TestConfigExtendedPart1:
             # Create a basic config file
             config = configparser.ConfigParser()
             config[DEFAULT_SECTION] = {
-                "puppy_name": "TestPuppy",
-                "owner_name": "TestOwner",
+                "agent_name": "TestPuppy",
+                "user_name": "TestOwner",
                 "model": "gpt-4",
                 "yolo_mode": "true",
                 "allow_recursion": "false",
@@ -61,7 +61,7 @@ class TestConfigExtendedPart1:
 
     def test_get_value_with_existing_key(self, mock_config_file):
         """Test getting a value that exists in config"""
-        result = get_value("puppy_name")
+        result = get_value("agent_name")
         assert result == "TestPuppy"
 
         result = get_value("yolo_mode")
@@ -88,14 +88,14 @@ class TestConfigExtendedPart1:
     def test_set_value_existing_key(self, mock_config_file):
         """Test updating an existing config value"""
         # Verify original value
-        original = get_value("puppy_name")
+        original = get_value("agent_name")
         assert original == "TestPuppy"
 
         # Update it
-        set_config_value("puppy_name", "UpdatedPuppy")
+        set_config_value("agent_name", "UpdatedPuppy")
 
         # Verify it was updated
-        result = get_value("puppy_name")
+        result = get_value("agent_name")
         assert result == "UpdatedPuppy"
 
     def test_set_value_empty_string(self, mock_config_file):
@@ -133,7 +133,7 @@ class TestConfigExtendedPart1:
 
         # Create config without allow_recursion key
         config = configparser.ConfigParser()
-        config[DEFAULT_SECTION] = {"puppy_name": "Test"}
+        config[DEFAULT_SECTION] = {"agent_name": "Test"}
         with open(config_file, "w") as f:
             config.write(f)
 
@@ -147,7 +147,7 @@ class TestConfigExtendedPart1:
 
         # Create config without yolo_mode key
         config = configparser.ConfigParser()
-        config[DEFAULT_SECTION] = {"puppy_name": "Test"}
+        config[DEFAULT_SECTION] = {"agent_name": "Test"}
         with open(config_file, "w") as f:
             config.write(f)
 
@@ -161,7 +161,7 @@ class TestConfigExtendedPart1:
 
         # Create config without auto_save_session key
         config = configparser.ConfigParser()
-        config[DEFAULT_SECTION] = {"puppy_name": "Test"}
+        config[DEFAULT_SECTION] = {"agent_name": "Test"}
         with open(config_file, "w") as f:
             config.write(f)
 
@@ -175,7 +175,7 @@ class TestConfigExtendedPart1:
 
         # Create config without enable_dbos key
         config = configparser.ConfigParser()
-        config[DEFAULT_SECTION] = {"puppy_name": "Test"}
+        config[DEFAULT_SECTION] = {"agent_name": "Test"}
         with open(config_file, "w") as f:
             config.write(f)
 
@@ -228,7 +228,7 @@ class TestConfigExtendedPart1:
         """Test get_puppy_name returns default when not set"""
         temp_dir, config_file = temp_config_dir
 
-        # Create config without puppy_name
+        # Create config without agent_name
         config = configparser.ConfigParser()
         config[DEFAULT_SECTION] = {}
         with open(config_file, "w") as f:
@@ -236,13 +236,13 @@ class TestConfigExtendedPart1:
 
         with patch("code_puppy.config.CONFIG_FILE", config_file):
             result = get_puppy_name()
-            assert result == "Puppy"  # Default should be "Puppy"
+            assert result == "Agent"  # Default should be "Agent"
 
     def test_get_owner_name_default(self, temp_config_dir):
         """Test get_owner_name returns default when not set"""
         temp_dir, config_file = temp_config_dir
 
-        # Create config without owner_name
+        # Create config without user_name
         config = configparser.ConfigParser()
         config[DEFAULT_SECTION] = {}
         with open(config_file, "w") as f:
@@ -250,7 +250,7 @@ class TestConfigExtendedPart1:
 
         with patch("code_puppy.config.CONFIG_FILE", config_file):
             result = get_owner_name()
-            assert result == "Master"  # Default should be "Master"
+            assert result == "User"  # Default should be "User"
 
     @patch("code_puppy.config._validate_model_exists")
     @patch("code_puppy.config._default_model_from_models_json")
@@ -290,7 +290,7 @@ class TestConfigExtendedPart1:
 
         # Create config without model key
         config = configparser.ConfigParser()
-        config[DEFAULT_SECTION] = {"puppy_name": "Test"}
+        config[DEFAULT_SECTION] = {"agent_name": "Test"}
         with open(config_file, "w") as f:
             config.write(f)
 

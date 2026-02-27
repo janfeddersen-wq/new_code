@@ -33,7 +33,7 @@ async def test_health(client: AsyncClient) -> None:
 async def test_root(client: AsyncClient) -> None:
     resp = await client.get("/")
     assert resp.status_code == 200
-    assert "Code Puppy" in resp.text
+    assert "Code Agent" in resp.text
     assert "Open Terminal" in resp.text
 
 
@@ -58,7 +58,7 @@ async def test_terminal_page_not_found(app: FastAPI) -> None:
 def test_create_app_returns_fastapi() -> None:
     app = create_app()
     assert isinstance(app, FastAPI)
-    assert app.title == "Code Puppy API"
+    assert app.title == "Code Agent API"
 
 
 @pytest.mark.asyncio

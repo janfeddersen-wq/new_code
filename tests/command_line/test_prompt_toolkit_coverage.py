@@ -416,7 +416,7 @@ class TestGetPromptWithActiveModel:
                 return_value=mock_agent,
             ),
             patch(
-                "code_puppy.command_line.prompt_toolkit_completion.get_puppy_name",
+                "code_puppy.command_line.prompt_toolkit_completion.get_agent_name",
                 return_value="Biscuit",
             ),
             patch(
@@ -442,7 +442,7 @@ class TestGetPromptWithActiveModel:
                 return_value=mock_agent,
             ),
             patch(
-                "code_puppy.command_line.prompt_toolkit_completion.get_puppy_name",
+                "code_puppy.command_line.prompt_toolkit_completion.get_agent_name",
                 return_value="Biscuit",
             ),
             patch(
@@ -470,7 +470,7 @@ class TestGetPromptWithActiveModel:
                 return_value=mock_agent,
             ),
             patch(
-                "code_puppy.command_line.prompt_toolkit_completion.get_puppy_name",
+                "code_puppy.command_line.prompt_toolkit_completion.get_agent_name",
                 return_value="Biscuit",
             ),
             patch(
@@ -493,7 +493,7 @@ class TestGetPromptWithActiveModel:
                 return_value=None,
             ),
             patch(
-                "code_puppy.command_line.prompt_toolkit_completion.get_puppy_name",
+                "code_puppy.command_line.prompt_toolkit_completion.get_agent_name",
                 return_value="Biscuit",
             ),
             patch(
@@ -503,7 +503,7 @@ class TestGetPromptWithActiveModel:
         ):
             result = get_prompt_with_active_model()
             text = "".join(t[1] for t in result)
-            assert "code-puppy" in text
+            assert "code-agent" in text
             assert "(default)" in text
 
     def test_cwd_outside_home(self):
@@ -521,7 +521,7 @@ class TestGetPromptWithActiveModel:
                 return_value=mock_agent,
             ),
             patch(
-                "code_puppy.command_line.prompt_toolkit_completion.get_puppy_name",
+                "code_puppy.command_line.prompt_toolkit_completion.get_agent_name",
                 return_value="B",
             ),
             patch(

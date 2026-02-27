@@ -220,14 +220,14 @@ def test_show_status():
                 return_value="MODEL-X",
             ),
             patch("code_puppy.config.get_owner_name", return_value="Ivan"),
-            patch("code_puppy.config.get_puppy_name", return_value="Biscuit"),
+            patch("code_puppy.config.get_agent_name", return_value="Biscuit"),
             patch("code_puppy.config.get_yolo_mode", return_value=True),
         ):
             result = handle_command("/show")
             assert result is True
             mock_emit_info.assert_called()
             assert any(
-                "Puppy Status" in str(call)
+                "Configuration Status" in str(call)
                 and "Ivan" in str(call)
                 and "Biscuit" in str(call)
                 and "MODEL-X" in str(call)

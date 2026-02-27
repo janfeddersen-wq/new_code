@@ -938,15 +938,15 @@ class TestEnsureConfigExists:
         monkeypatch.setattr("builtins.input", lambda _: next(inputs))
 
         config = cp_config.ensure_config_exists()
-        assert config["puppy"]["puppy_name"] == "TestPup"
-        assert config["puppy"]["owner_name"] == "TestOwner"
+        assert config["agent"]["agent_name"] == "TestPup"
+        assert config["agent"]["user_name"] == "TestOwner"
         assert os.path.exists(cfg_file)
 
     def test_existing_config_no_prompt(self, tmp_path, monkeypatch):
         cfg_dir = str(tmp_path)
         cfg_file = os.path.join(cfg_dir, "puppy.cfg")
         cp = configparser.ConfigParser()
-        cp["puppy"] = {"puppy_name": "Buddy", "owner_name": "Alice"}
+        cp["agent"] = {"agent_name": "Buddy", "user_name": "Alice"}
         with open(cfg_file, "w") as f:
             cp.write(f)
 
@@ -957,7 +957,7 @@ class TestEnsureConfigExists:
         monkeypatch.setattr(cp_config, "STATE_DIR", str(tmp_path / "state"))
 
         config = cp_config.ensure_config_exists()
-        assert config["puppy"]["puppy_name"] == "Buddy"
+        assert config["agent"]["agent_name"] == "Buddy"
 
 
 # ---------------------------------------------------------------------------

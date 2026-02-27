@@ -282,7 +282,7 @@ class CliHarness:
             (code_puppy_dir / "puppy.cfg").write_text(CONFIG_TEMPLATE, encoding="utf-8")
 
         log_path = temp_home / f"cli_output_{uuid.uuid4().hex}.log"
-        cmd_args = ["code-puppy"] + (args or [])
+        cmd_args = ["newcode"] + (args or [])
 
         spawn_env = os.environ.copy()
         spawn_env.update(env or {})
