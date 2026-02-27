@@ -481,7 +481,7 @@ def display_resumed_history(
             console.print(f"[dim]{content}[/dim]")
         else:  # assistant
             # Use the exact same banner format as normal agent response
-            banner = f"[{response_color}]│[/{response_color}] [bold {response_color}]agent response[/bold {response_color}]"
+            banner = f"[{response_color}]───[/{response_color}] [bold]AGENT RESPONSE[/bold] [{response_color}]───[/{response_color}]"
             console.print(f"\n{banner}")
             # Render content as markdown (same as normal chat)
             md = Markdown(content)

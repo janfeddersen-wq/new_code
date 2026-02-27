@@ -177,7 +177,7 @@ def test_file_operations_integration(
     # Also check if the agent actually ran list_files on our directory
     has_list_evidence = (
         str(test_dir) in log_output
-        or "directory listing" in log_output
+        or "directory listing" in log_output.lower()
         or "list_files" in log_output
     )
 

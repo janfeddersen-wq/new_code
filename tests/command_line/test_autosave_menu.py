@@ -1280,7 +1280,7 @@ class TestDisplayResumedHistory:
         # User message shown with > prefix
         assert "Hello from user" in captured.out
         # Assistant message has agent response banner
-        assert "agent response" in captured.out
+        assert "AGENT RESPONSE" in captured.out
         assert "Hello from assistant" in captured.out
         # Tool output shown
         assert "Tool result" in captured.out or "test_tool" in captured.out

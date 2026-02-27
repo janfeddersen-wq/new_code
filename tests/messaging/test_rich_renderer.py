@@ -326,7 +326,7 @@ def test_render_diff(mock_sub, renderer, console):
     )
     renderer._render_diff(msg)
     out = output(console)
-    assert "edit file" in out
+    assert "EDIT FILE" in out
 
 
 @patch("code_puppy.messaging.rich_renderer.is_subagent", return_value=False)
@@ -394,7 +394,7 @@ def test_render_agent_response(renderer, console):
     msg = AgentResponseMessage(content="**bold**", is_markdown=True)
     renderer._render_agent_response(msg)
     out = output(console)
-    assert "agent response" in out
+    assert "AGENT RESPONSE" in out
 
 
 def test_render_agent_response_plain(renderer, console):
@@ -439,7 +439,7 @@ def test_render_subagent_response(renderer, console):
     )
     renderer._render_subagent_response(msg)
     out = output(console)
-    assert "agent response" in out
+    assert "AGENT RESPONSE" in out
 
 
 # =========================================================================
@@ -904,7 +904,7 @@ def test_get_banner_color(renderer):
 def test_format_banner(renderer):
     with patch("code_puppy.config.get_banner_color", return_value="blue"):
         result = renderer._format_banner("test", "HELLO")
-        assert "hello" in result
+        assert "HELLO" in result
         assert "blue" in result
 
 

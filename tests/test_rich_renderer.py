@@ -287,7 +287,7 @@ def test_format_banner_and_level_prefix() -> None:
 
     banner = renderer._format_banner("thinking", "HELLO")
     assert "magenta" in banner
-    assert "hello" in banner
+    assert "HELLO" in banner
 
     assert renderer._get_level_prefix(MessageLevel.WARNING) == "! "
 
@@ -457,14 +457,14 @@ def test_consecutive_file_content_groups_under_single_banner() -> None:
     ]
 
     # Should have exactly ONE banner line (containing "read file")
-    banner_lines = [p for p in printed if "read file" in p]
+    banner_lines = [p for p in printed if "READ FILE" in p]
     assert len(banner_lines) == 1, (
         f"Expected 1 banner, got {len(banner_lines)}: {banner_lines}"
     )
 
     # Should have exactly THREE tree-child lines (containing "│")
     # Exclude banner lines (which also contain │) by checking for file paths
-    tree_lines = [p for p in printed if "│" in p and "read file" not in p and ".ts" in p]
+    tree_lines = [p for p in printed if "│" in p and "READ FILE" not in p and ".ts" in p]
     assert len(tree_lines) == 3, (
         f"Expected 3 tree lines, got {len(tree_lines)}: {tree_lines}"
     )
@@ -499,7 +499,7 @@ def test_single_file_content_still_has_banner_and_tree() -> None:
     ]
 
     # Should have banner
-    assert any("read file" in p for p in printed), "Missing read file banner"
+    assert any("READ FILE" in p for p in printed), "Missing read file banner"
 
     # Should have tree child
     assert any("│" in p and "app.py" in p for p in printed), "Missing tree child line"
@@ -539,7 +539,7 @@ def test_different_type_breaks_grouping() -> None:
     ]
 
     # Should have TWO banners (grouping was broken by TextMessage)
-    banner_lines = [p for p in printed if "read file" in p]
+    banner_lines = [p for p in printed if "READ FILE" in p]
     assert len(banner_lines) == 2, (
         f"Expected 2 banners, got {len(banner_lines)}: {banner_lines}"
     )
@@ -579,13 +579,13 @@ def test_spinner_does_not_break_grouping() -> None:
     ]
 
     # Should have only ONE banner (spinner didn't break the group)
-    banner_lines = [p for p in printed if "read file" in p]
+    banner_lines = [p for p in printed if "READ FILE" in p]
     assert len(banner_lines) == 1, (
         f"Expected 1 banner, got {len(banner_lines)}: {banner_lines}"
     )
 
     # Should have TWO tree-child lines (containing │ and .py file paths)
-    tree_lines = [p for p in printed if "│" in p and "read file" not in p and ".py" in p]
+    tree_lines = [p for p in printed if "│" in p and "READ FILE" not in p and ".py" in p]
     assert len(tree_lines) == 2, (
         f"Expected 2 tree lines, got {len(tree_lines)}: {tree_lines}"
     )
@@ -614,13 +614,13 @@ def test_consecutive_diff_groups() -> None:
         if call.args and isinstance(call.args[0], str)
     ]
 
-    banner_lines = [p for p in printed if "edit file" in p]
+    banner_lines = [p for p in printed if "EDIT FILE" in p]
     assert len(banner_lines) == 1, (
         f"Expected 1 banner, got {len(banner_lines)}: {banner_lines}"
     )
 
     # Tree lines contain │ and file paths but not the banner text
-    tree_lines = [p for p in printed if "│" in p and "edit file" not in p and ".py" in p]
+    tree_lines = [p for p in printed if "│" in p and "EDIT FILE" not in p and ".py" in p]
     assert len(tree_lines) == 3, (
         f"Expected 3 tree lines, got {len(tree_lines)}: {tree_lines}"
     )
@@ -645,13 +645,13 @@ def test_consecutive_shell_start_groups() -> None:
         if call.args and isinstance(call.args[0], str)
     ]
 
-    banner_lines = [p for p in printed if "shell command" in p]
+    banner_lines = [p for p in printed if "SHELL COMMAND" in p]
     assert len(banner_lines) == 1, (
         f"Expected 1 banner, got {len(banner_lines)}: {banner_lines}"
     )
 
     # Tree lines contain │ and $ but not the banner text
-    tree_lines = [p for p in printed if "│" in p and "shell command" not in p and "$ echo" in p]
+    tree_lines = [p for p in printed if "│" in p and "SHELL COMMAND" not in p and "$ echo" in p]
     assert len(tree_lines) == 3, (
         f"Expected 3 tree lines, got {len(tree_lines)}: {tree_lines}"
     )
@@ -688,7 +688,7 @@ def test_grouping_resets_across_different_groupable_types() -> None:
     ]
 
     # Should have both banners
-    assert any("read file" in p for p in printed), "Missing read file banner"
+    assert any("READ FILE" in p for p in printed), "Missing read file banner"
     assert any("grep" in p.lower() for p in printed), "Missing grep banner"
 
 
@@ -778,5 +778,5 @@ async def test_async_render_grouping_resets_across_different_groupable_types() -
         if call.args and isinstance(call.args[0], str)
     ]
 
-    assert any("read file" in p for p in printed), "Missing read file banner"
+    assert any("READ FILE" in p for p in printed), "Missing read file banner"
     assert any("grep" in p.lower() for p in printed), "Missing grep banner"

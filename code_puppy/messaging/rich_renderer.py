@@ -170,7 +170,7 @@ class RichConsoleRenderer:
         return get_banner_color(banner_name)
 
     def _format_banner(self, banner_name: str, text: str) -> str:
-        """Format a banner with its configured color.
+        """Format a banner with colored dashes and bold capitalized text.
 
         Args:
             banner_name: The banner identifier
@@ -180,7 +180,7 @@ class RichConsoleRenderer:
             Rich markup string for the banner
         """
         color = self._get_banner_color(banner_name)
-        return f"[{color}]│[/{color}] [bold {color}]{text.lower()}[/bold {color}]"
+        return f"[{color}]───[/{color}] [bold]{text.upper()}[/bold] [{color}]───[/{color}]"
 
     def _should_suppress_subagent_output(self) -> bool:
         """Check if sub-agent output should be suppressed.
@@ -431,7 +431,7 @@ class RichConsoleRenderer:
 
         bar = self._bar(color)
         self._console.print(
-            f"{bar}  [bold cyan]{msg.directory}[/bold cyan] [dim]{rec_flag}[/dim]\n"
+            f"{bar}  [bold cyan]{msg.directory}[/bold cyan] [dim]{rec_flag}[/dim]"
         )
 
         # Build a tree structure: {parent_path: {files: [], dirs: set(), size: int}}
@@ -484,7 +484,10 @@ class RichConsoleRenderer:
 
             # For root level, just show contents
             if dir_path == root_key:
-                # Show files at root level (depth 0)
+                # Show subdirs first (like ls), then files
+                for subdir in subdirs:
+                    render_dir_tree(subdir, depth)
+
                 for f in sorted(files, key=lambda x: x.path):
                     name = os.path.basename(f.path)
                     size_str = (
@@ -495,10 +498,6 @@ class RichConsoleRenderer:
                     self._console.print(
                         f"{bar}{indent}[green]{name}[/green]{size_str}"
                     )
-
-                # Show subdirs at root level
-                for subdir in subdirs:
-                    render_dir_tree(subdir, depth)
             else:
                 # Show directory with summary
                 dir_name = os.path.basename(dir_path)
@@ -773,7 +772,7 @@ class RichConsoleRenderer:
         """Render agent response with header and markdown formatting."""
         # Header
         banner = self._format_banner("agent_response", "AGENT RESPONSE")
-        self._console.print(f"\n{banner}\n")
+        self._console.print(f"\n{banner}")
 
         # Content (markdown or plain)
         if msg.is_markdown:
@@ -1057,13 +1056,13 @@ class RichConsoleRenderer:
         banner = self._format_banner("agent_response", "LIST SKILLS")
         query_info = f" matching [cyan]'{msg.query}'[/cyan]" if msg.query else ""
         self._console.print(
-            f"\n{banner} Found [bold]{msg.total_count}[/bold] skill(s){query_info}\n"
+            f"\n{banner} Found [bold]{msg.total_count}[/bold] skill(s){query_info}"
         )
 
         if not msg.skills:
             self._console.print(f"{bar}[dim]  No skills found.[/dim]")
             self._console.print(
-                f"{bar}[dim]  Install skills in ~/.code_puppy/skills/[/dim]\n"
+                f"{bar}[dim]  Install skills in ~/.code_puppy/skills/[/dim]"
             )
             return
 
