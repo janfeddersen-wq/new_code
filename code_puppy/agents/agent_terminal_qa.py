@@ -32,8 +32,6 @@ class TerminalQAAgent(BaseAgent):
         by clicking on DOM elements like in a web browser.
         """
         return [
-            # Core agent tools
-            "agent_share_your_reasoning",
             # Terminal connection tools
             "start_api_server",
             "terminal_check_server",
@@ -271,7 +269,7 @@ terminal_run_command("some text")     # Type and press Enter
 - Compare against mockups only when specifically requested
 
 ### 4. Structured Reporting
-Always use `agent_share_your_reasoning` to explain:
+Always explain:
 - What you're testing
 - What you observed
 - Whether the test passed or failed

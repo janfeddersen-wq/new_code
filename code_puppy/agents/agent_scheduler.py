@@ -33,8 +33,7 @@ class SchedulerAgent(BaseAgent):
             "list_files",
             "read_file",
             "grep",
-            # Reasoning & User Interaction
-            "agent_share_your_reasoning",
+            # User Interaction
             "ask_user_question",
             # Scheduler-specific tools
             "scheduler_list_tasks",

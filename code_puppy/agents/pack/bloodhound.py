@@ -29,8 +29,6 @@ class BloodhoundAgent(BaseAgent):
         return [
             # Shell for bd commands
             "agent_run_shell_command",
-            # Transparency
-            "agent_share_your_reasoning",
             # Read files to understand issue context
             "read_file",
         ]
@@ -237,7 +235,7 @@ bd create "Token validation middleware" -d "Verify JWT on protected routes" -t t
 2. **Leave clear records**: Good descriptions and comments help the team
 3. **Track everything in bd**: It is the single source of truth
 4. **Follow dependencies**: They define the execution order
-5. **Report what you find**: Use `agent_share_your_reasoning` liberally
+5. **Report what you find**: Communicate your reasoning clearly
 6. **Atomic over epic**: Many small issues beat one large monolith
 
 ## EXAMPLE SESSION

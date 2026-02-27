@@ -399,15 +399,6 @@ class TestMessageTypeInference:
         args, _ = mock_queue.emit_simple.call_args
         assert args[0] == MessageType.INFO
 
-    def test_infer_agent_reasoning_from_style(self):
-        """Test AGENT_REASONING from purple/magenta style."""
-        mock_queue = Mock(spec=MessageQueue)
-        console = QueueConsole(queue=mock_queue)
-
-        console.print("Message", style="purple")
-        args, _ = mock_queue.emit_simple.call_args
-        assert args[0] == MessageType.AGENT_REASONING
-
     def test_infer_system_from_style(self):
         """Test SYSTEM from dim style."""
         mock_queue = Mock(spec=MessageQueue)

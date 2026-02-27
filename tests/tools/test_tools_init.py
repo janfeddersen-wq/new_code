@@ -54,60 +54,9 @@ class TestLoadPluginTools:
             _load_plugin_tools()  # should not raise
 
 
-class TestHasExtendedThinkingActive:
-    @patch("code_puppy.config.get_global_model_name", return_value=None)
-    def test_no_model(self, mock_model):
-        from code_puppy.tools import has_extended_thinking_active
-
-        assert not has_extended_thinking_active()
-
-    def test_non_claude(self):
-        from code_puppy.tools import has_extended_thinking_active
-
-        assert not has_extended_thinking_active("gpt-4")
-
-    @patch("code_puppy.config.get_effective_model_settings", return_value={})
-    @patch("code_puppy.model_utils.get_default_extended_thinking", return_value=False)
-    def test_claude_disabled(self, mock_default, mock_settings):
-        from code_puppy.tools import has_extended_thinking_active
-
-        assert not has_extended_thinking_active("claude-3")
-
-    @patch(
-        "code_puppy.config.get_effective_model_settings",
-        return_value={"extended_thinking": True},
-    )
-    @patch("code_puppy.model_utils.get_default_extended_thinking", return_value=False)
-    def test_claude_legacy_true(self, mock_default, mock_settings):
-        from code_puppy.tools import has_extended_thinking_active
-
-        assert has_extended_thinking_active("claude-3")
-
-    @patch(
-        "code_puppy.config.get_effective_model_settings",
-        return_value={"extended_thinking": "enabled"},
-    )
-    @patch("code_puppy.model_utils.get_default_extended_thinking", return_value=False)
-    def test_claude_enabled(self, mock_default, mock_settings):
-        from code_puppy.tools import has_extended_thinking_active
-
-        assert has_extended_thinking_active("claude-3")
-
-    @patch(
-        "code_puppy.config.get_effective_model_settings",
-        return_value={"extended_thinking": "adaptive"},
-    )
-    @patch("code_puppy.model_utils.get_default_extended_thinking", return_value=False)
-    def test_claude_adaptive(self, mock_default, mock_settings):
-        from code_puppy.tools import has_extended_thinking_active
-
-        assert has_extended_thinking_active("anthropic-model")
-
-
 class TestRegisterToolsForAgent:
     @patch("code_puppy.tools._load_plugin_tools")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
-    def test_register_known_tool(self, mock_ext, mock_load):
+    def test_register_known_tool(self, mock_load):
         from code_puppy.tools import TOOL_REGISTRY, register_tools_for_agent
 
         agent = MagicMock()
@@ -120,9 +69,8 @@ class TestRegisterToolsForAgent:
             del TOOL_REGISTRY["__test_tool"]
 
     @patch("code_puppy.tools._load_plugin_tools")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     @patch("code_puppy.tools.emit_warning")
-    def test_unknown_tool(self, mock_warn, mock_ext, mock_load):
+    def test_unknown_tool(self, mock_warn, mock_load):
         from code_puppy.tools import register_tools_for_agent
 
         agent = MagicMock()
@@ -130,25 +78,8 @@ class TestRegisterToolsForAgent:
         mock_warn.assert_called()
 
     @patch("code_puppy.tools._load_plugin_tools")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=True)
-    def test_skip_reasoning_tool(self, mock_ext, mock_load):
-        from code_puppy.tools import TOOL_REGISTRY, register_tools_for_agent
-
-        mock_fn = MagicMock()
-        original = TOOL_REGISTRY.get("agent_share_your_reasoning")
-        TOOL_REGISTRY["agent_share_your_reasoning"] = mock_fn
-        try:
-            agent = MagicMock()
-            register_tools_for_agent(agent, ["agent_share_your_reasoning"])
-            mock_fn.assert_not_called()
-        finally:
-            if original:
-                TOOL_REGISTRY["agent_share_your_reasoning"] = original
-
-    @patch("code_puppy.tools._load_plugin_tools")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     @patch("code_puppy.config.get_universal_constructor_enabled", return_value=False)
-    def test_skip_uc_disabled(self, mock_uc, mock_ext, mock_load):
+    def test_skip_uc_disabled(self, mock_uc, mock_load):
         from code_puppy.tools import TOOL_REGISTRY, register_tools_for_agent
 
         mock_fn = MagicMock()
@@ -163,9 +94,8 @@ class TestRegisterToolsForAgent:
                 TOOL_REGISTRY["universal_constructor"] = original
 
     @patch("code_puppy.tools._load_plugin_tools")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     @patch("code_puppy.config.get_universal_constructor_enabled", return_value=False)
-    def test_skip_uc_prefixed_disabled(self, mock_uc, mock_ext, mock_load):
+    def test_skip_uc_prefixed_disabled(self, mock_uc, mock_load):
         from code_puppy.tools import register_tools_for_agent
 
         agent = MagicMock()
@@ -173,10 +103,9 @@ class TestRegisterToolsForAgent:
         # Should skip silently
 
     @patch("code_puppy.tools._load_plugin_tools")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     @patch("code_puppy.config.get_universal_constructor_enabled", return_value=True)
     @patch("code_puppy.tools._register_uc_tool_wrapper")
-    def test_uc_prefixed_enabled(self, mock_uc_reg, mock_uc, mock_ext, mock_load):
+    def test_uc_prefixed_enabled(self, mock_uc_reg, mock_uc, mock_load):
         from code_puppy.tools import register_tools_for_agent
 
         agent = MagicMock()
@@ -269,8 +198,3 @@ class TestRegisterAllToolsAndGetNames:
         assert len(names) > 0
 
 
-class TestExtendedThinkingPromptNote:
-    def test_constant_exists(self):
-        from code_puppy.tools import EXTENDED_THINKING_PROMPT_NOTE
-
-        assert "extended thinking" in EXTENDED_THINKING_PROMPT_NOTE.lower()

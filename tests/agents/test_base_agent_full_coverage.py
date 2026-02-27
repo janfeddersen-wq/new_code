@@ -879,10 +879,8 @@ class TestReloadCodeGenerationAgent:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     def test_basic_reload(
         self,
-        mock_thinking,
         mock_register,
         mock_pagent,
         mock_prep,
@@ -914,12 +912,10 @@ class TestReloadCodeGenerationAgent:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     @patch("code_puppy.agents.base_agent.DBOSAgent")
     def test_dbos_reload(
         self,
         mock_dbos_agent,
-        mock_thinking,
         mock_register,
         mock_pagent,
         mock_prep,
@@ -955,10 +951,8 @@ class TestCreateAgentWithOutputType:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     def test_creates_agent(
         self,
-        mock_thinking,
         mock_register,
         mock_pagent,
         mock_prep,
@@ -987,12 +981,10 @@ class TestCreateAgentWithOutputType:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     @patch("code_puppy.agents.base_agent.DBOSAgent")
     def test_creates_dbos_agent(
         self,
         mock_dbos_agent,
-        mock_thinking,
         mock_register,
         mock_pagent,
         mock_prep,
@@ -1594,10 +1586,8 @@ class TestReloadWithMcpFiltering:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     def test_mcp_tool_filtering(
         self,
-        mock_thinking,
         mock_register,
         mock_pagent,
         mock_prep,
@@ -1637,44 +1627,8 @@ class TestReloadWithMcpFiltering:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=True)
-    def test_extended_thinking_active(
-        self,
-        mock_thinking,
-        mock_register,
-        mock_pagent,
-        mock_prep,
-        mock_mcp_mgr,
-        mock_pinned,
-        mock_get_model,
-        mock_config,
-        mock_settings,
-        mock_dbos,
-        agent,
-    ):
-        mock_get_model.return_value = MagicMock()
-        mock_prep.return_value = MagicMock(instructions="test")
-        mock_mcp_mgr.return_value.get_servers_for_agent.return_value = []
-        mock_pagent.return_value = MagicMock(_tools={})
-
-        agent.reload_code_generation_agent()
-
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
-    @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
-        return_value={"model": {}},
-    )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     def test_mcp_server_no_tools(
         self,
-        mock_thinking,
         mock_register,
         mock_pagent,
         mock_prep,
@@ -1711,10 +1665,8 @@ class TestReloadWithMcpFiltering:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     def test_mcp_server_exception_during_filter(
         self,
-        mock_thinking,
         mock_register,
         mock_pagent,
         mock_prep,
@@ -1752,10 +1704,8 @@ class TestReloadWithMcpFiltering:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     def test_mcp_all_tools_filtered(
         self,
-        mock_thinking,
         mock_register,
         mock_pagent,
         mock_prep,
@@ -1794,10 +1744,8 @@ class TestReloadWithMcpFiltering:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.tools.has_extended_thinking_active", return_value=False)
     def test_puppy_rules_appended(
         self,
-        mock_thinking,
         mock_register,
         mock_pagent,
         mock_prep,

@@ -289,7 +289,6 @@ class TestGetConfigKeys:
             [
                 "allow_recursion",
                 "auto_save_session",
-                "banner_color_agent_reasoning",
                 "banner_color_agent_response",
                 "banner_color_directory_listing",
                 "banner_color_edit_file",
@@ -325,6 +324,7 @@ class TestGetConfigKeys:
                 "openai_verbosity",
                 "protected_token_count",
                 "resume_message_count",
+                "show_diffs",
                 "temperature",
                 "yolo_mode",
             ]
@@ -344,7 +344,6 @@ class TestGetConfigKeys:
             [
                 "allow_recursion",
                 "auto_save_session",
-                "banner_color_agent_reasoning",
                 "banner_color_agent_response",
                 "banner_color_directory_listing",
                 "banner_color_edit_file",
@@ -378,6 +377,7 @@ class TestGetConfigKeys:
                 "openai_verbosity",
                 "protected_token_count",
                 "resume_message_count",
+                "show_diffs",
                 "temperature",
                 "yolo_mode",
             ]
@@ -857,3 +857,28 @@ class TestModelSupportsSetting:
             "claude-sonnet-4": {"type": "anthropic", "name": "claude-sonnet-4"}
         }
         assert cp_config.model_supports_setting("claude-sonnet-4", "effort") is False
+
+
+class TestGetShowDiffs:
+    """Tests for the get_show_diffs config getter."""
+
+    @patch.object(cp_config, "get_value", return_value=None)
+    def test_default_is_true(self, _):
+        """show_diffs defaults to True when not configured."""
+        assert cp_config.get_show_diffs() is True
+
+    @patch.object(cp_config, "get_value", return_value="false")
+    def test_false_string(self, _):
+        assert cp_config.get_show_diffs() is False
+
+    @patch.object(cp_config, "get_value", return_value="off")
+    def test_off_string(self, _):
+        assert cp_config.get_show_diffs() is False
+
+    @patch.object(cp_config, "get_value", return_value="true")
+    def test_true_string(self, _):
+        assert cp_config.get_show_diffs() is True
+
+    @patch.object(cp_config, "get_value", return_value="0")
+    def test_zero_string(self, _):
+        assert cp_config.get_show_diffs() is False

@@ -33,8 +33,6 @@ class HuskyAgent(BaseAgent):
             "delete_file",
             # Shell for builds, tests, git
             "agent_run_shell_command",
-            # Transparency
-            "agent_share_your_reasoning",
             # Skills
             "activate_skill",
             "list_or_search_skills",
@@ -76,7 +74,6 @@ Follow this pattern for every task:
    -> grep() to find related code patterns
 
 4. PLAN YOUR APPROACH
-   -> share_your_reasoning() with your approach
    -> Break down into small, manageable steps
    -> Identify files to create/modify
 
@@ -275,10 +272,8 @@ list_files("../bd-15/src")
 read_file("../bd-15/src/routes/index.ts")
 
 # Step 2: Plan
-share_your_reasoning(
-    reasoning="Found existing auth structure. Will add login route following the same pattern as register.",
-    next_steps=["Create login endpoint", "Add JWT generation", "Write tests"]
-)
+# Found existing auth structure. Will add login route following the same pattern as register.
+# Next steps: Create login endpoint, Add JWT generation, Write tests
 
 # Step 3: Implement
 edit_file(payload={{"file_path": "../bd-15/src/routes/auth.ts", "replacements": [...]}})

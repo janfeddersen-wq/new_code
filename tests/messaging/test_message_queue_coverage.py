@@ -16,7 +16,6 @@ from code_puppy.messaging.message_queue import (
     MessageQueue,
     MessageType,
     UIMessage,
-    emit_agent_reasoning,
     emit_agent_response,
     emit_command_output,
     emit_divider,
@@ -494,14 +493,6 @@ class TestEmitHelperFunctions:
         msg = self.queue.get_nowait()
         assert msg.type == MessageType.COMMAND_OUTPUT
         assert msg.metadata["command"] == "ls -la"
-
-    def test_emit_agent_reasoning(self):
-        """Test emit_agent_reasoning function."""
-        emit_agent_reasoning("thinking about stuff")
-
-        msg = self.queue.get_nowait()
-        assert msg.type == MessageType.AGENT_REASONING
-        assert msg.content == "thinking about stuff"
 
     def test_emit_planned_next_steps(self):
         """Test emit_planned_next_steps function."""

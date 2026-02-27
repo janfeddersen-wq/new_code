@@ -268,10 +268,10 @@ class TestTerminalQAToolsCore:
 
         return TerminalQAAgent()
 
-    def test_tools_include_reasoning(self, agent):
-        """Test agent has agent_share_your_reasoning tool."""
+    def test_tools_include_terminal(self, agent):
+        """Test agent has terminal tools."""
         tools = agent.get_available_tools()
-        assert "agent_share_your_reasoning" in tools
+        assert "terminal_run_command" in tools
 
 
 # =============================================================================

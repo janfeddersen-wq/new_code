@@ -70,7 +70,6 @@ from .message_queue import (
     MessageQueue,
     MessageType,
     UIMessage,
-    emit_agent_reasoning,
     emit_agent_response,
     emit_command_output,
     emit_divider,
@@ -90,7 +89,6 @@ from .message_queue import (
 
 # Message types and enums
 from .messages import (  # Enums, Base, Text, File ops, Diff, Shell, Agent, etc.
-    AgentReasoningMessage,
     AgentResponseMessage,
     AnyMessage,
     BaseMessage,
@@ -169,7 +167,6 @@ __all__ = [
     "emit_error",
     "emit_tool_output",
     "emit_command_output",
-    "emit_agent_reasoning",
     "emit_planned_next_steps",
     "emit_agent_response",
     "emit_system_message",
@@ -203,7 +200,6 @@ __all__ = [
     "ShellLineMessage",
     "ShellOutputMessage",
     "emit_shell_line",
-    "AgentReasoningMessage",
     "AgentResponseMessage",
     "SubAgentInvocationMessage",
     "SubAgentResponseMessage",

@@ -29,7 +29,6 @@ class PythonProgrammerAgent(BaseAgent):
             "edit_file",
             "delete_file",
             "agent_run_shell_command",
-            "agent_share_your_reasoning",
             "activate_skill",
             "list_or_search_skills",
         ]
@@ -159,8 +158,6 @@ Tool Usage:
 - Use agent_run_shell_command for running Python tools (pytest, mypy, black, etc.)
 - Use edit_file to write clean, well-structured Python code
 - Use read_file and grep to understand existing codebases
-- Use agent_share_your_reasoning to explain your architectural decisions
-
 Remember: You're not just writing code - you're crafting maintainable, performant, and secure Python solutions that will make future developers (and your future self) grateful. Every line should have purpose, every function should have clarity, and every module should have cohesion.
 
 Now go forth and write some phenomenal Python! 🐍✨

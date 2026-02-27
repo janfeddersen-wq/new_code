@@ -19,7 +19,6 @@ from pydantic_ai import RunContext
 from rich.text import Text
 
 from code_puppy.messaging import (  # Structured messaging types
-    AgentReasoningMessage,
     ShellOutputMessage,
     ShellStartMessage,
     emit_error,
@@ -1286,32 +1285,6 @@ async def _run_command_inner(
         )
 
 
-class ReasoningOutput(BaseModel):
-    success: bool = True
-
-
-def share_your_reasoning(
-    context: RunContext, reasoning: str, next_steps: str | List[str] | None = None
-) -> ReasoningOutput:
-    # Handle list of next steps by formatting them
-    formatted_next_steps = next_steps
-    if isinstance(next_steps, list):
-        formatted_next_steps = "\n".join(
-            [f"{i + 1}. {step}" for i, step in enumerate(next_steps)]
-        )
-
-    # Emit structured AgentReasoningMessage for the UI
-    reasoning_msg = AgentReasoningMessage(
-        reasoning=reasoning,
-        next_steps=formatted_next_steps
-        if formatted_next_steps and formatted_next_steps.strip()
-        else None,
-    )
-    get_message_bus().emit(reasoning_msg)
-
-    return ReasoningOutput(success=True)
-
-
 def register_agent_run_shell_command(agent):
     """Register only the agent_run_shell_command tool."""
 
@@ -1328,19 +1301,3 @@ def register_agent_run_shell_command(agent):
         Supports streaming output, timeout handling, and background execution.
         """
         return await run_shell_command(context, command, cwd, timeout, background)
-
-
-def register_agent_share_your_reasoning(agent):
-    """Register only the agent_share_your_reasoning tool."""
-
-    @agent.tool
-    def agent_share_your_reasoning(
-        context: RunContext,
-        reasoning: str = "",
-        next_steps: str | List[str] | None = None,
-    ) -> ReasoningOutput:
-        """Share the agent's current reasoning and planned next steps with the user.
-
-        Displays reasoning and upcoming actions in a formatted panel for transparency.
-        """
-        return share_your_reasoning(context, reasoning, next_steps)

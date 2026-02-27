@@ -32,64 +32,16 @@ class CodePuppyAgent(BaseAgent):
             "edit_file",
             "delete_file",
             "agent_run_shell_command",
-            "agent_share_your_reasoning",
             "ask_user_question",
             "activate_skill",
             "list_or_search_skills",
             "load_image_for_analysis",
         ]
 
-    def _has_extended_thinking(self) -> bool:
-        """Check if the current model has extended thinking active."""
-        from code_puppy.tools import has_extended_thinking_active
-
-        return has_extended_thinking_active(self.get_model_name())
-
-    def _get_reasoning_prompt_sections(self) -> dict[str, str]:
-        """Return prompt sections that vary based on extended thinking state.
-
-        When extended thinking is active the model already exposes its
-        chain-of-thought, so we drop the share_your_reasoning tool docs
-        and adjust the "important rules" accordingly.
-        """
-        if self._has_extended_thinking():
-            return {
-                "reasoning_tool_section": "",
-                "pre_tool_rule": (
-                    "- Use your extended thinking to reason through problems "
-                    "before acting — plan your approach, then execute"
-                ),
-                "loop_rule": (
-                    "- You're encouraged to loop between reasoning, file "
-                    "tools, and run_shell_command to test output in order "
-                    "to write programs"
-                ),
-            }
-        return {
-            "reasoning_tool_section": (
-                "\nReasoning & Explanation:\n"
-                "   - share_your_reasoning(reasoning, next_steps=None): "
-                "Use this to explicitly share your thought process and "
-                "planned next steps\n"
-            ),
-            "pre_tool_rule": (
-                "- Before every other tool use, you must use "
-                '"share_your_reasoning" to explain your thought process '
-                "and planned next steps"
-            ),
-            "loop_rule": (
-                "- You're encouraged to loop between "
-                "share_your_reasoning, file tools, and "
-                "run_shell_command to test output in order to write "
-                "programs"
-            ),
-        }
-
     def get_system_prompt(self) -> str:
         """Get the Code Agent's full system prompt."""
         agent_name = get_agent_name()
         user_name = get_user_name()
-        r = self._get_reasoning_prompt_sections()
 
         result = f"""
 You are {agent_name}, a code agent assisting {user_name} with software development tasks. You have access to tools for writing, modifying, and executing code. You MUST use the provided tools to complete tasks rather than just describing what to do.
@@ -117,7 +69,7 @@ File Operations:
    - edit_file(payload): Swiss-army file editor. Prefer ReplacementsPayload for targeted edits. Keep diffs small (100-300 lines). Never paste entire files in old_str.
    - delete_file(file_path): Remove files when needed
    - grep(search_string, directory): Ripgrep-powered search across files (max 200 matches)
-{r["reasoning_tool_section"]}
+
 System Operations:
    - run_shell_command(command, cwd, timeout, background): Execute commands, run tests, start services. Use background=True for long-running servers.
    - For JS/TS test suites use `--silent` flag. For single test files, run without it. Pytest needs no special flags.
@@ -132,11 +84,11 @@ User Interaction:
 
 Important rules:
 - You MUST use tools -- DO NOT just output code or descriptions
-{r["pre_tool_rule"]}
+- Reason through problems before acting -- plan your approach, then execute
 - Check if files exist before modifying or deleting them
 - Prefer MODIFYING existing files (edit_file) over creating new ones
 - After system operations, always explain the results
-{r["loop_rule"]}
+- You're encouraged to loop between reasoning, file tools, and run_shell_command to test output in order to write programs
 - Continue autonomously unless user input is definitively required
 - Solutions should be production-ready, maintainable, and follow best practices
 """

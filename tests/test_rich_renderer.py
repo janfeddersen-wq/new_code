@@ -4,7 +4,7 @@ import sys
 import types
 from io import StringIO
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 from rich.console import Console
@@ -33,7 +33,6 @@ sys.modules.setdefault("code_puppy.tools.common", common_stub)
 from code_puppy.messaging import rich_renderer as rich_renderer_module  # noqa: E402
 from code_puppy.messaging.bus import MessageBus  # noqa: E402
 from code_puppy.messaging.messages import (  # noqa: E402
-    AgentReasoningMessage,
     ConfirmationRequest,
     DiffLine,
     DiffMessage,
@@ -84,24 +83,6 @@ def test_render_text_version_message_uses_dim_style() -> None:
     renderer._render_text(message)
 
     assert console.print.call_args.kwargs["style"] == "dim"
-
-
-def test_render_agent_reasoning_outputs_markdown() -> None:
-    renderer, console = _make_renderer()
-    renderer._get_banner_color = Mock(return_value="blue")
-    message = AgentReasoningMessage(
-        reasoning="**Why:** because markdown",
-        next_steps="- do the thing",
-    )
-
-    renderer._render_agent_reasoning(message)
-
-    markdown_calls = [
-        call
-        for call in console.print.call_args_list
-        if call.args and isinstance(call.args[0], Markdown)
-    ]
-    assert len(markdown_calls) == 2
 
 
 def test_render_status_panel_and_divider() -> None:
@@ -291,8 +272,10 @@ def test_markdown_rendering_to_real_console() -> None:
     console = Console(file=output)
     renderer = RichConsoleRenderer(bus, console=console)
 
-    message = AgentReasoningMessage(reasoning="# Title", next_steps=None)
-    renderer._render_agent_reasoning(message)
+    from code_puppy.messaging.messages import TextMessage, MessageLevel
+
+    message = TextMessage(level=MessageLevel.INFO, text="# Title")
+    renderer._render_text(message)
 
     rendered = output.getvalue()
     assert "Title" in rendered
@@ -351,7 +334,6 @@ def test_do_render_dispatches_multiple_messages() -> None:
         ShellOutputMessage(
             command="echo", stdout="ok", stderr="", exit_code=0, duration_seconds=0.1
         ),
-        AgentReasoningMessage(reasoning="Because", next_steps=None),
         SubAgentInvocationMessage(
             agent_name="helper",
             session_id="sess-1",
@@ -709,6 +691,61 @@ def test_grouping_resets_across_different_groupable_types() -> None:
     assert any("read file" in p for p in printed), "Missing read file banner"
     assert any("grep" in p.lower() for p in printed), "Missing grep banner"
 
+
+def test_render_diff_compact_when_show_diffs_false() -> None:
+    """When show_diffs is False, only line counts are shown."""
+    renderer, console = _make_renderer()
+    renderer._get_banner_color = Mock(return_value="blue")
+
+    msg = DiffMessage(
+        path="file.py",
+        operation="modify",
+        diff_lines=[
+            DiffLine(line_number=1, type="remove", content="old line"),
+            DiffLine(line_number=2, type="add", content="new line"),
+            DiffLine(line_number=3, type="add", content="extra line"),
+        ],
+    )
+
+    with patch("code_puppy.config.get_show_diffs", return_value=False):
+        renderer._render_diff(msg)
+
+    printed_args = [
+        call.args[0]
+        for call in console.print.call_args_list
+        if call.args and isinstance(call.args[0], str)
+    ]
+    # Should contain the summary line with counts
+    assert any("+2" in p and "-1" in p for p in printed_args)
+    # Should NOT contain actual diff content
+    assert not any("old line" in p for p in printed_args)
+    assert not any("new line" in p for p in printed_args)
+
+
+def test_render_diff_full_when_show_diffs_true() -> None:
+    """When show_diffs is True (default), full diff content is shown."""
+    renderer, console = _make_renderer()
+    renderer._get_banner_color = Mock(return_value="blue")
+
+    msg = DiffMessage(
+        path="file.py",
+        operation="modify",
+        diff_lines=[
+            DiffLine(line_number=1, type="remove", content="old line"),
+            DiffLine(line_number=2, type="add", content="new line"),
+        ],
+    )
+
+    with patch("code_puppy.config.get_show_diffs", return_value=True):
+        renderer._render_diff(msg)
+
+    printed_args = [
+        call.args[0]
+        for call in console.print.call_args_list
+        if call.args and isinstance(call.args[0], str)
+    ]
+    # Full diff content should be rendered (format_diff_with_colors output)
+    assert any("old line" in p or "new line" in p for p in printed_args)
 
 @pytest.mark.asyncio
 async def test_async_render_grouping_resets_across_different_groupable_types() -> None:

@@ -25,7 +25,6 @@ from code_puppy.tools.command_runner import (
     _RUNNING_PROCESSES_LOCK,
     _USER_KILLED_PROCESSES,
     MAX_LINE_LENGTH,
-    ReasoningOutput,
     ShellCommandOutput,
     ShellSafetyAssessment,
     _acquire_keyboard_context,
@@ -45,7 +44,6 @@ from code_puppy.tools.command_runner import (
     kill_all_running_shell_processes,
     run_shell_command_streaming,
     set_awaiting_user_input,
-    share_your_reasoning,
 )
 
 
@@ -527,89 +525,6 @@ class TestGetRunningShellProcessCount:
         assert count == 0
         with _RUNNING_PROCESSES_LOCK:
             assert proc not in _RUNNING_PROCESSES
-
-
-class TestShareYourReasoning:
-    """Tests for the share_your_reasoning function."""
-
-    def test_share_reasoning_returns_success(self):
-        """Test that share_your_reasoning returns success."""
-        mock_context = MagicMock()
-
-        with patch.object(command_runner, "get_message_bus") as mock_bus:
-            mock_bus.return_value = MagicMock()
-            result = share_your_reasoning(
-                mock_context, reasoning="Testing reasoning", next_steps="Step 1"
-            )
-
-        assert isinstance(result, ReasoningOutput)
-        assert result.success is True
-
-    def test_share_reasoning_with_list_steps(self):
-        """Test share_your_reasoning with list of next steps."""
-        mock_context = MagicMock()
-
-        with patch.object(command_runner, "get_message_bus") as mock_bus:
-            mock_bus.return_value = MagicMock()
-            result = share_your_reasoning(
-                mock_context,
-                reasoning="Multi-step reasoning",
-                next_steps=["Step 1", "Step 2", "Step 3"],
-            )
-
-        assert result.success is True
-
-    def test_share_reasoning_emits_message(self):
-        """Test that share_your_reasoning emits AgentReasoningMessage."""
-        mock_context = MagicMock()
-        mock_bus = MagicMock()
-
-        with patch.object(command_runner, "get_message_bus", return_value=mock_bus):
-            share_your_reasoning(
-                mock_context, reasoning="Test reasoning", next_steps=None
-            )
-
-        mock_bus.emit.assert_called_once()
-
-    def test_share_reasoning_with_none_steps(self):
-        """Test share_your_reasoning with None next_steps."""
-        mock_context = MagicMock()
-
-        with patch.object(command_runner, "get_message_bus") as mock_bus:
-            mock_bus.return_value = MagicMock()
-            result = share_your_reasoning(
-                mock_context, reasoning="No next steps", next_steps=None
-            )
-
-        assert result.success is True
-
-    def test_share_reasoning_with_empty_steps(self):
-        """Test share_your_reasoning with empty string next_steps."""
-        mock_context = MagicMock()
-
-        with patch.object(command_runner, "get_message_bus") as mock_bus:
-            mock_bus.return_value = MagicMock()
-            result = share_your_reasoning(
-                mock_context,
-                reasoning="Empty steps",
-                next_steps="  ",  # Whitespace only
-            )
-
-        assert result.success is True
-
-
-class TestReasoningOutput:
-    """Tests for the ReasoningOutput model."""
-
-    def test_reasoning_output_default_success(self):
-        """Test that ReasoningOutput defaults to success=True."""
-        output = ReasoningOutput()
-        assert output.success is True
-
-    def test_reasoning_output_explicit_success(self):
-        """Test ReasoningOutput with explicit success value."""
-        output = ReasoningOutput(success=False)
-        assert output.success is False
 
 
 class TestSpawnCtrlXKeyListener:

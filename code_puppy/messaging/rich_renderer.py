@@ -29,7 +29,6 @@ from .commands import (
     UserInputResponse,
 )
 from .messages import (
-    AgentReasoningMessage,
     AgentResponseMessage,
     AnyMessage,
     ConfirmationRequest,
@@ -312,8 +311,6 @@ class RichConsoleRenderer:
             self._render_shell_line(message)
         elif isinstance(message, ShellOutputMessage):
             self._render_shell_output(message)
-        elif isinstance(message, AgentReasoningMessage):
-            self._render_agent_reasoning(message)
         elif isinstance(message, AgentResponseMessage):
             # Skip rendering - we now stream agent responses via event_stream_handler
             pass
@@ -651,6 +648,8 @@ class RichConsoleRenderer:
 
     def _render_diff(self, msg: DiffMessage) -> None:
         """Render a diff with beautiful syntax highlighting."""
+        from code_puppy.config import get_show_diffs
+
         # Skip for sub-agents unless verbose mode
         if self._should_suppress_subagent_output():
             return
@@ -671,6 +670,15 @@ class RichConsoleRenderer:
         )
 
         if not msg.diff_lines:
+            return
+
+        # Compact mode: show only line counts, skip diff content
+        if not get_show_diffs():
+            added = sum(1 for line in msg.diff_lines if line.type == "add")
+            removed = sum(1 for line in msg.diff_lines if line.type == "remove")
+            self._console.print(
+                f"{bar}  [dim](+{added} / -{removed})[/dim]"
+            )
             return
 
         # Reconstruct unified diff text from diff_lines for format_diff_with_colors
@@ -760,27 +768,6 @@ class RichConsoleRenderer:
     # =========================================================================
     # Agent Messages
     # =========================================================================
-
-    def _render_agent_reasoning(self, msg: AgentReasoningMessage) -> None:
-        """Render agent reasoning matching old format."""
-        # Header matching old format
-        banner = self._format_banner("agent_reasoning", "AGENT REASONING")
-        self._console.print(f"\n{banner}")
-
-        # Current reasoning
-        self._console.print("[bold cyan]Current reasoning:[/bold cyan]")
-        # Render reasoning as markdown
-        md = Markdown(msg.reasoning)
-        self._console.print(md)
-
-        # Next steps (if any)
-        if msg.next_steps and msg.next_steps.strip():
-            self._console.print("\n[bold cyan]Planned next steps:[/bold cyan]")
-            md_steps = Markdown(msg.next_steps)
-            self._console.print(md_steps)
-
-        # Trailing newline for spinner separation
-        self._console.print()
 
     def _render_agent_response(self, msg: AgentResponseMessage) -> None:
         """Render agent response with header and markdown formatting."""

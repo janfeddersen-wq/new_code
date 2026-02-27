@@ -334,6 +334,8 @@ def get_config_keys():
         default_keys.append(f"banner_color_{banner_name}")
     # Add resume message count configuration
     default_keys.append("resume_message_count")
+    # Add show_diffs toggle
+    default_keys.append("show_diffs")
 
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
@@ -1452,7 +1454,6 @@ DEFAULT_BANNER_COLORS = {
     "edit_file": "dark_goldenrod",  # Gold - modifications
     "grep": "grey37",  # Silver - search results
     "directory_listing": "dodger_blue2",  # Sky - navigation
-    "agent_reasoning": "dark_violet",  # Violet - deep thought
     "invoke_agent": "deep_pink4",  # Ruby - agent invocation
     "subagent_response": "sea_green3",  # Emerald - sub-agent success
     "list_agents": "dark_slate_gray3",  # Slate - neutral listing
@@ -1614,6 +1615,20 @@ def finalize_autosave_session() -> str:
     """Persist the current autosave snapshot and rotate to a fresh session."""
     auto_save_session_if_enabled()
     return rotate_autosave_id()
+
+
+def get_show_diffs() -> bool:
+    """Check whether diff content should be shown in edit blocks.
+
+    Defaults to True (show full diffs). When False, only the filename and
+    a count of lines added/removed is displayed.
+    """
+    false_vals = {"0", "false", "no", "off"}
+    cfg_val = get_value("show_diffs")
+    if cfg_val is not None:
+        if str(cfg_val).strip().lower() in false_vals:
+            return False
+    return True
 
 
 def get_suppress_thinking_messages() -> bool:

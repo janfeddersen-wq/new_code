@@ -78,7 +78,6 @@ from code_puppy.tools.browser.terminal_tools import (
 )
 from code_puppy.tools.command_runner import (
     register_agent_run_shell_command,
-    register_agent_share_your_reasoning,
 )
 from code_puppy.tools.display import (
     display_non_streamed_result as display_non_streamed_result,
@@ -122,7 +121,6 @@ TOOL_REGISTRY = {
     "delete_file": register_delete_file,
     # Command Runner
     "agent_run_shell_command": register_agent_run_shell_command,
-    "agent_share_your_reasoning": register_agent_share_your_reasoning,
     # User Interaction
     "ask_user_question": register_ask_user_question,
     # Browser Control
@@ -231,57 +229,6 @@ def _load_plugin_tools() -> None:
         pass
 
 
-# Appended to the system prompt when extended thinking is active and
-# the share_your_reasoning tool is removed.  Encourages the model to
-# use its native thinking blocks between tool calls instead.
-EXTENDED_THINKING_PROMPT_NOTE = (
-    "\n\nIMPORTANT: You have extended thinking enabled. "
-    "Always think between tool calls or waves of tool calls "
-    "(if running parallel tools). Use your thinking blocks to reason "
-    "about the results before deciding on next steps."
-)
-
-
-def has_extended_thinking_active(model_name: str | None = None) -> bool:
-    """Check if an Anthropic model has extended thinking enabled or adaptive.
-
-    When extended thinking is active, the model already exposes its reasoning
-    via thinking blocks, making the share_your_reasoning tool redundant.
-
-    Args:
-        model_name: The model name to check. If None, uses the current global model.
-
-    Returns:
-        True if the model is an Anthropic model with extended_thinking set to
-        "enabled" or "adaptive".
-    """
-    from code_puppy.config import get_effective_model_settings, get_global_model_name
-
-    if model_name is None:
-        model_name = get_global_model_name()
-
-    if model_name is None:
-        return False
-
-    # Only applies to Anthropic/Claude models
-    if not (model_name.startswith("claude-") or model_name.startswith("anthropic-")):
-        return False
-
-    from code_puppy.model_utils import get_default_extended_thinking
-
-    settings = get_effective_model_settings(model_name)
-    default_thinking = get_default_extended_thinking(model_name)
-    extended_thinking = settings.get("extended_thinking", default_thinking)
-
-    # Handle legacy boolean values
-    if extended_thinking is True:
-        extended_thinking = "enabled"
-    elif extended_thinking is False:
-        return False
-
-    return extended_thinking in ("enabled", "adaptive")
-
-
 def register_tools_for_agent(
     agent, tool_names: list[str], model_name: str | None = None
 ):
@@ -290,16 +237,11 @@ def register_tools_for_agent(
     Args:
         agent: The agent to register tools to.
         tool_names: List of tool names to register. UC tools are prefixed with "uc:".
-        model_name: Optional model name. Used to determine if certain tools
-            (like agent_share_your_reasoning) should be skipped. If None,
-            falls back to the current global model.
+        model_name: Optional model name for conditional tool filtering.
     """
     from code_puppy.config import get_universal_constructor_enabled
 
     _load_plugin_tools()
-
-    # Pre-compute whether extended thinking is active to avoid repeated checks
-    skip_reasoning_tool = has_extended_thinking_active(model_name)
 
     for tool_name in tool_names:
         # Handle UC tools (prefixed with "uc:")
@@ -322,11 +264,6 @@ def register_tools_for_agent(
             and not get_universal_constructor_enabled()
         ):
             continue  # Skip UC if disabled in config
-
-        # Skip reasoning tool when extended thinking is active — the model
-        # already exposes its chain-of-thought via thinking blocks.
-        if tool_name == "agent_share_your_reasoning" and skip_reasoning_tool:
-            continue
 
         # Register the individual tool
         register_func = TOOL_REGISTRY[tool_name]

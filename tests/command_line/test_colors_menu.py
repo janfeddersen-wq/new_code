@@ -32,7 +32,6 @@ class TestBannerDisplayInfo:
             "edit_file",
             "grep",
             "directory_listing",
-            "agent_reasoning",
             "invoke_agent",
             "subagent_response",
             "list_agents",

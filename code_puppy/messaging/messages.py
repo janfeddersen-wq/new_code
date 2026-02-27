@@ -243,17 +243,6 @@ class ShellOutputMessage(BaseMessage):
 # =============================================================================
 
 
-class AgentReasoningMessage(BaseMessage):
-    """Agent's reasoning and planned next steps. Plain text only!"""
-
-    category: MessageCategory = MessageCategory.AGENT
-    reasoning: str = Field(description="The agent's current reasoning/thought process")
-    next_steps: Optional[str] = Field(
-        default=None,
-        description="Planned next actions (optional)",
-    )
-
-
 class AgentResponseMessage(BaseMessage):
     """A response from the agent. Use is_markdown flag for markdown content."""
 
@@ -498,7 +487,6 @@ AnyMessage = Union[
     ShellStartMessage,
     ShellLineMessage,
     ShellOutputMessage,
-    AgentReasoningMessage,
     AgentResponseMessage,
     SubAgentInvocationMessage,
     SubAgentResponseMessage,
@@ -543,7 +531,6 @@ __all__ = [
     "ShellLineMessage",
     "ShellOutputMessage",
     # Agent
-    "AgentReasoningMessage",
     "AgentResponseMessage",
     "SubAgentInvocationMessage",
     "SubAgentResponseMessage",

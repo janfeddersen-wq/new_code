@@ -57,7 +57,6 @@ class TestUIMessage:
         assert MessageType.ERROR.value == "error"
         assert MessageType.SUCCESS.value == "success"
         assert MessageType.WARNING.value == "warning"
-        assert MessageType.AGENT_REASONING.value == "agent_reasoning"
 
 
 class TestMessageQueueBasic:
@@ -254,15 +253,6 @@ class TestMessageQueueTypes:
         queue.emit(msg)
         retrieved = queue.get_nowait()
         assert retrieved.type == MessageType.TOOL_OUTPUT
-
-    def test_agent_reasoning_message(self):
-        """Test AGENT_REASONING message type."""
-        queue = MessageQueue()
-        queue.mark_renderer_active()
-        msg = UIMessage(type=MessageType.AGENT_REASONING, content="Thinking")
-        queue.emit(msg)
-        retrieved = queue.get_nowait()
-        assert retrieved.type == MessageType.AGENT_REASONING
 
     def test_divider_message(self):
         """Test DIVIDER message type."""

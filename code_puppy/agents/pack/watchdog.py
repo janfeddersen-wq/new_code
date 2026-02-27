@@ -35,8 +35,6 @@ class WatchdogAgent(BaseAgent):
             "grep",
             # Run the tests
             "agent_run_shell_command",
-            # Explain QA findings
-            "agent_share_your_reasoning",
         ]
 
     def get_system_prompt(self) -> str:
@@ -314,7 +312,7 @@ cargo test oauth  # Tests matching "oauth"
 4. **Check BOTH new and existing tests** - Changes can break things
 5. **Quality over quantity** - 5 good tests beat 20 bad ones
 6. **Edge cases matter** - Happy path alone is not enough
-7. **Report everything** - Use `agent_share_your_reasoning` liberally
+7. **Report everything** - Communicate your reasoning clearly
 
 ## EXAMPLE SESSION
 

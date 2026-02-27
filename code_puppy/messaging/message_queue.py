@@ -313,11 +313,6 @@ def emit_command_output(content: Any, command: str = None, **metadata):
     emit_message(MessageType.COMMAND_OUTPUT, content, **metadata)
 
 
-def emit_agent_reasoning(content: Any, **metadata):
-    """Emit agent reasoning."""
-    emit_message(MessageType.AGENT_REASONING, content, **metadata)
-
-
 def emit_planned_next_steps(content: Any, **metadata):
     """Emit planned_next_steps"""
     emit_message(MessageType.PLANNED_NEXT_STEPS, content, **metadata)

@@ -21,7 +21,6 @@ Here is the complete set of available tools:
 - **`grab_json_from_url(url)`** - Fetch JSON data from URLs (when network allows)
 
 # **Agent Communication**
-- **`agent_share_your_reasoning(reasoning, next_steps)`** - Share the reasoning process and planned next steps (transparency)
 - **`final_result(output_message, awaiting_user_input)`** - Deliver final responses
 
 # **Tool Usage Philosophy**
@@ -35,7 +34,6 @@ These principles are followed:
 # **Pro Tips**
 
 - For `edit_file`, **targeted replacements** are preferred over full file overwrites (more efficient)
-- `agent_share_your_reasoning` is used before major operations to explain the thinking
 - When running tests, `--silent` flags for JS/TS are used to avoid spam
 - Explore with `list_files` before modifying anything
 

@@ -50,21 +50,6 @@ class TestInteractiveRendererMessageTypes:
         assert "Tool output text" in output_text
 
     @pytest.mark.asyncio
-    async def test_render_agent_reasoning(self):
-        """Test rendering AGENT_REASONING message (no style)."""
-        queue = MessageQueue()
-        output = StringIO()
-        console = Console(file=output, force_terminal=True)
-
-        renderer = InteractiveRenderer(queue, console)
-        msg = UIMessage(type=MessageType.AGENT_REASONING, content="Thinking...")
-
-        await renderer.render_message(msg)
-
-        output_text = output.getvalue()
-        assert "Thinking" in output_text
-
-    @pytest.mark.asyncio
     async def test_render_planned_next_steps(self):
         """Test rendering PLANNED_NEXT_STEPS message (no style)."""
         queue = MessageQueue()
@@ -444,21 +429,6 @@ class TestSynchronousInteractiveRendererMessageTypes:
         renderer._render_message(msg)
 
         assert "Tool result" in output.getvalue()
-
-    def test_render_agent_reasoning_message(self):
-        """Test rendering AGENT_REASONING message (no style)."""
-        queue = MessageQueue()
-        output = StringIO()
-        console = Console(file=output, force_terminal=True)
-
-        renderer = SynchronousInteractiveRenderer(queue, console)
-        msg = UIMessage(
-            type=MessageType.AGENT_REASONING, content="Thinking about it..."
-        )
-
-        renderer._render_message(msg)
-
-        assert "Thinking about it" in output.getvalue()
 
     def test_render_agent_response_as_markdown(self):
         """Test AGENT_RESPONSE renders as markdown."""

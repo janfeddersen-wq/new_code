@@ -10,7 +10,6 @@ from rich.console import Console
 
 from code_puppy.messaging.bus import MessageBus
 from code_puppy.messaging.messages import (
-    AgentReasoningMessage,
     AgentResponseMessage,
     ConfirmationRequest,
     DiffLine,
@@ -389,18 +388,6 @@ def test_render_shell_output(renderer, console):
 # =========================================================================
 # Agent Messages
 # =========================================================================
-
-
-def test_render_agent_reasoning(renderer, console):
-    msg = AgentReasoningMessage(reasoning="I think...", next_steps="Do X")
-    renderer._render_agent_reasoning(msg)
-    out = output(console)
-    assert "agent reasoning" in out
-
-
-def test_render_agent_reasoning_no_steps(renderer, console):
-    msg = AgentReasoningMessage(reasoning="I think...", next_steps="")
-    renderer._render_agent_reasoning(msg)
 
 
 def test_render_agent_response(renderer, console):
@@ -785,7 +772,6 @@ def test_do_render_all_message_types(renderer, console):
         ShellStartMessage(command="ls", timeout=30, background=False),
         ShellLineMessage(line="out", stream="stdout"),
         ShellOutputMessage(command="ls", exit_code=0, duration_seconds=0.1),
-        AgentReasoningMessage(reasoning="think", next_steps=""),
         AgentResponseMessage(content="resp", is_markdown=False),
         SubAgentResponseMessage(
             agent_name="a", session_id="s", response="r", message_count=1

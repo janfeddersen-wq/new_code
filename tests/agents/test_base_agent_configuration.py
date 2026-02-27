@@ -182,58 +182,16 @@ class TestBaseAgentConfiguration:
                 assert isinstance(result, list)
 
 
-class TestCodePuppyDynamicPrompt:
-    """Test that the Code-Puppy system prompt adapts when extended thinking is active."""
+class TestCodePuppyPrompt:
+    """Test that the Code-Puppy system prompt contains expected sections."""
 
     @pytest.fixture
     def agent(self):
         return CodePuppyAgent()
 
-    def test_prompt_includes_reasoning_tool_when_thinking_off(self, agent):
-        """Without extended thinking, prompt documents share_your_reasoning."""
-        with patch.object(agent, "_has_extended_thinking", return_value=False):
-            prompt = agent.get_system_prompt()
-            assert "share_your_reasoning" in prompt
-            assert "Reasoning & Explanation" in prompt
-
-    def test_prompt_excludes_reasoning_tool_when_thinking_active(self, agent):
-        """With extended thinking, prompt drops share_your_reasoning docs."""
-        with patch.object(agent, "_has_extended_thinking", return_value=True):
-            prompt = agent.get_system_prompt()
-            assert "share_your_reasoning" not in prompt
-            assert "Reasoning & Explanation" not in prompt
-
-    def test_prompt_uses_thinking_rule_when_thinking_active(self, agent):
-        """With extended thinking, prompt tells model to use its thinking."""
-        with patch.object(agent, "_has_extended_thinking", return_value=True):
-            prompt = agent.get_system_prompt()
-            assert "extended thinking to reason through problems" in prompt
-
-    def test_prompt_uses_share_reasoning_rule_when_thinking_off(self, agent):
-        """Without extended thinking, prompt mandates share_your_reasoning usage."""
-        with patch.object(agent, "_has_extended_thinking", return_value=False):
-            prompt = agent.get_system_prompt()
-            assert '"share_your_reasoning"' in prompt
-
-    def test_prompt_loop_rule_adapts(self, agent):
-        """The 'loop between' rule swaps share_your_reasoning for reasoning."""
-        with patch.object(agent, "_has_extended_thinking", return_value=True):
-            prompt = agent.get_system_prompt()
-            assert "loop between reasoning, file tools" in prompt
-            assert "loop between share_your_reasoning" not in prompt
-
-        with patch.object(agent, "_has_extended_thinking", return_value=False):
-            prompt = agent.get_system_prompt()
-            assert "loop between share_your_reasoning" in prompt
-
-    def test_non_reasoning_sections_unchanged(self, agent):
-        """Core prompt sections are identical regardless of thinking mode."""
-        with patch.object(agent, "_has_extended_thinking", return_value=False):
-            prompt_off = agent.get_system_prompt()
-        with patch.object(agent, "_has_extended_thinking", return_value=True):
-            prompt_on = agent.get_system_prompt()
-
-        # These sections must be present in both variants
+    def test_prompt_contains_core_sections(self, agent):
+        """Core prompt sections must be present."""
+        prompt = agent.get_system_prompt()
         for expected in [
             "edit_file",
             "run_shell_command",
@@ -242,19 +200,9 @@ class TestCodePuppyDynamicPrompt:
             "ask_user_question",
             "production-ready, maintainable",
         ]:
-            assert expected in prompt_off, f"Missing in thinking-off prompt: {expected}"
-            assert expected in prompt_on, f"Missing in thinking-on prompt: {expected}"
+            assert expected in prompt, f"Missing in prompt: {expected}"
 
-    def test_has_extended_thinking_delegates_to_tools(self, agent):
-        """_has_extended_thinking delegates to the tools helper."""
-        with (
-            patch.object(
-                agent, "get_model_name", return_value="claude-sonnet-4-20250514"
-            ),
-            patch(
-                "code_puppy.tools.has_extended_thinking_active", return_value=True
-            ) as mock_check,
-        ):
-            result = agent._has_extended_thinking()
-            assert result is True
-            mock_check.assert_called_once_with("claude-sonnet-4-20250514")
+    def test_prompt_does_not_mention_share_your_reasoning(self, agent):
+        """share_your_reasoning tool has been removed."""
+        prompt = agent.get_system_prompt()
+        assert "share_your_reasoning" not in prompt

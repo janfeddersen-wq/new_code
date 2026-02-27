@@ -58,94 +58,6 @@ class TestLoadPluginTools:
             _load_plugin_tools()  # Should not crash
 
 
-class TestHasExtendedThinkingActive:
-    def test_none_model(self):
-        from code_puppy.tools import has_extended_thinking_active
-
-        with patch("code_puppy.config.get_global_model_name", return_value=None):
-            assert has_extended_thinking_active() is False
-
-    def test_non_anthropic_model(self):
-        from code_puppy.tools import has_extended_thinking_active
-
-        assert has_extended_thinking_active("gpt-4") is False
-
-    def test_anthropic_model_enabled(self):
-        from code_puppy.tools import has_extended_thinking_active
-
-        with (
-            patch(
-                "code_puppy.config.get_effective_model_settings",
-                return_value={"extended_thinking": "enabled"},
-            ),
-            patch(
-                "code_puppy.model_utils.get_default_extended_thinking",
-                return_value=False,
-            ),
-        ):
-            assert has_extended_thinking_active("claude-3") is True
-
-    def test_anthropic_model_adaptive(self):
-        from code_puppy.tools import has_extended_thinking_active
-
-        with (
-            patch(
-                "code_puppy.config.get_effective_model_settings",
-                return_value={"extended_thinking": "adaptive"},
-            ),
-            patch(
-                "code_puppy.model_utils.get_default_extended_thinking",
-                return_value=False,
-            ),
-        ):
-            assert has_extended_thinking_active("claude-3") is True
-
-    def test_anthropic_model_disabled(self):
-        from code_puppy.tools import has_extended_thinking_active
-
-        with (
-            patch(
-                "code_puppy.config.get_effective_model_settings",
-                return_value={"extended_thinking": False},
-            ),
-            patch(
-                "code_puppy.model_utils.get_default_extended_thinking",
-                return_value=False,
-            ),
-        ):
-            assert has_extended_thinking_active("claude-3") is False
-
-    def test_anthropic_model_legacy_true(self):
-        from code_puppy.tools import has_extended_thinking_active
-
-        with (
-            patch(
-                "code_puppy.config.get_effective_model_settings",
-                return_value={"extended_thinking": True},
-            ),
-            patch(
-                "code_puppy.model_utils.get_default_extended_thinking",
-                return_value=False,
-            ),
-        ):
-            assert has_extended_thinking_active("claude-3") is True
-
-    def test_anthropic_prefix(self):
-        from code_puppy.tools import has_extended_thinking_active
-
-        with (
-            patch(
-                "code_puppy.config.get_effective_model_settings",
-                return_value={"extended_thinking": "enabled"},
-            ),
-            patch(
-                "code_puppy.model_utils.get_default_extended_thinking",
-                return_value=False,
-            ),
-        ):
-            assert has_extended_thinking_active("anthropic-model") is True
-
-
 class TestRegisterToolsForAgent:
     def test_register_known_tools(self):
         from code_puppy.tools import register_tools_for_agent
@@ -176,13 +88,10 @@ class TestRegisterToolsForAgent:
 
         agent = MagicMock()
         agent.tool_plain = lambda fn: fn
-        with (
-            patch("code_puppy.tools.has_extended_thinking_active", return_value=True),
-            patch(
-                "code_puppy.config.get_universal_constructor_enabled", return_value=True
-            ),
+        with patch(
+            "code_puppy.config.get_universal_constructor_enabled", return_value=True
         ):
-            register_tools_for_agent(agent, ["agent_share_your_reasoning"])
+            register_tools_for_agent(agent, ["list_files"])
 
     def test_uc_tool_prefix(self):
         from code_puppy.tools import register_tools_for_agent

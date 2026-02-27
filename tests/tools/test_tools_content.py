@@ -66,14 +66,8 @@ class TestToolsContentToolNames:
         )
 
     def test_contains_agent_communication_tools(self):
-        """Test that agent communication tools are mentioned."""
-        agent_tools = [
-            "agent_share_your_reasoning",
-        ]
-        for tool in agent_tools:
-            assert tool in tools_content, (
-                f"Expected agent tool '{tool}' not found in tools_content"
-            )
+        """Test that agent communication tools are not in content."""
+        assert "agent_share_your_reasoning" not in tools_content
 
 
 class TestToolsContentSections:
@@ -159,10 +153,10 @@ class TestToolsContentUsageGuidance:
             "replacement" in tools_content.lower() or "replace" in tools_content.lower()
         ), "Expected guidance on edit_file replacements"
 
-    def test_mentions_reasoning_before_operations(self):
-        """Test that guidance mentions using share_your_reasoning."""
-        assert "reasoning" in tools_content.lower(), (
-            "Expected guidance on sharing reasoning"
+    def test_no_share_your_reasoning_reference(self):
+        """Test that share_your_reasoning is not mentioned (removed tool)."""
+        assert "share_your_reasoning" not in tools_content.lower(), (
+            "share_your_reasoning should not be referenced in tools_content"
         )
 
     def test_mentions_exploration_before_modification(self):
