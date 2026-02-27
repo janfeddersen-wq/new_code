@@ -134,11 +134,11 @@ async def event_stream_handler(
         # Clear line and print newline before banner
         console.print(" " * 50, end="\r")
         console.print()  # Newline before banner
-        # Bold banner with configurable color and lightning bolt
+        # Left-border banner with configurable color
         thinking_color = get_banner_color("thinking")
         console.print(
             Text.from_markup(
-                f"[bold white on {thinking_color}] THINKING [/bold white on {thinking_color}] [dim]\u26a1 "
+                f"[{thinking_color}]│[/{thinking_color}] [bold {thinking_color}]thinking[/bold {thinking_color}] [dim]"
             ),
             end="",
         )
@@ -156,7 +156,7 @@ async def event_stream_handler(
         response_color = get_banner_color("agent_response")
         console.print(
             Text.from_markup(
-                f"[bold white on {response_color}] AGENT RESPONSE [/bold white on {response_color}]"
+                f"[{response_color}]│[/{response_color}] [bold {response_color}]agent response[/bold {response_color}]"
             )
         )
         did_stream_anything = True
@@ -275,15 +275,15 @@ async def event_stream_handler(
                     # Use stored tool name for display
                     tool_name = tool_names.get(event.index, "")
                     count = token_count[event.index]
-                    # Display with tool wrench icon and tool name
+                    # Display tool name
                     if tool_name:
                         console.print(
-                            f"  \U0001f527 Calling {tool_name}... {count} token(s)   ",
+                            f"  Calling {tool_name}... {count} token(s)   ",
                             end="\r",
                         )
                     else:
                         console.print(
-                            f"  \U0001f527 Calling tool... {count} token(s)   ",
+                            f"  Calling tool... {count} token(s)   ",
                             end="\r",
                         )
 

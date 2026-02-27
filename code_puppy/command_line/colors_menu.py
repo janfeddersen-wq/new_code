@@ -21,35 +21,35 @@ from rich.console import Console
 
 # Banner display names with icons
 BANNER_DISPLAY_INFO = {
-    "thinking": ("THINKING", "⚡"),
-    "agent_response": ("AGENT RESPONSE", ""),
-    "shell_command": ("SHELL COMMAND", "🚀"),
-    "read_file": ("READ FILE", "📂"),
-    "edit_file": ("EDIT FILE", "✏️"),
-    "grep": ("GREP", "📂"),
-    "directory_listing": ("DIRECTORY LISTING", "📂"),
-    "agent_reasoning": ("AGENT REASONING", ""),
-    "invoke_agent": ("🤖 INVOKE AGENT", ""),
-    "subagent_response": ("✓ AGENT RESPONSE", ""),
-    "list_agents": ("LIST AGENTS", ""),
-    "universal_constructor": ("UNIVERSAL CONSTRUCTOR", "🔧"),
-    "terminal_tool": ("TERMINAL TOOL", "🖥️"),
+    "thinking": ("thinking", ""),
+    "agent_response": ("agent response", ""),
+    "shell_command": ("shell command", ""),
+    "read_file": ("read file", ""),
+    "edit_file": ("edit file", ""),
+    "grep": ("grep", ""),
+    "directory_listing": ("directory listing", ""),
+    "agent_reasoning": ("agent reasoning", ""),
+    "invoke_agent": ("invoke agent", ""),
+    "subagent_response": ("agent response", ""),
+    "list_agents": ("list agents", ""),
+    "universal_constructor": ("universal constructor", ""),
+    "terminal_tool": ("terminal tool", ""),
 }
 
 # Sample content to show after each banner
 BANNER_SAMPLE_CONTENT = {
     "thinking": "Let me analyze this code structure and figure out the best approach...",
     "agent_response": "I've implemented the feature you requested. The changes include...",
-    "shell_command": "$ npm run test -- --silent\n⏱ Timeout: 60s",
+    "shell_command": "$ npm run test -- --silent\nTimeout: 60s",
     "read_file": "/path/to/file.py (lines 1-50)",
     "edit_file": "MODIFY /path/to/file.py\n--- a/file.py\n+++ b/file.py",
-    "grep": "/src for 'handleClick'\n📄 Button.tsx (3 matches)",
-    "directory_listing": "/src (recursive=True)\n📁 components/\n   └── Button.tsx",
+    "grep": "/src for 'handleClick'\nButton.tsx (3 matches)",
+    "directory_listing": "/src (recursive=True)\ncomponents/\n   Button.tsx",
     "agent_reasoning": "Current reasoning:\nI need to refactor this function...",
     "invoke_agent": "code-reviewer (New session)\nSession: review-auth-abc123",
     "subagent_response": "code-reviewer\nThe code looks good overall...",
     "list_agents": "- code-puppy: Code Agent\n- planning-agent: Planning Agent",
-    "universal_constructor": "action=create tool_name=api.weather\n✅ Created successfully",
+    "universal_constructor": "action=create tool_name=api.weather\n* Created successfully",
     "terminal_tool": "$ chromium --headless\nBrowser terminal session started",
 }
 
@@ -419,10 +419,10 @@ def _get_preview_text_for_prompt_toolkit(config: ColorConfiguration) -> ANSI:
         else:
             console.print("  ", end="")
 
-        # Print the banner with its configured color
+        # Print the banner with its configured color (left-border style)
         icon_str = f" {icon}" if icon else ""
         banner_text = (
-            f"[bold white on {color}] {display_name} [/bold white on {color}]{icon_str}"
+            f"[{color}]│[/{color}] [bold {color}]{display_name}[/bold {color}]{icon_str}"
         )
         console.print(banner_text)
 
@@ -506,10 +506,10 @@ def _get_single_banner_preview(config: ColorConfiguration) -> ANSI:
     console.print("[bold]═" * 60 + "[/bold]")
     console.print()
 
-    # Show the banner large
+    # Show the banner large (left-border style)
     icon_str = f" {icon}" if icon else ""
     banner_text = (
-        f"[bold white on {color}] {display_name} [/bold white on {color}]{icon_str}"
+        f"[{color}]│[/{color}] [bold {color}]{display_name}[/bold {color}]{icon_str}"
     )
     console.print(banner_text)
     console.print()

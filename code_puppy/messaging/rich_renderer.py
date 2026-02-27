@@ -181,7 +181,7 @@ class RichConsoleRenderer:
             Rich markup string for the banner
         """
         color = self._get_banner_color(banner_name)
-        return f"[bold white on {color}] {text} [/bold white on {color}]"
+        return f"[{color}]│[/{color}] [bold {color}]{text.lower()}[/bold {color}]"
 
     def _should_suppress_subagent_output(self) -> bool:
         """Check if sub-agent output should be suppressed.
@@ -384,14 +384,25 @@ class RichConsoleRenderer:
         safe_text = escape_rich_markup(msg.text)
         self._console.print(f"{prefix}{safe_text}", style=style)
 
+    def _bar(self, color: str) -> str:
+        """Return a colored bar prefix for content lines under a banner.
+
+        Args:
+            color: Rich color name for the bar
+
+        Returns:
+            Rich markup string for the colored bar prefix
+        """
+        return f"[{color}]│[/{color}] "
+
     def _get_level_prefix(self, level: MessageLevel) -> str:
         """Get a prefix icon for the message level."""
         prefixes = {
-            MessageLevel.ERROR: "✗ ",
-            MessageLevel.WARNING: "⚠ ",
-            MessageLevel.SUCCESS: "✓ ",
-            MessageLevel.INFO: "ℹ ",
-            MessageLevel.DEBUG: "• ",
+            MessageLevel.ERROR: "x ",
+            MessageLevel.WARNING: "! ",
+            MessageLevel.SUCCESS: "* ",
+            MessageLevel.INFO: "- ",
+            MessageLevel.DEBUG: ". ",
         }
         return prefixes.get(level, "")
 
@@ -416,12 +427,14 @@ class RichConsoleRenderer:
         from collections import defaultdict
 
         rec_flag = f"(recursive={msg.recursive})"
+        color = self._get_banner_color("directory_listing")
         if not self._is_continuation(FileListingMessage):
             banner = self._format_banner("directory_listing", "DIRECTORY LISTING")
             self._console.print(f"\n{banner}")
 
+        bar = self._bar(color)
         self._console.print(
-            f"  ├─ 📂 [bold cyan]{msg.directory}[/bold cyan] [dim]{rec_flag}[/dim]\n"
+            f"{bar}  [bold cyan]{msg.directory}[/bold cyan] [dim]{rec_flag}[/dim]\n"
         )
 
         # Build a tree structure: {parent_path: {files: [], dirs: set(), size: int}}
@@ -476,7 +489,6 @@ class RichConsoleRenderer:
             if dir_path == root_key:
                 # Show files at root level (depth 0)
                 for f in sorted(files, key=lambda x: x.path):
-                    icon = self._get_file_icon(f.path)
                     name = os.path.basename(f.path)
                     size_str = (
                         f" [dim]({self._format_size(f.size)})[/dim]"
@@ -484,7 +496,7 @@ class RichConsoleRenderer:
                         else ""
                     )
                     self._console.print(
-                        f"{indent}{icon} [green]{name}[/green]{size_str}"
+                        f"{bar}{indent}[green]{name}[/green]{size_str}"
                     )
 
                 # Show subdirs at root level
@@ -512,7 +524,7 @@ class RichConsoleRenderer:
 
                 summary = f" [dim]({', '.join(parts)})[/dim]" if parts else ""
                 self._console.print(
-                    f"{indent}📁 [bold blue]{dir_name}/[/bold blue]{summary}"
+                    f"{bar}{indent}[bold blue]{dir_name}/[/bold blue]{summary}"
                 )
 
                 # Recursively show subdirectories
@@ -523,10 +535,10 @@ class RichConsoleRenderer:
         render_dir_tree(root_key, 0)
 
         # Summary
-        self._console.print("\n[bold cyan]Summary:[/bold cyan]")
+        self._console.print(f"{bar}[bold cyan]Summary:[/bold cyan]")
         self._console.print(
-            f"📁 [blue]{msg.dir_count} directories[/blue], "
-            f"📄 [green]{msg.file_count} files[/green] "
+            f"{bar}[blue]{msg.dir_count} directories[/blue], "
+            f"[green]{msg.file_count} files[/green] "
             f"[dim]({self._format_size(msg.total_size)} total)[/dim]"
         )
 
@@ -542,12 +554,13 @@ class RichConsoleRenderer:
             line_info = f" [dim](lines {msg.start_line}-{end_line})[/dim]"
 
         # Print banner only if this is NOT a continuation of the same type
+        color = self._get_banner_color("read_file")
         if not self._is_continuation(FileContentMessage):
             banner = self._format_banner("read_file", "READ FILE")
             self._console.print(f"\n{banner}")
 
         # Always print as tree child
-        self._console.print(f"  ├─ 📂 [bold cyan]{msg.path}[/bold cyan]{line_info}")
+        self._console.print(f"[{color}]│[/{color}]   [bold cyan]{msg.path}[/bold cyan]{line_info}")
 
     def _render_grep_result(self, msg: GrepResultMessage) -> None:
         """Render grep results grouped by file matching old format."""
@@ -557,17 +570,18 @@ class RichConsoleRenderer:
 
         import re
 
+        color = self._get_banner_color("grep")
         if not self._is_continuation(GrepResultMessage):
             banner = self._format_banner("grep", "GREP")
             self._console.print(f"\n{banner}")
 
         self._console.print(
-            f"  ├─ 📂 [dim]{msg.directory} for '{msg.search_term}'[/dim]"
+            f"[{color}]│[/{color}]   [dim]{msg.directory} for '{msg.search_term}'[/dim]"
         )
 
         if not msg.matches:
             self._console.print(
-                f"  │     [dim]No matches found for '{msg.search_term}' "
+                f"[{color}]│[/{color}]     [dim]No matches found for '{msg.search_term}' "
                 f"in {msg.directory}[/dim]"
             )
             return
@@ -584,7 +598,7 @@ class RichConsoleRenderer:
                 file_matches = by_file[file_path]
                 match_word = "match" if len(file_matches) == 1 else "matches"
                 self._console.print(
-                    f"  │     [dim]📄 {file_path} ({len(file_matches)} {match_word})[/dim]"
+                    f"[{color}]│[/{color}]     [dim]{file_path} ({len(file_matches)} {match_word})[/dim]"
                 )
 
                 # Show each match with line number and content
@@ -611,7 +625,7 @@ class RichConsoleRenderer:
 
                     ln = match.line_number
                     self._console.print(
-                        f"  │     [dim]{ln:4d}[/dim] │ {highlighted_line}"
+                        f"[{color}]│[/{color}]     [dim]{ln:4d}[/dim] │ {highlighted_line}"
                     )
         else:
             # Concise mode (default): Show only file summaries
@@ -619,7 +633,7 @@ class RichConsoleRenderer:
                 file_matches = by_file[file_path]
                 match_word = "match" if len(file_matches) == 1 else "matches"
                 self._console.print(
-                    f"  │     [dim]📄 {file_path} ({len(file_matches)} {match_word})[/dim]"
+                    f"[{color}]│[/{color}]     [dim]{file_path} ({len(file_matches)} {match_word})[/dim]"
                 )
 
         # Summary - subtle
@@ -627,7 +641,7 @@ class RichConsoleRenderer:
         file_word = "file" if len(by_file) == 1 else "files"
         num_files = len(by_file)
         self._console.print(
-            f"  │     [dim]Found {msg.total_matches} {match_word} "
+            f"[{color}]│[/{color}]     [dim]Found {msg.total_matches} {match_word} "
             f"across {num_files} {file_word}[/dim]"
         )
 
@@ -642,17 +656,17 @@ class RichConsoleRenderer:
             return
 
         # Operation-specific styling
-        op_icons = {"create": "✨", "modify": "✏️", "delete": "🗑️"}
         op_colors = {"create": "green", "modify": "yellow", "delete": "red"}
-        icon = op_icons.get(msg.operation, "📄")
         op_color = op_colors.get(msg.operation, "white")
 
+        color = self._get_banner_color("edit_file")
+        bar = self._bar(color)
         if not self._is_continuation(DiffMessage):
             banner = self._format_banner("edit_file", "EDIT FILE")
             self._console.print(f"\n{banner}")
 
         self._console.print(
-            f"  ├─ {icon} [{op_color}]{msg.operation.upper()}[/{op_color}] "
+            f"{bar}  [{op_color}]{msg.operation.upper()}[/{op_color}] "
             f"[bold cyan]{msg.path}[/bold cyan]"
         )
 
@@ -678,7 +692,9 @@ class RichConsoleRenderer:
 
         # Use the beautiful syntax-highlighted diff formatter
         formatted_diff = format_diff_with_colors(diff_text)
-        self._console.print(formatted_diff)
+        # Prefix each line with the colored bar
+        for diff_line in str(formatted_diff).split("\n"):
+            self._console.print(f"{bar}  {diff_line}")
 
     # =========================================================================
     # Shell Output
@@ -691,6 +707,7 @@ class RichConsoleRenderer:
 
         safe_command = escape_rich_markup(msg.command)
 
+        color = self._get_banner_color("shell_command")
         if not self._is_continuation(ShellStartMessage):
             banner = self._format_banner("shell_command", "SHELL COMMAND")
             self._console.print(f"\n{banner}")
@@ -698,21 +715,21 @@ class RichConsoleRenderer:
         # Tree child with command
         if msg.background:
             self._console.print(
-                f"  ├─ 🚀 [dim]$ {safe_command}[/dim]  [bold magenta][BACKGROUND 🌙][/bold magenta]"
+                f"[{color}]│[/{color}]   [dim]$ {safe_command}[/dim]  [bold magenta][BACKGROUND][/bold magenta]"
             )
         else:
-            self._console.print(f"  ├─ 🚀 [dim]$ {safe_command}[/dim]")
+            self._console.print(f"[{color}]│[/{color}]   [dim]$ {safe_command}[/dim]")
 
         # Show working directory if specified
         if msg.cwd:
             safe_cwd = escape_rich_markup(msg.cwd)
-            self._console.print(f"  │  [dim]📂 Working directory: {safe_cwd}[/dim]")
+            self._console.print(f"[{color}]│[/{color}]  [dim]Working directory: {safe_cwd}[/dim]")
 
         # Show timeout or background status
         if msg.background:
-            self._console.print("  │  [dim]⏱ Runs detached (no timeout)[/dim]")
+            self._console.print(f"[{color}]│[/{color}]  [dim]Runs detached (no timeout)[/dim]")
         else:
-            self._console.print(f"  │  [dim]⏱ Timeout: {msg.timeout}s[/dim]")
+            self._console.print(f"[{color}]│[/{color}]  [dim]Timeout: {msg.timeout}s[/dim]")
 
     def _render_shell_line(self, msg: ShellLineMessage) -> None:
         """Render shell output line preserving ANSI codes and carriage returns."""
@@ -790,7 +807,9 @@ class RichConsoleRenderer:
             if msg.is_new_session
             else f"Continuing ({msg.message_count} messages)"
         )
-        banner = self._format_banner("invoke_agent", "🤖 INVOKE AGENT")
+        color = self._get_banner_color("invoke_agent")
+        bar = self._bar(color)
+        banner = self._format_banner("invoke_agent", "INVOKE AGENT")
         self._console.print(
             f"\n{banner} "
             f"[bold cyan]{msg.agent_name}[/bold cyan] "
@@ -798,20 +817,22 @@ class RichConsoleRenderer:
         )
 
         # Session ID
-        self._console.print(f"[dim]Session:[/dim] [bold]{msg.session_id}[/bold]")
+        self._console.print(f"{bar}[dim]Session:[/dim] [bold]{msg.session_id}[/bold]")
 
         # Prompt (truncated if too long, rendered as markdown)
         prompt_display = (
             msg.prompt[:200] + "..." if len(msg.prompt) > 200 else msg.prompt
         )
-        self._console.print("[dim]Prompt:[/dim]")
+        self._console.print(f"{bar}[dim]Prompt:[/dim]")
         md_prompt = Markdown(prompt_display)
         self._console.print(md_prompt)
 
     def _render_subagent_response(self, msg: SubAgentResponseMessage) -> None:
         """Render sub-agent response with markdown formatting."""
         # Response header
-        banner = self._format_banner("subagent_response", "✓ AGENT RESPONSE")
+        color = self._get_banner_color("subagent_response")
+        bar = self._bar(color)
+        banner = self._format_banner("subagent_response", "AGENT RESPONSE")
         self._console.print(f"\n{banner} [bold cyan]{msg.agent_name}[/bold cyan]")
 
         # Render response as markdown
@@ -820,7 +841,7 @@ class RichConsoleRenderer:
 
         # Footer with session info
         self._console.print(
-            f"\n[dim]Session [bold]{msg.session_id}[/bold] saved "
+            f"\n{bar}[dim]Session [bold]{msg.session_id}[/bold] saved "
             f"({msg.message_count} messages)[/dim]"
         )
 
@@ -831,11 +852,13 @@ class RichConsoleRenderer:
             return
 
         # Format banner
+        color = self._get_banner_color("universal_constructor")
+        bar = self._bar(color)
         banner = self._format_banner("universal_constructor", "UNIVERSAL CONSTRUCTOR")
 
         # Build the header line with action and optional tool name
         # Escape user-controlled strings to prevent Rich markup injection
-        header_parts = [f"\n{banner} 🔧 [bold cyan]{msg.action.upper()}[/bold cyan]"]
+        header_parts = [f"\n{banner} [bold cyan]{msg.action.upper()}[/bold cyan]"]
         if msg.tool_name:
             safe_tool_name = escape_rich_markup(msg.tool_name)
             header_parts.append(f" [dim]tool=[/dim][bold]{safe_tool_name}[/bold]")
@@ -844,14 +867,14 @@ class RichConsoleRenderer:
         # Status indicator
         safe_summary = escape_rich_markup(msg.summary) if msg.summary else ""
         if msg.success:
-            self._console.print(f"[green]✓[/green] {safe_summary}")
+            self._console.print(f"{bar}[green]*[/green] {safe_summary}")
         else:
-            self._console.print(f"[red]✗[/red] {safe_summary}")
+            self._console.print(f"{bar}[red]x[/red] {safe_summary}")
 
         # Show details if present
         if msg.details:
             safe_details = escape_rich_markup(msg.details)
-            self._console.print(f"[dim]{safe_details}[/dim]")
+            self._console.print(f"{bar}[dim]{safe_details}[/dim]")
 
         # Trailing newline for spinner separation
         self._console.print()
@@ -1003,10 +1026,10 @@ class RichConsoleRenderer:
         if msg.update_available:
             cur = msg.current_version
             latest = msg.latest_version
-            self._console.print(f"[dim]⬆ Update available: {cur} → {latest}[/dim]")
+            self._console.print(f"[dim]Update available: {cur} → {latest}[/dim]")
         else:
             self._console.print(
-                f"[dim]✓ You're on the latest version ({msg.current_version})[/dim]"
+                f"[dim]* You're on the latest version ({msg.current_version})[/dim]"
             )
 
     # =========================================================================
@@ -1025,75 +1048,11 @@ class RichConsoleRenderer:
             return f"{size_bytes / (1024 * 1024 * 1024):.1f} GB"
 
     def _get_file_icon(self, file_path: str) -> str:
-        """Get an emoji icon for a file based on its extension."""
-        import os
+        """Get an icon for a file based on its extension.
 
-        ext = os.path.splitext(file_path)[1].lower()
-        icons = {
-            # Python
-            ".py": "🐍",
-            ".pyw": "🐍",
-            # JavaScript/TypeScript
-            ".js": "📜",
-            ".jsx": "📜",
-            ".ts": "📜",
-            ".tsx": "📜",
-            # Web
-            ".html": "🌐",
-            ".htm": "🌐",
-            ".xml": "🌐",
-            ".css": "🎨",
-            ".scss": "🎨",
-            ".sass": "🎨",
-            # Documentation
-            ".md": "📝",
-            ".markdown": "📝",
-            ".rst": "📝",
-            ".txt": "📝",
-            # Config
-            ".json": "⚙️",
-            ".yaml": "⚙️",
-            ".yml": "⚙️",
-            ".toml": "⚙️",
-            ".ini": "⚙️",
-            # Images
-            ".jpg": "🖼️",
-            ".jpeg": "🖼️",
-            ".png": "🖼️",
-            ".gif": "🖼️",
-            ".svg": "🖼️",
-            ".webp": "🖼️",
-            # Audio
-            ".mp3": "🎵",
-            ".wav": "🎵",
-            ".ogg": "🎵",
-            ".flac": "🎵",
-            # Video
-            ".mp4": "🎬",
-            ".avi": "🎬",
-            ".mov": "🎬",
-            ".webm": "🎬",
-            # Documents
-            ".pdf": "📄",
-            ".doc": "📄",
-            ".docx": "📄",
-            ".xls": "📄",
-            ".xlsx": "📄",
-            ".ppt": "📄",
-            ".pptx": "📄",
-            # Archives
-            ".zip": "📦",
-            ".tar": "📦",
-            ".gz": "📦",
-            ".rar": "📦",
-            ".7z": "📦",
-            # Executables
-            ".exe": "⚡",
-            ".dll": "⚡",
-            ".so": "⚡",
-            ".dylib": "⚡",
-        }
-        return icons.get(ext, "📄")
+        Returns empty string - no file icons in the clean output.
+        """
+        return ""
 
     # =========================================================================
     # Skills
@@ -1106,16 +1065,18 @@ class RichConsoleRenderer:
             return
 
         # Banner
+        color = self._get_banner_color("agent_response")
+        bar = self._bar(color)
         banner = self._format_banner("agent_response", "LIST SKILLS")
         query_info = f" matching [cyan]'{msg.query}'[/cyan]" if msg.query else ""
         self._console.print(
-            f"\n{banner} 🛠️ Found [bold]{msg.total_count}[/bold] skill(s){query_info}\n"
+            f"\n{banner} Found [bold]{msg.total_count}[/bold] skill(s){query_info}\n"
         )
 
         if not msg.skills:
-            self._console.print("[dim]  No skills found.[/dim]")
+            self._console.print(f"{bar}[dim]  No skills found.[/dim]")
             self._console.print(
-                "[dim]  Install skills in ~/.code_puppy/skills/[/dim]\n"
+                f"{bar}[dim]  Install skills in ~/.code_puppy/skills/[/dim]\n"
             )
             return
 
@@ -1127,7 +1088,7 @@ class RichConsoleRenderer:
         table.add_column("Tags", style="yellow dim")
 
         for skill in msg.skills:
-            status = "[green]✓[/green]" if skill.enabled else "[red]✗[/red]"
+            status = "[green]*[/green]" if skill.enabled else "[red]x[/red]"
             tags = ", ".join(skill.tags[:3]) if skill.tags else "-"
             # Truncate description if too long
             desc = skill.description
@@ -1145,20 +1106,22 @@ class RichConsoleRenderer:
             return
 
         # Banner
+        color = self._get_banner_color("agent_response")
+        bar = self._bar(color)
         banner = self._format_banner("agent_response", "ACTIVATE SKILL")
-        status = "[green]✓[/green]" if msg.success else "[red]✗[/red]"
+        status = "[green]*[/green]" if msg.success else "[red]x[/red]"
         self._console.print(
             f"\n{banner} {status} [bold cyan]{msg.skill_name}[/bold cyan]\n"
         )
 
         if msg.success:
             # Show path
-            self._console.print(f"  [dim]Path:[/dim] {msg.skill_path}")
+            self._console.print(f"{bar} [dim]Path:[/dim] {msg.skill_path}")
 
             # Show resource count
             if msg.resource_count > 0:
                 self._console.print(
-                    f"  [dim]Resources:[/dim] {msg.resource_count} bundled file(s)"
+                    f"{bar} [dim]Resources:[/dim] {msg.resource_count} bundled file(s)"
                 )
 
             # Show preview
@@ -1166,9 +1129,9 @@ class RichConsoleRenderer:
                 preview = msg.content_preview.replace("\n", " ")[:100]
                 if len(msg.content_preview) > 100:
                     preview += "..."
-                self._console.print(f"  [dim]Preview:[/dim] {preview}")
+                self._console.print(f"{bar} [dim]Preview:[/dim] {preview}")
         else:
-            self._console.print("  [red]Activation failed[/red]")
+            self._console.print(f"{bar} [red]Activation failed[/red]")
 
         self._console.print()
 

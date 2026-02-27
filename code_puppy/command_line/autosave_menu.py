@@ -125,10 +125,10 @@ def _extract_message_content(msg) -> Tuple[str, str]:
                 if len(str(args)) > 100:
                     args_preview += "..."
                 content_parts.append(
-                    f"🔧 Tool Call: {tool_name}\n   Args: {args_preview}"
+                    f"Tool Call: {tool_name}\n   Args: {args_preview}"
                 )
             else:
-                content_parts.append(f"🔧 Tool Call: {tool_name}")
+                content_parts.append(f"Tool Call: {tool_name}")
 
         elif part_kind == "tool-return":
             # Tool result being returned - show tool name and truncated result
@@ -273,11 +273,11 @@ def _render_message_browser_panel(
 
     # Role indicator with icon and color
     if role == "user":
-        lines.append(("fg:ansicyan bold", "  🧑 USER"))
+        lines.append(("fg:ansicyan bold", "  USER"))
     elif role == "tool":
-        lines.append(("fg:ansiyellow bold", "  🔧 TOOL"))
+        lines.append(("fg:ansiyellow bold", "  TOOL"))
     else:
-        lines.append(("fg:ansigreen bold", "  🤖 ASSISTANT"))
+        lines.append(("fg:ansigreen bold", "  ASSISTANT"))
     lines.append(("", "\n"))
 
     # Separator line
@@ -480,8 +480,8 @@ def display_resumed_history(
             # Tool output is typically dim/collapsed
             console.print(f"[dim]{content}[/dim]")
         else:  # assistant
-            # Use the exact same banner format as normal AGENT RESPONSE
-            banner = f"[bold white on {response_color}] AGENT RESPONSE [/bold white on {response_color}]"
+            # Use the exact same banner format as normal agent response
+            banner = f"[{response_color}]│[/{response_color}] [bold {response_color}]agent response[/bold {response_color}]"
             console.print(f"\n{banner}")
             # Render content as markdown (same as normal chat)
             md = Markdown(content)

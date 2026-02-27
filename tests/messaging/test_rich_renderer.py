@@ -145,11 +145,11 @@ def test_render_text_version_dim(renderer, console):
 
 
 def test_get_level_prefix(renderer):
-    assert renderer._get_level_prefix(MessageLevel.ERROR) == "✗ "
-    assert renderer._get_level_prefix(MessageLevel.WARNING) == "⚠ "
-    assert renderer._get_level_prefix(MessageLevel.SUCCESS) == "✓ "
-    assert renderer._get_level_prefix(MessageLevel.INFO) == "ℹ "
-    assert renderer._get_level_prefix(MessageLevel.DEBUG) == "• "
+    assert renderer._get_level_prefix(MessageLevel.ERROR) == "x "
+    assert renderer._get_level_prefix(MessageLevel.WARNING) == "! "
+    assert renderer._get_level_prefix(MessageLevel.SUCCESS) == "* "
+    assert renderer._get_level_prefix(MessageLevel.INFO) == "- "
+    assert renderer._get_level_prefix(MessageLevel.DEBUG) == ". "
 
 
 # =========================================================================
@@ -327,7 +327,7 @@ def test_render_diff(mock_sub, renderer, console):
     )
     renderer._render_diff(msg)
     out = output(console)
-    assert "EDIT FILE" in out
+    assert "edit file" in out
 
 
 @patch("code_puppy.messaging.rich_renderer.is_subagent", return_value=False)
@@ -395,7 +395,7 @@ def test_render_agent_reasoning(renderer, console):
     msg = AgentReasoningMessage(reasoning="I think...", next_steps="Do X")
     renderer._render_agent_reasoning(msg)
     out = output(console)
-    assert "AGENT REASONING" in out
+    assert "agent reasoning" in out
 
 
 def test_render_agent_reasoning_no_steps(renderer, console):
@@ -407,7 +407,7 @@ def test_render_agent_response(renderer, console):
     msg = AgentResponseMessage(content="**bold**", is_markdown=True)
     renderer._render_agent_response(msg)
     out = output(console)
-    assert "AGENT RESPONSE" in out
+    assert "agent response" in out
 
 
 def test_render_agent_response_plain(renderer, console):
@@ -452,7 +452,7 @@ def test_render_subagent_response(renderer, console):
     )
     renderer._render_subagent_response(msg)
     out = output(console)
-    assert "AGENT RESPONSE" in out
+    assert "agent response" in out
 
 
 # =========================================================================
@@ -486,7 +486,7 @@ def test_render_universal_constructor_failure(mock_sub, renderer, console):
     )
     renderer._render_universal_constructor(msg)
     out = output(console)
-    assert "✗" in out
+    assert "x" in out
 
 
 # =========================================================================
@@ -895,19 +895,19 @@ def test_format_size(renderer):
 
 
 def test_get_file_icon(renderer):
-    assert renderer._get_file_icon("test.py") == "🐍"
-    assert renderer._get_file_icon("test.js") == "📜"
-    assert renderer._get_file_icon("test.html") == "🌐"
-    assert renderer._get_file_icon("test.css") == "🎨"
-    assert renderer._get_file_icon("test.md") == "📝"
-    assert renderer._get_file_icon("test.json") == "⚙️"
-    assert renderer._get_file_icon("test.jpg") == "🖼️"
-    assert renderer._get_file_icon("test.mp3") == "🎵"
-    assert renderer._get_file_icon("test.mp4") == "🎬"
-    assert renderer._get_file_icon("test.pdf") == "📄"
-    assert renderer._get_file_icon("test.zip") == "📦"
-    assert renderer._get_file_icon("test.exe") == "⚡"
-    assert renderer._get_file_icon("test.unknown") == "📄"
+    assert renderer._get_file_icon("test.py") == ""
+    assert renderer._get_file_icon("test.js") == ""
+    assert renderer._get_file_icon("test.html") == ""
+    assert renderer._get_file_icon("test.css") == ""
+    assert renderer._get_file_icon("test.md") == ""
+    assert renderer._get_file_icon("test.json") == ""
+    assert renderer._get_file_icon("test.jpg") == ""
+    assert renderer._get_file_icon("test.mp3") == ""
+    assert renderer._get_file_icon("test.mp4") == ""
+    assert renderer._get_file_icon("test.pdf") == ""
+    assert renderer._get_file_icon("test.zip") == ""
+    assert renderer._get_file_icon("test.exe") == ""
+    assert renderer._get_file_icon("test.unknown") == ""
 
 
 def test_get_banner_color(renderer):
@@ -918,7 +918,7 @@ def test_get_banner_color(renderer):
 def test_format_banner(renderer):
     with patch("code_puppy.config.get_banner_color", return_value="blue"):
         result = renderer._format_banner("test", "HELLO")
-        assert "HELLO" in result
+        assert "hello" in result
         assert "blue" in result
 
 

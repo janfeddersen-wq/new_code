@@ -86,8 +86,8 @@ async def process_tool_call(
 
     console = Console()
     color = get_banner_color("mcp_tool_call")
-    banner = f"[bold white on {color}] MCP TOOL CALL [/bold white on {color}]"
-    console.print(f"\n{banner} 🔧 [bold cyan]{name}[/bold cyan]")
+    banner = f"[{color}]│[/{color}] [bold {color}]mcp tool call[/bold {color}]"
+    console.print(f"\n{banner} [bold cyan]{name}[/bold cyan]")
     return await call_tool(name, tool_args, {"deps": ctx.deps})
 
 

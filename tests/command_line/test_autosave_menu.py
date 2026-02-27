@@ -709,7 +709,7 @@ class TestExtractMessageContent:
         )
         role, content = _extract_message_content(msg)
         assert role == "tool"
-        assert "🔧 Tool Call: edit_file" in content
+        assert "Tool Call: edit_file" in content
 
     def test_text_response_returns_assistant_role(self):
         """Response with text part returns role='assistant'."""
@@ -760,7 +760,7 @@ class TestExtractMessageContent:
             ],
         )
         role, content = _extract_message_content(msg)
-        assert "🔧 Tool Call: edit_file" in content
+        assert "Tool Call: edit_file" in content
         assert "Args:" in content
         assert "file_path" in content
 
@@ -787,7 +787,7 @@ class TestExtractMessageContent:
             ],
         )
         role, content = _extract_message_content(msg)
-        assert "🔧 Tool Call: list_files" in content
+        assert "Tool Call: list_files" in content
 
     def test_tool_return_extracts_tool_name_and_result(self):
         """Tool return shows tool name and content preview."""
@@ -1279,8 +1279,8 @@ class TestDisplayResumedHistory:
         captured = capsys.readouterr()
         # User message shown with > prefix
         assert "Hello from user" in captured.out
-        # Assistant message has AGENT RESPONSE banner
-        assert "AGENT RESPONSE" in captured.out
+        # Assistant message has agent response banner
+        assert "agent response" in captured.out
         assert "Hello from assistant" in captured.out
         # Tool output shown
         assert "Tool result" in captured.out or "test_tool" in captured.out

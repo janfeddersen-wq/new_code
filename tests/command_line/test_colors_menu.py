@@ -52,14 +52,14 @@ class TestBannerDisplayInfo:
     def test_thinking_banner_display(self):
         """Test thinking banner display info."""
         name, icon = BANNER_DISPLAY_INFO["thinking"]
-        assert name == "THINKING"
-        assert icon == "⚡"
+        assert name == "thinking"
+        assert icon == ""
 
     def test_shell_command_banner_display(self):
         """Test shell command banner display info."""
         name, icon = BANNER_DISPLAY_INFO["shell_command"]
-        assert name == "SHELL COMMAND"
-        assert icon == "🚀"
+        assert name == "shell command"
+        assert icon == ""
 
 
 class TestBannerSampleContent:
@@ -258,8 +258,8 @@ class TestColorPreview:
         banner_key = "shell_command"
         name, icon = BANNER_DISPLAY_INFO[banner_key]
         # Preview would show this name and icon
-        assert name == "SHELL COMMAND"
-        assert icon == "🚀"
+        assert name == "shell command"
+        assert icon == ""
 
 
 class TestThemeManagement:
