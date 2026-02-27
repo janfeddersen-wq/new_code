@@ -108,7 +108,7 @@ class TestPackLeaderAgent:
 
     def test_display_name(self, agent):
         """Test Pack Leader has correct display name."""
-        assert agent.display_name == "Pack Leader 🐺"
+        assert agent.display_name == "Orchestrator"
 
     def test_description(self, agent):
         """Test Pack Leader has a description."""
@@ -139,10 +139,9 @@ class TestPackLeaderAgent:
         assert "list_agents" in tools
         assert "invoke_agent" in tools
 
-    def test_system_prompt_mentions_pack(self, agent):
-        """Test Pack Leader system prompt mentions the pack."""
+    def test_system_prompt_mentions_team(self, agent):
+        """Test Pack Leader system prompt mentions the team agents."""
         prompt = agent.get_system_prompt()
-        assert "pack" in prompt.lower()
         assert "bloodhound" in prompt.lower()
         assert "terrier" in prompt.lower()
         assert "retriever" in prompt.lower()
@@ -196,7 +195,7 @@ class TestBloodhoundAgent:
 
     def test_display_name(self, agent):
         """Test Bloodhound has correct display name."""
-        assert "Bloodhound" in agent.display_name
+        assert "Tracker" in agent.display_name
 
     def test_description_mentions_issue_tracking(self, agent):
         """Test Bloodhound description mentions issue tracking."""
@@ -245,7 +244,7 @@ class TestTerrierAgent:
 
     def test_display_name(self, agent):
         """Test Terrier has correct display name."""
-        assert "Terrier" in agent.display_name
+        assert "Workspace Manager" in agent.display_name
 
     def test_description_mentions_worktree(self, agent):
         """Test Terrier description mentions worktree."""
@@ -294,7 +293,7 @@ class TestRetrieverAgent:
 
     def test_display_name(self, agent):
         """Test Retriever has correct display name."""
-        assert "Retriever" in agent.display_name
+        assert "Merger" in agent.display_name
 
     def test_description_mentions_merge(self, agent):
         """Test Retriever description mentions merge."""
@@ -343,7 +342,7 @@ class TestHuskyAgent:
 
     def test_display_name(self, agent):
         """Test Husky has correct display name."""
-        assert "Husky" in agent.display_name
+        assert "Executor" in agent.display_name
 
     def test_description_mentions_task_execution(self, agent):
         """Test Husky description mentions task execution."""
@@ -393,7 +392,7 @@ class TestShepherdAgent:
 
     def test_display_name(self, agent):
         """Test Shepherd has correct display name."""
-        assert "Shepherd" in agent.display_name
+        assert "Reviewer" in agent.display_name
 
     def test_description_mentions_review(self, agent):
         """Test Shepherd description mentions code review."""
@@ -454,7 +453,7 @@ class TestWatchdogAgent:
 
     def test_display_name(self, agent):
         """Test Watchdog has correct display name."""
-        assert "Watchdog" in agent.display_name
+        assert "QA Checker" in agent.display_name
 
     def test_description_mentions_qa(self, agent):
         """Test Watchdog description mentions QA/testing."""

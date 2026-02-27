@@ -235,13 +235,11 @@ class TestCodePuppyDynamicPrompt:
 
         # These sections must be present in both variants
         for expected in [
-            "the most loyal digital puppy",
             "edit_file",
             "run_shell_command",
             "list_files",
             "invoke_agent",
             "ask_user_question",
-            "Zen puppy approves",
             "production-ready, maintainable",
         ]:
             assert expected in prompt_off, f"Missing in thinking-off prompt: {expected}"
