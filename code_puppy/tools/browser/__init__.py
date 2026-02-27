@@ -25,7 +25,7 @@ def format_terminal_banner(text: str) -> str:
         Rich markup formatted string
     """
     color = get_banner_color("terminal_tool")
-    return f"[bold white on {color}] {text} [/bold white on {color}]"
+    return f"[{color}]│[/{color}] [bold {color}]{text.lower()}[/bold {color}]"
 
 
 __all__ = [

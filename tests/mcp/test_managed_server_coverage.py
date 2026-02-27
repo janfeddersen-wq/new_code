@@ -91,7 +91,7 @@ class TestProcessToolCall:
         mock_console.print.assert_called_once()
         printed = mock_console.print.call_args[0][0]
         assert "test_tool" in printed
-        assert "MCP TOOL CALL" in printed
+        assert "mcp tool call" in printed
 
         # Verify call_tool was called with correct args
         mock_call_tool.assert_called_once_with(

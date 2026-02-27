@@ -544,8 +544,9 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
                 # Fall back to basic input if prompt_toolkit is not available
                 task = input(">>> ")
 
-        except KeyboardInterrupt:
-            # Handle Ctrl+C - cancel input and continue
+        except (KeyboardInterrupt, asyncio.CancelledError):
+            # Handle Ctrl+C (or CancelledError from prompt_toolkit's
+            # prompt_async when the asyncio task is cancelled) - continue loop
             # Windows-specific: Reset terminal state after interrupt to prevent
             # the terminal from becoming unresponsive (can't type characters)
             reset_windows_terminal_full()
@@ -1028,8 +1029,7 @@ def main_entry():
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        # Note: Using sys.stderr for crash output - messaging system may not be available
-        sys.stderr.write(traceback.format_exc())
+        # Normal exit via Ctrl+C – not a crash, so just clean up quietly
         if get_use_dbos():
             DBOS.destroy()
         return 0

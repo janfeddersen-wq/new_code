@@ -250,7 +250,7 @@ def register_list_agents(agent):
         list_agents_color = get_banner_color("list_agents")
         emit_info(
             Text.from_markup(
-                f"\n[bold white on {list_agents_color}] LIST AGENTS [/bold white on {list_agents_color}]"
+                f"\n[{list_agents_color}]│[/{list_agents_color}] [bold {list_agents_color}]list agents[/bold {list_agents_color}]"
             ),
             message_group=group_id,
         )
