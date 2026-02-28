@@ -24,7 +24,7 @@ _REVIEWER_AGENTS = [
     ("code_puppy.agents.agent_python_reviewer", "PythonReviewerAgent"),
     ("code_puppy.agents.agent_python_programmer", "PythonProgrammerAgent"),
     ("code_puppy.agents.agent_qa_expert", "QAExpertAgent"),
-    ("code_puppy.agents.agent_qa_kitten", "QualityAssuranceKittenAgent"),
+    ("code_puppy.agents.agent_qa_browser", "QABrowserAgent"),
     ("code_puppy.agents.agent_security_auditor", "SecurityAuditorAgent"),
     ("code_puppy.agents.agent_typescript_reviewer", "TypeScriptReviewerAgent"),
 ]
@@ -87,11 +87,11 @@ class TestSchedulerAgent:
         assert "Scheduler Agent" in prompt
 
 
-class TestCodePuppyAgentTools:
+class TestCodeAgentTools:
     def test_get_available_tools(self):
-        from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+        from code_puppy.agents.agent_code_agent import CodeAgent
 
-        agent = CodePuppyAgent()
+        agent = CodeAgent()
         tools = agent.get_available_tools()
         assert "edit_file" in tools
         assert "invoke_agent" in tools

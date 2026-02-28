@@ -68,7 +68,7 @@ class TestAgentTools:
             assert "USER FEEDBACK SYSTEM" in file_permission_text
             assert "How User Approval Works" in file_permission_text
 
-    def test_invoke_agent_includes_puppy_rules(self):
+    def test_invoke_agent_includes_agent_rules(self):
         """Test that invoke_agent includes AGENTS.md content for subagents (excluding ShellSafetyAgent)."""
         from unittest.mock import MagicMock
 
@@ -78,31 +78,31 @@ class TestAgentTools:
         mock_agent_config.get_system_prompt.return_value = "Test system prompt"
 
         # Mock AGENTS.md content
-        mock_puppy_rules = "# AGENTS.MD CONTENT\nSome puppy rules here..."
-        mock_agent_config.load_puppy_rules.return_value = mock_puppy_rules
+        mock_agent_rules = "# AGENTS.MD CONTENT\nSome puppy rules here..."
+        mock_agent_config.load_agent_rules.return_value = mock_agent_rules
 
         # Test the core logic that was added to invoke_agent
         # Test that regular agents get AGENTS.md content
         instructions = mock_agent_config.get_system_prompt()
         if mock_agent_config.name != "shell_safety_checker":
-            puppy_rules = mock_agent_config.load_puppy_rules()
-            if puppy_rules:
-                instructions += f"\n{puppy_rules}"
+            agent_rules = mock_agent_config.load_agent_rules()
+            if agent_rules:
+                instructions += f"\n{agent_rules}"
 
         # Verify AGENTS.md was added to regular agent
-        assert mock_puppy_rules in instructions
+        assert mock_agent_rules in instructions
         assert "Test system prompt" in instructions
 
         # Test that ShellSafetyAgent does NOT get AGENTS.md content
         mock_agent_config.name = "shell_safety_checker"
         instructions_safety = mock_agent_config.get_system_prompt()
         if mock_agent_config.name != "shell_safety_checker":
-            puppy_rules = mock_agent_config.load_puppy_rules()
-            if puppy_rules:
-                instructions_safety += f"\n{puppy_rules}"
+            agent_rules = mock_agent_config.load_agent_rules()
+            if agent_rules:
+                instructions_safety += f"\n{agent_rules}"
 
-        # Should not have added puppy_rules for shell safety agent
-        assert mock_puppy_rules not in instructions_safety
+        # Should not have added agent_rules for shell safety agent
+        assert mock_agent_rules not in instructions_safety
         assert "Test system prompt" in instructions_safety
 
 

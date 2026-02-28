@@ -2,13 +2,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentReload:
     @pytest.fixture
     def agent(self):
-        return CodePuppyAgent()
+        return CodeAgent()
 
     def test_reload_basic_functionality(self, agent):
         """Test that reload_code_generation_agent can be called without errors."""
@@ -19,7 +19,7 @@ class TestBaseAgentReload:
             ) as mock_load_config,
             patch("code_puppy.model_factory.ModelFactory.get_model") as mock_get_model,
             patch("code_puppy.tools.register_tools_for_agent") as mock_register,
-            patch.object(agent, "load_puppy_rules", return_value="Be a good puppy!"),
+            patch.object(agent, "load_agent_rules", return_value="Be a good puppy!"),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=["test_tool"]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
@@ -59,7 +59,7 @@ class TestBaseAgentReload:
             patch("code_puppy.model_factory.ModelFactory.get_model"),
             patch("code_puppy.tools.register_tools_for_agent"),
             patch.object(agent, "get_model_name", return_value="claude-code-test"),
-            patch.object(agent, "load_puppy_rules", return_value=""),
+            patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "get_model_context_length", return_value=200000),
@@ -90,7 +90,7 @@ class TestBaseAgentReload:
             patch("code_puppy.model_factory.ModelFactory.get_model"),
             patch("code_puppy.tools.register_tools_for_agent"),
             patch.object(agent, "get_model_name", return_value="gpt-5-test"),
-            patch.object(agent, "load_puppy_rules", return_value=""),
+            patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "get_model_context_length", return_value=200000),
@@ -115,17 +115,17 @@ class TestBaseAgentReload:
             assert "openai_reasoning_effort" in model_settings
             assert result == mock_agent_instance
 
-    def test_reload_puppy_rules_appended(self, agent):
+    def test_reload_agent_rules_appended(self, agent):
         """Test that puppy rules are loaded and appended to instructions."""
         base_prompt = "Be a good coding assistant."
-        puppy_rules = "Always wag your tail when code compiles."
+        agent_rules = "Always wag your tail when code compiles."
 
         with (
             patch("code_puppy.model_factory.ModelFactory.load_config"),
             patch("code_puppy.model_factory.ModelFactory.get_model"),
             patch("code_puppy.tools.register_tools_for_agent"),
             patch.object(agent, "get_system_prompt", return_value=base_prompt),
-            patch.object(agent, "load_puppy_rules", return_value=puppy_rules),
+            patch.object(agent, "load_agent_rules", return_value=agent_rules),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
@@ -144,8 +144,8 @@ class TestBaseAgentReload:
             call_args = mock_agent_class.call_args
             instructions = call_args.kwargs["instructions"]
             assert base_prompt in instructions
-            assert puppy_rules in instructions
-            assert instructions.endswith(puppy_rules)
+            assert agent_rules in instructions
+            assert instructions.endswith(agent_rules)
             assert result == mock_agent_instance
 
     def test_reload_tools_registration(self, agent):
@@ -156,7 +156,7 @@ class TestBaseAgentReload:
             patch("code_puppy.model_factory.ModelFactory.load_config"),
             patch("code_puppy.model_factory.ModelFactory.get_model"),
             patch("code_puppy.tools.register_tools_for_agent") as mock_register,
-            patch.object(agent, "load_puppy_rules", return_value=""),
+            patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=test_tools),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
@@ -191,7 +191,7 @@ class TestBaseAgentReload:
             patch("code_puppy.model_factory.ModelFactory.get_model"),
             patch("code_puppy.tools.register_tools_for_agent"),
             patch.object(agent, "get_model_name", return_value="test-model"),
-            patch.object(agent, "load_puppy_rules", return_value=""),
+            patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
@@ -224,7 +224,7 @@ class TestBaseAgentReload:
             patch("code_puppy.model_factory.ModelFactory.load_config"),
             patch("code_puppy.model_factory.ModelFactory.get_model"),
             patch("code_puppy.tools.register_tools_for_agent"),
-            patch.object(agent, "load_puppy_rules", return_value=""),
+            patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
@@ -258,7 +258,7 @@ class TestBaseAgentReload:
             patch("code_puppy.model_factory.ModelFactory.load_config"),
             patch("code_puppy.model_factory.ModelFactory.get_model"),
             patch("code_puppy.tools.register_tools_for_agent") as mock_register,
-            patch.object(agent, "load_puppy_rules", return_value=""),
+            patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
@@ -292,7 +292,7 @@ class TestBaseAgentReload:
             ) as mock_load_config,
             patch("code_puppy.model_factory.ModelFactory.get_model") as mock_get_model,
             patch("code_puppy.tools.register_tools_for_agent") as mock_register,
-            patch.object(agent, "load_puppy_rules", return_value=""),
+            patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
@@ -312,7 +312,7 @@ class TestBaseAgentReload:
             # Note: load_config may be called multiple times depending on the code path
             assert mock_load_config.called
             mock_load_fallback.assert_called_once()
-            agent.load_puppy_rules.assert_called_once()
+            agent.load_agent_rules.assert_called_once()
             agent.load_mcp_servers.assert_called_once()
             agent.get_available_tools.assert_called()  # Called at least once (may be called twice)
             mock_register.assert_called()

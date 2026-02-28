@@ -9,7 +9,7 @@ from pydantic_ai.messages import (
     TextPart,
 )
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestTokenEstimation:
@@ -18,7 +18,7 @@ class TestTokenEstimation:
     @pytest.fixture
     def agent(self):
         """Provide a concrete BaseAgent subclass for testing."""
-        return CodePuppyAgent()
+        return CodeAgent()
 
     # Tests for estimate_token_count
 
@@ -230,7 +230,7 @@ class TestMCPToolCache:
     @pytest.fixture
     def agent(self):
         """Provide a concrete BaseAgent subclass for testing."""
-        return CodePuppyAgent()
+        return CodeAgent()
 
     def test_mcp_tool_cache_initialized_empty(self, agent):
         """Test that MCP tool cache is initialized as empty list."""
@@ -345,7 +345,7 @@ class TestTokenEstimationIntegration:
     @pytest.fixture
     def agent(self):
         """Provide a concrete BaseAgent subclass for testing."""
-        return CodePuppyAgent()
+        return CodeAgent()
 
     def test_estimate_tokens_consistency(self, agent):
         """Test that estimate_tokens_for_message is consistent with estimate_token_count."""

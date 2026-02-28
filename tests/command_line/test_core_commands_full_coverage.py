@@ -248,7 +248,7 @@ class TestHandleExitCommand:
 
 
 class TestHandleAgentCommand:
-    def _mock_agent(self, name="code-puppy", display="Code Puppy", desc="A dog"):
+    def _mock_agent(self, name="code-agent", display="Code Agent", desc="A dog"):
         a = MagicMock()
         a.name = name
         a.display_name = display
@@ -305,7 +305,7 @@ class TestHandleAgentCommand:
             patch("code_puppy.messaging.emit_info"),
         ):
             mock_future = MagicMock()
-            mock_future.result.return_value = "code-puppy"
+            mock_future.result.return_value = "code-agent"
             pool.return_value.__enter__ = MagicMock(return_value=pool.return_value)
             pool.return_value.__exit__ = MagicMock(return_value=False)
             pool.return_value.submit.return_value = mock_future
@@ -343,11 +343,11 @@ class TestHandleAgentCommand:
             patch("code_puppy.agents.get_current_agent", return_value=agent),
             patch(
                 "code_puppy.agents.get_available_agents",
-                return_value={"code-puppy": "Code Puppy"},
+                return_value={"code-agent": "Code Agent"},
             ),
             patch(
                 "code_puppy.agents.get_agent_descriptions",
-                return_value={"code-puppy": "desc"},
+                return_value={"code-agent": "desc"},
             ),
             patch("code_puppy.messaging.emit_warning"),
             patch("code_puppy.messaging.emit_info"),
@@ -366,7 +366,7 @@ class TestHandleAgentCommand:
             ),
             patch(
                 "code_puppy.agents.get_available_agents",
-                return_value={"code-puppy": "CP", "other": "Other"},
+                return_value={"code-agent": "CP", "other": "Other"},
             ),
             patch(
                 "code_puppy.command_line.core_commands.finalize_autosave_session",
@@ -384,7 +384,7 @@ class TestHandleAgentCommand:
         with (
             patch(
                 "code_puppy.agents.get_available_agents",
-                return_value={"code-puppy": "CP"},
+                return_value={"code-agent": "CP"},
             ),
             patch("code_puppy.messaging.emit_error"),
             patch("code_puppy.messaging.emit_warning"),
@@ -399,7 +399,7 @@ class TestHandleAgentCommand:
             patch("code_puppy.agents.get_current_agent", return_value=agent),
             patch(
                 "code_puppy.agents.get_available_agents",
-                return_value={"code-puppy": "CP"},
+                return_value={"code-agent": "CP"},
             ),
             patch("code_puppy.messaging.emit_info"),
         ):
@@ -413,7 +413,7 @@ class TestHandleAgentCommand:
             patch("code_puppy.agents.get_current_agent", return_value=agent),
             patch(
                 "code_puppy.agents.get_available_agents",
-                return_value={"code-puppy": "CP", "other": "O"},
+                return_value={"code-agent": "CP", "other": "O"},
             ),
             patch(
                 "code_puppy.command_line.core_commands.finalize_autosave_session",

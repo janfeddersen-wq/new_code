@@ -3,13 +3,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentKeyListeners:
     @pytest.fixture
     def agent(self):
-        return CodePuppyAgent()
+        return CodeAgent()
 
     @patch("sys.stdin")
     def test_spawn_ctrl_x_key_listener_basic(self, mock_stdin, agent):
@@ -206,8 +206,8 @@ class TestBaseAgentKeyListeners:
                 # Verify callback was called
                 callback.assert_called()
 
-    def test_agent_code_puppy_inherits_key_listeners(self, agent):
-        """Test that CodePuppyAgent has the key listener methods."""
+    def test_agent_code_agent_inherits_key_listeners(self, agent):
+        """Test that CodeAgent has the key listener methods."""
         # Verify the agent has the key listener methods
         assert hasattr(agent, "_spawn_ctrl_x_key_listener")
         assert hasattr(agent, "_listen_for_ctrl_x_posix")

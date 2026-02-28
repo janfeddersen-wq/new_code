@@ -236,7 +236,7 @@ class TestGetAgentsAndModels:
 
         with patch.dict("sys.modules", {"code_puppy.agents": None}):
             result = sw.get_available_agents_list()
-        assert result == [("code-puppy", "Default agent")]
+        assert result == [("code-agent", "Default agent")]
 
     def test_get_models(self):
         from code_puppy.plugins.scheduler import scheduler_wizard as sw
@@ -282,7 +282,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.SelectionMenu")
     @patch(f"{_MOD}.get_available_models_list", return_value=["m1"])
     @patch(
-        f"{_MOD}.get_available_agents_list", return_value=[("code-puppy", "Default")]
+        f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_full_wizard(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
@@ -298,7 +298,7 @@ class TestCreateTaskWizard:
         # SelectionMenu: schedule, agent, model
         sel_instances = [MagicMock(), MagicMock(), MagicMock()]
         sel_instances[0].run.return_value = "Every hour"
-        sel_instances[1].run.return_value = "code-puppy"
+        sel_instances[1].run.return_value = "code-agent"
         sel_instances[2].run.return_value = "(use default model)"
         mock_sel.side_effect = sel_instances
 
@@ -341,7 +341,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.SelectionMenu")
     @patch(f"{_MOD}.get_available_models_list", return_value=["m1"])
     @patch(
-        f"{_MOD}.get_available_agents_list", return_value=[("code-puppy", "Default")]
+        f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_wizard_custom_interval(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
@@ -357,7 +357,7 @@ class TestCreateTaskWizard:
 
         sel_instances = [MagicMock(), MagicMock(), MagicMock()]
         sel_instances[0].run.return_value = "Custom interval..."
-        sel_instances[1].run.return_value = "code-puppy"
+        sel_instances[1].run.return_value = "code-agent"
         sel_instances[2].run.return_value = "m1"
         mock_sel.side_effect = sel_instances
 
@@ -388,7 +388,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.TextInputMenu")
     @patch(f"{_MOD}.SelectionMenu")
     @patch(
-        f"{_MOD}.get_available_agents_list", return_value=[("code-puppy", "Default")]
+        f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_wizard_cancel_agent(self, mock_agents, mock_sel, mock_text):
         from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
@@ -408,7 +408,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.SelectionMenu")
     @patch(f"{_MOD}.get_available_models_list", return_value=["m1"])
     @patch(
-        f"{_MOD}.get_available_agents_list", return_value=[("code-puppy", "Default")]
+        f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_wizard_cancel_model(self, mock_agents, mock_models, mock_sel, mock_text):
         from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
@@ -419,7 +419,7 @@ class TestCreateTaskWizard:
 
         sel_instances = [MagicMock(), MagicMock(), MagicMock()]
         sel_instances[0].run.return_value = "Every hour"
-        sel_instances[1].run.return_value = "code-puppy"
+        sel_instances[1].run.return_value = "code-agent"
         sel_instances[2].run.return_value = None  # cancel model
         mock_sel.side_effect = sel_instances
 
@@ -430,7 +430,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.SelectionMenu")
     @patch(f"{_MOD}.get_available_models_list", return_value=["m1"])
     @patch(
-        f"{_MOD}.get_available_agents_list", return_value=[("code-puppy", "Default")]
+        f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_wizard_cancel_prompt(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi
@@ -443,7 +443,7 @@ class TestCreateTaskWizard:
 
         sel_instances = [MagicMock(), MagicMock(), MagicMock()]
         sel_instances[0].run.return_value = "Every hour"
-        sel_instances[1].run.return_value = "code-puppy"
+        sel_instances[1].run.return_value = "code-agent"
         sel_instances[2].run.return_value = "m1"
         mock_sel.side_effect = sel_instances
 
@@ -458,7 +458,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.SelectionMenu")
     @patch(f"{_MOD}.get_available_models_list", return_value=["m1"])
     @patch(
-        f"{_MOD}.get_available_agents_list", return_value=[("code-puppy", "Default")]
+        f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_wizard_cancel_workdir(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi
@@ -472,7 +472,7 @@ class TestCreateTaskWizard:
 
         sel_instances = [MagicMock(), MagicMock(), MagicMock()]
         sel_instances[0].run.return_value = "Every hour"
-        sel_instances[1].run.return_value = "code-puppy"
+        sel_instances[1].run.return_value = "code-agent"
         sel_instances[2].run.return_value = "m1"
         mock_sel.side_effect = sel_instances
 
@@ -488,7 +488,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.SelectionMenu")
     @patch(f"{_MOD}.get_available_models_list", return_value=["m1"])
     @patch(
-        f"{_MOD}.get_available_agents_list", return_value=[("code-puppy", "Default")]
+        f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_wizard_decline_confirm(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
@@ -502,7 +502,7 @@ class TestCreateTaskWizard:
 
         sel_instances = [MagicMock(), MagicMock(), MagicMock()]
         sel_instances[0].run.return_value = "Every hour"
-        sel_instances[1].run.return_value = "code-puppy"
+        sel_instances[1].run.return_value = "code-agent"
         sel_instances[2].run.return_value = "m1"
         mock_sel.side_effect = sel_instances
 
@@ -518,7 +518,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.SelectionMenu")
     @patch(f"{_MOD}.get_available_models_list", return_value=["m1"])
     @patch(
-        f"{_MOD}.get_available_agents_list", return_value=[("code-puppy", "Default")]
+        f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_wizard_confirm_interrupt(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
@@ -532,7 +532,7 @@ class TestCreateTaskWizard:
 
         sel_instances = [MagicMock(), MagicMock(), MagicMock()]
         sel_instances[0].run.return_value = "Every hour"
-        sel_instances[1].run.return_value = "code-puppy"
+        sel_instances[1].run.return_value = "code-agent"
         sel_instances[2].run.return_value = "m1"
         mock_sel.side_effect = sel_instances
 
@@ -549,12 +549,12 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.get_available_models_list", return_value=["m1"])
     @patch(
         f"{_MOD}.get_available_agents_list",
-        return_value=[("code-puppy", "Default"), ("other", "Other")],
+        return_value=[("code-agent", "Default"), ("other", "Other")],
     )
-    def test_wizard_code_puppy_first(
+    def test_wizard_code_agent_first(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
     ):
-        """Verify code-puppy is moved to front of agent list."""
+        """Verify code-agent is moved to front of agent list."""
         from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_instances = [MagicMock(), MagicMock()]
@@ -564,7 +564,7 @@ class TestCreateTaskWizard:
 
         sel_instances = [MagicMock(), MagicMock(), MagicMock()]
         sel_instances[0].run.return_value = "Daily"
-        sel_instances[1].run.return_value = "code-puppy"
+        sel_instances[1].run.return_value = "code-agent"
         sel_instances[2].run.return_value = "m1"
         mock_sel.side_effect = sel_instances
 
@@ -592,7 +592,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.SelectionMenu")
     @patch(f"{_MOD}.get_available_models_list", return_value=["m1"])
     @patch(
-        f"{_MOD}.get_available_agents_list", return_value=[("code-puppy", "Default")]
+        f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_schedule_map(
         self,
@@ -615,7 +615,7 @@ class TestCreateTaskWizard:
 
         sel_instances = [MagicMock(), MagicMock(), MagicMock()]
         sel_instances[0].run.return_value = choice
-        sel_instances[1].run.return_value = "code-puppy"
+        sel_instances[1].run.return_value = "code-agent"
         sel_instances[2].run.return_value = "m1"
         mock_sel.side_effect = sel_instances
 

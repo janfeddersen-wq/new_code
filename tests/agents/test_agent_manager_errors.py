@@ -79,11 +79,11 @@ class TestAgentManagerErrors:
 
         # Mock registry with only code-puppy available
         mock_agent_class = MagicMock(spec=BaseAgent)
-        mock_agent_class.return_value.name = "code-puppy"
+        mock_agent_class.return_value.name = "code-agent"
 
         with patch(
             "code_puppy.agents.agent_manager._AGENT_REGISTRY",
-            {"code-puppy": mock_agent_class},
+            {"code-agent": mock_agent_class},
         ):
             # Should fallback to code-puppy instead of raising error
             result = load_agent("nonexistent-agent")
@@ -137,14 +137,14 @@ class TestAgentManagerErrors:
 
         # Mock registry with only code-puppy available
         mock_agent_class = MagicMock(spec=BaseAgent)
-        mock_agent_class.return_value.name = "code-puppy"
+        mock_agent_class.return_value.name = "code-agent"
         mock_agent_class.return_value.get_message_history.return_value = []
         mock_agent_class.return_value.set_message_history.return_value = None
         mock_agent_class.return_value.id = "test-id"
 
         with patch(
             "code_puppy.agents.agent_manager._AGENT_REGISTRY",
-            {"code-puppy": mock_agent_class},
+            {"code-agent": mock_agent_class},
         ):
             with patch(
                 "code_puppy.agents.agent_manager.get_current_agent"
@@ -188,8 +188,8 @@ class TestAgentManagerErrors:
             {"Code-Puppy": mock_agent_class},
         ):
             # Different case should not match
-            with pytest.raises(ValueError, match="Agent 'code-puppy' not found"):
-                load_agent("code-puppy")
+            with pytest.raises(ValueError, match="Agent 'code-agent' not found"):
+                load_agent("code-agent")
 
             # Exact case should work
             result = load_agent("Code-Puppy")

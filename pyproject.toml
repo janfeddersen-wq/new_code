@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "newcode"
 version = "0.1.7"
-description = "AI-powered code generation agent - a fedstew fork of code-puppy"
+description = "AI-powered code generation agent platform"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [

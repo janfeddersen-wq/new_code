@@ -19,7 +19,7 @@ from pydantic_ai.messages import (
     ToolReturnPart,
 )
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentMessageProcessing:
@@ -29,10 +29,10 @@ class TestBaseAgentMessageProcessing:
     def agent(self):
         """Create a fresh agent instance for each test.
 
-        Uses CodePuppyAgent as a concrete implementation of BaseAgent
+        Uses CodeAgent as a concrete implementation of BaseAgent
         to test the abstract class's message processing functionality.
         """
-        return CodePuppyAgent()
+        return CodeAgent()
 
     def test_stringify_message_part_text(self, agent):
         """Test stringify_message_part with TextPart."""

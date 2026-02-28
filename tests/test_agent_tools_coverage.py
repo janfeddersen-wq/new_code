@@ -508,7 +508,7 @@ class TestRegisterInvokeAgentExecution:
         mock_agent_config = MagicMock()
         mock_agent_config.get_model_name.return_value = "test-model"
         mock_agent_config.get_system_prompt.return_value = "Test"
-        mock_agent_config.load_puppy_rules.return_value = None
+        mock_agent_config.load_agent_rules.return_value = None
 
         set_context_calls = []
 

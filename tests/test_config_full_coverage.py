@@ -1027,7 +1027,7 @@ class TestAgentsDirectories:
 # ---------------------------------------------------------------------------
 class TestDefaultAgent:
     def test_default(self):
-        assert cp_config.get_default_agent() == "code-puppy"
+        assert cp_config.get_default_agent() == "code-agent"
 
     def test_set_and_get(self):
         cp_config.set_default_agent("custom-agent")

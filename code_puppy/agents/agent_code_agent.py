@@ -6,12 +6,12 @@ from .. import callbacks
 from .base_agent import BaseAgent
 
 
-class CodePuppyAgent(BaseAgent):
+class CodeAgent(BaseAgent):
     """Code Agent - The default general-purpose code agent."""
 
     @property
     def name(self) -> str:
-        return "code-puppy"
+        return "code-agent"
 
     @property
     def display_name(self) -> str:

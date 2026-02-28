@@ -13,7 +13,7 @@ import pytest
 from pydantic_ai import RunContext
 from pydantic_ai.messages import ModelRequest, ModelResponse, TextPart, ThinkingPart
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentComplexMethods:
@@ -21,8 +21,8 @@ class TestBaseAgentComplexMethods:
 
     @pytest.fixture
     def agent(self):
-        """Create a CodePuppyAgent instance for testing."""
-        return CodePuppyAgent()
+        """Create a CodeAgent instance for testing."""
+        return CodeAgent()
 
     @pytest.fixture
     def mock_run_context(self):

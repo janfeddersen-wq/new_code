@@ -1459,11 +1459,11 @@ class TestRunWithMcp:
 
 
 class TestLoadPuppyRules:
-    """Test load_puppy_rules caching."""
+    """Test load_agent_rules caching."""
 
     def test_caching(self, agent):
-        agent._puppy_rules = "cached rules"
-        assert agent.load_puppy_rules() == "cached rules"
+        agent._agent_rules = "cached rules"
+        assert agent.load_agent_rules() == "cached rules"
 
 
 class TestHasPendingToolCalls:
@@ -1744,7 +1744,7 @@ class TestReloadWithMcpFiltering:
     @patch("code_puppy.model_utils.prepare_prompt_for_model")
     @patch("code_puppy.agents.base_agent.PydanticAgent")
     @patch("code_puppy.tools.register_tools_for_agent")
-    def test_puppy_rules_appended(
+    def test_agent_rules_appended(
         self,
         mock_register,
         mock_pagent,
@@ -1763,7 +1763,7 @@ class TestReloadWithMcpFiltering:
         mock_pagent.return_value = MagicMock(_tools={})
 
         # Set puppy rules
-        agent._puppy_rules = "Custom rules here"
+        agent._agent_rules = "Custom rules here"
         agent.reload_code_generation_agent()
 
 
@@ -2004,10 +2004,10 @@ class TestRunSummarizationSync:
 
 
 class TestLoadPuppyRulesFromFiles:
-    """Test load_puppy_rules loading from files."""
+    """Test load_agent_rules loading from files."""
 
     def test_loads_from_project_dir(self, agent, tmp_path):
-        agent._puppy_rules = None
+        agent._agent_rules = None
         rules_file = tmp_path / "AGENTS.md"
         rules_file.write_text("# Project Rules")
         with (

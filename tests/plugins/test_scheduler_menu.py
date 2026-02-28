@@ -12,7 +12,7 @@ def _make_task(**kwargs):
         id="t1",
         name="Test Task",
         prompt="do stuff",
-        agent="code-puppy",
+        agent="code-agent",
         model="gpt-4",
         schedule_type="interval",
         schedule_value="1h",
@@ -592,7 +592,7 @@ class TestCreateNewTask:
         mock_wizard.return_value = {
             "name": "Test",
             "prompt": "do stuff",
-            "agent": "code-puppy",
+            "agent": "code-agent",
             "model": "",
             "schedule_type": "interval",
             "schedule_value": "1h",

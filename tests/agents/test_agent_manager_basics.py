@@ -312,15 +312,15 @@ class TestAgentManagerBasics:
         """Test fallback to code-puppy agent when requested agent not found."""
 
         # Setup registry with only code-puppy
-        class CodePuppyAgent(MockAgent):
+        class CodeAgent(MockAgent):
             def __init__(self):
                 super().__init__()
-                self._name = "code-puppy"
+                self._name = "code-agent"
 
         mock_iter_modules.return_value = [("code_puppy.agents", "code_puppy", True)]
 
         mock_module = MagicMock()
-        mock_module.CodePuppyAgent = CodePuppyAgent
+        mock_module.CodeAgent = CodeAgent
 
         def mock_import_side_effect(module_name):
             if "code_puppy" in module_name:
@@ -335,7 +335,7 @@ class TestAgentManagerBasics:
 
         # Should fallback to code-puppy
         assert agent is not None
-        assert agent.name == "code-puppy"
+        assert agent.name == "code-agent"
 
     def test_refresh_agents(self):
         """Test refreshing agent discovery."""

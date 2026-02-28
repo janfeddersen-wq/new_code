@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from pydantic_ai import BinaryContent, DocumentUrl, ImageUrl
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentRunMCP:
@@ -21,8 +21,8 @@ class TestBaseAgentRunMCP:
 
     @pytest.fixture
     def agent(self):
-        """Create a CodePuppyAgent instance for testing."""
-        return CodePuppyAgent()
+        """Create a CodeAgent instance for testing."""
+        return CodeAgent()
 
     @pytest.mark.asyncio
     async def test_run_with_mcp_basic(self, agent):
@@ -192,7 +192,7 @@ class TestBaseAgentRunMCP:
 
     @pytest.mark.asyncio
     @patch.object(
-        CodePuppyAgent, "should_attempt_delayed_compaction", return_value=False
+        CodeAgent, "should_attempt_delayed_compaction", return_value=False
     )
     async def test_run_with_mcp_skips_compaction_when_not_needed(
         self, mock_should_compact, agent
@@ -215,7 +215,7 @@ class TestBaseAgentRunMCP:
 
     @pytest.mark.asyncio
     @patch.object(
-        CodePuppyAgent, "should_attempt_delayed_compaction", return_value=False
+        CodeAgent, "should_attempt_delayed_compaction", return_value=False
     )
     async def test_run_with_mcp_without_delayed_compaction(
         self, mock_should_compact, agent
@@ -237,7 +237,7 @@ class TestBaseAgentRunMCP:
             assert agent.get_message_history() == original_messages
 
     @pytest.mark.asyncio
-    @patch.object(CodePuppyAgent, "get_model_name", return_value="claude-code-3.5")
+    @patch.object(CodeAgent, "get_model_name", return_value="claude-code-3.5")
     async def test_run_with_mcp_claude_code_system_prompt(self, mock_get_model, agent):
         """Test run_with_mcp prepends system prompt for claude-code models."""
         # Clear message history to trigger system prompt prepend
@@ -319,7 +319,7 @@ class TestBaseAgentRunMCP:
                 mock_reload.assert_called_once()
 
     @pytest.mark.asyncio
-    @patch.object(CodePuppyAgent, "prune_interrupted_tool_calls")
+    @patch.object(CodeAgent, "prune_interrupted_tool_calls")
     async def test_run_with_mcp_prunes_tool_calls(self, mock_prune, agent):
         """Test run_with_mcp prunes interrupted tool calls before and after execution."""
         original_messages = ["tool_call_msg", "regular_msg"]

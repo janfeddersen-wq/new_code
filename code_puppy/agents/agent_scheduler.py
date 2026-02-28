@@ -63,7 +63,7 @@ You can help users:
 
 - Tasks are stored in `~/.code_puppy/scheduled_tasks.json`
 - A background daemon checks for tasks to run based on their schedule
-- Each task runs: `code-puppy -p <prompt> --model <model> --agent <agent>`
+- Each task runs: `newcode -p <prompt> --model <model> --agent <agent>`
 - Output is saved to log files in `~/.code_puppy/scheduler_logs/`
 
 ## Schedule Types
@@ -75,7 +75,7 @@ You can help users:
 ## Available Agents to Suggest
 
 When users ask about automation, suggest appropriate agents:
-- `code-puppy` - General coding tasks
+- `code-agent` - General coding tasks
 - `code-reviewer` or `python-reviewer` - Code review tasks
 - `security-auditor` - Security scanning
 - `qa-expert` - Quality assurance checks

@@ -2,40 +2,40 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentConfiguration:
     @pytest.fixture
     def agent(self):
-        return CodePuppyAgent()
+        return CodeAgent()
 
-    def test_load_puppy_rules_no_file(self, agent):
+    def test_load_agent_rules_no_file(self, agent):
         # Test when no AGENTS.md exists
         with patch("pathlib.Path.exists", return_value=False):
-            result = agent.load_puppy_rules()
+            result = agent.load_agent_rules()
             assert result is None
 
-    def test_load_puppy_rules_with_file(self, agent, tmp_path, monkeypatch):
+    def test_load_agent_rules_with_file(self, agent, tmp_path, monkeypatch):
         # Test with actual temp file in project directory
         rules_file = tmp_path / "AGENTS.md"
         rules_file.write_text("Test rules")
 
         # Clear any cached rules
-        agent._puppy_rules = None
+        agent._agent_rules = None
 
         # Change to temp directory so Path("AGENTS.md") finds our file
         monkeypatch.chdir(tmp_path)
 
         # Mock CONFIG_DIR to a non-existent location so global rules aren't found
         with patch("code_puppy.config.CONFIG_DIR", str(tmp_path / "nonexistent")):
-            result = agent.load_puppy_rules()
+            result = agent.load_agent_rules()
             assert result == "Test rules"
 
-    def test_load_puppy_rules_caching(self, agent):
+    def test_load_agent_rules_caching(self, agent):
         # Test caching functionality
-        agent._puppy_rules = "Cached rules"
-        result = agent.load_puppy_rules()
+        agent._agent_rules = "Cached rules"
+        result = agent.load_agent_rules()
         assert result == "Cached rules"
 
     def test_load_mcp_servers_disabled(self, agent):
@@ -187,7 +187,7 @@ class TestCodePuppyPrompt:
 
     @pytest.fixture
     def agent(self):
-        return CodePuppyAgent()
+        return CodeAgent()
 
     def test_prompt_contains_core_sections(self, agent):
         """Core prompt sections must be present."""

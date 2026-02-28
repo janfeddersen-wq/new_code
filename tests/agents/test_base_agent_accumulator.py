@@ -22,7 +22,7 @@ from pydantic_ai.messages import (
     ToolCallPart,
 )
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentAccumulator:
@@ -32,10 +32,10 @@ class TestBaseAgentAccumulator:
     def agent(self):
         """Create a fresh agent instance for each test.
 
-        Uses CodePuppyAgent as a concrete implementation of BaseAgent
+        Uses CodeAgent as a concrete implementation of BaseAgent
         to test the message_history_accumulator functionality.
         """
-        return CodePuppyAgent()
+        return CodeAgent()
 
     @pytest.fixture
     def mock_run_context(self):
@@ -217,7 +217,7 @@ class TestBaseAgentAccumulator:
         assert has_response
         assert has_thinking
 
-    @patch.object(CodePuppyAgent, "message_history_processor")
+    @patch.object(CodeAgent, "message_history_processor")
     def test_message_history_accumulator_calls_processor(
         self, mock_processor, agent, mock_run_context
     ):

@@ -15,7 +15,7 @@ def _make_task(**overrides):
         id="test-id",
         name="test-task",
         prompt="do something",
-        agent="code-puppy",
+        agent="code-agent",
         model="gpt-5",
         working_directory=".",
     )
@@ -24,13 +24,13 @@ def _make_task(**overrides):
 
 
 class TestGetCodePuppyCommand:
-    def test_returns_code_puppy(self):
-        assert get_code_puppy_command() == "code-puppy"
+    def test_returns_newcode(self):
+        assert get_code_puppy_command() == "newcode"
 
     @patch("sys.platform", "win32")
-    def test_returns_code_puppy_windows(self):
-        # Re-import to test the branch - but the function just returns "code-puppy" either way
-        assert get_code_puppy_command() == "code-puppy"
+    def test_returns_newcode_windows(self):
+        # Re-import to test the branch - but the function just returns "newcode" either way
+        assert get_code_puppy_command() == "newcode"
 
 
 class TestExecuteTask:

@@ -22,7 +22,7 @@ class TestScheduledTask:
         task = ScheduledTask(name="Test Task", prompt="Do something")
         assert task.name == "Test Task"
         assert task.prompt == "Do something"
-        assert task.agent == "code-puppy"
+        assert task.agent == "code-agent"
         assert task.enabled is True
         assert task.schedule_type == "interval"
         assert task.schedule_value == "1h"
@@ -60,7 +60,7 @@ class TestScheduledTask:
             "id": "test123",
             "name": "From Dict",
             "prompt": "Test prompt",
-            "agent": "code-puppy",
+            "agent": "code-agent",
             "model": "",
             "schedule_type": "interval",
             "schedule_value": "30m",

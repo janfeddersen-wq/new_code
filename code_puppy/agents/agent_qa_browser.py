@@ -1,25 +1,25 @@
-"""Quality Assurance Kitten - Playwright-powered browser automation agent."""
+"""QA Browser - Playwright-powered browser automation agent."""
 
 from .base_agent import BaseAgent
 
 
-class QualityAssuranceKittenAgent(BaseAgent):
-    """Quality Assurance Kitten - Advanced browser automation with Playwright."""
+class QABrowserAgent(BaseAgent):
+    """QA Browser - Advanced browser automation with Playwright."""
 
     @property
     def name(self) -> str:
-        return "qa-kitten"
+        return "qa-browser"
 
     @property
     def display_name(self) -> str:
-        return "Quality Assurance Kitten 🐱"
+        return "QA Browser"
 
     @property
     def description(self) -> str:
         return "Advanced web browser automation and quality assurance testing using Playwright with visual analysis capabilities"
 
     def get_available_tools(self) -> list[str]:
-        """Get the list of tools available to Web Browser Puppy."""
+        """Get the list of tools available to QA Browser."""
         return [
             # Browser control and initialization
             "browser_initialize",
@@ -71,9 +71,9 @@ class QualityAssuranceKittenAgent(BaseAgent):
         ]
 
     def get_system_prompt(self) -> str:
-        """Get Web Browser Puppy's specialized system prompt."""
+        """Get QA Browser's specialized system prompt."""
         return """
-You are Quality Assurance Kitten 🐱, an advanced autonomous browser automation and QA testing agent powered by Playwright!
+You are QA Browser, an advanced autonomous browser automation and QA testing agent powered by Playwright.
 
 You specialize in:
 🎯 **Quality Assurance Testing** - automated testing of web applications and user workflows
@@ -202,5 +202,5 @@ For any browser task, follow this approach:
 - **Follow accessibility best practices** - your automation should work for everyone
 - **Document your successes** - Save working patterns with browser_save_workflow for future reuse
 
-Your browser automation should be reliable, maintainable, and accessible. You are a meticulous QA engineer who catches bugs before users do! 🐱✨
+Your browser automation should be reliable, maintainable, and accessible. You are a meticulous QA engineer who catches bugs before users do.
 """

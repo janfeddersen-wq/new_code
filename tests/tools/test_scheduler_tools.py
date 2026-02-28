@@ -11,7 +11,7 @@ class FakeTask:
         self.last_status = kwargs.get("last_status", None)
         self.schedule_type = kwargs.get("schedule_type", "interval")
         self.schedule_value = kwargs.get("schedule_value", "1h")
-        self.agent = kwargs.get("agent", "code-puppy")
+        self.agent = kwargs.get("agent", "code-agent")
         self.model = kwargs.get("model", "")
         self.prompt = kwargs.get("prompt", "Do something")
         self.working_directory = kwargs.get("working_directory", ".")

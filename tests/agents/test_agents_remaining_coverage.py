@@ -74,9 +74,9 @@ def test_qa_expert():
 
 
 def test_qa_kitten():
-    from code_puppy.agents.agent_qa_kitten import QualityAssuranceKittenAgent
+    from code_puppy.agents.agent_qa_browser import QABrowserAgent
 
-    agent = QualityAssuranceKittenAgent()
+    agent = QABrowserAgent()
     tools = agent.get_available_tools()
     assert isinstance(tools, list)
     prompt = agent.get_system_prompt()
@@ -99,9 +99,9 @@ def test_python_programmer():
 
 
 def test_code_puppy_agent():
-    from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+    from code_puppy.agents.agent_code_agent import CodeAgent
 
-    agent = CodePuppyAgent()
+    agent = CodeAgent()
     tools = agent.get_available_tools()
     assert isinstance(tools, list)
     prompt = agent.get_system_prompt()

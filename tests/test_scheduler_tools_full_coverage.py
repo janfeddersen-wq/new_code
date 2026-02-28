@@ -11,7 +11,7 @@ def _make_task(**kwargs):
         prompt="do stuff",
         schedule_type="interval",
         schedule_value="1h",
-        agent="code-puppy",
+        agent="code-agent",
         model="",
         working_directory=".",
         enabled=True,

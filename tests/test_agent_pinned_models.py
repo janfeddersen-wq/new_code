@@ -5,7 +5,7 @@ import tempfile
 
 import pytest
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 from code_puppy.config import (
     clear_agent_pinned_model,
     get_agent_pinned_model,
@@ -65,8 +65,8 @@ class TestAgentPinnedModels:
 
     def test_base_agent_get_model_name(self):
         """Test BaseAgent.get_model_name() returns pinned model."""
-        agent = CodePuppyAgent()
-        agent_name = agent.name  # "code-puppy"
+        agent = CodeAgent()
+        agent_name = agent.name  # "code-agent"
         model_name = "gpt-4o-mini"
 
         # Initially no pinned model - should return global model

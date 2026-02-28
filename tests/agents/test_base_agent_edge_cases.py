@@ -6,7 +6,7 @@ This module tests error handling and edge cases in BaseAgent methods:
 - stringify_message_part() with unusual content types
 - filter_huge_messages() with corrupted messages
 - get_model_context_length() when model config is broken
-- load_puppy_rules() with file read errors
+- load_agent_rules() with file read errors
 - Compaction methods with extreme token counts
 
 Focuses on ensuring error handling doesn't crash and provides graceful degradation.
@@ -21,7 +21,7 @@ from pydantic_ai.messages import (
     TextPart,
 )
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentEdgeCases:
@@ -30,7 +30,7 @@ class TestBaseAgentEdgeCases:
     @pytest.fixture
     def agent(self):
         """Create a fresh agent instance for each test."""
-        return CodePuppyAgent()
+        return CodeAgent()
 
     @patch("code_puppy.model_factory.ModelFactory.get_model")
     @patch("code_puppy.model_factory.ModelFactory.load_config")
@@ -279,33 +279,33 @@ class TestBaseAgentEdgeCases:
 
     @patch("pathlib.Path.read_text", side_effect=PermissionError("Permission denied"))
     @patch("pathlib.Path.exists")
-    def test_load_puppy_rules_file_permission_error(
+    def test_load_agent_rules_file_permission_error(
         self, mock_exists, mock_read_text, agent
     ):
-        """Test load_puppy_rules when file exists but can't be read due to permissions."""
+        """Test load_agent_rules when file exists but can't be read due to permissions."""
         mock_exists.return_value = True
 
         # The method doesn't handle file errors gracefully - should propagate
         with pytest.raises(PermissionError):
-            agent.load_puppy_rules()
+            agent.load_agent_rules()
 
     @patch("pathlib.Path.read_text", side_effect=IOError("Disk error"))
     @patch("pathlib.Path.exists")
-    def test_load_puppy_rules_file_io_error(self, mock_exists, mock_read_text, agent):
-        """Test load_puppy_rules when file has IO error."""
+    def test_load_agent_rules_file_io_error(self, mock_exists, mock_read_text, agent):
+        """Test load_agent_rules when file has IO error."""
         mock_exists.return_value = True
 
         # The method doesn't handle IO errors gracefully - should propagate
         with pytest.raises(IOError):
-            agent.load_puppy_rules()
+            agent.load_agent_rules()
 
     @patch("pathlib.Path.read_text", return_value="")
     @patch("pathlib.Path.exists")
-    def test_load_puppy_rules_empty_file(self, mock_exists, mock_read_text, agent):
-        """Test load_puppy_rules with empty file."""
+    def test_load_agent_rules_empty_file(self, mock_exists, mock_read_text, agent):
+        """Test load_agent_rules with empty file."""
         mock_exists.return_value = True
 
-        result = agent.load_puppy_rules()
+        result = agent.load_agent_rules()
         # Empty string is falsy, so it gets filtered out by the list comprehension
         # [r for r in [global_rules, project_rules] if r] - empty string is falsy
         assert (
@@ -313,11 +313,11 @@ class TestBaseAgentEdgeCases:
         )  # Should return None for empty file (empty string is falsy)
 
     @patch("pathlib.Path.exists")
-    def test_load_puppy_rules_no_files_exist(self, mock_exists, agent):
-        """Test load_puppy_rules when no AGENT(S).md files exist."""
+    def test_load_agent_rules_no_files_exist(self, mock_exists, agent):
+        """Test load_agent_rules when no AGENT(S).md files exist."""
         mock_exists.return_value = False
 
-        result = agent.load_puppy_rules()
+        result = agent.load_agent_rules()
         assert result is None
 
     def test_compaction_edge_cases_with_extreme_tokens(self, agent):

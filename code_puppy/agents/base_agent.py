@@ -150,8 +150,8 @@ class BaseAgent(ABC):
         # Agent construction cache
         self._code_generation_agent = None
         self._last_model_name: Optional[str] = None
-        # Puppy rules loaded lazily
-        self._puppy_rules: Optional[str] = None
+        # Agent rules loaded lazily
+        self._agent_rules: Optional[str] = None
         self.cur_model: pydantic_ai.models.Model
         # Cache for MCP tool definitions (for token estimation)
         # This is populated after the first successful run when MCP tools are retrieved
@@ -1175,7 +1175,7 @@ class BaseAgent(ABC):
         return run_summarization_sync(instructions, message_history)
 
     # ===== Agent wiring formerly in code_puppy/agent.py =====
-    def load_puppy_rules(self) -> Optional[str]:
+    def load_agent_rules(self) -> Optional[str]:
         """Load AGENT(S).md from both global config and project directory.
 
         Checks for AGENTS.md/AGENT.md/agents.md/agent.md in this order:
@@ -1185,8 +1185,8 @@ class BaseAgent(ABC):
         If both exist, they are combined with global rules first, then project rules.
         This allows project-specific rules to override or extend global rules.
         """
-        if self._puppy_rules is not None:
-            return self._puppy_rules
+        if self._agent_rules is not None:
+            return self._agent_rules
         from pathlib import Path
 
         possible_paths = ["AGENTS.md", "AGENT.md", "agents.md", "agent.md"]
@@ -1212,8 +1212,8 @@ class BaseAgent(ABC):
         # Combine global and project rules
         # Global rules come first, project rules second (allowing project to override)
         rules = [r for r in [global_rules, project_rules] if r]
-        self._puppy_rules = "\n\n".join(rules) if rules else None
-        return self._puppy_rules
+        self._agent_rules = "\n\n".join(rules) if rules else None
+        return self._agent_rules
 
     def load_mcp_servers(self, extra_headers: Optional[Dict[str, str]] = None):
         """Load MCP servers through the manager and return pydantic-ai compatible servers.
@@ -1317,9 +1317,9 @@ class BaseAgent(ABC):
         )
 
         instructions = self.get_full_system_prompt()
-        puppy_rules = self.load_puppy_rules()
-        if puppy_rules:
-            instructions += f"\n{puppy_rules}"
+        agent_rules = self.load_agent_rules()
+        if agent_rules:
+            instructions += f"\n{agent_rules}"
 
         mcp_servers = self.load_mcp_servers()
 
@@ -1485,9 +1485,9 @@ class BaseAgent(ABC):
         )
 
         instructions = self.get_full_system_prompt()
-        puppy_rules = self.load_puppy_rules()
-        if puppy_rules:
-            instructions += f"\n{puppy_rules}"
+        agent_rules = self.load_agent_rules()
+        if agent_rules:
+            instructions += f"\n{agent_rules}"
 
         mcp_servers = getattr(self, "_mcp_servers", []) or []
         model_settings = make_model_settings(resolved_model_name)
@@ -1664,7 +1664,7 @@ class BaseAgent(ABC):
                 )
 
         thread = threading.Thread(
-            target=listener, name="code-puppy-key-listener", daemon=True
+            target=listener, name="key-listener", daemon=True
         )
         thread.start()
         return thread
@@ -1823,9 +1823,9 @@ class BaseAgent(ABC):
         should_prepend = len(self.get_message_history()) == 0
         if should_prepend:
             system_prompt = self.get_full_system_prompt()
-            puppy_rules = self.load_puppy_rules()
-            if puppy_rules:
-                system_prompt += f"\n{puppy_rules}"
+            agent_rules = self.load_agent_rules()
+            if agent_rules:
+                system_prompt += f"\n{agent_rules}"
 
             prepared = prepare_prompt_for_model(
                 model_name=self.get_model_name(),

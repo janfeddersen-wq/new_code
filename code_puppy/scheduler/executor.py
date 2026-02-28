@@ -18,14 +18,14 @@ from code_puppy.scheduler.config import (
 
 
 def get_code_puppy_command() -> str:
-    """Get the path to the code-puppy executable."""
-    # Try to find code-puppy in the same environment as this script
+    """Get the path to the newcode executable."""
+    # Try to find newcode in the same environment as this script
     if sys.platform == "win32":
-        # On Windows, look for code-puppy.exe or use python -m
-        return "code-puppy"
+        # On Windows, look for newcode.exe or use python -m
+        return "newcode"
     else:
-        # On Unix, code-puppy should be in PATH if installed
-        return "code-puppy"
+        # On Unix, newcode should be in PATH if installed
+        return "newcode"
 
 
 def execute_task(task: ScheduledTask) -> Tuple[bool, int, str]:

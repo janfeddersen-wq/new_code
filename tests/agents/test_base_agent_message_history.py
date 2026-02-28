@@ -10,7 +10,7 @@ This module tests the following message history methods in BaseAgent:
 
 import pytest
 
-from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+from code_puppy.agents.agent_code_agent import CodeAgent
 
 
 class TestMessageHistoryManagement:
@@ -20,10 +20,10 @@ class TestMessageHistoryManagement:
     def agent(self):
         """Create a fresh agent instance for each test.
 
-        Uses CodePuppyAgent as a concrete implementation of BaseAgent
+        Uses CodeAgent as a concrete implementation of BaseAgent
         to test the abstract class's message history functionality.
         """
-        return CodePuppyAgent()
+        return CodeAgent()
 
     def test_get_empty_message_history(self, agent):
         """Test that a new agent has an empty message history.
@@ -300,8 +300,8 @@ class TestMessageHistoryManagement:
         Verifies that message history is instance-specific and
         not shared between different agent instances.
         """
-        agent1 = CodePuppyAgent()
-        agent2 = CodePuppyAgent()
+        agent1 = CodeAgent()
+        agent2 = CodeAgent()
 
         messages1 = [{"role": "user", "content": "Agent 1 message"}]
         messages2 = [

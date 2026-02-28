@@ -843,11 +843,11 @@ class TestLoadAgent:
 
     @patch("code_puppy.agents.agent_manager._discover_agents")
     def test_fallback_to_code_puppy(self, mock_discover):
-        from code_puppy.agents.agent_code_puppy import CodePuppyAgent
+        from code_puppy.agents.agent_code_agent import CodeAgent
 
-        am._AGENT_REGISTRY["code-puppy"] = CodePuppyAgent
+        am._AGENT_REGISTRY["code-agent"] = CodeAgent
         agent = am.load_agent("nonexistent")
-        assert agent.name == "code-puppy"
+        assert agent.name == "code-agent"
 
     @patch("code_puppy.agents.agent_manager._discover_agents")
     def test_no_fallback_raises(self, mock_discover):
