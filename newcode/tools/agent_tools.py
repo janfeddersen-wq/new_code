@@ -473,7 +473,7 @@ def register_invoke_agent(agent):
             instructions = agent_config.get_full_system_prompt()
 
             # Add AGENTS.md content to subagents
-            puppy_rules = agent_config.load_puppy_rules()
+            puppy_rules = agent_config.load_agent_rules()
             if puppy_rules:
                 instructions += f"\n\n{puppy_rules}"
 
