@@ -58,7 +58,7 @@ class TestPlanningAgent:
         assert "invoke_agent" in tools
 
         prompt = agent.get_system_prompt()
-        assert "strategic planning specialist" in prompt
+        assert "expert AI orchestrator" in prompt
         assert "EXECUTION PLAN" in prompt
 
 
