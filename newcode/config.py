@@ -1734,7 +1734,7 @@ def get_default_agent() -> str:
     Returns:
         str: The default agent name, or "planning" if not set.
     """
-    return get_value("default_agent") or "planning"
+    return get_value("default_agent") or "planning-agent"
 
 
 def set_default_agent(agent_name: str) -> None:
