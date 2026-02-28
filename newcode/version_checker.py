@@ -2,8 +2,7 @@
 
 import httpx
 
-from newcode.messaging import emit_info, emit_success, emit_warning, get_message_bus
-from newcode.messaging.messages import VersionCheckMessage
+from newcode.messaging import emit_info, emit_warning
 
 
 def normalize_version(version_str):
@@ -65,18 +64,9 @@ def default_version_mismatch_behavior(current_version):
         latest_version and version_is_newer(latest_version, current_version)
     )
 
-    # Emit structured version check message
-    version_msg = VersionCheckMessage(
-        current_version=current_version,
-        latest_version=latest_version or current_version,
-        update_available=update_available,
-    )
-    get_message_bus().emit(version_msg)
-
-    # Also emit plain text for legacy renderer
-    emit_info(f"Current version: {current_version}")
-
     if update_available:
-        emit_info(f"Latest version: {latest_version}")
-        emit_warning(f"A new version is available: {latest_version}")
-        emit_success("Please consider updating!")
+        emit_info(
+            f"Current version: {current_version} (update {latest_version} available)"
+        )
+    else:
+        emit_info(f"Current version: {current_version} (up to date)")

@@ -35,7 +35,6 @@ from newcode.config import (
 from newcode.http_utils import find_available_port
 from newcode.keymap import (
     KeymapError,
-    get_cancel_agent_display_name,
     validate_cancel_agent_key,
 )
 from newcode.messaging import emit_info
@@ -261,12 +260,9 @@ async def main():
         "on",
     )
     if no_version_update:
-        version_msg = f"Current version: {current_version}"
-        update_disabled_msg = (
-            "Update phase disabled because NO_VERSION_UPDATE is set to 1 or true"
+        emit_system_message(
+            f"Current version: {current_version} (update check disabled)"
         )
-        emit_system_message(version_msg)
-        emit_system_message(update_disabled_msg)
     else:
         if len(callbacks.get_callbacks("version_check")):
             await callbacks.on_version_check(current_version)
@@ -337,32 +333,7 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
     display_console = message_renderer.console
     from newcode.messaging import emit_info, emit_system_message
 
-    emit_system_message(
-        "Type '/exit', '/quit', or press Ctrl+D to exit the interactive mode."
-    )
-    emit_system_message("Type 'clear' to reset the conversation history.")
-    emit_system_message("Type /help to view all commands")
-    emit_system_message(
-        "Type @ for path completion, or /model to pick a model. Toggle multiline with Alt+M or F2; newline: Ctrl+J."
-    )
-    emit_system_message("Paste images: Ctrl+V (even on Mac!), F3, or /paste command.")
-    import platform
-
-    if platform.system() == "Darwin":
-        emit_system_message(
-            "💡 macOS tip: Use Ctrl+V (not Cmd+V) to paste images in terminal."
-        )
-    cancel_key = get_cancel_agent_display_name()
-    emit_system_message(
-        f"Press {cancel_key} during processing to cancel the current task or inference. Use Ctrl+X to interrupt running shell commands."
-    )
-    emit_system_message(
-        "Use /autosave_load to manually load a previous autosave session."
-    )
-    emit_system_message(
-        "Use /diff to configure diff highlighting colors for file changes."
-    )
-    emit_system_message("To re-run the tutorial, use /tutorial.")
+    emit_system_message("Type /help for commands and shortcuts.")
     try:
         from newcode.command_line.motd import print_motd
 

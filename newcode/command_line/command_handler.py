@@ -106,6 +106,28 @@ def get_commands_help():
             line.append_text(right)
             lines.append(line)
 
+    # Tips & Shortcuts section
+    import platform
+
+    from newcode.keymap import get_cancel_agent_display_name
+
+    cancel_key = get_cancel_agent_display_name()
+    tips = [
+        "Type '/exit', '/quit', or press Ctrl+D to exit",
+        "Type 'clear' to reset conversation history",
+        "Type @ for path completion, /model to pick a model",
+        "Toggle multiline: Alt+M or F2 | Newline: Ctrl+J",
+        "Paste images: Ctrl+V, F3, or /paste",
+        f"Press {cancel_key} to cancel current task | Ctrl+X to stop shell commands",
+    ]
+    if platform.system() == "Darwin":
+        tips.append("macOS: Use Ctrl+V (not Cmd+V) to paste images")
+
+    lines.append(Text(""))
+    lines.append(Text("Tips & Shortcuts", style="bold magenta"))
+    for tip in tips:
+        lines.append(Text(f"  {tip}", style="dim"))
+
     final_text = Text()
     for i, line in enumerate(lines):
         if i > 0:

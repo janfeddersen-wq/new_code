@@ -78,9 +78,6 @@ def _base_main_patches():
 def _interactive_patches():
     return {
         "newcode.cli_runner.print_truecolor_warning": MagicMock(),
-        "newcode.cli_runner.get_cancel_agent_display_name": MagicMock(
-            return_value="Ctrl+C"
-        ),
         "newcode.cli_runner.reset_windows_terminal_ansi": MagicMock(),
         "newcode.cli_runner.reset_windows_terminal_full": MagicMock(),
         "newcode.cli_runner.save_command_to_history": MagicMock(),
