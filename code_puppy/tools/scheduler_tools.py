@@ -87,8 +87,8 @@ def register_scheduler_create_task(agent):
         name: str = Field(description="Human-readable name for the task"),
         prompt: str = Field(description="The prompt to execute"),
         agent: str = Field(
-            default="code-puppy",
-            description="Agent to use (e.g., code-puppy, code-reviewer, security-auditor)",
+            default="code-agent",
+            description="Agent to use (e.g., code-agent, code-reviewer, security-auditor)",
         ),
         model: str = Field(
             default="", description="Model to use (empty string for default)"

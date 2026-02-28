@@ -1,7 +1,7 @@
 """Tests for code_puppy.tools.tools_content.
 
 This module tests the tools_content string constant that provides
-user-facing documentation about Code Puppy's available tools.
+user-facing documentation about available tools.
 """
 
 # Import directly from the module file to avoid heavy dependencies in __init__.py
@@ -129,7 +129,9 @@ class TestToolsContentFormatting:
 
     def test_contains_markdown_content(self):
         """Test that the content contains structured tool documentation."""
-        assert "available tools" in tools_content.lower(), "Expected 'available tools' in content"
+        assert "available tools" in tools_content.lower(), (
+            "Expected 'available tools' in content"
+        )
 
     def test_contains_markdown_headers(self):
         """Test that content uses markdown-style headers."""

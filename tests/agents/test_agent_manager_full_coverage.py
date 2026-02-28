@@ -328,7 +328,7 @@ class TestDiscoverAgents:
     @patch("code_puppy.agents.agent_manager.discover_json_agents", return_value={})
     def test_discovers_python_agents(self, mock_json, mock_plugins):
         am._discover_agents()
-        # Should have found at least code-puppy agent
+        # Should have found at least code-agent
         assert len(am._AGENT_REGISTRY) > 0
 
     @patch("code_puppy.agents.agent_manager.on_register_agents")

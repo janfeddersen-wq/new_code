@@ -58,7 +58,7 @@ def _download_to_file(url: str, dest: Path) -> bool:
 
     headers = {
         "Accept": "application/zip, application/octet-stream, */*",
-        "User-Agent": "code-puppy/skill-downloader",
+        "User-Agent": "code-agent/skill-downloader",
     }
 
     try:

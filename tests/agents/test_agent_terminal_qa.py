@@ -1,7 +1,7 @@
 """Tests for the Terminal QA Agent.
 
 Terminal QA Agent specializes in testing terminal and TUI applications
-using Code Puppy's API server with visual analysis capabilities.
+using the API server with visual analysis capabilities.
 """
 
 import pytest

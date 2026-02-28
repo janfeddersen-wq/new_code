@@ -1,4 +1,4 @@
-"""Pytest configuration and fixtures for code-puppy tests.
+"""Pytest configuration and fixtures.
 
 This file intentionally keeps the test environment lean (no extra deps).
 To support `async def` tests without pytest-asyncio, we provide a minimal

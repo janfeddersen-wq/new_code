@@ -46,7 +46,7 @@ BANNER_SAMPLE_CONTENT = {
     "directory_listing": "/src (recursive=True)\ncomponents/\n   Button.tsx",
     "invoke_agent": "code-reviewer (New session)\nSession: review-auth-abc123",
     "subagent_response": "code-reviewer\nThe code looks good overall...",
-    "list_agents": "- code-puppy: Code Agent\n- planning-agent: Planning Agent",
+    "list_agents": "- code-agent: Code Agent\n- code-reviewer: Code Reviewer",
     "universal_constructor": "action=create tool_name=api.weather\n* Created successfully",
     "terminal_tool": "$ chromium --headless\nBrowser terminal session started",
 }
@@ -419,9 +419,7 @@ def _get_preview_text_for_prompt_toolkit(config: ColorConfiguration) -> ANSI:
 
         # Print the banner with its configured color (left-border style)
         icon_str = f" {icon}" if icon else ""
-        banner_text = (
-            f"[{color}]───[/{color}] [bold]{display_name.upper()}[/bold] [{color}]───[/{color}]{icon_str}"
-        )
+        banner_text = f"[{color}]───[/{color}] [bold]{display_name.upper()}[/bold] [{color}]───[/{color}]{icon_str}"
         console.print(banner_text)
 
         # Print sample content (dimmed)
@@ -506,9 +504,7 @@ def _get_single_banner_preview(config: ColorConfiguration) -> ANSI:
 
     # Show the banner large (left-border style)
     icon_str = f" {icon}" if icon else ""
-    banner_text = (
-        f"[{color}]───[/{color}] [bold]{display_name.upper()}[/bold] [{color}]───[/{color}]{icon_str}"
-    )
+    banner_text = f"[{color}]───[/{color}] [bold]{display_name.upper()}[/bold] [{color}]───[/{color}]{icon_str}"
     console.print(banner_text)
     console.print()
 

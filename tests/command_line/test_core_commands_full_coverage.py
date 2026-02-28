@@ -403,7 +403,7 @@ class TestHandleAgentCommand:
             ),
             patch("code_puppy.messaging.emit_info"),
         ):
-            assert handle_agent_command("/agent code-puppy") is True
+            assert handle_agent_command("/agent code-agent") is True
 
     def test_with_name_switch_fails(self):
         from code_puppy.command_line.core_commands import handle_agent_command

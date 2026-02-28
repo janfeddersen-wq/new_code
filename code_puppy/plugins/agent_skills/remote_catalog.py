@@ -135,7 +135,7 @@ def _fetch_remote_json(url: str) -> Optional[dict[str, Any]]:
 
     headers = {
         "Accept": "application/json",
-        "User-Agent": "code-puppy/remote-catalog",
+        "User-Agent": "code-agent/remote-catalog",
     }
 
     try:

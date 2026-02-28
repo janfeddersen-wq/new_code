@@ -74,10 +74,10 @@ class TestAgentManagerErrors:
 
     @patch("code_puppy.agents.agent_manager._discover_agents")
     def test_load_agent_fallback_behavior(self, mock_discover):
-        """Test load_agent fallback to code-puppy when requested agent not found."""
+        """Test load_agent fallback to code-agent when requested agent not found."""
         mock_discover.return_value = None
 
-        # Mock registry with only code-puppy available
+        # Mock registry with only code-agent available
         mock_agent_class = MagicMock(spec=BaseAgent)
         mock_agent_class.return_value.name = "code-agent"
 
@@ -85,7 +85,7 @@ class TestAgentManagerErrors:
             "code_puppy.agents.agent_manager._AGENT_REGISTRY",
             {"code-agent": mock_agent_class},
         ):
-            # Should fallback to code-puppy instead of raising error
+            # Should fallback to code-agent instead of raising error
             result = load_agent("nonexistent-agent")
             assert result is not None
             mock_agent_class.assert_called_once()
@@ -135,7 +135,7 @@ class TestAgentManagerErrors:
         """Test set_current_agent with nonexistent agent name."""
         mock_discover.return_value = None
 
-        # Mock registry with only code-puppy available
+        # Mock registry with only code-agent available
         mock_agent_class = MagicMock(spec=BaseAgent)
         mock_agent_class.return_value.name = "code-agent"
         mock_agent_class.return_value.get_message_history.return_value = []

@@ -286,7 +286,7 @@ class SubAgentStatusMessage(BaseMessage):
 
     category: MessageCategory = MessageCategory.AGENT
     session_id: str = Field(description="Unique session ID of the sub-agent")
-    agent_name: str = Field(description="Name of the agent (e.g., 'code-puppy')")
+    agent_name: str = Field(description="Name of the agent (e.g., 'code-agent')")
     model_name: str = Field(description="Model being used by this agent")
     status: Literal[
         "starting", "running", "thinking", "tool_calling", "completed", "error"

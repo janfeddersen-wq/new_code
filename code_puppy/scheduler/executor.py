@@ -1,6 +1,6 @@
 """Task executor for the scheduler.
 
-Handles executing scheduled tasks by invoking code-puppy CLI
+Handles executing scheduled tasks by invoking the CLI
 with the configured prompt, model, and agent.
 """
 
@@ -121,7 +121,7 @@ def execute_task(task: ScheduledTask) -> Tuple[bool, int, str]:
         return (exit_code == 0, exit_code, "")
 
     except FileNotFoundError as e:
-        error_msg = f"code-puppy not found: {e}"
+        error_msg = f"CLI executable not found: {e}"
         task.last_status = "failed"
         task.last_exit_code = -1
         update_task(task)

@@ -443,7 +443,7 @@ def register_invoke_agent(agent):
 
         terminal_session_token = set_terminal_session(f"terminal-{session_id}")
 
-        # Set browser session for browser tools (qa-kitten, etc.)
+        # Set browser session for browser tools (qa-browser, etc.)
         # This allows parallel agent invocations to each have their own browser
         from code_puppy.tools.browser.browser_manager import (
             set_browser_session,

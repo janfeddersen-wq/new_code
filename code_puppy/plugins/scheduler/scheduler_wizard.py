@@ -262,9 +262,9 @@ def create_task_wizard() -> Optional[dict]:
     agent_names = [a[0] for a in agents]
     agent_descs = [a[1] for a in agents]
 
-    # Put code-puppy first if it exists
-    if "code-puppy" in agent_names:
-        idx = agent_names.index("code-puppy")
+    # Put code-agent first if it exists
+    if "code-agent" in agent_names:
+        idx = agent_names.index("code-agent")
         agent_names.insert(0, agent_names.pop(idx))
         agent_descs.insert(0, agent_descs.pop(idx))
 

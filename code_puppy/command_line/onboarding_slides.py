@@ -150,7 +150,7 @@ def slide_use_cases() -> str:
     content += "  • Refactor entire codebase\n"
     content += "  • Multi-file architectural changes\n\n"
 
-    content += "[cyan]Switch: /agent planning-agent[/cyan]\n"
+    content += "[cyan]Switch: /agent code-reviewer[/cyan]\n"
     content += "[dim]Planning breaks big tasks into steps,[/dim]\n"
     content += "[dim]then delegates to specialists.[/dim]"
     content += get_nav_footer()

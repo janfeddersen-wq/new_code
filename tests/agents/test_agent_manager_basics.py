@@ -298,7 +298,7 @@ class TestAgentManagerBasics:
         with patch("code_puppy.agents.agent_manager._discover_agents"):
             _AGENT_REGISTRY.clear()
 
-            # The actual behavior is that it tries to fallback to code-puppy
+            # The actual behavior is that it tries to fallback to code-agent
             # Since we have no agents, it should raise ValueError
             with pytest.raises(ValueError, match="not found and no fallback"):
                 load_agent("nonexistent-agent")
@@ -306,12 +306,12 @@ class TestAgentManagerBasics:
     @patch("code_puppy.agents.agent_manager.discover_json_agents")
     @patch("pkgutil.iter_modules")
     @patch("importlib.import_module")
-    def test_load_agent_fallback_to_code_puppy(
+    def test_load_agent_fallback_to_code_agent(
         self, mock_import, mock_iter_modules, mock_json_agents
     ):
-        """Test fallback to code-puppy agent when requested agent not found."""
+        """Test fallback to code-agent when requested agent not found."""
 
-        # Setup registry with only code-puppy
+        # Setup registry with only code-agent
         class CodeAgent(MockAgent):
             def __init__(self):
                 super().__init__()
@@ -333,7 +333,7 @@ class TestAgentManagerBasics:
         # Try to load non-existent agent
         agent = load_agent("nonexistent-agent")
 
-        # Should fallback to code-puppy
+        # Should fallback to code-agent
         assert agent is not None
         assert agent.name == "code-agent"
 

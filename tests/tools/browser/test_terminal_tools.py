@@ -195,7 +195,7 @@ class TestOpenTerminal:
         """Test successful terminal opening."""
         mock_page = AsyncMock()
         mock_page.url = "http://localhost:8765/terminal"
-        mock_page.title.return_value = "Code Puppy Terminal"
+        mock_page.title.return_value = "Agent Terminal"
         mock_page.wait_for_selector = AsyncMock()
         mock_page.goto = AsyncMock()
 
@@ -220,7 +220,7 @@ class TestOpenTerminal:
 
                         assert result["success"] is True
                         assert result["url"] == "http://localhost:8765/terminal"
-                        assert result["page_title"] == "Code Puppy Terminal"
+                        assert result["page_title"] == "Agent Terminal"
                         mock_manager.async_initialize.assert_called_once()
                         mock_page.goto.assert_called_once_with(
                             "http://localhost:8765/terminal"
