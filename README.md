@@ -1,12 +1,12 @@
 # NewCode
 
-NewCode is an open-source, terminal-first AI coding agent for generating, editing, and reviewing code.
+**NewCode** is an open-source, terminal-first AI coding agent for generating, editing, and reviewing code directly from your CLI.
 
-This project is maintained as a fork of [code-puppy](https://github.com/mpfaffenberger/code_puppy), with a more professional default UX and workflow-focused agent setup.
+It is maintained as a fork of [code-puppy](https://github.com/mpfaffenberger/code_puppy), with a more professional default UX and workflow-focused agent setup.
 
-## Overview
+## Why NewCode
 
-NewCode helps you work on software projects from the command line with AI-assisted workflows: inspect files, make edits, run tools, and iterate quickly.
+NewCode is designed for practical software workflows in the terminal: inspect files, make edits, run commands, and iterate quickly with AI assistance.
 
 ## Features
 
@@ -18,14 +18,9 @@ NewCode helps you work on software projects from the command line with AI-assist
 - Session autosave/restore and scheduler utilities
 - Plugin/callback extensibility hooks
 
-## Installation
+## Quick start
 
-### Requirements
-
-- Python `>=3.11,<3.14`
-- At least one provider/API key for a supported model backend
-
-### Install from PyPI
+### 1) Install
 
 ```bash
 pip install newcode
@@ -37,15 +32,13 @@ Or with [uv](https://docs.astral.sh/uv/):
 uv pip install newcode
 ```
 
-## Usage
-
-Start NewCode:
+### 2) Launch
 
 ```bash
 newcode
 ```
 
-Or use the short alias:
+Short alias:
 
 ```bash
 nc
@@ -53,7 +46,7 @@ nc
 
 On first run, NewCode starts onboarding to help configure API keys and defaults.
 
-Useful in-app commands:
+### 3) First useful commands
 
 ```bash
 /config         # Show current configuration
@@ -64,7 +57,12 @@ Useful in-app commands:
 /api            # Manage built-in API server (start|stop|status)
 ```
 
-### Configuration location
+## Requirements
+
+- Python `>=3.11,<3.14`
+- At least one provider/API key for a supported model backend
+
+## Configuration
 
 NewCode uses a legacy-compatible config filename: `puppy.cfg`.
 
@@ -98,9 +96,9 @@ ruff format --check .
 
 Contributions are welcome.
 
-- Open an issue to discuss bugs, ideas, or improvements
-- Submit a pull request with clear scope and rationale
-- Keep changes focused and include tests when applicable
+- Open an issue to discuss bugs, ideas, or improvements.
+- Submit a pull request with a clear scope and rationale.
+- Keep changes focused and include tests when applicable.
 
 ## License
 
