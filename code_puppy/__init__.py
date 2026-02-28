@@ -2,7 +2,7 @@ import importlib.metadata
 
 # Version detection
 try:
-    _detected_version = importlib.metadata.version("code-puppy")
+    _detected_version = importlib.metadata.version("newcode")
     # Ensure we never end up with None or empty string
     __version__ = _detected_version if _detected_version else "0.0.0-dev"
 except Exception:
