@@ -336,6 +336,15 @@ def get_config_keys():
     default_keys.append("resume_message_count")
     # Add show_diffs toggle
     default_keys.append("show_diffs")
+    # Add remaining settable keys
+    default_keys.append("subagent_verbose")
+    default_keys.append("safety_permission_level")
+    default_keys.append("mcp_disabled")
+    default_keys.append("grep_output_verbose")
+    default_keys.append("diff_addition_color")
+    default_keys.append("diff_deletion_color")
+    default_keys.append("suppress_thinking_messages")
+    default_keys.append("suppress_informational_messages")
 
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
@@ -1620,15 +1629,15 @@ def finalize_autosave_session() -> str:
 def get_show_diffs() -> bool:
     """Check whether diff content should be shown in edit blocks.
 
-    Defaults to True (show full diffs). When False, only the filename and
-    a count of lines added/removed is displayed.
+    Defaults to False (compact mode showing only filename and line counts).
+    When True, full diff content is displayed.
     """
-    false_vals = {"0", "false", "no", "off"}
+    true_vals = {"1", "true", "yes", "on"}
     cfg_val = get_value("show_diffs")
     if cfg_val is not None:
-        if str(cfg_val).strip().lower() in false_vals:
-            return False
-    return True
+        if str(cfg_val).strip().lower() in true_vals:
+            return True
+    return False
 
 
 def get_suppress_thinking_messages() -> bool:

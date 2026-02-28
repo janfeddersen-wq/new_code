@@ -537,6 +537,7 @@ class RichConsoleRenderer:
             f"[green]{msg.file_count} files[/green] "
             f"[dim]({self._format_size(msg.total_size)} total)[/dim]"
         )
+        self._console.print(f"{bar}")
 
     def _render_file_content(self, msg: FileContentMessage) -> None:
         """Render a file read - just show the header, not the content."""

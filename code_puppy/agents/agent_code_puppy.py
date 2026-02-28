@@ -19,7 +19,7 @@ class CodePuppyAgent(BaseAgent):
 
     @property
     def description(self) -> str:
-        return "General-purpose code generation and modification agent"
+        return "General-purpose code agent that can read, write, and modify files, search codebases, and execute shell commands"
 
     def get_available_tools(self) -> list[str]:
         """Get the list of tools available to the Code Agent."""

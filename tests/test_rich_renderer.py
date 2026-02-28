@@ -120,7 +120,8 @@ def test_render_diff_uses_formatter(monkeypatch: pytest.MonkeyPatch) -> None:
         ],
     )
 
-    renderer._render_diff(message)
+    with patch("code_puppy.config.get_show_diffs", return_value=True):
+        renderer._render_diff(message)
 
     printed = "".join(
         call.args[0]

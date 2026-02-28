@@ -306,7 +306,9 @@ class TestGetConfigKeys:
                 "compaction_strategy",
                 "compaction_threshold",
                 "default_agent",
+                "diff_addition_color",
                 "diff_context_lines",
+                "diff_deletion_color",
                 "enable_dbos",
                 "enable_pack_agents",
                 "enable_streaming",
@@ -314,17 +316,23 @@ class TestGetConfigKeys:
                 "frontend_emitter_enabled",
                 "frontend_emitter_max_recent_events",
                 "frontend_emitter_queue_size",
+                "grep_output_verbose",
                 "http2",
                 "key1",
                 "key2",
                 "max_saved_sessions",
+                "mcp_disabled",
                 "message_limit",
                 "model",
                 "openai_reasoning_effort",
                 "openai_verbosity",
                 "protected_token_count",
                 "resume_message_count",
+                "safety_permission_level",
                 "show_diffs",
+                "subagent_verbose",
+                "suppress_informational_messages",
+                "suppress_thinking_messages",
                 "temperature",
                 "yolo_mode",
             ]
@@ -361,7 +369,9 @@ class TestGetConfigKeys:
                 "compaction_strategy",
                 "compaction_threshold",
                 "default_agent",
+                "diff_addition_color",
                 "diff_context_lines",
+                "diff_deletion_color",
                 "enable_dbos",
                 "enable_pack_agents",
                 "enable_streaming",
@@ -369,15 +379,21 @@ class TestGetConfigKeys:
                 "frontend_emitter_enabled",
                 "frontend_emitter_max_recent_events",
                 "frontend_emitter_queue_size",
+                "grep_output_verbose",
                 "http2",
                 "max_saved_sessions",
+                "mcp_disabled",
                 "message_limit",
                 "model",
                 "openai_reasoning_effort",
                 "openai_verbosity",
                 "protected_token_count",
                 "resume_message_count",
+                "safety_permission_level",
                 "show_diffs",
+                "subagent_verbose",
+                "suppress_informational_messages",
+                "suppress_thinking_messages",
                 "temperature",
                 "yolo_mode",
             ]
@@ -863,9 +879,9 @@ class TestGetShowDiffs:
     """Tests for the get_show_diffs config getter."""
 
     @patch.object(cp_config, "get_value", return_value=None)
-    def test_default_is_true(self, _):
-        """show_diffs defaults to True when not configured."""
-        assert cp_config.get_show_diffs() is True
+    def test_default_is_false(self, _):
+        """show_diffs defaults to False when not configured."""
+        assert cp_config.get_show_diffs() is False
 
     @patch.object(cp_config, "get_value", return_value="false")
     def test_false_string(self, _):

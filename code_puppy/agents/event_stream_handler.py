@@ -138,10 +138,10 @@ async def event_stream_handler(
         thinking_color = get_banner_color("thinking")
         console.print(
             Text.from_markup(
-                f"[{thinking_color}]───[/{thinking_color}] [bold]THINKING[/bold] [{thinking_color}]───[/{thinking_color}] [dim]"
+                f"[{thinking_color}]───[/{thinking_color}] [bold]THINKING[/bold] [{thinking_color}]───[/{thinking_color}]"
             ),
-            end="",
         )
+        console.print("[dim]", end="")
         did_stream_anything = True
 
     async def _print_response_banner() -> None:
