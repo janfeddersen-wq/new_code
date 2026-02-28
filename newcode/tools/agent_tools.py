@@ -278,11 +278,12 @@ def register_list_agents(agent):
 
             # Accumulate output into a single string and emit once
             # Use Text.from_markup() to pass a Rich object that won't be escaped
+            bar = f"[{list_agents_color}]│[/{list_agents_color}]   "
             lines = []
             for agent_item in agents:
                 lines.append(
-                    f"- [bold]{agent_item.name}[/bold]: {agent_item.display_name}\n"
-                    f"  [dim]{agent_item.description}[/dim]"
+                    f"{bar}- [bold]{agent_item.name}[/bold]: {agent_item.display_name}\n"
+                    f"{bar}  [dim]{agent_item.description}[/dim]"
                 )
             emit_info(Text.from_markup("\n".join(lines)), message_group=group_id)
 
