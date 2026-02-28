@@ -531,9 +531,9 @@ class RichConsoleRenderer:
         render_dir_tree(root_key, 0)
 
         # Summary
-        self._console.print(f"{bar}[bold cyan]Summary:[/bold cyan]")
+        self._console.print(f"{bar}   [bold cyan]Summary:[/bold cyan]")
         self._console.print(
-            f"{bar}[blue]{msg.dir_count} directories[/blue], "
+            f"{bar}    [blue]{msg.dir_count} directories[/blue], "
             f"[green]{msg.file_count} files[/green] "
             f"[dim]({self._format_size(msg.total_size)} total)[/dim]"
         )
