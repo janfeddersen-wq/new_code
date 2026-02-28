@@ -480,7 +480,7 @@ class RichConsoleRenderer:
                     count += get_recursive_file_count(sub)
                 return count
 
-            indent = "    " * depth
+            indent = "    " * (depth + 1)
 
             # For root level, just show contents
             if dir_path == root_key:
