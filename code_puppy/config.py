@@ -1763,9 +1763,9 @@ def get_default_agent() -> str:
     Get the default agent name from puppy.cfg.
 
     Returns:
-        str: The default agent name, or "planning-agent" if not set.
+        str: The default agent name, or "code-agent" if not set.
     """
-    return get_value("default_agent") or "planning-agent"
+    return get_value("default_agent") or "code-agent"
 
 
 def set_default_agent(agent_name: str) -> None:

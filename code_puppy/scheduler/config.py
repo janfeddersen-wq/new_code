@@ -27,7 +27,7 @@ class ScheduledTask:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     prompt: str = ""
-    agent: str = "code-puppy"
+    agent: str = "code-agent"
     model: str = ""  # Uses default if empty
     schedule_type: str = "interval"  # "interval", "cron", "daily", "hourly"
     schedule_value: str = "1h"  # e.g., "30m", "1h", "0 9 * * *" for cron

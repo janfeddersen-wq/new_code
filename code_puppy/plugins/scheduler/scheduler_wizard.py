@@ -176,7 +176,7 @@ def get_available_agents_list() -> List[Tuple[str, str]]:
             result.append((agent_name, desc))
         return result
     except Exception:
-        return [("code-puppy", "Default agent")]
+        return [("code-agent", "Default agent")]
 
 
 def get_available_models_list() -> List[str]:
