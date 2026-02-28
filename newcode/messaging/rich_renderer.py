@@ -816,10 +816,15 @@ class RichConsoleRenderer:
         # Session ID
         self._console.print(f"{bar}  [dim]Session:[/dim] [bold]{msg.session_id}[/bold]")
 
-        # Prompt (truncated if too long, with bar prefix on each line)
-        prompt_display = (
-            msg.prompt[:200] + "..." if len(msg.prompt) > 200 else msg.prompt
-        )
+        # Prompt (show full in debug mode, truncated otherwise)
+        from newcode.config import get_debug
+
+        if get_debug():
+            prompt_display = msg.prompt
+        else:
+            prompt_display = (
+                msg.prompt[:200] + "..." if len(msg.prompt) > 200 else msg.prompt
+            )
         self._console.print(f"{bar}  [dim]Prompt:[/dim]")
         for prompt_line in prompt_display.split("\n"):
             escaped = prompt_line.replace("[", "\\[")

@@ -314,6 +314,7 @@ def get_config_keys():
     default_keys.append("diff_deletion_color")
     default_keys.append("suppress_thinking_messages")
     default_keys.append("suppress_informational_messages")
+    default_keys.append("debug")
 
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
@@ -1645,6 +1646,20 @@ def get_suppress_informational_messages() -> bool:
         if str(cfg_val).strip().lower() in true_vals:
             return True
         return False
+    return False
+
+
+def get_debug() -> bool:
+    """Check whether debug mode is enabled.
+
+    Defaults to False. When True, enables verbose output such as
+    showing full sub-agent prompts without truncation.
+    """
+    true_vals = {"1", "true", "yes", "on"}
+    cfg_val = get_value("debug")
+    if cfg_val is not None:
+        if str(cfg_val).strip().lower() in true_vals:
+            return True
     return False
 
 
