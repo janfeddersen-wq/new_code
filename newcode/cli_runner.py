@@ -116,22 +116,21 @@ async def main():
     # Show the banner when entering interactive mode
     # This happens when: no -p flag (prompt-only mode) is used
     if not args.prompt:
-        banner_lines = [
-            r"▓░░                                                          ▓░░           ",
-            r"▓░░ ▓░░      ▓░░     ▓░░     ▓░░░    ▓░░░    ▓░░          ▓░░    ▓░░    ",
-            r" ▓░░  ▓░░  ▓░   ▓░░   ▓░░  ░  ▓░░  ▓░░     ▓░░  ▓░░   ▓░░ ▓░░  ▓░   ▓░░ ",
-            r" ▓░░  ▓░░ ▓░░░░░ ▓░░  ▓░░ ▓░  ▓░░ ▓░░     ▓░░    ▓░░ ▓░   ▓░░ ▓░░░░░ ▓░░",
-            r" ▓░░  ▓░░ ▓░          ▓░ ▓░ ▓░▓░░  ▓░░     ▓░░  ▓░░  ▓░   ▓░░ ▓░        ",
-            r"▓░░░  ▓░░   ▓░░░░    ▓░░░    ▓░░░    ▓░░░    ▓░░      ▓░░ ▓░░   ▓░░░░  ",
-        ]
-        gradient_colors = ["bright_blue", "bright_cyan", "bright_green"]
-        display_console.print("\n")
-        lines = []
-        for line_num, line in enumerate(banner_lines):
-            color_idx = min(line_num // 2, len(gradient_colors) - 1)
-            color = gradient_colors[color_idx]
-            lines.append(f"[{color}]{line}[/{color}]")
-        display_console.print("\n".join(lines))
+        banner = (
+            "\n"
+            r"                                                          ▓░░           "
+            "\n"
+            r"▓░░ ▓░░      ▓░░     ▓░░     ▓░░░    ▓░░░    ▓░░          ▓░░    ▓░░    "
+            "\n"
+            r" ▓░░  ▓░░  ▓░   ▓░░   ▓░░  ░  ▓░░  ▓░░     ▓░░  ▓░░   ▓░░ ▓░░  ▓░   ▓░░ "
+            "\n"
+            r" ▓░░  ▓░░ ▓░░░░░ ▓░░  ▓░░ ▓░  ▓░░ ▓░░     ▓░░    ▓░░ ▓░   ▓░░ ▓░░░░░ ▓░░"
+            "\n"
+            r" ▓░░  ▓░░ ▓░          ▓░ ▓░ ▓░▓░░  ▓░░     ▓░░  ▓░░  ▓░   ▓░░ ▓░        "
+            "\n"
+            r"▓░░░  ▓░░   ▓░░░░    ▓░░░    ▓░░░    ▓░░░    ▓░░      ▓░░ ▓░░   ▓░░░░  "
+        )
+        display_console.print(banner, highlight=False)
 
         # Truecolor warning moved to interactive_mode() so it prints LAST
         # after all the help stuff - max visibility for the ugly red box!

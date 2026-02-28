@@ -202,14 +202,14 @@ class TestLogoDisplay:
         prompt_arg = "write hello world"
         assert prompt_arg is not None  # args.prompt is not None
 
-    def test_banner_lines_defined(self):
-        """Test that banner lines are used in cli_runner."""
+    def test_banner_defined(self):
+        """Test that banner is used in cli_runner."""
         import inspect
 
         import newcode.cli_runner as mod
 
         source = inspect.getsource(mod)
-        assert "banner_lines" in source
+        assert "banner" in source
 
 
 class TestAPIKeyLoading:

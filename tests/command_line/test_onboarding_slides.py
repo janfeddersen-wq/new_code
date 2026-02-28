@@ -39,12 +39,12 @@ class TestGetGradientBanner:
         # Should contain the block characters from the hardcoded banner
         assert "▓" in result
 
-    def test_has_gradient_colors(self):
+    def test_plain_text_no_markup(self):
         from newcode.command_line.onboarding_slides import get_gradient_banner
 
         result = get_gradient_banner()
-        assert "bright_blue" in result
-        assert "bright_green" in result
+        # Banner should be plain text with no Rich color markup
+        assert "[" not in result
 
 
 class TestSlideWelcome:
