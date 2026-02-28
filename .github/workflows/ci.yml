@@ -67,7 +67,7 @@ jobs:
         run: |
           echo "Running unit tests (skipping integration tests) on ${{ runner.os }} with Python ${{ matrix.python-version }}..."
           echo "Required environment variables are set (using CI fallbacks if secrets not available)"
-          uv run pytest tests/ --ignore tests/integration -v --cov=code_puppy --cov-report=term-missing
+          uv run pytest tests/ --ignore tests/integration -v -n auto --cov=code_puppy --cov-report=term-missing
 
   quality:
     runs-on: ubuntu-latest
