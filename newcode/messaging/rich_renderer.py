@@ -736,17 +736,17 @@ class RichConsoleRenderer:
         if msg.cwd:
             safe_cwd = escape_rich_markup(msg.cwd)
             self._console.print(
-                f"[{color}]│[/{color}]  [dim]Working directory: {safe_cwd}[/dim]"
+                f"[{color}]│[/{color}]   [dim]Working directory: {safe_cwd}[/dim]"
             )
 
         # Show timeout or background status
         if msg.background:
             self._console.print(
-                f"[{color}]│[/{color}]  [dim]Runs detached (no timeout)[/dim]"
+                f"[{color}]│[/{color}]   [dim]Runs detached (no timeout)[/dim]"
             )
         else:
             self._console.print(
-                f"[{color}]│[/{color}]  [dim]Timeout: {msg.timeout}s[/dim]"
+                f"[{color}]│[/{color}]   [dim]Timeout: {msg.timeout}s[/dim]"
             )
 
     def _render_shell_line(self, msg: ShellLineMessage) -> None:
