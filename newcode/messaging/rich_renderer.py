@@ -814,15 +814,16 @@ class RichConsoleRenderer:
         )
 
         # Session ID
-        self._console.print(f"{bar}[dim]Session:[/dim] [bold]{msg.session_id}[/bold]")
+        self._console.print(f"{bar}  [dim]Session:[/dim] [bold]{msg.session_id}[/bold]")
 
-        # Prompt (truncated if too long, rendered as markdown)
+        # Prompt (truncated if too long, with bar prefix on each line)
         prompt_display = (
             msg.prompt[:200] + "..." if len(msg.prompt) > 200 else msg.prompt
         )
-        self._console.print(f"{bar}[dim]Prompt:[/dim]")
-        md_prompt = Markdown(prompt_display)
-        self._console.print(md_prompt)
+        self._console.print(f"{bar}  [dim]Prompt:[/dim]")
+        for prompt_line in prompt_display.split("\n"):
+            escaped = prompt_line.replace("[", "\\[")
+            self._console.print(f"{bar}    [dim]{escaped}[/dim]")
 
     def _render_subagent_response(self, msg: SubAgentResponseMessage) -> None:
         """Render sub-agent response with markdown formatting."""

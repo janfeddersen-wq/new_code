@@ -1,12 +1,11 @@
 # NewCode
 
-An AI-powered code generation and modification agent for the terminal.
+NewCode is an AI-powered terminal coding agent for generating, editing, and reviewing code.
 
-NewCode is a fork of [code-puppy](https://github.com/mpfaffenberger/newcode) by Michael Pfaffenberger, customized for the fedstew workflow. We wanted a clean, professional CLI agent with opinionated defaults, streamlined prompts, and a focus on practical code generation without the playful branding.
+It is maintained as a fork of [code-puppy](https://github.com/mpfaffenberger/code_puppy), with a more professional default UX and workflow-focused agent setup.
 
 ## Table of Contents
 
-- [What changed from code-puppy](#what-changed-from-code-puppy)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Requirements](#requirements)
@@ -17,24 +16,15 @@ NewCode is a fork of [code-puppy](https://github.com/mpfaffenberger/newcode) by 
 - [Credits](#credits)
 - [License](#license)
 
-## What changed from code-puppy
-
-- Removed all dog/puppy-themed branding and emojis in favor of a clean, professional interface
-- Renamed the "Pack" multi-agent system to functional names (Orchestrator, Tracker, Executor, Reviewer, etc.)
-- Rewrote all agent system prompts for clarity and professionalism
-- Increased output validation retries from 3 to 10 for more robust model interactions
-- Updated configuration keys and display names throughout
-- Published to PyPI as `newcode` instead of `code-puppy`
-
 ## Installation
 
-Install with `pip`:
+Install from PyPI:
 
 ```bash
 pip install newcode
 ```
 
-Or install with [uv](https://docs.astral.sh/uv/):
+Or with [uv](https://docs.astral.sh/uv/):
 
 ```bash
 uv pip install newcode
@@ -42,80 +32,75 @@ uv pip install newcode
 
 ## Quick Start
 
-Run the agent:
+Start NewCode:
 
 ```bash
 newcode
 ```
 
-Or use the short alias:
+Short alias:
 
 ```bash
 nc
 ```
 
-On first run, NewCode opens a setup wizard to help you configure API keys and preferences.
+On first run, NewCode launches an onboarding wizard to help configure API keys and defaults.
 
 ## Requirements
 
-- Python 3.11 - 3.13
-- An API key for at least one supported provider (OpenAI, Anthropic, Cerebras, Google Gemini, etc.)
+- Python **3.11 to 3.13** (`>=3.11,<3.14`)
+- At least one provider/API key for a supported model backend
+  - Examples include OpenAI, Anthropic, Gemini, Cerebras, and compatible custom OpenAI-style endpoints
 
 ## Features
 
-### Model and agent capabilities
-
-- Multi-model support: OpenAI, Anthropic Claude, Google Gemini, Cerebras, and more
-- Multi-agent workflows with specialized agents (Orchestrator, Tracker, Executor, Reviewer, QA Checker, Workspace Manager, Merger)
-- MCP (Model Context Protocol) server support
-
-### Core workflow tools
-
-- File operations: read, write, edit, delete with diff previews and permission prompts
-- Shell command execution with safety controls
-- Session auto-save and restore
-
-### Automation and extensibility
-
-- Scheduled task execution with a background daemon
-- Plugin system with lifecycle callbacks and event-based hooks
-
-### Interface and UX
-
-- Interactive TUI menus for configuration, model selection, and task management
-- Browser-based terminal via built-in API server
+- **Multi-provider model support**
+  - OpenAI, Anthropic, Gemini, Cerebras, and additional configured/custom providers
+- **Terminal-first coding workflow**
+  - Read/search/edit/delete files, run commands, and review diffs from the CLI
+- **Agent system**
+  - Default general-purpose code agent plus optional specialist/multi-agent workflows
+- **MCP support**
+  - Model Context Protocol server management and integration
+- **Interactive UX**
+  - Built-in command menus for model, agent, and settings management
+- **Session and workflow utilities**
+  - Session autosave/restore and scheduler capabilities
+- **Extensibility**
+  - Plugin/callback hooks for custom behavior
 
 ## Configuration
 
-NewCode stores configuration at:
+NewCode uses a legacy-compatible `puppy.cfg` filename.
 
-- `~/.config/newcode/puppy.cfg` (XDG-compliant path)
+By default (no XDG env vars set), config is stored in:
 
-The first-run setup wizard creates and populates this file automatically. After setup, you can manage configuration from inside the agent REPL:
+- `~/.newcode/puppy.cfg`
+
+If XDG environment variables are set, config is stored under:
+
+- `$XDG_CONFIG_HOME/newcode/puppy.cfg`
+
+Useful in-app commands:
 
 ```bash
-/config          # Show current configuration
-/model           # Switch models
-/agent           # Switch agents
-/scheduler       # Manage scheduled tasks
-/colors          # Customize terminal colors
+/config         # Show current configuration
+/model          # Select or switch model
+/agent          # Select or switch agent
+/scheduler      # Manage scheduled tasks
+/colors         # Customize terminal UI colors
+/api            # Manage built-in API server (start|stop|status)
 ```
 
 ## Agents
 
-| Agent | Primary responsibility |
-|-------|------------------------|
-| Code Agent | General-purpose code generation and modification (default) |
-| Orchestrator | Coordinates multi-agent workflows |
-| Tracker | Performs code search and navigation |
-| Executor | Runs shell commands |
-| Reviewer | Performs code review and quality checks |
-| QA Checker | Handles testing and validation |
-| Workspace Manager | Manages file system operations |
-| Merger | Integrates outputs from multiple agents |
-| Python Reviewer | Provides Python-specific code review |
-| QA Expert | Defines testing strategy and quality assurance |
-| Security Auditor | Performs security analysis |
+NewCode includes a default coding agent and additional specialized agents.
+
+- **Default:** `code-agent` (general-purpose coding and project modifications)
+- **Specialist examples:** language reviewers, QA-focused agents, security auditor, and planning-oriented agents
+- **Optional pack agents:** orchestrated multi-agent workflow roles (disabled by default unless enabled in config)
+
+Use `/agent` in the CLI to view and switch available agents in your current setup.
 
 ## Development
 
@@ -124,23 +109,24 @@ The first-run setup wizard creates and populates this file automatically. After 
 git clone https://github.com/janfeddersen-wq/new_code.git
 cd new_code
 
-# Install in editable mode with development dependencies
+# Install editable package with development dependencies
 uv pip install -e ".[dev]"
 
-# Run the test suite
+# Run tests
 uv run pytest tests/ -v
 
-# Run lint checks
+# Lint and formatting checks
 ruff check .
-
-# Verify formatting
 ruff format --check .
 ```
 
 ## Credits
 
-This project is a fork of [code-puppy](https://github.com/mpfaffenberger/newcode) by [Michael Pfaffenberger](https://github.com/mpfaffenberger), licensed under the MIT License. We are grateful for the original work and the open-source foundation it provides.
+- NewCode repository: <https://github.com/janfeddersen-wq/new_code>
+- Upstream project: [code-puppy](https://github.com/mpfaffenberger/code_puppy)
+- Original code-puppy author: [Michael Pfaffenberger](https://github.com/mpfaffenberger)
+- NewCode author: Jan Feddersen
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](LICENSE).
