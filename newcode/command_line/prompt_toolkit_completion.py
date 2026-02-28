@@ -520,6 +520,12 @@ def get_prompt_with_active_model(base: str = ">>> "):
     # Get current agent information
     current_agent = get_current_agent()
     agent_display = current_agent.display_name if current_agent else "code-agent"
+    # Strip emoji from display name for cleaner prompt
+    import re
+
+    agent_display = re.sub(
+        r"\s*[\U0001f300-\U0001faff\U00002702-\U000027b0]+\s*", "", agent_display
+    ).strip()
 
     # Check if current agent has a pinned model
     agent_model = None
@@ -527,15 +533,10 @@ def get_prompt_with_active_model(base: str = ">>> "):
         agent_model = current_agent.get_model_name()
 
     # Determine which model to display
-    if agent_model and agent_model != global_model:
-        # Show both models when they differ
-        model_display = f"[{global_model} → {agent_model}]"
-    elif agent_model:
-        # Show only the agent model when pinned
-        model_display = f"[{agent_model}]"
+    if agent_model:
+        model_display = f"[Pinned: {agent_model}]"
     else:
-        # Show only the global model when no agent model is pinned
-        model_display = f"[{global_model}]"
+        model_display = f"[Default: {global_model}]"
 
     cwd = os.getcwd()
     home = os.path.expanduser("~")
