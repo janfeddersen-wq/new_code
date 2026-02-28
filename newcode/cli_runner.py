@@ -349,7 +349,6 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
 
     # Initialize the runtime agent manager
     if initial_command:
-        from newcode.agents import get_current_agent
         from newcode.messaging import emit_info, emit_success, emit_system_message
 
         agent = get_current_agent()
@@ -472,14 +471,9 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
     current_agent_task = None
 
     while True:
-        from newcode.agents.agent_manager import get_current_agent
         from newcode.messaging import emit_info
 
-        # Get the custom prompt from the current agent, or use default
         current_agent = get_current_agent()
-        user_prompt = current_agent.get_user_prompt() or "Enter your coding task:"
-
-        emit_info(f"{user_prompt}\n")
 
         try:
             # Use prompt_toolkit for enhanced input with path completion
@@ -617,9 +611,6 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
 
                         if use_interactive_picker:
                             # Use interactive picker for terminal sessions
-                            from newcode.agents.agent_manager import (
-                                get_current_agent,
-                            )
                             from newcode.command_line.autosave_menu import (
                                 interactive_autosave_picker,
                             )

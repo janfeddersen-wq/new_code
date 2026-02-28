@@ -48,7 +48,7 @@ def test_spawned_cli_is_alive(spawned_cli: SpawnResult) -> None:
     """spawned_cli fixture should hand us a live CLI at the task prompt."""
     assert spawned_cli.child.isalive()
     log = spawned_cli.read_log()
-    assert "Enter your coding task" in log or log == ""
+    assert ">>> " in log or log == ""
 
 
 def test_send_command_returns_output(spawned_cli: SpawnResult) -> None:

@@ -58,7 +58,7 @@ def test_session_rotation(
             time.sleep(5)  # Increased sleep time
 
             # Verify we get a new session prompt (look for the specific text that indicates a new session)
-            second_run.child.expect("Enter your coding task", timeout=10)
+            second_run.child.expect(">>> ", timeout=10)
 
             # Verify we now have two session directories
             autosave_dir = Path(second_run.temp_home) / ".newcode" / "autosaves"

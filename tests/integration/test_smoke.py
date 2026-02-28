@@ -38,24 +38,15 @@ def test_interactive_smoke() -> None:
     try:
         idx = child.expect(
             [
-                "What should we name the puppy?",
-                "Enter your coding task",
                 ">>> ",
                 pexpect.TIMEOUT,
             ],
             timeout=15,
         )
 
-        if idx == 0:  # Puppy name prompt
-            child.sendline("IntegrationPup\r")
-            child.expect("What's your name", timeout=15)
-            child.sendline("HarnessTester\r")
-            # Now wait for the coding task prompt
-            child.expect(["Enter your coding task", ">>> "], timeout=30)
-            print("[SMOKE] Completed first-run setup")
-        elif idx == 1 or idx == 2:  # Found prompt
+        if idx == 0:  # Found prompt
             print("[SMOKE] Found prompt indicator")
-        elif idx == 3:  # Timeout
+        elif idx == 1:  # Timeout
             print(
                 f"[SMOKE] Timeout waiting for prompt. Buffer: {child.before[:200] if child.before else 'None'}"
             )
