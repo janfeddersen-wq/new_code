@@ -443,9 +443,10 @@ class TestGetPromptWithActiveModel:
             ),
         ):
             result = get_prompt_with_active_model()
-            # Should show both models
+            # Should show pinned model
             text = "".join(t[1] for t in result)
-            assert "→" in text
+            assert "Pinned:" in text
+            assert "claude-3" in text
 
     def test_agent_model_same_as_global(self):
         from newcode.command_line.prompt_toolkit_completion import (
@@ -468,6 +469,7 @@ class TestGetPromptWithActiveModel:
         ):
             result = get_prompt_with_active_model()
             text = "".join(t[1] for t in result)
+            assert "Pinned:" in text
             assert "gpt-4" in text
 
     def test_no_current_agent(self):
