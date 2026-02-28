@@ -119,6 +119,7 @@ async def event_stream_handler(
     token_count: dict[int, int] = {}  # Track token count per text/tool part
     tool_names: dict[int, str] = {}  # Track tool name per tool part index
     did_stream_anything = False  # Track if we streamed any content
+    thinking_at_line_start: dict[int, bool] = {}  # Track line-start for │ prefix
 
     # Termflow streaming state for text parts
     termflow_parsers: dict[int, TermflowParser] = {}
@@ -141,8 +142,33 @@ async def event_stream_handler(
                 f"[{thinking_color}]───[/{thinking_color}] [bold]THINKING[/bold] [{thinking_color}]───[/{thinking_color}]"
             ),
         )
-        console.print("[dim]", end="")
         did_stream_anything = True
+
+    def _print_thinking_content(index: int, content: str) -> None:
+        """Print thinking content with │ bar prefix on each line."""
+        if not content:
+            return
+        thinking_color = get_banner_color("thinking")
+        bar = f"[{thinking_color}]│[/{thinking_color}]   "
+
+        lines = content.split("\n")
+        for i, line in enumerate(lines):
+            is_last = i == len(lines) - 1
+
+            # Print bar prefix at start of a new line (skip for trailing empty segment)
+            if thinking_at_line_start.get(index, True) and (line or not is_last):
+                console.print(bar, end="")
+                thinking_at_line_start[index] = False
+
+            # Print the line content
+            if line:
+                escaped = escape(line)
+                console.print(f"[dim]{escaped}[/dim]", end="")
+
+            # Print newline between segments (not after last)
+            if not is_last:
+                console.print()  # newline
+                thinking_at_line_start[index] = True
 
     async def _print_response_banner() -> None:
         """Print the AGENT RESPONSE banner with spinner pause and line clear."""
@@ -181,8 +207,8 @@ async def event_stream_handler(
                 # If there's initial content, print banner + content now
                 if part.content and part.content.strip():
                     await _print_thinking_banner()
-                    escaped = escape(part.content)
-                    console.print(f"[dim]{escaped}[/dim]", end="")
+                    thinking_at_line_start[event.index] = True
+                    _print_thinking_content(event.index, part.content)
                     banner_printed.add(event.index)
             elif isinstance(part, TextPart):
                 streaming_parts.add(event.index)
@@ -247,12 +273,12 @@ async def event_stream_handler(
 
                             termflow_line_buffers[event.index] = buffer
                         else:
-                            # For thinking parts, stream immediately (dim)
+                            # For thinking parts, stream immediately (dim) with │ prefix
                             if event.index not in banner_printed:
                                 await _print_thinking_banner()
+                                thinking_at_line_start[event.index] = True
                                 banner_printed.add(event.index)
-                            escaped = escape(delta.content_delta)
-                            console.print(f"[dim]{escaped}[/dim]", end="")
+                            _print_thinking_content(event.index, delta.content_delta)
                 elif isinstance(delta, ToolCallPartDelta):
                     # For tool calls, estimate tokens from args_delta content
                     # args_delta contains the streaming JSON arguments
@@ -324,13 +350,15 @@ async def event_stream_handler(
                 elif event.index in tool_parts:
                     # Clear the chunk counter line by printing spaces and returning
                     console.print(" " * 50, end="\r")
-                # For thinking parts, just print newline
+                # For thinking parts, finish the current line
                 elif event.index in banner_printed:
-                    console.print()  # Final newline after streaming
+                    if not thinking_at_line_start.get(event.index, True):
+                        console.print()  # Final newline if mid-line
 
-                # Clean up token count and tool names
+                # Clean up token count, tool names, and thinking state
                 token_count.pop(event.index, None)
                 tool_names.pop(event.index, None)
+                thinking_at_line_start.pop(event.index, None)
                 # Clean up all tracking sets
                 streaming_parts.discard(event.index)
                 thinking_parts.discard(event.index)
