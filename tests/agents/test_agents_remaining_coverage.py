@@ -97,15 +97,6 @@ def test_python_programmer():
     assert isinstance(prompt, str)
 
 
-def test_helios_agent():
-    from code_puppy.agents.agent_helios import HeliosAgent
-
-    agent = HeliosAgent()
-    tools = agent.get_available_tools()
-    assert isinstance(tools, list)
-    prompt = agent.get_system_prompt()
-    assert isinstance(prompt, str)
-
 
 def test_code_puppy_agent():
     from code_puppy.agents.agent_code_puppy import CodePuppyAgent

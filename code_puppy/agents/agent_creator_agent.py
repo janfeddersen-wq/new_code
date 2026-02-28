@@ -50,7 +50,7 @@ class AgentCreatorAgent(BaseAgent):
             uc_tools_section = "\n".join(uc_tools_info)
         else:
             uc_tools_section = (
-                "No custom UC tools created yet. Use Helios to create some!"
+                "No custom UC tools created yet."
             )
 
         # Load available models dynamically
@@ -163,7 +163,7 @@ Users can optionally pin a specific model to their agent to override the global 
 - `invoke_agent` - Invoke other agents with specific prompts (recommended for agent managers)
 
 ### 🔧 **Universal Constructor Tools** (custom tools):
-- These are tools created by Helios or via the Universal Constructor
+- These are tools created via the Universal Constructor
 - They persist across sessions and can be bound to any agent
 - Use `universal_constructor(action="list")` to see available custom tools
 - Bind them by adding their full name to the agent's tools array
