@@ -30,10 +30,11 @@ def mock_config_paths(monkeypatch):
     monkeypatch.setattr(cp_config, "CACHE_DIR", mock_cache_dir)
     monkeypatch.setattr(cp_config, "STATE_DIR", mock_state_dir)
     monkeypatch.setattr(cp_config, "SKILLS_DIR", mock_skills_dir)
+    _real_expanduser = os.path.expanduser
     monkeypatch.setattr(
         os.path,
         "expanduser",
-        lambda path: mock_home if path == "~" else os.path.expanduser(path),
+        lambda path: mock_home if path == "~" else _real_expanduser(path),
     )
     return mock_config_dir, mock_config_file
 
