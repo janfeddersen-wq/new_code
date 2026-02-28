@@ -169,20 +169,20 @@ class RichConsoleRenderer:
 
         return get_banner_color(banner_name)
 
-    def _format_banner(self, banner_name: str, text: str) -> str:
+    def _format_banner(self, banner_name: str, text: str, corner: bool = True) -> str:
         """Format a banner with colored dashes and bold capitalized text.
 
         Args:
             banner_name: The banner identifier
             text: The banner text
+            corner: If True use ╭── leading edge, otherwise ───
 
         Returns:
             Rich markup string for the banner
         """
         color = self._get_banner_color(banner_name)
-        return (
-            f"[{color}]╭──[/{color}] [bold]{text.upper()}[/bold] [{color}]───[/{color}]"
-        )
+        lead = "╭──" if corner else "───"
+        return f"[{color}]{lead}[/{color}] [bold]{text.upper()}[/bold] [{color}]───[/{color}]"
 
     def _should_suppress_subagent_output(self) -> bool:
         """Check if sub-agent output should be suppressed.
@@ -782,7 +782,7 @@ class RichConsoleRenderer:
     def _render_agent_response(self, msg: AgentResponseMessage) -> None:
         """Render agent response with header and markdown formatting."""
         # Header
-        banner = self._format_banner("agent_response", "AGENT RESPONSE")
+        banner = self._format_banner("agent_response", "AGENT RESPONSE", corner=False)
         self._console.print(f"\n{banner}")
 
         # Content (markdown or plain)
@@ -835,7 +835,9 @@ class RichConsoleRenderer:
         # Response header
         color = self._get_banner_color("subagent_response")
         bar = self._bar(color)
-        banner = self._format_banner("subagent_response", "AGENT RESPONSE")
+        banner = self._format_banner(
+            "subagent_response", "AGENT RESPONSE", corner=False
+        )
         self._console.print(f"\n{banner} [bold cyan]{msg.agent_name}[/bold cyan]")
 
         # Render response as markdown

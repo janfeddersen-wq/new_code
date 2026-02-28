@@ -1,24 +1,31 @@
 # NewCode
 
-NewCode is an AI-powered terminal coding agent for generating, editing, and reviewing code.
+NewCode is an open-source, terminal-first AI coding agent for generating, editing, and reviewing code.
 
-It is maintained as a fork of [code-puppy](https://github.com/mpfaffenberger/code_puppy), with a more professional default UX and workflow-focused agent setup.
+This project is maintained as a fork of [code-puppy](https://github.com/mpfaffenberger/code_puppy), with a more professional default UX and workflow-focused agent setup.
 
-## Table of Contents
+## Overview
 
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Requirements](#requirements)
-- [Features](#features)
-- [Configuration](#configuration)
-- [Agents](#agents)
-- [Development](#development)
-- [Credits](#credits)
-- [License](#license)
+NewCode helps you work on software projects from the command line with AI-assisted workflows: inspect files, make edits, run tools, and iterate quickly.
+
+## Features
+
+- Multi-provider model support (including OpenAI, Anthropic, Gemini, Cerebras, and compatible OpenAI-style endpoints)
+- Terminal-first coding workflow (read/search/edit/delete files and run commands)
+- Built-in agent system with a default coding agent and optional specialist workflows
+- MCP (Model Context Protocol) integration and server management
+- Interactive command-driven UX for model, agent, and settings management
+- Session autosave/restore and scheduler utilities
+- Plugin/callback extensibility hooks
 
 ## Installation
 
-Install from PyPI:
+### Requirements
+
+- Python `>=3.11,<3.14`
+- At least one provider/API key for a supported model backend
+
+### Install from PyPI
 
 ```bash
 pip install newcode
@@ -30,7 +37,7 @@ Or with [uv](https://docs.astral.sh/uv/):
 uv pip install newcode
 ```
 
-## Quick Start
+## Usage
 
 Start NewCode:
 
@@ -38,48 +45,13 @@ Start NewCode:
 newcode
 ```
 
-Short alias:
+Or use the short alias:
 
 ```bash
 nc
 ```
 
-On first run, NewCode launches an onboarding wizard to help configure API keys and defaults.
-
-## Requirements
-
-- Python **3.11 to 3.13** (`>=3.11,<3.14`)
-- At least one provider/API key for a supported model backend
-  - Examples include OpenAI, Anthropic, Gemini, Cerebras, and compatible custom OpenAI-style endpoints
-
-## Features
-
-- **Multi-provider model support**
-  - OpenAI, Anthropic, Gemini, Cerebras, and additional configured/custom providers
-- **Terminal-first coding workflow**
-  - Read/search/edit/delete files, run commands, and review diffs from the CLI
-- **Agent system**
-  - Default general-purpose code agent plus optional specialist/multi-agent workflows
-- **MCP support**
-  - Model Context Protocol server management and integration
-- **Interactive UX**
-  - Built-in command menus for model, agent, and settings management
-- **Session and workflow utilities**
-  - Session autosave/restore and scheduler capabilities
-- **Extensibility**
-  - Plugin/callback hooks for custom behavior
-
-## Configuration
-
-NewCode uses a legacy-compatible `puppy.cfg` filename.
-
-By default (no XDG env vars set), config is stored in:
-
-- `~/.newcode/puppy.cfg`
-
-If XDG environment variables are set, config is stored under:
-
-- `$XDG_CONFIG_HOME/newcode/puppy.cfg`
+On first run, NewCode starts onboarding to help configure API keys and defaults.
 
 Useful in-app commands:
 
@@ -92,40 +64,43 @@ Useful in-app commands:
 /api            # Manage built-in API server (start|stop|status)
 ```
 
-## Agents
+### Configuration location
 
-NewCode includes a default coding agent and additional specialized agents.
+NewCode uses a legacy-compatible config filename: `puppy.cfg`.
 
-- **Default:** `code-agent` (general-purpose coding and project modifications)
-- **Specialist examples:** language reviewers, QA-focused agents, security auditor, and planning-oriented agents
-- **Optional pack agents:** orchestrated multi-agent workflow roles (disabled by default unless enabled in config)
-
-Use `/agent` in the CLI to view and switch available agents in your current setup.
+- Default path: `~/.newcode/puppy.cfg`
+- With XDG variables: `$XDG_CONFIG_HOME/newcode/puppy.cfg`
 
 ## Development
 
 ```bash
-# Clone the repository
 git clone https://github.com/janfeddersen-wq/new_code.git
 cd new_code
-
-# Install editable package with development dependencies
 uv pip install -e ".[dev]"
+```
 
-# Run tests
+## Testing
+
+Run the test suite:
+
+```bash
 uv run pytest tests/ -v
+```
 
-# Lint and formatting checks
+Run linting and formatting checks:
+
+```bash
 ruff check .
 ruff format --check .
 ```
 
-## Credits
+## Contributing
 
-- NewCode repository: <https://github.com/janfeddersen-wq/new_code>
-- Upstream project: [code-puppy](https://github.com/mpfaffenberger/code_puppy)
-- Original code-puppy author: [Michael Pfaffenberger](https://github.com/mpfaffenberger)
-- NewCode author: Jan Feddersen
+Contributions are welcome.
+
+- Open an issue to discuss bugs, ideas, or improvements
+- Submit a pull request with clear scope and rationale
+- Keep changes focused and include tests when applicable
 
 ## License
 

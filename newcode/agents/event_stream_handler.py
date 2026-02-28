@@ -182,7 +182,7 @@ async def event_stream_handler(
         response_color = get_banner_color("agent_response")
         console.print(
             Text.from_markup(
-                f"[{response_color}]╭──[/{response_color}] [bold]AGENT RESPONSE[/bold] [{response_color}]───[/{response_color}]"
+                f"[{response_color}]───[/{response_color}] [bold]AGENT RESPONSE[/bold] [{response_color}]───[/{response_color}]"
             )
         )
         did_stream_anything = True
