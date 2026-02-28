@@ -8,7 +8,7 @@ import os
 import subprocess
 from unittest.mock import MagicMock, patch
 
-from code_puppy.tools.file_operations import (
+from newcode.tools.file_operations import (
     GrepOutput,
     ListFileOutput,
     MatchInfo,
@@ -466,7 +466,7 @@ class TestRegisterFunctions:
 
     def test_register_list_files_truncation(self):
         """Test that list_files truncates very large results."""
-        from code_puppy.tools.file_operations import register_list_files
+        from newcode.tools.file_operations import register_list_files
 
         # Create a mock agent
         mock_agent = MagicMock()
@@ -485,7 +485,7 @@ class TestRegisterFunctions:
 
     def test_register_read_file(self):
         """Test that read_file tool is registered correctly."""
-        from code_puppy.tools.file_operations import register_read_file
+        from newcode.tools.file_operations import register_read_file
 
         mock_agent = MagicMock()
         registered_tools = {}
@@ -502,7 +502,7 @@ class TestRegisterFunctions:
 
     def test_register_grep(self):
         """Test that grep tool is registered correctly."""
-        from code_puppy.tools.file_operations import register_grep
+        from newcode.tools.file_operations import register_grep
 
         mock_agent = MagicMock()
         registered_tools = {}
@@ -519,7 +519,7 @@ class TestRegisterFunctions:
 
     def test_list_files_recursion_disabled_by_config(self, tmp_path):
         """Test that recursion is disabled when config says so."""
-        from code_puppy.tools.file_operations import register_list_files
+        from newcode.tools.file_operations import register_list_files
 
         mock_agent = MagicMock()
         registered_tools = {}
@@ -531,7 +531,7 @@ class TestRegisterFunctions:
         mock_agent.tool = capture_tool
 
         # Mock get_allow_recursion at the config module level before registration
-        with patch("code_puppy.config.get_allow_recursion", return_value=False):
+        with patch("newcode.config.get_allow_recursion", return_value=False):
             register_list_files(mock_agent)
             list_files_tool = registered_tools["list_files"]
 

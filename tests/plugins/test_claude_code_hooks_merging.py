@@ -17,7 +17,7 @@ class TestHookMerging:
 
     def test_merges_different_event_types(self):
         """Global and project hooks with different event types should both be present."""
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         project_hooks = {
             "PreToolUse": [
@@ -47,11 +47,11 @@ class TestHookMerging:
                 json.dump(global_hooks_data, f)
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     global_file,
                 ):
                     result = load_hooks_config()
@@ -64,7 +64,7 @@ class TestHookMerging:
 
     def test_merges_same_event_type(self):
         """Global and project hooks with same event type should be concatenated."""
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         project_hooks = {
             "PreToolUse": [
@@ -94,11 +94,11 @@ class TestHookMerging:
                 json.dump(global_hooks_data, f)
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     global_file,
                 ):
                     result = load_hooks_config()
@@ -111,7 +111,7 @@ class TestHookMerging:
 
     def test_global_hooks_loaded_first(self):
         """Global hooks should appear before project hooks in merged result."""
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         project_hooks = {
             "SessionStart": [
@@ -141,11 +141,11 @@ class TestHookMerging:
                 json.dump(global_hooks_data, f)
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     global_file,
                 ):
                     result = load_hooks_config()
@@ -158,7 +158,7 @@ class TestHookMerging:
 
     def test_only_global_hooks_when_no_project(self):
         """Should load only global hooks if project config doesn't exist."""
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         global_hooks_data = {
             "PostToolUse": [
@@ -176,11 +176,11 @@ class TestHookMerging:
                 json.dump(global_hooks_data, f)
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     global_file,
                 ):
                     result = load_hooks_config()
@@ -190,7 +190,7 @@ class TestHookMerging:
 
     def test_only_project_hooks_when_no_global(self):
         """Should load only project hooks if global config doesn't exist."""
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         project_hooks = {
             "PreToolUse": [
@@ -209,11 +209,11 @@ class TestHookMerging:
 
             # Global file doesn't exist
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     os.path.join(tmpdir, "nonexistent.json"),
                 ):
                     result = load_hooks_config()
@@ -223,7 +223,7 @@ class TestHookMerging:
 
     def test_multiple_hook_groups_per_event(self):
         """Multiple hook groups within same event should be preserved."""
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         project_hooks = {
             "PreToolUse": [
@@ -257,11 +257,11 @@ class TestHookMerging:
                 json.dump(global_hooks_data, f)
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     global_file,
                 ):
                     result = load_hooks_config()
@@ -274,7 +274,7 @@ class TestHookMerging:
 
     def test_wrapped_global_hooks_format(self):
         """Global hooks wrapped in {'hooks': ...} format should work."""
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         project_hooks = {
             "PreToolUse": [
@@ -304,11 +304,11 @@ class TestHookMerging:
                 json.dump(global_hooks_data, f)
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     global_file,
                 ):
                     result = load_hooks_config()

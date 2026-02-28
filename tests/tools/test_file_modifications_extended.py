@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from code_puppy.tools.file_modifications import (
+from newcode.tools.file_modifications import (
     ContentPayload,
     DeleteSnippetPayload,
     Replacement,

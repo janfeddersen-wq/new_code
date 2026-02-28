@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from code_puppy.plugins.antigravity_oauth.accounts import (
+from newcode.plugins.antigravity_oauth.accounts import (
     AccountManager,
     ManagedAccount,
     _clear_expired_rate_limits,
@@ -15,12 +15,12 @@ from code_puppy.plugins.antigravity_oauth.accounts import (
     _is_rate_limited_for_quota_key,
     _now_ms,
 )
-from code_puppy.plugins.antigravity_oauth.storage import (
+from newcode.plugins.antigravity_oauth.storage import (
     AccountMetadata,
     AccountStorage,
     RateLimitState,
 )
-from code_puppy.plugins.antigravity_oauth.token import RefreshParts
+from newcode.plugins.antigravity_oauth.token import RefreshParts
 
 # ============================================================================
 # FIXTURES
@@ -38,7 +38,7 @@ def mock_now(monkeypatch):
         return base_time + (call_count[0] * 0.01)  # Increment slightly each call
 
     monkeypatch.setattr(
-        "code_puppy.plugins.antigravity_oauth.accounts.time.time", mock_time
+        "newcode.plugins.antigravity_oauth.accounts.time.time", mock_time
     )
     return base_time
 
@@ -88,7 +88,7 @@ def mock_load_accounts(sample_storage, monkeypatch):
         return sample_storage
 
     monkeypatch.setattr(
-        "code_puppy.plugins.antigravity_oauth.accounts.load_accounts",
+        "newcode.plugins.antigravity_oauth.accounts.load_accounts",
         fake_load,
     )
     return sample_storage
@@ -102,7 +102,7 @@ def mock_save_accounts(monkeypatch):
         pass
 
     monkeypatch.setattr(
-        "code_puppy.plugins.antigravity_oauth.accounts.save_accounts",
+        "newcode.plugins.antigravity_oauth.accounts.save_accounts",
         fake_save,
     )
 
@@ -612,7 +612,7 @@ class TestPersistence:
             saved_storage = storage
 
         monkeypatch.setattr(
-            "code_puppy.plugins.antigravity_oauth.accounts.save_accounts",
+            "newcode.plugins.antigravity_oauth.accounts.save_accounts",
             capture_save,
         )
 
@@ -636,7 +636,7 @@ class TestPersistence:
             saved_storage = storage
 
         monkeypatch.setattr(
-            "code_puppy.plugins.antigravity_oauth.accounts.save_accounts",
+            "newcode.plugins.antigravity_oauth.accounts.save_accounts",
             capture_save,
         )
 
@@ -727,7 +727,7 @@ class TestEdgeCases:
             return now + 200  # 200ms in future
 
         monkeypatch.setattr(
-            "code_puppy.plugins.antigravity_oauth.accounts._now_ms",
+            "newcode.plugins.antigravity_oauth.accounts._now_ms",
             mock_time_future,
         )
 

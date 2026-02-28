@@ -43,7 +43,7 @@ Skills are installed by placing them in designated skill directories. Code Puppy
 
 By default, Code Puppy looks for skills in:
 
-1. **`~/.code_puppy/skills/`** - User-level skills (global)
+1. **`~/.newcode/skills/`** - User-level skills (global)
 2. **`./skills/`** - Project-level skills (local)
 
 ### Installation Steps
@@ -51,14 +51,14 @@ By default, Code Puppy looks for skills in:
 1. **Create the skills directory** (if it doesn't exist):
 
    ```bash
-   mkdir -p ~/.code_puppy/skills
+   mkdir -p ~/.newcode/skills
    ```
 
 2. **Download or clone a skill** into the directory:
 
    ```bash
    # Example: Installing a docker skill
-   cd ~/.code_puppy/skills
+   cd ~/.newcode/skills
    git clone https://github.com/example/code-puppy-docker.git docker
    
    # Or manually create the skill directory
@@ -68,7 +68,7 @@ By default, Code Puppy looks for skills in:
 3. **Verify the skill** has a `SKILL.md` file:
 
    ```bash
-   ls ~/.code_puppy/skills/my-custom-skill/SKILL.md
+   ls ~/.newcode/skills/my-custom-skill/SKILL.md
    ```
 
 4. **Refresh skill discovery**:
@@ -80,7 +80,7 @@ By default, Code Puppy looks for skills in:
 ### Skill Directory Structure
 
 ```
-~/.code_puppy/skills/
+~/.newcode/skills/
 ├── docker/
 │   ├── SKILL.md          # Required: Skill instructions + metadata
 │   ├── docker-compose.yml # Optional: Supporting resource
@@ -370,7 +370,7 @@ These resources are listed when the skill is activated via the `resources` field
 
 ### Testing Your Skill
 
-1. Place your skill in `~/.code_puppy/skills/`
+1. Place your skill in `~/.newcode/skills/`
 2. Run `/skills refresh`
 3. Verify it appears in `/skills list`
 4. Test activation by asking an agent to use it
@@ -386,7 +386,7 @@ Agent Skills can be configured through Code Puppy's configuration system.
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `skills_enabled` | boolean | `true` | Globally enable/disable skills integration |
-| `skill_directories` | JSON list | `["~/.code_puppy/skills", "./skills"]` | Directories to scan for skills |
+| `skill_directories` | JSON list | `["~/.newcode/skills", "./skills"]` | Directories to scan for skills |
 | `disabled_skills` | JSON list | `[]` | List of skill names to disable |
 
 ### Setting Configuration Values
@@ -401,7 +401,7 @@ Use the `/set` command to configure skills:
 /set skills_enabled = true
 
 # Add a custom skill directory
-/set skill_directories = "[\"/path/to/skills\", \"~/.code_puppy/skills\"]"
+/set skill_directories = "[\"/path/to/skills\", \"~/.newcode/skills\"]"
 
 # Disable specific skills
 /set disabled_skills = "[\"skill-one\", \"skill-two\"]"
@@ -418,7 +418,7 @@ You can also manage directories via the TUI:
 This shows:
 ```
 Skill Directories:
-  1. ✓ /home/user/.code_puppy/skills
+  1. ✓ /home/user/.newcode/skills
   2. ✓ /path/to/project/skills
   3. ✗ /old/path (does not exist)
 
@@ -431,12 +431,12 @@ Commands:
 
 ### Configuration File Location
 
-Settings are stored in `~/.code_puppy/puppy.cfg`:
+Settings are stored in `~/.newcode/puppy.cfg`:
 
 ```ini
 [puppy]
 skills_enabled = true
-skill_directories = ["/home/user/.code_puppy/skills", "./skills"]
+skill_directories = ["/home/user/.newcode/skills", "./skills"]
 disabled_skills = ["deprecated-skill"]
 ```
 

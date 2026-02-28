@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.agents.agent_code_agent import CodeAgent
+from newcode.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentConfiguration:
@@ -28,7 +28,7 @@ class TestBaseAgentConfiguration:
         monkeypatch.chdir(tmp_path)
 
         # Mock CONFIG_DIR to a non-existent location so global rules aren't found
-        with patch("code_puppy.config.CONFIG_DIR", str(tmp_path / "nonexistent")):
+        with patch("newcode.config.CONFIG_DIR", str(tmp_path / "nonexistent")):
             result = agent.load_agent_rules()
             assert result == "Test rules"
 
@@ -40,7 +40,7 @@ class TestBaseAgentConfiguration:
 
     def test_load_mcp_servers_disabled(self, agent):
         # Test when MCP is disabled
-        with patch("code_puppy.config.get_value", return_value="true"):
+        with patch("newcode.config.get_value", return_value="true"):
             result = agent.load_mcp_servers()
             assert isinstance(result, list)
             assert result == []
@@ -48,34 +48,34 @@ class TestBaseAgentConfiguration:
     def test_load_mcp_servers_true_variants(self, agent):
         # Test various true values for disabled config
         for true_val in ["1", "true", "yes", "on"]:
-            with patch("code_puppy.config.get_value", return_value=true_val):
+            with patch("newcode.config.get_value", return_value=true_val):
                 result = agent.load_mcp_servers()
                 assert isinstance(result, list)
 
     def test_load_mcp_servers_empty_config(self, agent):
         # Test with empty config and no existing servers
         with (
-            patch("code_puppy.config.get_value", return_value="false"),
-            patch("code_puppy.config.load_mcp_server_configs", return_value={}),
+            patch("newcode.config.get_value", return_value="false"),
+            patch("newcode.config.load_mcp_server_configs", return_value={}),
         ):
             mock_manager = MagicMock()
             mock_manager.list_servers.return_value = []
             mock_manager.get_servers_for_agent.return_value = []
-            with patch("code_puppy.mcp_.get_mcp_manager", return_value=mock_manager):
+            with patch("newcode.mcp_.get_mcp_manager", return_value=mock_manager):
                 result = agent.load_mcp_servers()
                 assert isinstance(result, list)
 
     def test_load_mcp_servers_with_existing_servers(self, agent):
         # Test with existing servers when config is empty
         with (
-            patch("code_puppy.config.get_value", return_value="false"),
-            patch("code_puppy.config.load_mcp_server_configs", return_value={}),
+            patch("newcode.config.get_value", return_value="false"),
+            patch("newcode.config.load_mcp_server_configs", return_value={}),
         ):
             mock_manager = MagicMock()
             mock_server = MagicMock()
             mock_manager.list_servers.return_value = [mock_server]
             mock_manager.get_servers_for_agent.return_value = [mock_server]
-            with patch("code_puppy.mcp_.get_mcp_manager", return_value=mock_manager):
+            with patch("newcode.mcp_.get_mcp_manager", return_value=mock_manager):
                 result = agent.load_mcp_servers()
                 assert isinstance(result, list)
 
@@ -84,7 +84,7 @@ class TestBaseAgentConfiguration:
         mock_manager = MagicMock()
         mock_manager.get_servers_for_agent.return_value = [MagicMock()]
         with (
-            patch("code_puppy.mcp_.get_mcp_manager", return_value=mock_manager),
+            patch("newcode.mcp_.get_mcp_manager", return_value=mock_manager),
             patch.object(agent, "load_mcp_servers"),
         ):
             result = agent.reload_mcp_servers()
@@ -96,7 +96,7 @@ class TestBaseAgentConfiguration:
         models_config = {"gpt-4": {"provider": "openai"}}
 
         with patch(
-            "code_puppy.model_factory.ModelFactory.get_model", return_value=test_model
+            "newcode.model_factory.ModelFactory.get_model", return_value=test_model
         ):
             model, model_name = agent._load_model_with_fallback(
                 "gpt-4", models_config, "test_group"
@@ -113,9 +113,9 @@ class TestBaseAgentConfiguration:
         }
 
         with (
-            patch("code_puppy.model_factory.ModelFactory.get_model") as mock_get_model,
+            patch("newcode.model_factory.ModelFactory.get_model") as mock_get_model,
             patch(
-                "code_puppy.agents.base_agent.get_global_model_name",
+                "newcode.agents.base_agent.get_global_model_name",
                 return_value="gpt-4",
             ),
         ):
@@ -133,7 +133,7 @@ class TestBaseAgentConfiguration:
     def test_load_model_with_fallback_empty_config(self, agent):
         # Test with empty models config
         with patch(
-            "code_puppy.model_factory.ModelFactory.get_model",
+            "newcode.model_factory.ModelFactory.get_model",
             side_effect=ValueError("No models"),
         ):
             models_config = {}
@@ -158,11 +158,9 @@ class TestBaseAgentConfiguration:
         mock_manager.get_servers_for_agent.return_value = []
 
         with (
-            patch("code_puppy.config.get_value", return_value="false"),
-            patch(
-                "code_puppy.config.load_mcp_server_configs", return_value=test_configs
-            ),
-            patch("code_puppy.mcp_.get_mcp_manager", return_value=mock_manager),
+            patch("newcode.config.get_value", return_value="false"),
+            patch("newcode.config.load_mcp_server_configs", return_value=test_configs),
+            patch("newcode.mcp_.get_mcp_manager", return_value=mock_manager),
         ):
             result = agent.load_mcp_servers()
             # Just verify it returns a list and doesn't crash
@@ -171,13 +169,13 @@ class TestBaseAgentConfiguration:
     def test_load_mcp_servers_basic(self, agent):
         # Basic test that method returns a list
         with (
-            patch("code_puppy.config.get_value", return_value="false"),
-            patch("code_puppy.config.load_mcp_server_configs", return_value={}),
+            patch("newcode.config.get_value", return_value="false"),
+            patch("newcode.config.load_mcp_server_configs", return_value={}),
         ):
             mock_manager = MagicMock()
             mock_manager.list_servers.return_value = []
             mock_manager.get_servers_for_agent.return_value = []
-            with patch("code_puppy.mcp_.get_mcp_manager", return_value=mock_manager):
+            with patch("newcode.mcp_.get_mcp_manager", return_value=mock_manager):
                 result = agent.load_mcp_servers()
                 assert isinstance(result, list)
 

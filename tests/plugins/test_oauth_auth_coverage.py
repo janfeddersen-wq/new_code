@@ -1,4 +1,4 @@
-"""Coverage tests for OAuth & auth modules (code_puppy-0yx).
+"""Coverage tests for OAuth & auth modules (newcode-0yx).
 
 Covers:
 - antigravity_oauth/token.py (TokenRefreshError, refresh_access_token)
@@ -15,21 +15,21 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.plugins.antigravity_oauth.config import (
+from newcode.plugins.antigravity_oauth.config import (
     get_accounts_storage_path,
     get_antigravity_models_path,
     get_token_storage_path,
 )
-from code_puppy.plugins.antigravity_oauth.token import (
+from newcode.plugins.antigravity_oauth.token import (
     OAuthTokens,
     TokenRefreshError,
     refresh_access_token,
 )
-from code_puppy.plugins.claude_code_oauth.config import (
+from newcode.plugins.claude_code_oauth.config import (
     get_claude_models_path,
     get_config_dir,
 )
-from code_puppy.plugins.claude_code_oauth.config import (
+from newcode.plugins.claude_code_oauth.config import (
     get_token_storage_path as get_claude_token_storage_path,
 )
 
@@ -55,7 +55,7 @@ class TestRefreshAccessToken:
     def test_empty_refresh_token_returns_none(self):
         assert refresh_access_token("") is None
 
-    @patch("code_puppy.plugins.antigravity_oauth.token.requests.post")
+    @patch("newcode.plugins.antigravity_oauth.token.requests.post")
     def test_success(self, mock_post):
         resp = MagicMock()
         resp.ok = True
@@ -73,7 +73,7 @@ class TestRefreshAccessToken:
         assert "proj" in result.refresh_token
         assert "managed" in result.refresh_token
 
-    @patch("code_puppy.plugins.antigravity_oauth.token.requests.post")
+    @patch("newcode.plugins.antigravity_oauth.token.requests.post")
     def test_success_no_new_refresh(self, mock_post):
         """When response has no refresh_token, reuse the old one."""
         resp = MagicMock()
@@ -85,7 +85,7 @@ class TestRefreshAccessToken:
         assert result is not None
         assert "keep_me" in result.refresh_token
 
-    @patch("code_puppy.plugins.antigravity_oauth.token.requests.post")
+    @patch("newcode.plugins.antigravity_oauth.token.requests.post")
     def test_invalid_grant_raises(self, mock_post):
         resp = MagicMock()
         resp.ok = False
@@ -101,7 +101,7 @@ class TestRefreshAccessToken:
         assert exc_info.value.code == "invalid_grant"
         assert exc_info.value.status == 400
 
-    @patch("code_puppy.plugins.antigravity_oauth.token.requests.post")
+    @patch("newcode.plugins.antigravity_oauth.token.requests.post")
     def test_non_grant_error_returns_none(self, mock_post):
         resp = MagicMock()
         resp.ok = False
@@ -112,7 +112,7 @@ class TestRefreshAccessToken:
 
         assert refresh_access_token("tok") is None
 
-    @patch("code_puppy.plugins.antigravity_oauth.token.requests.post")
+    @patch("newcode.plugins.antigravity_oauth.token.requests.post")
     def test_error_json_parse_failure(self, mock_post):
         """Cover the except branch when error response isn't valid JSON."""
         resp = MagicMock()
@@ -124,7 +124,7 @@ class TestRefreshAccessToken:
 
         assert refresh_access_token("tok") is None
 
-    @patch("code_puppy.plugins.antigravity_oauth.token.requests.post")
+    @patch("newcode.plugins.antigravity_oauth.token.requests.post")
     def test_network_exception_returns_none(self, mock_post):
         mock_post.side_effect = ConnectionError("offline")
         assert refresh_access_token("tok") is None
@@ -136,20 +136,20 @@ class TestRefreshAccessToken:
 
 
 class TestAntigravityConfigPaths:
-    @patch("code_puppy.plugins.antigravity_oauth.config.config")
+    @patch("newcode.plugins.antigravity_oauth.config.config")
     def test_get_token_storage_path(self, mock_cfg, tmp_path):
         mock_cfg.DATA_DIR = str(tmp_path)
         p = get_token_storage_path()
         assert p.name == "antigravity_oauth.json"
         assert p.parent == tmp_path
 
-    @patch("code_puppy.plugins.antigravity_oauth.config.config")
+    @patch("newcode.plugins.antigravity_oauth.config.config")
     def test_get_accounts_storage_path(self, mock_cfg, tmp_path):
         mock_cfg.DATA_DIR = str(tmp_path)
         p = get_accounts_storage_path()
         assert p.name == "antigravity_accounts.json"
 
-    @patch("code_puppy.plugins.antigravity_oauth.config.config")
+    @patch("newcode.plugins.antigravity_oauth.config.config")
     def test_get_antigravity_models_path(self, mock_cfg, tmp_path):
         mock_cfg.DATA_DIR = str(tmp_path)
         p = get_antigravity_models_path()
@@ -162,20 +162,20 @@ class TestAntigravityConfigPaths:
 
 
 class TestClaudeCodeConfigPaths:
-    @patch("code_puppy.plugins.claude_code_oauth.config.config")
+    @patch("newcode.plugins.claude_code_oauth.config.config")
     def test_get_claude_models_path(self, mock_cfg, tmp_path):
         mock_cfg.DATA_DIR = str(tmp_path)
         p = get_claude_models_path()
         assert p.name == "claude_models.json"
         assert p.parent == tmp_path
 
-    @patch("code_puppy.plugins.claude_code_oauth.config.config")
+    @patch("newcode.plugins.claude_code_oauth.config.config")
     def test_get_config_dir(self, mock_cfg, tmp_path):
         mock_cfg.CONFIG_DIR = str(tmp_path)
         p = get_config_dir()
         assert p == tmp_path
 
-    @patch("code_puppy.plugins.claude_code_oauth.config.config")
+    @patch("newcode.plugins.claude_code_oauth.config.config")
     def test_get_token_storage_path(self, mock_cfg, tmp_path):
         mock_cfg.DATA_DIR = str(tmp_path)
         p = get_claude_token_storage_path()
@@ -192,7 +192,7 @@ class TestAntigravityTestPlugin:
     """Exercise antigravity_oauth/test_plugin.py by importing its test classes."""
 
     def test_pkce(self):
-        from code_puppy.plugins.antigravity_oauth.test_plugin import TestPKCE
+        from newcode.plugins.antigravity_oauth.test_plugin import TestPKCE
 
         t = TestPKCE()
         t.test_code_verifier_length()
@@ -201,7 +201,7 @@ class TestAntigravityTestPlugin:
         t.test_prepare_oauth_context()
 
     def test_state_encoding(self):
-        from code_puppy.plugins.antigravity_oauth.test_plugin import TestStateEncoding
+        from newcode.plugins.antigravity_oauth.test_plugin import TestStateEncoding
 
         t = TestStateEncoding()
         t.test_encode_decode_roundtrip()
@@ -209,7 +209,7 @@ class TestAntigravityTestPlugin:
         t.test_decode_invalid_state_raises()
 
     def test_refresh_parts(self):
-        from code_puppy.plugins.antigravity_oauth.test_plugin import TestRefreshParts
+        from newcode.plugins.antigravity_oauth.test_plugin import TestRefreshParts
 
         t = TestRefreshParts()
         t.test_parse_simple_token()
@@ -219,7 +219,7 @@ class TestAntigravityTestPlugin:
         t.test_format_roundtrip()
 
     def test_token_expiry(self):
-        from code_puppy.plugins.antigravity_oauth.test_plugin import TestTokenExpiry
+        from newcode.plugins.antigravity_oauth.test_plugin import TestTokenExpiry
 
         t = TestTokenExpiry()
         t.test_none_expires_is_expired()
@@ -228,7 +228,7 @@ class TestAntigravityTestPlugin:
         t.test_expiry_buffer()
 
     def test_storage_migration(self):
-        from code_puppy.plugins.antigravity_oauth.test_plugin import (
+        from newcode.plugins.antigravity_oauth.test_plugin import (
             TestStorageMigration,
         )
 
@@ -237,7 +237,7 @@ class TestAntigravityTestPlugin:
         t.test_migrate_v2_to_v3()
 
     def test_account_manager(self):
-        from code_puppy.plugins.antigravity_oauth.test_plugin import TestAccountManager
+        from newcode.plugins.antigravity_oauth.test_plugin import TestAccountManager
 
         t = TestAccountManager()
         t.test_empty_manager()
@@ -248,7 +248,7 @@ class TestAntigravityTestPlugin:
         t.test_gemini_dual_quota()
 
     def test_constants(self):
-        from code_puppy.plugins.antigravity_oauth.test_plugin import TestConstants
+        from newcode.plugins.antigravity_oauth.test_plugin import TestConstants
 
         t = TestConstants()
         t.test_models_have_required_fields()
@@ -261,78 +261,78 @@ class TestChatgptTestPlugin:
     """Exercise chatgpt_oauth/test_plugin.py."""
 
     def test_config_paths(self):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import test_config_paths
+        from newcode.plugins.chatgpt_oauth.test_plugin import test_config_paths
 
         test_config_paths()
 
     def test_oauth_config(self):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import test_oauth_config
+        from newcode.plugins.chatgpt_oauth.test_plugin import test_oauth_config
 
         test_oauth_config()
 
     def test_jwt_parsing_with_nested_org(self):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_jwt_parsing_with_nested_org,
         )
 
         test_jwt_parsing_with_nested_org()
 
     def test_code_verifier_generation(self):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_code_verifier_generation,
         )
 
         test_code_verifier_generation()
 
     def test_code_challenge_computation(self):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_code_challenge_computation,
         )
 
         test_code_challenge_computation()
 
     def test_prepare_oauth_context(self):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_prepare_oauth_context,
         )
 
         test_prepare_oauth_context()
 
     def test_assign_redirect_uri(self):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_assign_redirect_uri,
         )
 
         test_assign_redirect_uri()
 
     def test_build_authorization_url(self):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_build_authorization_url,
         )
 
         test_build_authorization_url()
 
     def test_parse_jwt_claims(self):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import test_parse_jwt_claims
+        from newcode.plugins.chatgpt_oauth.test_plugin import test_parse_jwt_claims
 
         test_parse_jwt_claims()
 
     def test_save_and_load_tokens(self, tmp_path):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_save_and_load_tokens,
         )
 
         test_save_and_load_tokens(tmp_path)
 
     def test_save_and_load_chatgpt_models(self, tmp_path):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_save_and_load_chatgpt_models,
         )
 
         test_save_and_load_chatgpt_models(tmp_path)
 
     def test_remove_chatgpt_models(self, tmp_path):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_remove_chatgpt_models,
         )
 
@@ -340,23 +340,23 @@ class TestChatgptTestPlugin:
 
     def test_exchange_code_for_tokens(self):
         """Delegate to the in-source test (it uses its own @patch decorator)."""
-        from code_puppy.plugins.chatgpt_oauth import test_plugin
+        from newcode.plugins.chatgpt_oauth import test_plugin
 
         # Call the underlying decorated function directly
         test_plugin.test_exchange_code_for_tokens()
 
     def test_fetch_chatgpt_models(self):
-        from code_puppy.plugins.chatgpt_oauth import test_plugin
+        from newcode.plugins.chatgpt_oauth import test_plugin
 
         test_plugin.test_fetch_chatgpt_models()
 
     def test_fetch_chatgpt_models_fallback(self):
-        from code_puppy.plugins.chatgpt_oauth import test_plugin
+        from newcode.plugins.chatgpt_oauth import test_plugin
 
         test_plugin.test_fetch_chatgpt_models_fallback()
 
     def test_add_models_to_chatgpt_config(self, tmp_path):
-        from code_puppy.plugins.chatgpt_oauth.test_plugin import (
+        from newcode.plugins.chatgpt_oauth.test_plugin import (
             test_add_models_to_chatgpt_config,
         )
 
@@ -367,41 +367,41 @@ class TestClaudeCodeTestPlugin:
     """Exercise claude_code_oauth/test_plugin.py."""
 
     def test_plugin_imports(self):
-        from code_puppy.plugins.claude_code_oauth.test_plugin import (
+        from newcode.plugins.claude_code_oauth.test_plugin import (
             test_plugin_imports,
         )
 
         assert test_plugin_imports() is True
 
     def test_oauth_helpers(self):
-        from code_puppy.plugins.claude_code_oauth.test_plugin import (
+        from newcode.plugins.claude_code_oauth.test_plugin import (
             test_oauth_helpers,
         )
 
         assert test_oauth_helpers() is True
 
     def test_file_operations(self):
-        from code_puppy.plugins.claude_code_oauth.test_plugin import (
+        from newcode.plugins.claude_code_oauth.test_plugin import (
             test_file_operations,
         )
 
         assert test_file_operations() is True
 
     def test_command_handlers(self):
-        from code_puppy.plugins.claude_code_oauth.test_plugin import (
+        from newcode.plugins.claude_code_oauth.test_plugin import (
             test_command_handlers,
         )
 
         assert test_command_handlers() is True
 
     def test_configuration(self):
-        from code_puppy.plugins.claude_code_oauth.test_plugin import (
+        from newcode.plugins.claude_code_oauth.test_plugin import (
             test_configuration,
         )
 
         assert test_configuration() is True
 
     def test_main_all_pass(self):
-        from code_puppy.plugins.claude_code_oauth.test_plugin import main
+        from newcode.plugins.claude_code_oauth.test_plugin import main
 
         assert main() is True

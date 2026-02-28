@@ -1,4 +1,4 @@
-from code_puppy.tools import file_modifications
+from newcode.tools import file_modifications
 
 
 def test_replace_in_file_missing_file(tmp_path):

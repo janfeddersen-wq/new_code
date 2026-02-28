@@ -1,23 +1,23 @@
-"""Tests for code_puppy/api/routers/agents.py."""
+"""Tests for newcode/api/routers/agents.py."""
 
 from unittest.mock import patch
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from code_puppy.api.app import create_app
+from newcode.api.app import create_app
 
 
 @pytest.fixture
 async def client():
     with (
         patch(
-            "code_puppy.agents.get_available_agents",
+            "newcode.agents.get_available_agents",
             return_value={"main": "Main Agent"},
             create=True,
         ),
         patch(
-            "code_puppy.agents.get_agent_descriptions",
+            "newcode.agents.get_agent_descriptions",
             return_value={"main": "The main agent"},
             create=True,
         ),

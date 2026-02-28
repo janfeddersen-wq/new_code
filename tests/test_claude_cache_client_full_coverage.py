@@ -1,4 +1,4 @@
-"""Full coverage tests for code_puppy/claude_cache_client.py."""
+"""Full coverage tests for newcode/claude_cache_client.py."""
 
 import base64
 import json
@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 import httpx
 import pytest
 
-from code_puppy.claude_cache_client import (
+from newcode.claude_cache_client import (
     CLAUDE_CLI_USER_AGENT,
     TOKEN_MAX_AGE_SECONDS,
     TOOL_PREFIX,
@@ -163,8 +163,8 @@ class TestCheckStoredExpiry:
         with patch.dict(
             "sys.modules",
             {
-                "code_puppy.plugins.claude_code_oauth": MagicMock(),
-                "code_puppy.plugins.claude_code_oauth.utils": mock_module,
+                "newcode.plugins.claude_code_oauth": MagicMock(),
+                "newcode.plugins.claude_code_oauth.utils": mock_module,
             },
         ):
             assert ClaudeCacheAsyncClient._check_stored_token_expiry() is True
@@ -175,8 +175,8 @@ class TestCheckStoredExpiry:
         with patch.dict(
             "sys.modules",
             {
-                "code_puppy.plugins.claude_code_oauth": MagicMock(),
-                "code_puppy.plugins.claude_code_oauth.utils": mock_module,
+                "newcode.plugins.claude_code_oauth": MagicMock(),
+                "newcode.plugins.claude_code_oauth.utils": mock_module,
             },
         ):
             assert ClaudeCacheAsyncClient._check_stored_token_expiry() is False
@@ -187,8 +187,8 @@ class TestCheckStoredExpiry:
         with patch.dict(
             "sys.modules",
             {
-                "code_puppy.plugins.claude_code_oauth": MagicMock(),
-                "code_puppy.plugins.claude_code_oauth.utils": mock_module,
+                "newcode.plugins.claude_code_oauth": MagicMock(),
+                "newcode.plugins.claude_code_oauth.utils": mock_module,
             },
         ):
             assert ClaudeCacheAsyncClient._check_stored_token_expiry() is False
@@ -410,7 +410,7 @@ class TestPatchAnthropic:
         mock_client.messages = mock_messages
 
         # Patch AsyncAnthropic to make isinstance check pass
-        with patch("code_puppy.claude_cache_client.AsyncAnthropic", type(mock_client)):
+        with patch("newcode.claude_cache_client.AsyncAnthropic", type(mock_client)):
             patch_anthropic_client_messages(mock_client)
 
         # Now create should be wrapped
@@ -432,7 +432,7 @@ class TestPatchAnthropic:
         mock_client = MagicMock()
         mock_client.messages = mock_messages
 
-        with patch("code_puppy.claude_cache_client.AsyncAnthropic", type(mock_client)):
+        with patch("newcode.claude_cache_client.AsyncAnthropic", type(mock_client)):
             patch_anthropic_client_messages(mock_client)
 
         # Call with positional dict arg
@@ -451,7 +451,7 @@ class TestPatchAnthropic:
         mock_client = MagicMock()
         mock_client.messages = mock_messages
 
-        with patch("code_puppy.claude_cache_client.AsyncAnthropic", type(mock_client)):
+        with patch("newcode.claude_cache_client.AsyncAnthropic", type(mock_client)):
             patch_anthropic_client_messages(mock_client)
 
         # Call with non-dict positional arg
@@ -460,7 +460,7 @@ class TestPatchAnthropic:
 
     def test_no_messages_attr(self):
         mock_client = MagicMock(spec=[])
-        with patch("code_puppy.claude_cache_client.AsyncAnthropic", type(mock_client)):
+        with patch("newcode.claude_cache_client.AsyncAnthropic", type(mock_client)):
             patch_anthropic_client_messages(mock_client)  # should not raise
 
 
@@ -587,8 +587,8 @@ class TestRefreshToken:
         with patch.dict(
             "sys.modules",
             {
-                "code_puppy.plugins.claude_code_oauth": MagicMock(),
-                "code_puppy.plugins.claude_code_oauth.utils": mock_module,
+                "newcode.plugins.claude_code_oauth": MagicMock(),
+                "newcode.plugins.claude_code_oauth.utils": mock_module,
             },
         ):
             result = c._refresh_claude_oauth_token()
@@ -601,8 +601,8 @@ class TestRefreshToken:
         with patch.dict(
             "sys.modules",
             {
-                "code_puppy.plugins.claude_code_oauth": MagicMock(),
-                "code_puppy.plugins.claude_code_oauth.utils": mock_module,
+                "newcode.plugins.claude_code_oauth": MagicMock(),
+                "newcode.plugins.claude_code_oauth.utils": mock_module,
             },
         ):
             result = c._refresh_claude_oauth_token()
@@ -615,8 +615,8 @@ class TestRefreshToken:
         with patch.dict(
             "sys.modules",
             {
-                "code_puppy.plugins.claude_code_oauth": MagicMock(),
-                "code_puppy.plugins.claude_code_oauth.utils": mock_module,
+                "newcode.plugins.claude_code_oauth": MagicMock(),
+                "newcode.plugins.claude_code_oauth.utils": mock_module,
             },
         ):
             result = c._refresh_claude_oauth_token()

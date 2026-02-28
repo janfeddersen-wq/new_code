@@ -10,7 +10,7 @@ import tempfile
 import threading
 from unittest.mock import Mock, patch
 
-from code_puppy.plugins.file_permission_handler.register_callbacks import (
+from newcode.plugins.file_permission_handler.register_callbacks import (
     _generate_preview_from_operation_data,
     _preview_delete_file,
     _preview_delete_snippet,
@@ -298,9 +298,7 @@ class TestPreviewReplacements:
 class TestPermissionPrompt:
     """Test permission prompt functionality."""
 
-    @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode"
-    )
+    @patch("newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode")
     def test_prompt_yolo_mode_enabled(self, mock_yolo):
         """Test that YOLO mode skips permission prompt."""
         mock_yolo.return_value = True
@@ -311,11 +309,9 @@ class TestPermissionPrompt:
         assert feedback is None
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_user_approval"
+        "newcode.plugins.file_permission_handler.register_callbacks.get_user_approval"
     )
-    @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode"
-    )
+    @patch("newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode")
     def test_prompt_user_approves(self, mock_yolo, mock_approval):
         """Test permission prompt when user approves."""
         mock_yolo.return_value = False
@@ -326,11 +322,9 @@ class TestPermissionPrompt:
         assert confirmed is True
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_user_approval"
+        "newcode.plugins.file_permission_handler.register_callbacks.get_user_approval"
     )
-    @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode"
-    )
+    @patch("newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode")
     def test_prompt_user_denies(self, mock_yolo, mock_approval):
         """Test permission prompt when user denies."""
         mock_yolo.return_value = False
@@ -341,11 +335,9 @@ class TestPermissionPrompt:
         assert confirmed is False
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_user_approval"
+        "newcode.plugins.file_permission_handler.register_callbacks.get_user_approval"
     )
-    @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode"
-    )
+    @patch("newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode")
     def test_prompt_with_feedback(self, mock_yolo, mock_approval):
         """Test permission prompt with user feedback."""
         mock_yolo.return_value = False
@@ -357,11 +349,9 @@ class TestPermissionPrompt:
         assert feedback == "Add error handling"
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_user_approval"
+        "newcode.plugins.file_permission_handler.register_callbacks.get_user_approval"
     )
-    @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode"
-    )
+    @patch("newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode")
     def test_prompt_with_preview(self, mock_yolo, mock_approval):
         """Test permission prompt with preview."""
         mock_yolo.return_value = False
@@ -382,7 +372,7 @@ class TestHandleEditFilePermission:
     """Test edit file permission handling."""
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
+        "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
     )
     def test_handle_write_operation(self, mock_prompt):
         """Test handling write operation."""
@@ -400,7 +390,7 @@ class TestHandleEditFilePermission:
         mock_prompt.assert_called_once()
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
+        "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
     )
     def test_handle_replace_operation(self, mock_prompt):
         """Test handling replace operation."""
@@ -417,7 +407,7 @@ class TestHandleEditFilePermission:
         assert confirmed is True
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
+        "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
     )
     def test_handle_delete_snippet_operation(self, mock_prompt):
         """Test handling delete snippet operation."""
@@ -434,7 +424,7 @@ class TestHandleEditFilePermission:
         assert confirmed is True
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
+        "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
     )
     def test_handle_stores_user_feedback(self, mock_prompt):
         """Test that feedback is stored in thread-local storage."""
@@ -457,7 +447,7 @@ class TestHandleDeleteFilePermission:
     """Test delete file permission handling."""
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
+        "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
     )
     def test_handle_delete_file(self, mock_prompt):
         """Test handling delete file operation."""
@@ -472,7 +462,7 @@ class TestHandleDeleteFilePermission:
         mock_prompt.assert_called_once()
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
+        "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
     )
     def test_handle_delete_file_denied(self, mock_prompt):
         """Test handling denied delete file operation."""
@@ -491,7 +481,7 @@ class TestHandleFilePermission:
     """Test generic file permission handler."""
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
+        "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
     )
     def test_handle_with_operation_data(self, mock_prompt):
         """Test handler with operation data."""
@@ -508,7 +498,7 @@ class TestHandleFilePermission:
         assert confirmed is True
 
     @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
+        "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission"
     )
     def test_handle_with_preview(self, mock_prompt):
         """Test handler with explicit preview."""
@@ -566,9 +556,7 @@ class TestHelpFunctions:
         assert "File Permission" in help_text
         assert "permission" in help_text.lower()
 
-    @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode"
-    )
+    @patch("newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode")
     def test_get_prompt_additions_yolo_mode_off(self, mock_yolo):
         """Test prompt additions when YOLO mode is off."""
         mock_yolo.return_value = False
@@ -578,9 +566,7 @@ class TestHelpFunctions:
         assert len(additions) > 0
         assert "USER FEEDBACK" in additions or "feedback" in additions.lower()
 
-    @patch(
-        "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode"
-    )
+    @patch("newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode")
     def test_get_prompt_additions_yolo_mode_on(self, mock_yolo):
         """Test prompt additions when YOLO mode is on."""
         mock_yolo.return_value = True

@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from pydantic_ai import ToolReturn
 
-from code_puppy.tools.browser.terminal_command_tools import (
+from newcode.tools.browser.terminal_command_tools import (
     DEFAULT_COMMAND_TIMEOUT,
     DEFAULT_OUTPUT_TIMEOUT,
     MODIFIER_MAP,
@@ -76,22 +76,22 @@ class TestRunTerminalCommand:
         )
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
                 with patch(
-                    "code_puppy.tools.browser.terminal_command_tools.terminal_screenshot",
+                    "newcode.tools.browser.terminal_command_tools.terminal_screenshot",
                     return_value=mock_screenshot_result,
                 ):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_info"
+                        "newcode.tools.browser.terminal_command_tools.emit_info"
                     ):
                         with patch(
-                            "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                            "newcode.tools.browser.terminal_command_tools.emit_success"
                         ):
                             result = await run_terminal_command(
                                 "ls -la", capture_screenshot=True
@@ -116,16 +116,16 @@ class TestRunTerminalCommand:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         result = await run_terminal_command(
                             "echo hello",
@@ -143,12 +143,12 @@ class TestRunTerminalCommand:
         mock_manager.get_current_page.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_command_tools.emit_error"
+                    "newcode.tools.browser.terminal_command_tools.emit_error"
                 ) as mock_error:
                     result = await run_terminal_command("ls")
 
@@ -167,16 +167,16 @@ class TestRunTerminalCommand:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         with patch(
                             "asyncio.sleep", new_callable=AsyncMock
@@ -202,16 +202,16 @@ class TestRunTerminalCommand:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_error"
+                        "newcode.tools.browser.terminal_command_tools.emit_error"
                     ):
                         result = await run_terminal_command("test")
 
@@ -233,22 +233,22 @@ class TestRunTerminalCommand:
         }
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
                 with patch(
-                    "code_puppy.tools.browser.terminal_command_tools.terminal_screenshot",
+                    "newcode.tools.browser.terminal_command_tools.terminal_screenshot",
                     return_value=mock_screenshot_result,
                 ):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_info"
+                        "newcode.tools.browser.terminal_command_tools.emit_info"
                     ):
                         with patch(
-                            "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                            "newcode.tools.browser.terminal_command_tools.emit_success"
                         ):
                             result = await run_terminal_command(
                                 "ls", capture_screenshot=True
@@ -269,16 +269,16 @@ class TestRunTerminalCommand:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         result = await run_terminal_command(
                             "sleep 5",
@@ -302,16 +302,16 @@ class TestSendTerminalKeys:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         result = await send_terminal_keys("Tab")
 
@@ -332,16 +332,16 @@ class TestSendTerminalKeys:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         result = await send_terminal_keys("c", modifiers=["Control"])
 
@@ -364,16 +364,16 @@ class TestSendTerminalKeys:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         result = await send_terminal_keys("ArrowUp")
 
@@ -390,16 +390,16 @@ class TestSendTerminalKeys:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         result = await send_terminal_keys(
                             "s",
@@ -420,12 +420,12 @@ class TestSendTerminalKeys:
         mock_manager.get_current_page.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_command_tools.emit_error"
+                    "newcode.tools.browser.terminal_command_tools.emit_error"
                 ) as mock_error:
                     result = await send_terminal_keys("Tab")
 
@@ -444,16 +444,16 @@ class TestSendTerminalKeys:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_error"
+                        "newcode.tools.browser.terminal_command_tools.emit_error"
                     ):
                         result = await send_terminal_keys("Enter")
 
@@ -470,16 +470,16 @@ class TestSendTerminalKeys:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         result = await send_terminal_keys("c", modifiers=["cmd"])
 
@@ -498,16 +498,16 @@ class TestSendTerminalKeys:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_error"
+                        "newcode.tools.browser.terminal_command_tools.emit_error"
                     ):
                         await send_terminal_keys("c", modifiers=["Control"])
 
@@ -528,13 +528,11 @@ class TestWaitForTerminalOutput:
         }
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.terminal_read_output",
+            "newcode.tools.browser.terminal_command_tools.terminal_read_output",
             return_value=mock_read_result,
         ):
-            with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
-                with patch(
-                    "code_puppy.tools.browser.terminal_command_tools.emit_success"
-                ):
+            with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_success"):
                     result = await wait_for_terminal_output()
 
                     assert result["success"] is True
@@ -551,13 +549,11 @@ class TestWaitForTerminalOutput:
         }
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.terminal_read_output",
+            "newcode.tools.browser.terminal_command_tools.terminal_read_output",
             return_value=mock_read_result,
         ):
-            with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
-                with patch(
-                    "code_puppy.tools.browser.terminal_command_tools.emit_success"
-                ):
+            with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_success"):
                     result = await wait_for_terminal_output(pattern="SUCCESS")
 
                     assert result["success"] is True
@@ -573,10 +569,10 @@ class TestWaitForTerminalOutput:
         }
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.terminal_read_output",
+            "newcode.tools.browser.terminal_command_tools.terminal_read_output",
             return_value=mock_read_result,
         ):
-            with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                 result = await wait_for_terminal_output(pattern="ERROR")
 
                 assert result["success"] is True
@@ -591,13 +587,11 @@ class TestWaitForTerminalOutput:
         }
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.terminal_read_output",
+            "newcode.tools.browser.terminal_command_tools.terminal_read_output",
             return_value=mock_read_result,
         ):
-            with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
-                with patch(
-                    "code_puppy.tools.browser.terminal_command_tools.emit_error"
-                ):
+            with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_error"):
                     result = await wait_for_terminal_output()
 
                     assert result["success"] is False
@@ -618,14 +612,14 @@ class TestWaitForTerminalOutput:
         }
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.terminal_read_output",
+            "newcode.tools.browser.terminal_command_tools.terminal_read_output",
             return_value=mock_read_result,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools.terminal_screenshot",
+                "newcode.tools.browser.terminal_command_tools.terminal_screenshot",
                 return_value=mock_screenshot_result,
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     result = await wait_for_terminal_output(capture_screenshot=True)
 
                     # Read succeeded, screenshot didn't add image
@@ -636,13 +630,11 @@ class TestWaitForTerminalOutput:
     async def test_wait_vqa_failure(self):
         """Test handling of read output failure."""
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.terminal_read_output",
+            "newcode.tools.browser.terminal_command_tools.terminal_read_output",
             side_effect=RuntimeError("Read failed"),
         ):
-            with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
-                with patch(
-                    "code_puppy.tools.browser.terminal_command_tools.emit_error"
-                ):
+            with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_error"):
                     result = await wait_for_terminal_output(pattern="test")
 
                     assert result["success"] is False
@@ -667,12 +659,12 @@ class TestWaitForTerminalOutput:
             }
 
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools.terminal_read_output",
+                "newcode.tools.browser.terminal_command_tools.terminal_read_output",
                 return_value=mock_read_result,
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         result = await wait_for_terminal_output(pattern=pattern)
 
@@ -686,7 +678,7 @@ class TestToolRegistration:
 
     def test_register_run_terminal_command(self):
         """Test that run_terminal_command registration works."""
-        from code_puppy.tools.browser.terminal_command_tools import (
+        from newcode.tools.browser.terminal_command_tools import (
             register_run_terminal_command,
         )
 
@@ -699,7 +691,7 @@ class TestToolRegistration:
 
     def test_register_send_terminal_keys(self):
         """Test that send_terminal_keys registration works."""
-        from code_puppy.tools.browser.terminal_command_tools import (
+        from newcode.tools.browser.terminal_command_tools import (
             register_send_terminal_keys,
         )
 
@@ -712,7 +704,7 @@ class TestToolRegistration:
 
     def test_register_wait_for_terminal_output(self):
         """Test that wait_terminal_output registration works."""
-        from code_puppy.tools.browser.terminal_command_tools import (
+        from newcode.tools.browser.terminal_command_tools import (
             register_wait_terminal_output,
         )
 
@@ -725,7 +717,7 @@ class TestToolRegistration:
 
     def test_register_all_terminal_command_tools(self):
         """Test that all tools can be registered at once."""
-        from code_puppy.tools.browser.terminal_command_tools import (
+        from newcode.tools.browser.terminal_command_tools import (
             register_run_terminal_command,
             register_send_terminal_keys,
             register_wait_terminal_output,
@@ -791,22 +783,22 @@ class TestIntegrationScenarios:
         }
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
                 with patch(
-                    "code_puppy.tools.browser.terminal_command_tools.terminal_read_output",
+                    "newcode.tools.browser.terminal_command_tools.terminal_read_output",
                     return_value=mock_read_result,
                 ):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_info"
+                        "newcode.tools.browser.terminal_command_tools.emit_info"
                     ):
                         with patch(
-                            "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                            "newcode.tools.browser.terminal_command_tools.emit_success"
                         ):
                             # Run a command
                             run_result = await run_terminal_command(
@@ -832,16 +824,16 @@ class TestIntegrationScenarios:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         # Start a command (no wait)
                         run_result = await run_terminal_command(
@@ -869,16 +861,16 @@ class TestIntegrationScenarios:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_command_tools.get_session_manager",
+            "newcode.tools.browser.terminal_command_tools.get_session_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_command_tools._focus_terminal",
+                "newcode.tools.browser.terminal_command_tools._focus_terminal",
                 return_value={"success": True},
             ):
-                with patch("code_puppy.tools.browser.terminal_command_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_command_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_command_tools.emit_success"
+                        "newcode.tools.browser.terminal_command_tools.emit_success"
                     ):
                         # Type partial command
                         await run_terminal_command(

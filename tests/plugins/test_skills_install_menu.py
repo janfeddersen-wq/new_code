@@ -1,10 +1,9 @@
-"""Tests for code_puppy/plugins/agent_skills/skills_install_menu.py"""
+"""Tests for newcode/plugins/agent_skills/skills_install_menu.py"""
 
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-
-_MOD = "code_puppy.plugins.agent_skills.skills_install_menu"
+_MOD = "newcode.plugins.agent_skills.skills_install_menu"
 
 
 # ---------------------------------------------------------------------------
@@ -14,57 +13,57 @@ _MOD = "code_puppy.plugins.agent_skills.skills_install_menu"
 
 class TestFormatBytes:
     def test_zero(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _format_bytes
+        from newcode.plugins.agent_skills.skills_install_menu import _format_bytes
 
         assert _format_bytes(0) == "0 B"
 
     def test_bytes(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _format_bytes
+        from newcode.plugins.agent_skills.skills_install_menu import _format_bytes
 
         assert _format_bytes(500) == "500 B"
 
     def test_kb(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _format_bytes
+        from newcode.plugins.agent_skills.skills_install_menu import _format_bytes
 
         result = _format_bytes(2048)
         assert "KB" in result
 
     def test_mb(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _format_bytes
+        from newcode.plugins.agent_skills.skills_install_menu import _format_bytes
 
         result = _format_bytes(2 * 1024 * 1024)
         assert "MB" in result
 
     def test_gb(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _format_bytes
+        from newcode.plugins.agent_skills.skills_install_menu import _format_bytes
 
         result = _format_bytes(5 * 1024 * 1024 * 1024)
         assert "GB" in result
 
     def test_negative(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _format_bytes
+        from newcode.plugins.agent_skills.skills_install_menu import _format_bytes
 
         assert _format_bytes(-100) == "0 B"
 
     def test_invalid(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _format_bytes
+        from newcode.plugins.agent_skills.skills_install_menu import _format_bytes
 
         assert _format_bytes("not a number") == "0 B"
 
 
 class TestWrapText:
     def test_empty(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _wrap_text
+        from newcode.plugins.agent_skills.skills_install_menu import _wrap_text
 
         assert _wrap_text("", 40) == []
 
     def test_short(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _wrap_text
+        from newcode.plugins.agent_skills.skills_install_menu import _wrap_text
 
         assert _wrap_text("hello world", 40) == ["hello world"]
 
     def test_wrap(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _wrap_text
+        from newcode.plugins.agent_skills.skills_install_menu import _wrap_text
 
         result = _wrap_text("word " * 20, 15)
         assert len(result) > 1
@@ -72,22 +71,22 @@ class TestWrapText:
 
 class TestCategoryKey:
     def test_normal(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _category_key
+        from newcode.plugins.agent_skills.skills_install_menu import _category_key
 
         assert _category_key("Data") == "data"
 
     def test_special_chars(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _category_key
+        from newcode.plugins.agent_skills.skills_install_menu import _category_key
 
         assert _category_key("Product Management!") == "productmanagement"
 
     def test_none(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _category_key
+        from newcode.plugins.agent_skills.skills_install_menu import _category_key
 
         assert _category_key(None) == ""
 
     def test_empty(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import _category_key
+        from newcode.plugins.agent_skills.skills_install_menu import _category_key
 
         assert _category_key("") == ""
 
@@ -95,7 +94,7 @@ class TestCategoryKey:
 class TestIsSkillInstalled:
     @patch("pathlib.Path.is_file", return_value=True)
     def test_installed(self, mock_is_file):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             is_skill_installed,
         )
 
@@ -103,7 +102,7 @@ class TestIsSkillInstalled:
 
     @patch("pathlib.Path.is_file", return_value=False)
     def test_not_installed(self, mock_is_file):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             is_skill_installed,
         )
 
@@ -116,7 +115,7 @@ class TestIsSkillInstalled:
 
 
 def _make_entry(**kwargs):
-    from code_puppy.plugins.agent_skills.skill_catalog import SkillCatalogEntry
+    from newcode.plugins.agent_skills.skill_catalog import SkillCatalogEntry
 
     defaults = dict(
         id="test-skill",
@@ -139,7 +138,7 @@ class TestSkillsInstallMenuInit:
     @patch(f"{_MOD}.catalog")
     def test_init_with_catalog(self, mock_catalog):
         mock_catalog.list_categories.return_value = ["Data", "Finance"]
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             SkillsInstallMenu,
         )
 
@@ -148,7 +147,7 @@ class TestSkillsInstallMenuInit:
 
     @patch(f"{_MOD}.catalog", None)
     def test_init_no_catalog(self):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             SkillsInstallMenu,
         )
 
@@ -158,7 +157,7 @@ class TestSkillsInstallMenuInit:
     @patch(f"{_MOD}.catalog")
     def test_init_catalog_error(self, mock_catalog):
         mock_catalog.list_categories.side_effect = RuntimeError("offline")
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             SkillsInstallMenu,
         )
 
@@ -174,7 +173,7 @@ class TestSkillsInstallMenuRendering:
                 mc.get_by_category = catalog_mock
             else:
                 mc.get_by_category.return_value = []
-            from code_puppy.plugins.agent_skills.skills_install_menu import (
+            from newcode.plugins.agent_skills.skills_install_menu import (
                 SkillsInstallMenu,
             )
 
@@ -363,7 +362,7 @@ class TestSkillsInstallMenuNavigation:
         with patch(f"{_MOD}.catalog") as mc:
             mc.list_categories.return_value = categories or []
             mc.get_by_category.return_value = [_make_entry()]
-            from code_puppy.plugins.agent_skills.skills_install_menu import (
+            from newcode.plugins.agent_skills.skills_install_menu import (
                 SkillsInstallMenu,
             )
 
@@ -434,10 +433,10 @@ class TestPromptAndInstall:
     @patch(f"{_MOD}.safe_input", return_value="y")
     @patch(f"{_MOD}.is_skill_installed", return_value=False)
     def test_install_success(self, mock_inst, mock_input, mock_download):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.installer import InstallResult
+        from newcode.plugins.agent_skills.skills_install_menu import (
             _prompt_and_install,
         )
-        from code_puppy.plugins.agent_skills.installer import InstallResult
 
         mock_download.return_value = InstallResult(
             success=True, message="OK", installed_path=Path("/tmp/s")
@@ -448,7 +447,7 @@ class TestPromptAndInstall:
     @patch(f"{_MOD}.safe_input", return_value="n")
     @patch(f"{_MOD}.is_skill_installed", return_value=False)
     def test_install_cancelled(self, mock_inst, mock_input):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             _prompt_and_install,
         )
 
@@ -458,10 +457,10 @@ class TestPromptAndInstall:
     @patch(f"{_MOD}.safe_input", return_value="y")
     @patch(f"{_MOD}.is_skill_installed", return_value=True)
     def test_reinstall(self, mock_inst, mock_input, mock_download):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.installer import InstallResult
+        from newcode.plugins.agent_skills.skills_install_menu import (
             _prompt_and_install,
         )
-        from code_puppy.plugins.agent_skills.installer import InstallResult
 
         mock_download.return_value = InstallResult(success=True, message="OK")
         assert _prompt_and_install(_make_entry()) is True
@@ -469,7 +468,7 @@ class TestPromptAndInstall:
     @patch(f"{_MOD}.safe_input", return_value="n")
     @patch(f"{_MOD}.is_skill_installed", return_value=True)
     def test_reinstall_cancelled(self, mock_inst, mock_input):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             _prompt_and_install,
         )
 
@@ -478,7 +477,7 @@ class TestPromptAndInstall:
     @patch(f"{_MOD}.safe_input", side_effect=KeyboardInterrupt)
     @patch(f"{_MOD}.is_skill_installed", return_value=False)
     def test_keyboard_interrupt(self, mock_inst, mock_input):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             _prompt_and_install,
         )
 
@@ -487,7 +486,7 @@ class TestPromptAndInstall:
     @patch(f"{_MOD}.safe_input", side_effect=EOFError)
     @patch(f"{_MOD}.is_skill_installed", return_value=False)
     def test_eof_error(self, mock_inst, mock_input):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             _prompt_and_install,
         )
 
@@ -497,7 +496,7 @@ class TestPromptAndInstall:
     @patch(f"{_MOD}.safe_input", return_value="y")
     @patch(f"{_MOD}.is_skill_installed", return_value=False)
     def test_download_error(self, mock_inst, mock_input, mock_download):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             _prompt_and_install,
         )
 
@@ -507,10 +506,10 @@ class TestPromptAndInstall:
     @patch(f"{_MOD}.safe_input", return_value="y")
     @patch(f"{_MOD}.is_skill_installed", return_value=False)
     def test_install_failure_result(self, mock_inst, mock_input, mock_download):
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.installer import InstallResult
+        from newcode.plugins.agent_skills.skills_install_menu import (
             _prompt_and_install,
         )
-        from code_puppy.plugins.agent_skills.installer import InstallResult
 
         mock_download.return_value = InstallResult(success=False, message="Failed")
         assert _prompt_and_install(_make_entry()) is False
@@ -531,7 +530,7 @@ class TestSkillsInstallMenuRun:
         self, mock_cat, mock_stdout, mock_time, mock_app_cls, mock_await
     ):
         mock_cat.list_categories.return_value = []
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             SkillsInstallMenu,
         )
 
@@ -551,7 +550,7 @@ class TestSkillsInstallMenuRun:
         self, mock_cat, mock_stdout, mock_time, mock_app_cls, mock_await, mock_prompt
     ):
         mock_cat.list_categories.return_value = []
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             SkillsInstallMenu,
         )
 
@@ -574,7 +573,7 @@ class TestRunSkillsInstallMenu:
         mock_menu = MagicMock()
         mock_menu.run.return_value = False
         mock_cls.return_value = mock_menu
-        from code_puppy.plugins.agent_skills.skills_install_menu import (
+        from newcode.plugins.agent_skills.skills_install_menu import (
             run_skills_install_menu,
         )
 
@@ -631,7 +630,7 @@ class TestSkillsInstallMenuKeyBindings:
         ):
             mc.list_categories.return_value = categories or []
             mc.get_by_category.return_value = [_make_entry()]
-            from code_puppy.plugins.agent_skills.skills_install_menu import (
+            from newcode.plugins.agent_skills.skills_install_menu import (
                 SkillsInstallMenu,
             )
 
@@ -743,7 +742,7 @@ class TestNavigationHints:
     def _make_menu(self):
         with patch(f"{_MOD}.catalog") as mc:
             mc.list_categories.return_value = []
-            from code_puppy.plugins.agent_skills.skills_install_menu import (
+            from newcode.plugins.agent_skills.skills_install_menu import (
                 SkillsInstallMenu,
             )
 

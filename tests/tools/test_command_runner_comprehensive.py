@@ -1,4 +1,4 @@
-"""Comprehensive tests for code_puppy.tools.command_runner.
+"""Comprehensive tests for newcode.tools.command_runner.
 
 This module provides extensive coverage for the command_runner module, testing:
 - Timeout handling (inactivity, absolute)
@@ -24,7 +24,7 @@ import pytest
 # Import directly from the module file
 spec = importlib.util.spec_from_file_location(
     "command_runner_module",
-    Path(__file__).parent.parent.parent / "code_puppy" / "tools" / "command_runner.py",
+    Path(__file__).parent.parent.parent / "newcode" / "tools" / "command_runner.py",
 )
 command_runner_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(command_runner_module)
@@ -334,7 +334,7 @@ class TestProcessTermination:
 
         # Only run on POSIX for this test
         if not sys.platform.startswith("win"):
-            from code_puppy.tools.command_runner import kill_all_running_shell_processes
+            from newcode.tools.command_runner import kill_all_running_shell_processes
 
             _register_process(mock_process)
             kill_all_running_shell_processes()

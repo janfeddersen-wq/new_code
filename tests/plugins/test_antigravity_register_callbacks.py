@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+from newcode.plugins.antigravity_oauth.register_callbacks import (
     _await_callback,
     _custom_help,
     _handle_custom_command,
@@ -46,7 +46,7 @@ def mock_no_tokens():
 @pytest.fixture
 def mock_context():
     """Create mock OAuth context."""
-    from code_puppy.plugins.antigravity_oauth.oauth import OAuthContext
+    from newcode.plugins.antigravity_oauth.oauth import OAuthContext
 
     return OAuthContext(
         state="test_state_123",
@@ -126,8 +126,8 @@ class TestCallbackHandler:
 class TestStartCallbackServer:
     """Test _start_callback_server function."""
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.HTTPServer")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.threading.Thread")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.HTTPServer")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.threading.Thread")
     def test_start_callback_server_success(self, mock_thread, mock_server):
         """Test successful callback server startup."""
         mock_server_instance = MagicMock()
@@ -143,8 +143,8 @@ class TestStartCallbackServer:
         assert isinstance(event, threading.Event)
         assert "localhost" in redirect_uri
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.HTTPServer")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_error")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.HTTPServer")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_error")
     def test_start_callback_server_all_ports_in_use(self, mock_emit_error, mock_server):
         """Test callback server startup when all ports are in use."""
         # Make HTTPServer raise OSError for all ports
@@ -157,8 +157,8 @@ class TestStartCallbackServer:
         mock_emit_error.assert_called_once()
         assert "all candidate ports" in mock_emit_error.call_args[0][0]
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.HTTPServer")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.threading.Thread")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.HTTPServer")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.threading.Thread")
     def test_start_callback_server_fallback_ports(self, mock_thread, mock_server):
         """Test callback server tries fallback ports."""
         # First port fails, second succeeds
@@ -185,7 +185,7 @@ class TestAwaitCallback:
     """Test _await_callback function."""
 
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks._start_callback_server"
+        "newcode.plugins.antigravity_oauth.register_callbacks._start_callback_server"
     )
     def test_await_callback_server_startup_failure(self, mock_start_server):
         """Test callback wait when server fails to start."""
@@ -205,19 +205,15 @@ class TestAwaitCallback:
 class TestPerformAuthentication:
     """Test _perform_authentication function."""
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.save_tokens")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.save_tokens")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.add_models_to_config")
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.add_models_to_config"
+        "newcode.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens"
     )
-    @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens"
-    )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback")
-    @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
-    )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks._await_callback")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_success")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info")
     def test_perform_authentication_success(
         self,
         mock_emit_info,
@@ -229,7 +225,7 @@ class TestPerformAuthentication:
         mock_save_tokens,
     ):
         """Test successful authentication flow."""
-        from code_puppy.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
+        from newcode.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
 
         # Setup mocks
         mock_context = MagicMock()
@@ -254,14 +250,14 @@ class TestPerformAuthentication:
         mock_add_models.return_value = True
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager"
+            "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager"
         ) as mock_manager_class:
             mock_manager = MagicMock()
             mock_manager.account_count = 0
             mock_manager_class.load_from_disk.return_value = mock_manager
 
             with patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.reload_current_agent"
+                "newcode.plugins.antigravity_oauth.register_callbacks.reload_current_agent"
             ):
                 result = _perform_authentication()
 
@@ -270,10 +266,8 @@ class TestPerformAuthentication:
         mock_add_models.assert_called_once()
         mock_emit_success.assert_called()
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback")
-    @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
-    )
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks._await_callback")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context")
     def test_perform_authentication_callback_failure(
         self, mock_prepare_context, mock_await_callback
     ):
@@ -286,14 +280,12 @@ class TestPerformAuthentication:
 
         assert result is False
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_error")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_error")
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens"
+        "newcode.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens"
     )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback")
-    @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
-    )
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks._await_callback")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context")
     def test_perform_authentication_token_exchange_failure(
         self,
         mock_prepare_context,
@@ -302,7 +294,7 @@ class TestPerformAuthentication:
         mock_emit_error,
     ):
         """Test authentication when token exchange fails."""
-        from code_puppy.plugins.antigravity_oauth.oauth import TokenExchangeFailure
+        from newcode.plugins.antigravity_oauth.oauth import TokenExchangeFailure
 
         mock_context = MagicMock()
         mock_prepare_context.return_value = mock_context
@@ -319,15 +311,13 @@ class TestPerformAuthentication:
         assert result is False
         mock_emit_error.assert_called()
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_error")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.save_tokens")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_error")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.save_tokens")
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens"
+        "newcode.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens"
     )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback")
-    @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
-    )
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks._await_callback")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context")
     def test_perform_authentication_save_tokens_failure(
         self,
         mock_prepare_context,
@@ -337,7 +327,7 @@ class TestPerformAuthentication:
         mock_emit_error,
     ):
         """Test authentication when token save fails."""
-        from code_puppy.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
+        from newcode.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
 
         mock_context = MagicMock()
         mock_prepare_context.return_value = mock_context
@@ -363,20 +353,14 @@ class TestPerformAuthentication:
         mock_emit_error.assert_called()
         assert "Failed to save tokens" in mock_emit_error.call_args[0][0]
 
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.reload_current_agent")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.add_models_to_config")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.save_tokens")
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.reload_current_agent"
+        "newcode.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens"
     )
-    @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.add_models_to_config"
-    )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.save_tokens")
-    @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens"
-    )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback")
-    @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
-    )
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks._await_callback")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context")
     def test_perform_authentication_add_account_flag(
         self,
         mock_prepare_context,
@@ -387,7 +371,7 @@ class TestPerformAuthentication:
         mock_reload_agent,
     ):
         """Test authentication with add_account=True."""
-        from code_puppy.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
+        from newcode.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
 
         mock_context = MagicMock()
         mock_prepare_context.return_value = mock_context
@@ -409,14 +393,14 @@ class TestPerformAuthentication:
         mock_add_models.return_value = True
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager"
+            "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager"
         ) as mock_manager_class:
             mock_manager = MagicMock()
             mock_manager.account_count = 2  # Multiple accounts exist
             mock_manager_class.load_from_disk.return_value = mock_manager
 
             with patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success"
+                "newcode.plugins.antigravity_oauth.register_callbacks.emit_success"
             ) as mock_emit_success:
                 result = _perform_authentication(add_account=True)
 
@@ -490,8 +474,8 @@ class TestCustomHelp:
 class TestHandleStatus:
     """Test _handle_status function."""
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
     def test_handle_status_not_authenticated(self, mock_load_tokens, mock_emit_warning):
         """Test status when user is not authenticated."""
         mock_load_tokens.return_value = {}
@@ -502,14 +486,14 @@ class TestHandleStatus:
         assert "Not authenticated" in mock_emit_warning.call_args[0][0]
 
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.load_antigravity_models"
+        "newcode.plugins.antigravity_oauth.register_callbacks.load_antigravity_models"
     )
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status"
+        "newcode.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status"
     )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_success")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
     def test_handle_status_authenticated(
         self,
         mock_load_tokens,
@@ -525,7 +509,7 @@ class TestHandleStatus:
             "expires_at": time.time() + 3600,
         }
 
-        from code_puppy.plugins.antigravity_oauth.oauth import AntigravityStatus
+        from newcode.plugins.antigravity_oauth.oauth import AntigravityStatus
 
         mock_status = AntigravityStatus(
             project_id="project_123",
@@ -541,7 +525,7 @@ class TestHandleStatus:
         }
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager"
+            "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager"
         ) as mock_manager_class:
             mock_manager = MagicMock()
             mock_manager.account_count = 1
@@ -553,7 +537,7 @@ class TestHandleStatus:
         assert "Authenticated" in mock_emit_success.call_args[0][0]
         mock_emit_info.assert_called()
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
     def test_handle_status_no_email(
         self,
         mock_load_tokens,
@@ -564,10 +548,10 @@ class TestHandleStatus:
             "expires_at": time.time() + 3600,
         }
 
-        from code_puppy.plugins.antigravity_oauth.oauth import AntigravityStatus
+        from newcode.plugins.antigravity_oauth.oauth import AntigravityStatus
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status"
+            "newcode.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status"
         ) as mock_fetch:
             mock_status = AntigravityStatus(
                 project_id="project_123",
@@ -579,26 +563,26 @@ class TestHandleStatus:
             mock_fetch.return_value = mock_status
 
             with patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager"
+                "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager"
             ) as mock_manager_class:
                 mock_manager = MagicMock()
                 mock_manager.account_count = 1
                 mock_manager_class.load_from_disk.return_value = mock_manager
 
                 with patch(
-                    "code_puppy.plugins.antigravity_oauth.register_callbacks.load_antigravity_models",
+                    "newcode.plugins.antigravity_oauth.register_callbacks.load_antigravity_models",
                     return_value={},
                 ):
                     with patch(
-                        "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"
+                        "newcode.plugins.antigravity_oauth.register_callbacks.emit_info"
                     ):
                         _handle_status()
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning")
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status"
+        "newcode.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status"
     )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
     def test_handle_status_fetch_error(
         self, mock_load_tokens, mock_fetch_status, mock_emit_warning
     ):
@@ -608,7 +592,7 @@ class TestHandleStatus:
             "email": "test@example.com",
         }
 
-        from code_puppy.plugins.antigravity_oauth.oauth import AntigravityStatus
+        from newcode.plugins.antigravity_oauth.oauth import AntigravityStatus
 
         mock_status = AntigravityStatus(
             project_id="",
@@ -620,21 +604,21 @@ class TestHandleStatus:
         mock_fetch_status.return_value = mock_status
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager"
+            "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager"
         ) as mock_manager_class:
             mock_manager = MagicMock()
             mock_manager.account_count = 1
             mock_manager_class.load_from_disk.return_value = mock_manager
 
             with patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_antigravity_models",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_antigravity_models",
                 return_value={},
             ):
                 with patch(
-                    "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success"
+                    "newcode.plugins.antigravity_oauth.register_callbacks.emit_success"
                 ):
                     with patch(
-                        "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"
+                        "newcode.plugins.antigravity_oauth.register_callbacks.emit_info"
                     ):
                         _handle_status()
 
@@ -653,17 +637,17 @@ class TestHandleLogout:
     """Test _handle_logout function."""
 
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.remove_antigravity_models"
+        "newcode.plugins.antigravity_oauth.register_callbacks.remove_antigravity_models"
     )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.clear_accounts")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.clear_accounts")
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.get_accounts_storage_path"
+        "newcode.plugins.antigravity_oauth.register_callbacks.get_accounts_storage_path"
     )
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.get_token_storage_path"
+        "newcode.plugins.antigravity_oauth.register_callbacks.get_token_storage_path"
     )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_success")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info")
     def test_handle_logout_success(
         self,
         mock_emit_info,
@@ -693,9 +677,9 @@ class TestHandleLogout:
         assert "logout complete" in mock_emit_success.call_args[0][0].lower()
 
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.get_token_storage_path"
+        "newcode.plugins.antigravity_oauth.register_callbacks.get_token_storage_path"
     )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info")
     def test_handle_logout_no_tokens(self, mock_emit_info, mock_get_token_path):
         """Test logout when no tokens exist."""
         mock_token_path = MagicMock(spec=Path)
@@ -703,18 +687,18 @@ class TestHandleLogout:
         mock_get_token_path.return_value = mock_token_path
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks.get_accounts_storage_path"
+            "newcode.plugins.antigravity_oauth.register_callbacks.get_accounts_storage_path"
         ) as mock_get_accounts_path:
             mock_accounts_path = MagicMock(spec=Path)
             mock_accounts_path.exists.return_value = False
             mock_get_accounts_path.return_value = mock_accounts_path
 
             with patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.remove_antigravity_models",
+                "newcode.plugins.antigravity_oauth.register_callbacks.remove_antigravity_models",
                 return_value=0,
             ):
                 with patch(
-                    "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success"
+                    "newcode.plugins.antigravity_oauth.register_callbacks.emit_success"
                 ):
                     _handle_logout()
 
@@ -737,13 +721,13 @@ class TestHandleCustomCommand:
         assert result is None
 
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks.set_model_and_reload_agent"
+        "newcode.plugins.antigravity_oauth.register_callbacks.set_model_and_reload_agent"
     )
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks._perform_authentication"
+        "newcode.plugins.antigravity_oauth.register_callbacks._perform_authentication"
     )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info")
     def test_handle_custom_command_auth(
         self,
         mock_emit_info,
@@ -762,9 +746,9 @@ class TestHandleCustomCommand:
         mock_set_model.assert_called_once_with("antigravity-gemini-3-pro-high")
 
     @patch(
-        "code_puppy.plugins.antigravity_oauth.register_callbacks._perform_authentication"
+        "newcode.plugins.antigravity_oauth.register_callbacks._perform_authentication"
     )
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info")
     def test_handle_custom_command_add(
         self,
         mock_emit_info,
@@ -774,7 +758,7 @@ class TestHandleCustomCommand:
         mock_perform_auth.return_value = True
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager"
+            "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager"
         ) as mock_manager_class:
             mock_manager = MagicMock()
             mock_manager.account_count = 1
@@ -787,7 +771,7 @@ class TestHandleCustomCommand:
         call_kwargs = mock_perform_auth.call_args
         assert call_kwargs[1].get("add_account") is True
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks._handle_status")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks._handle_status")
     def test_handle_custom_command_status(self, mock_handle_status):
         """Test antigravity-status command."""
         result = _handle_custom_command("custom_command", "antigravity-status")
@@ -795,7 +779,7 @@ class TestHandleCustomCommand:
         assert result is True
         mock_handle_status.assert_called_once()
 
-    @patch("code_puppy.plugins.antigravity_oauth.register_callbacks._handle_logout")
+    @patch("newcode.plugins.antigravity_oauth.register_callbacks._handle_logout")
     def test_handle_custom_command_logout(self, mock_handle_logout):
         """Test antigravity-logout command."""
         result = _handle_custom_command("custom_command", "antigravity-logout")

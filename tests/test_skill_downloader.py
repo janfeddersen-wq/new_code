@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-import code_puppy.plugins.agent_skills.downloader as dl
+import newcode.plugins.agent_skills.downloader as dl
 
 
 @pytest.fixture(autouse=True)

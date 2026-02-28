@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from code_puppy.plugins.agent_skills.config import (
+from newcode.plugins.agent_skills.config import (
     add_skill_directory,
     get_disabled_skills,
     get_skill_directories,
@@ -15,21 +15,21 @@ from code_puppy.plugins.agent_skills.config import (
     set_skill_disabled,
     set_skills_enabled,
 )
-from code_puppy.plugins.agent_skills.discovery import (
+from newcode.plugins.agent_skills.discovery import (
     SkillInfo,
     discover_skills,
     get_default_skill_directories,
     is_valid_skill_directory,
     refresh_skill_cache,
 )
-from code_puppy.plugins.agent_skills.metadata import (
+from newcode.plugins.agent_skills.metadata import (
     SkillMetadata,
     get_skill_resources,
     load_full_skill_content,
     parse_skill_metadata,
     parse_yaml_frontmatter,
 )
-from code_puppy.plugins.agent_skills.prompt_builder import (
+from newcode.plugins.agent_skills.prompt_builder import (
     build_available_skills_xml,
     build_skills_guidance,
 )
@@ -146,8 +146,8 @@ class TestSkillDiscovery:
         """Test default skill directories are correctly returned."""
         directories = get_default_skill_directories()
         assert len(directories) == 3
-        assert directories[0] == Path.home() / ".code_puppy" / "skills"
-        assert directories[1] == Path.cwd() / ".code_puppy" / "skills"
+        assert directories[0] == Path.home() / ".newcode" / "skills"
+        assert directories[1] == Path.cwd() / ".newcode" / "skills"
         assert directories[2] == Path.cwd() / "skills"
 
     def test_is_valid_skill_directory_valid(self, valid_skill_dir):
@@ -283,7 +283,7 @@ class TestSkillDiscovery:
         # Apply the monkeypatch to discover_skills in the discovery module
         # AND in the test module (since we imported it directly)
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.discovery.discover_skills", mock_discover
+            "newcode.plugins.agent_skills.discovery.discover_skills", mock_discover
         )
         # Also patch the direct import in this test module
         monkeypatch.setattr(
@@ -591,7 +591,7 @@ class TestPromptBuilder:
         assert "list_or_search_skills" in guidance
         assert "activate_skill" in guidance
         assert "Skill Locations" in guidance
-        assert "~/.code_puppy/skills/" in guidance
+        assert "~/.newcode/skills/" in guidance
 
 
 # Tests for Config Module
@@ -608,14 +608,14 @@ class TestSkillsConfig:
             return None
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_value", mock_get_value
+            "newcode.plugins.agent_skills.config.get_value", mock_get_value
         )
 
         directories = get_skill_directories()
         assert len(directories) == 3
         # The tilde will be expanded to the actual home directory
-        assert ".code_puppy/skills" in directories[0]
-        assert ".code_puppy/skills" in directories[1]
+        assert ".newcode/skills" in directories[0]
+        assert ".newcode/skills" in directories[1]
         # The current directory path will contain the full path, ending with "skills"
         assert "skills" in directories[2]
 
@@ -628,7 +628,7 @@ class TestSkillsConfig:
             return saved_dirs
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_value", mock_get_value
+            "newcode.plugins.agent_skills.config.get_value", mock_get_value
         )
 
         directories = get_skill_directories()
@@ -642,7 +642,7 @@ class TestSkillsConfig:
             return "not json"
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_value", mock_get_value
+            "newcode.plugins.agent_skills.config.get_value", mock_get_value
         )
 
         with caplog.at_level(logging.ERROR):
@@ -659,7 +659,7 @@ class TestSkillsConfig:
             return ["/existing"]
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_skill_directories",
+            "newcode.plugins.agent_skills.config.get_skill_directories",
             mock_get_skill_directories,
         )
 
@@ -670,7 +670,7 @@ class TestSkillsConfig:
             return None
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         result = add_skill_directory("/new")
@@ -692,7 +692,7 @@ class TestSkillsConfig:
             return ["/existing"]
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_skill_directories",
+            "newcode.plugins.agent_skills.config.get_skill_directories",
             mock_get_skill_directories,
         )
 
@@ -703,7 +703,7 @@ class TestSkillsConfig:
             return None
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         result = add_skill_directory("/existing")
@@ -719,7 +719,7 @@ class TestSkillsConfig:
             return ["/existing"]
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_skill_directories",
+            "newcode.plugins.agent_skills.config.get_skill_directories",
             mock_get_skill_directories,
         )
 
@@ -727,7 +727,7 @@ class TestSkillsConfig:
             raise Exception("Config save error")
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         with caplog.at_level(logging.ERROR):
@@ -744,7 +744,7 @@ class TestSkillsConfig:
             return ["/dir1", "/dir2", "/dir3"]
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_skill_directories",
+            "newcode.plugins.agent_skills.config.get_skill_directories",
             mock_get_skill_directories,
         )
 
@@ -755,7 +755,7 @@ class TestSkillsConfig:
             return None
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         result = remove_skill_directory("/dir2")
@@ -776,7 +776,7 @@ class TestSkillsConfig:
             return ["/dir1", "/dir2"]
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_skill_directories",
+            "newcode.plugins.agent_skills.config.get_skill_directories",
             mock_get_skill_directories,
         )
 
@@ -787,7 +787,7 @@ class TestSkillsConfig:
             return None
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         result = remove_skill_directory("/not-exists")
@@ -803,7 +803,7 @@ class TestSkillsConfig:
             return ["/dir1", "/dir2"]
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_skill_directories",
+            "newcode.plugins.agent_skills.config.get_skill_directories",
             mock_get_skill_directories,
         )
 
@@ -811,7 +811,7 @@ class TestSkillsConfig:
             raise Exception("Config save error")
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         with caplog.at_level(logging.ERROR):
@@ -827,7 +827,7 @@ class TestSkillsConfig:
             return None
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_value", mock_get_value
+            "newcode.plugins.agent_skills.config.get_value", mock_get_value
         )
         assert get_skills_enabled() is True
 
@@ -853,7 +853,7 @@ class TestSkillsConfig:
             return value
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_value", mock_get_value
+            "newcode.plugins.agent_skills.config.get_value", mock_get_value
         )
         assert get_skills_enabled() == expected
 
@@ -865,7 +865,7 @@ class TestSkillsConfig:
             calls.append((key, value))
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
         set_skills_enabled(True)
         assert calls == [("skills_enabled", "true")]
@@ -878,7 +878,7 @@ class TestSkillsConfig:
             calls.append((key, value))
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
         set_skills_enabled(False)
         assert calls == [("skills_enabled", "false")]
@@ -890,7 +890,7 @@ class TestSkillsConfig:
             return None
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_value", mock_get_value
+            "newcode.plugins.agent_skills.config.get_value", mock_get_value
         )
         disabled = get_disabled_skills()
         assert isinstance(disabled, set)
@@ -904,7 +904,7 @@ class TestSkillsConfig:
             return json.dumps(["skill1", "skill2", "skill3"])
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_value", mock_get_value
+            "newcode.plugins.agent_skills.config.get_value", mock_get_value
         )
 
         disabled = get_disabled_skills()
@@ -918,7 +918,7 @@ class TestSkillsConfig:
             return "not json"
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_value", mock_get_value
+            "newcode.plugins.agent_skills.config.get_value", mock_get_value
         )
 
         with caplog.at_level(logging.ERROR):
@@ -936,7 +936,7 @@ class TestSkillsConfig:
             return set()
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_disabled_skills",
+            "newcode.plugins.agent_skills.config.get_disabled_skills",
             mock_get_disabled_skills,
         )
 
@@ -946,7 +946,7 @@ class TestSkillsConfig:
             calls.append((key, value))
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         set_skill_disabled("skill1", disabled=True)
@@ -966,7 +966,7 @@ class TestSkillsConfig:
             return {"skill1", "skill2"}
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_disabled_skills",
+            "newcode.plugins.agent_skills.config.get_disabled_skills",
             mock_get_disabled_skills,
         )
 
@@ -976,7 +976,7 @@ class TestSkillsConfig:
             calls.append((key, value))
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         set_skill_disabled("skill1", disabled=False)
@@ -997,7 +997,7 @@ class TestSkillsConfig:
             return {"skill1"}
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_disabled_skills",
+            "newcode.plugins.agent_skills.config.get_disabled_skills",
             mock_get_disabled_skills,
         )
 
@@ -1007,7 +1007,7 @@ class TestSkillsConfig:
             calls.append((key, value))
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         set_skill_disabled("skill1", disabled=True)
@@ -1023,7 +1023,7 @@ class TestSkillsConfig:
             return set()
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.get_disabled_skills",
+            "newcode.plugins.agent_skills.config.get_disabled_skills",
             mock_get_disabled_skills,
         )
 
@@ -1033,7 +1033,7 @@ class TestSkillsConfig:
             calls.append((key, value))
 
         monkeypatch.setattr(
-            "code_puppy.plugins.agent_skills.config.set_value", mock_set_value
+            "newcode.plugins.agent_skills.config.set_value", mock_set_value
         )
 
         set_skill_disabled("skill1", disabled=False)

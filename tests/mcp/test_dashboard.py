@@ -1,5 +1,5 @@
 """
-Comprehensive tests for code_puppy/mcp_/dashboard.py
+Comprehensive tests for newcode/mcp_/dashboard.py
 
 Provides full coverage of MCPDashboard functionality including:
 - Dashboard rendering with various server states
@@ -16,8 +16,8 @@ from unittest.mock import MagicMock, Mock, patch
 from rich.console import Console
 from rich.table import Table
 
-from code_puppy.mcp_.dashboard import MCPDashboard
-from code_puppy.mcp_.status_tracker import ServerState
+from newcode.mcp_.dashboard import MCPDashboard
+from newcode.mcp_.status_tracker import ServerState
 
 
 class TestMCPDashboardInit:
@@ -39,7 +39,7 @@ class TestMCPDashboardInit:
 class TestRenderDashboard:
     """Tests for render_dashboard() method."""
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_render_dashboard_with_servers(self, mock_get_manager):
         """Test dashboard rendering with multiple servers."""
         # Mock servers
@@ -73,7 +73,7 @@ class TestRenderDashboard:
         # Should have header + 2 server rows
         assert len(table.rows) == 2
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_render_dashboard_empty_servers(self, mock_get_manager):
         """Test dashboard rendering when no servers exist."""
         mock_manager = Mock()
@@ -87,7 +87,7 @@ class TestRenderDashboard:
         # Should have 1 row for empty state message
         assert len(table.rows) == 1
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_render_dashboard_error_state(self, mock_get_manager):
         """Test dashboard rendering when manager raises exception."""
         mock_manager = Mock()
@@ -101,7 +101,7 @@ class TestRenderDashboard:
         # Should have 1 row for error state
         assert len(table.rows) == 1
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_render_dashboard_columns(self, mock_get_manager):
         """Test that dashboard has correct columns."""
         mock_manager = Mock()
@@ -536,7 +536,7 @@ class TestRenderMetricsSummary:
 class TestPrintDashboard:
     """Tests for print_dashboard() method."""
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_print_dashboard_calls_console_print(self, mock_get_manager):
         """Test that print_dashboard calls console.print()."""
         mock_manager = Mock()
@@ -550,7 +550,7 @@ class TestPrintDashboard:
         # Should call print twice (once for table, once for spacing)
         assert dashboard._console.print.call_count == 2
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_print_dashboard_integration(self, mock_get_manager):
         """Test print_dashboard with actual console (integration test)."""
         server = Mock()
@@ -574,7 +574,7 @@ class TestPrintDashboard:
 class TestGetDashboardString:
     """Tests for get_dashboard_string() method."""
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_get_dashboard_string_returns_string(self, mock_get_manager):
         """Test that get_dashboard_string returns a string."""
         mock_manager = Mock()
@@ -587,7 +587,7 @@ class TestGetDashboardString:
         assert isinstance(result, str)
         assert len(result) > 0
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_get_dashboard_string_contains_title(self, mock_get_manager):
         """Test that dashboard string contains title."""
         mock_manager = Mock()
@@ -599,7 +599,7 @@ class TestGetDashboardString:
 
         assert "MCP Server Status Dashboard" in result
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_get_dashboard_string_with_servers(self, mock_get_manager):
         """Test dashboard string with servers."""
         server = Mock()
@@ -625,7 +625,7 @@ class TestGetDashboardString:
 class TestEdgeCases:
     """Tests for edge cases and error handling."""
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_server_with_very_long_name(self, mock_get_manager):
         """Test server with very long name."""
         server = Mock()
@@ -660,7 +660,7 @@ class TestEdgeCases:
         result = dashboard.format_uptime(start_time)
         assert "365d" in result or "d" in result
 
-    @patch("code_puppy.mcp_.dashboard.get_mcp_manager")
+    @patch("newcode.mcp_.dashboard.get_mcp_manager")
     def test_multiple_servers_with_different_states(self, mock_get_manager):
         """Test dashboard with servers in all different states."""
         servers = []

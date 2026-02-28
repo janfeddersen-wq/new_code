@@ -4,17 +4,16 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-
 # ===== browser_manager.py =====
 
-MOD_MGR = "code_puppy.tools.browser.browser_manager"
+MOD_MGR = "newcode.tools.browser.browser_manager"
 
 
 class TestBrowserManagerRemainingLines:
     @pytest.mark.asyncio
     async def test_initialize_success_sets_initialized(self):
         """Cover line 154: _initialized set to True after successful _initialize_browser."""
-        from code_puppy.tools.browser.browser_manager import BrowserManager
+        from newcode.tools.browser.browser_manager import BrowserManager
 
         mgr = BrowserManager.__new__(BrowserManager)
         mgr.session_id = "test-success"
@@ -30,7 +29,7 @@ class TestBrowserManagerRemainingLines:
     @pytest.mark.asyncio
     async def test_initialize_cleanup_on_exception(self):
         """Cover exception branch in async_initialize."""
-        from code_puppy.tools.browser.browser_manager import BrowserManager
+        from newcode.tools.browser.browser_manager import BrowserManager
 
         mgr = BrowserManager.__new__(BrowserManager)
         mgr.session_id = "test"
@@ -46,8 +45,8 @@ class TestBrowserManagerRemainingLines:
     @pytest.mark.asyncio
     async def test_cleanup_exception_branch(self):
         """Cover lines 267-269: outer exception during cleanup with silent=False."""
-        from code_puppy.tools.browser.browser_manager import BrowserManager
-        import code_puppy.tools.browser.browser_manager as bm_mod
+        import newcode.tools.browser.browser_manager as bm_mod
+        from newcode.tools.browser.browser_manager import BrowserManager
 
         mgr = BrowserManager.__new__(BrowserManager)
         mgr.session_id = "test-exc-outer"
@@ -71,11 +70,11 @@ class TestBrowserManagerRemainingLines:
     @pytest.mark.asyncio
     async def test_atexit_cleanup_with_running_loop(self):
         """Cover lines 353-354: atexit handler when event loop is running."""
-        from code_puppy.tools.browser.browser_manager import (
-            _sync_cleanup_browsers,
+        import newcode.tools.browser.browser_manager as bm_mod
+        from newcode.tools.browser.browser_manager import (
             _active_managers,
+            _sync_cleanup_browsers,
         )
-        import code_puppy.tools.browser.browser_manager as bm_mod
 
         # Ensure early-exit guards don't trigger
         old_cleanup_done = bm_mod._cleanup_done
@@ -92,8 +91,8 @@ class TestBrowserManagerRemainingLines:
 
     def test_atexit_cleanup_no_running_loop(self):
         """Cover the no-running-loop path."""
-        from code_puppy.tools.browser.browser_manager import _sync_cleanup_browsers
-        import code_puppy.tools.browser.browser_manager as bm_mod
+        import newcode.tools.browser.browser_manager as bm_mod
+        from newcode.tools.browser.browser_manager import _sync_cleanup_browsers
 
         old_cleanup_done = bm_mod._cleanup_done
         bm_mod._cleanup_done = False
@@ -115,14 +114,14 @@ class TestBrowserManagerRemainingLines:
 
 # ===== browser_scripts.py line 155 =====
 
-MOD_SCRIPTS = "code_puppy.tools.browser.browser_scripts"
+MOD_SCRIPTS = "newcode.tools.browser.browser_scripts"
 
 
 class TestBrowserScriptsRemainingLines:
     @pytest.mark.asyncio
     async def test_scroll_to_element_no_page(self):
         """Cover line 155: scroll_to_element returns error when no active page."""
-        from code_puppy.tools.browser.browser_scripts import scroll_to_element
+        from newcode.tools.browser.browser_scripts import scroll_to_element
 
         mgr = AsyncMock()
         mgr.get_current_page.return_value = None
@@ -137,14 +136,14 @@ class TestBrowserScriptsRemainingLines:
 
 # ===== browser_workflows.py =====
 
-MOD_WF = "code_puppy.tools.browser.browser_workflows"
+MOD_WF = "newcode.tools.browser.browser_workflows"
 
 
 class TestBrowserWorkflowsRemainingLines:
     @pytest.mark.asyncio
     async def test_list_workflows_file_error(self, tmp_path):
         """Cover exception reading a workflow file."""
-        from code_puppy.tools.browser.browser_workflows import list_workflows
+        from newcode.tools.browser.browser_workflows import list_workflows
 
         wf_dir = tmp_path / "workflows"
         wf_dir.mkdir()
@@ -165,14 +164,14 @@ class TestBrowserWorkflowsRemainingLines:
 
 # ===== chromium_terminal_manager.py =====
 
-MOD_CTM = "code_puppy.tools.browser.chromium_terminal_manager"
+MOD_CTM = "newcode.tools.browser.chromium_terminal_manager"
 
 
 class TestChromiumTerminalManagerRemainingLines:
     @pytest.mark.asyncio
     async def test_cleanup_exception(self):
         """Cover exception during chromium cleanup."""
-        from code_puppy.tools.browser.chromium_terminal_manager import (
+        from newcode.tools.browser.chromium_terminal_manager import (
             ChromiumTerminalManager,
         )
 
@@ -196,14 +195,14 @@ class TestChromiumTerminalManagerRemainingLines:
 
 # ===== terminal_command_tools.py =====
 
-MOD_TCT = "code_puppy.tools.browser.terminal_command_tools"
+MOD_TCT = "newcode.tools.browser.terminal_command_tools"
 
 
 class TestTerminalCommandToolsRemainingLines:
     @pytest.mark.asyncio
     async def test_run_terminal_command_focus_warning(self):
         """Cover focus_result not successful."""
-        from code_puppy.tools.browser.terminal_command_tools import run_terminal_command
+        from newcode.tools.browser.terminal_command_tools import run_terminal_command
 
         page = AsyncMock()
         page.evaluate.return_value = {"success": True, "output": "ok"}
@@ -226,7 +225,7 @@ class TestTerminalCommandToolsRemainingLines:
 
 # ===== terminal_screenshot_tools.py lines 516, 521-523 =====
 
-MOD_TST = "code_puppy.tools.browser.terminal_screenshot_tools"
+MOD_TST = "newcode.tools.browser.terminal_screenshot_tools"
 
 
 def _extract_registered_fn(register_func):
@@ -247,7 +246,7 @@ class TestTerminalScreenshotToolsCompare:
     @pytest.mark.asyncio
     async def test_compare_mockup_capture_fails(self):
         """Cover line 516: capture fails."""
-        from code_puppy.tools.browser.terminal_screenshot_tools import (
+        from newcode.tools.browser.terminal_screenshot_tools import (
             register_terminal_compare_mockup,
         )
 
@@ -268,7 +267,7 @@ class TestTerminalScreenshotToolsCompare:
     @pytest.mark.asyncio
     async def test_compare_mockup_file_not_found(self):
         """Cover lines 521-523: mockup file not found."""
-        from code_puppy.tools.browser.terminal_screenshot_tools import (
+        from newcode.tools.browser.terminal_screenshot_tools import (
             register_terminal_compare_mockup,
         )
 
@@ -295,10 +294,11 @@ class TestTerminalScreenshotToolsCompare:
     @pytest.mark.asyncio
     async def test_compare_mockup_success(self, tmp_path):
         """Cover full success path."""
-        from code_puppy.tools.browser.terminal_screenshot_tools import (
+        from pydantic_ai import ToolReturn
+
+        from newcode.tools.browser.terminal_screenshot_tools import (
             register_terminal_compare_mockup,
         )
-        from pydantic_ai import ToolReturn
 
         fn = _extract_registered_fn(register_terminal_compare_mockup)
         ctx = MagicMock()

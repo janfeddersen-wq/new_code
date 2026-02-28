@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from pydantic_ai import BinaryContent, ToolReturn
 
-from code_puppy.tools.browser.terminal_screenshot_tools import (
+from newcode.tools.browser.terminal_screenshot_tools import (
     XTERM_TEXT_EXTRACTION_JS,
     _build_screenshot_path,
     _capture_terminal_screenshot,
@@ -60,7 +60,7 @@ class TestCaptureTerminalScreenshot:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
             result = await _capture_terminal_screenshot(
@@ -78,7 +78,7 @@ class TestCaptureTerminalScreenshot:
         mock_manager.get_current_page.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
             result = await _capture_terminal_screenshot()
@@ -95,7 +95,7 @@ class TestCaptureTerminalScreenshot:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
             result = await _capture_terminal_screenshot(
@@ -115,7 +115,7 @@ class TestCaptureTerminalScreenshot:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
             result = await _capture_terminal_screenshot(
@@ -139,7 +139,7 @@ class TestCaptureTerminalScreenshot:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
             result = await _capture_terminal_screenshot()
@@ -160,12 +160,12 @@ class TestTerminalScreenshot:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_success"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_success"
                 ):
                     result = await terminal_screenshot(full_page=False)
 
@@ -200,12 +200,12 @@ class TestTerminalReadOutput:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_success"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_success"
                 ):
                     result = await terminal_read_output(lines=50)
 
@@ -226,12 +226,12 @@ class TestTerminalReadOutput:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_success"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_success"
                 ):
                     result = await terminal_read_output(lines=2)
 
@@ -248,12 +248,12 @@ class TestTerminalReadOutput:
         mock_manager.get_current_page.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_error"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_error"
                 ):
                     result = await terminal_read_output()
 
@@ -272,12 +272,12 @@ class TestTerminalReadOutput:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_error"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_error"
                 ):
                     result = await terminal_read_output()
 
@@ -293,12 +293,12 @@ class TestTerminalReadOutput:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_error"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_error"
                 ):
                     result = await terminal_read_output()
 
@@ -317,9 +317,9 @@ class TestLoadImage:
             image_path = f.name
 
         try:
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_success"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_success"
                 ):
                     result = await load_image(image_path=image_path)
 
@@ -343,8 +343,8 @@ class TestLoadImage:
     @pytest.mark.asyncio
     async def test_load_image_not_found(self):
         """Test handling when image file doesn't exist."""
-        with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_error"):
+        with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_error"):
                 result = await load_image(image_path="/nonexistent/image.png")
 
                 assert result["success"] is False
@@ -354,9 +354,9 @@ class TestLoadImage:
     async def test_load_image_is_directory(self):
         """Test handling when image path is a directory."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_error"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_error"
                 ):
                     result = await load_image(image_path=tmpdir)
 
@@ -380,11 +380,9 @@ class TestLoadImage:
                 image_path = f.name
 
             try:
-                with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_info"
-                ):
+                with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_screenshot_tools.emit_success"
+                        "newcode.tools.browser.terminal_screenshot_tools.emit_success"
                     ):
                         result = await load_image(image_path=image_path)
 
@@ -406,13 +404,13 @@ class TestLoadImage:
             image_path = f.name
 
         try:
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_error"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_error"
                 ):
                     # Mock Path.read_bytes to fail
                     with patch(
-                        "code_puppy.tools.browser.terminal_screenshot_tools.Path.read_bytes",
+                        "newcode.tools.browser.terminal_screenshot_tools.Path.read_bytes",
                         side_effect=RuntimeError("Read failed"),
                     ):
                         result = await load_image(image_path=image_path)
@@ -500,14 +498,12 @@ class TestIntegrationScenarios:
             mock_manager.get_current_page.return_value = mock_page
 
             with patch(
-                "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+                "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
                 return_value=mock_manager,
             ):
-                with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_info"
-                ):
+                with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_screenshot_tools.emit_success"
+                        "newcode.tools.browser.terminal_screenshot_tools.emit_success"
                     ):
                         # First take screenshot
                         screenshot_result = await terminal_screenshot(full_page=False)
@@ -535,12 +531,12 @@ class TestIntegrationScenarios:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_screenshot_tools.get_session_manager",
+            "newcode.tools.browser.terminal_screenshot_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_screenshot_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_screenshot_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_screenshot_tools.emit_success"
+                    "newcode.tools.browser.terminal_screenshot_tools.emit_success"
                 ):
                     # First read output (still returns dict)
                     read_result = await terminal_read_output(lines=10)

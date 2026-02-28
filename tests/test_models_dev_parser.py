@@ -17,11 +17,11 @@ from unittest.mock import MagicMock, mock_open, patch
 import httpx
 import pytest
 
-from code_puppy.models_dev_parser import (
+from newcode.models_dev_parser import (
     ModelInfo,
     ModelsDevRegistry,
     ProviderInfo,
-    convert_to_code_puppy_config,
+    convert_to_newcode_config,
 )
 
 
@@ -293,7 +293,7 @@ class TestModelInfo:
 class TestModelsDevRegistryAPIFetching:
     """Tests for API fetching and data loading."""
 
-    @patch("code_puppy.models_dev_parser.httpx.Client")
+    @patch("newcode.models_dev_parser.httpx.Client")
     def test_fetch_from_api_success(
         self,
         mock_client_class,
@@ -325,7 +325,7 @@ class TestModelsDevRegistryAPIFetching:
         assert len(registry.providers) == 1
         assert "anthropic" in registry.providers
 
-    @patch("code_puppy.models_dev_parser.httpx.Client")
+    @patch("newcode.models_dev_parser.httpx.Client")
     def test_fetch_from_api_timeout(
         self,
         mock_client_class,
@@ -355,7 +355,7 @@ class TestModelsDevRegistryAPIFetching:
                 registry = ModelsDevRegistry()
                 assert "bundled:" in registry.data_source
 
-    @patch("code_puppy.models_dev_parser.httpx.Client")
+    @patch("newcode.models_dev_parser.httpx.Client")
     def test_fetch_from_api_http_error(
         self,
         mock_client_class,
@@ -385,7 +385,7 @@ class TestModelsDevRegistryAPIFetching:
                 registry = ModelsDevRegistry()
                 assert "bundled:" in registry.data_source
 
-    @patch("code_puppy.models_dev_parser.httpx.Client")
+    @patch("newcode.models_dev_parser.httpx.Client")
     def test_fetch_from_api_general_exception(
         self,
         mock_client_class,
@@ -1066,7 +1066,7 @@ class TestConvertToCodePuppyConfig:
     def test_convert_basic(self, sample_data):
         """Test basic configuration conversion."""
         provider, model = sample_data
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
 
         assert config["type"] == "anthropic"
         assert config["model"] == "claude-3-opus"
@@ -1087,7 +1087,7 @@ class TestConvertToCodePuppyConfig:
             model_id="mistral",
             name="Mistral",
         )
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
         assert config["api_url"] == "http://localhost:11434"
 
     def test_convert_with_npm_package(self):
@@ -1104,13 +1104,13 @@ class TestConvertToCodePuppyConfig:
             model_id="mistral",
             name="Mistral",
         )
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
         assert config["npm_package"] == "@ollama/sdk"
 
     def test_convert_cost_information(self, sample_data):
         """Test conversion includes cost information."""
         provider, model = sample_data
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
 
         assert config["input_cost_per_token"] == 0.015
         assert config["output_cost_per_token"] == 0.075
@@ -1132,7 +1132,7 @@ class TestConvertToCodePuppyConfig:
             cost_output=0.015,
             # No cache_read cost
         )
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
 
         assert config["input_cost_per_token"] == 0.003
         assert config["output_cost_per_token"] == 0.015
@@ -1141,7 +1141,7 @@ class TestConvertToCodePuppyConfig:
     def test_convert_limits(self, sample_data):
         """Test conversion includes token limits."""
         provider, model = sample_data
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
 
         assert config["max_tokens"] == 200000
         assert config["max_output_tokens"] == 4096
@@ -1149,7 +1149,7 @@ class TestConvertToCodePuppyConfig:
     def test_convert_capabilities(self, sample_data):
         """Test conversion includes capabilities."""
         provider, model = sample_data
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
 
         capabilities = config["capabilities"]
         assert capabilities["attachment"] is True
@@ -1161,7 +1161,7 @@ class TestConvertToCodePuppyConfig:
     def test_convert_modalities(self, sample_data):
         """Test conversion includes input/output modalities."""
         provider, model = sample_data
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
 
         assert config["input_modalities"] == ["text"]
         assert config["output_modalities"] == ["text"]
@@ -1169,7 +1169,7 @@ class TestConvertToCodePuppyConfig:
     def test_convert_metadata(self, sample_data):
         """Test conversion includes metadata."""
         provider, model = sample_data
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
 
         metadata = config["metadata"]
         assert metadata["knowledge"] == "April 2024"
@@ -1200,7 +1200,7 @@ class TestConvertToCodePuppyConfig:
                 model_id="test",
                 name="Test Model",
             )
-            config = convert_to_code_puppy_config(model, provider)
+            config = convert_to_newcode_config(model, provider)
             assert config["type"] == expected_type
 
     def test_convert_unmapped_provider_type(self):
@@ -1216,7 +1216,7 @@ class TestConvertToCodePuppyConfig:
             model_id="test",
             name="Test Model",
         )
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
         assert config["type"] == "custom_provider"
 
     def test_convert_minimal_metadata(self):
@@ -1233,7 +1233,7 @@ class TestConvertToCodePuppyConfig:
             name="Test",
             open_weights=True,
         )
-        config = convert_to_code_puppy_config(model, provider)
+        config = convert_to_newcode_config(model, provider)
         metadata = config["metadata"]
         assert metadata["open_weights"] is True
         assert len(metadata) == 1  # Only open_weights
@@ -1242,7 +1242,7 @@ class TestConvertToCodePuppyConfig:
 class TestModelsDevRegistryUncoveredPaths:
     """Tests for uncovered code paths to reach 90%+ coverage."""
 
-    @patch("code_puppy.models_dev_parser.httpx.Client")
+    @patch("newcode.models_dev_parser.httpx.Client")
     def test_fetch_from_api_returns_empty_dict(
         self,
         mock_client_class,
@@ -1271,7 +1271,7 @@ class TestModelsDevRegistryUncoveredPaths:
         self,
     ):
         """Test JSONDecodeError when loading bundled fallback file."""
-        with patch("code_puppy.models_dev_parser.httpx.Client") as mock_client_class:
+        with patch("newcode.models_dev_parser.httpx.Client") as mock_client_class:
             mock_client = MagicMock()
             mock_client_class.return_value.__enter__.return_value = mock_client
             mock_client.get.side_effect = httpx.TimeoutException("Timeout")
@@ -1441,7 +1441,7 @@ class TestEdgeCases:
 class TestBundledFileNotFound:
     """Test when bundled fallback file doesn't exist."""
 
-    @patch("code_puppy.models_dev_parser.httpx.Client")
+    @patch("newcode.models_dev_parser.httpx.Client")
     def test_no_api_no_bundled_raises_file_not_found(self, mock_client_class):
         """When API fails and bundled file missing, raise FileNotFoundError."""
         mock_client = MagicMock()
@@ -1462,9 +1462,9 @@ class TestBundledFileNotFound:
 class TestMainBlock:
     """Test the __main__ block."""
 
-    @patch("code_puppy.models_dev_parser.emit_error")
-    @patch("code_puppy.models_dev_parser.emit_info")
-    @patch("code_puppy.models_dev_parser.ModelsDevRegistry")
+    @patch("newcode.models_dev_parser.emit_error")
+    @patch("newcode.models_dev_parser.emit_info")
+    @patch("newcode.models_dev_parser.ModelsDevRegistry")
     def test_main_block_success(self, mock_registry_cls, mock_info, mock_error):
         """Test __main__ block with successful registry."""
         mock_registry = MagicMock()
@@ -1486,26 +1486,26 @@ class TestMainBlock:
         import runpy
 
         with patch.dict("sys.modules", {}, clear=False):
-            runpy.run_module("code_puppy.models_dev_parser", run_name="__main__")
+            runpy.run_module("newcode.models_dev_parser", run_name="__main__")
 
-    @patch("code_puppy.models_dev_parser.emit_error")
+    @patch("newcode.models_dev_parser.emit_error")
     def test_main_block_file_not_found(self, mock_error):
         """Test __main__ block with FileNotFoundError."""
         import runpy
 
         with patch(
-            "code_puppy.models_dev_parser.ModelsDevRegistry",
+            "newcode.models_dev_parser.ModelsDevRegistry",
             side_effect=FileNotFoundError("no file"),
         ):
-            runpy.run_module("code_puppy.models_dev_parser", run_name="__main__")
+            runpy.run_module("newcode.models_dev_parser", run_name="__main__")
 
-    @patch("code_puppy.models_dev_parser.emit_error")
+    @patch("newcode.models_dev_parser.emit_error")
     def test_main_block_generic_exception(self, mock_error):
         """Test __main__ block with generic exception."""
         import runpy
 
         with patch(
-            "code_puppy.models_dev_parser.ModelsDevRegistry",
+            "newcode.models_dev_parser.ModelsDevRegistry",
             side_effect=RuntimeError("boom"),
         ):
-            runpy.run_module("code_puppy.models_dev_parser", run_name="__main__")
+            runpy.run_module("newcode.models_dev_parser", run_name="__main__")

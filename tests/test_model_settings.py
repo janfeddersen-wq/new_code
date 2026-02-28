@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock, patch
 
-import code_puppy.config as cp_config
+import newcode.config as cp_config
 
 
 class TestPerModelSettings:

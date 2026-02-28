@@ -1,4 +1,4 @@
-"""Comprehensive tests for code_puppy/messaging/subagent_console.py.
+"""Comprehensive tests for newcode/messaging/subagent_console.py.
 
 Targets coverage improvement from 29% to 85%+.
 Focuses on:
@@ -19,8 +19,8 @@ import pytest
 from rich.console import Console, Group
 from rich.panel import Panel
 
-from code_puppy.messaging.messages import SubAgentStatusMessage
-from code_puppy.messaging.subagent_console import (
+from newcode.messaging.messages import SubAgentStatusMessage
+from newcode.messaging.subagent_console import (
     DEFAULT_STYLE,
     STATUS_STYLES,
     AgentState,
@@ -424,7 +424,7 @@ class TestDisplayManagement:
         """Clean up."""
         SubAgentConsoleManager.reset_instance()
 
-    @patch("code_puppy.messaging.subagent_console.Live")
+    @patch("newcode.messaging.subagent_console.Live")
     def test_start_display_creates_live(self, mock_live_class):
         """Test that _start_display creates a Live instance."""
         mock_live = MagicMock()
@@ -441,7 +441,7 @@ class TestDisplayManagement:
         # Clean up
         manager._stop_display()
 
-    @patch("code_puppy.messaging.subagent_console.Live")
+    @patch("newcode.messaging.subagent_console.Live")
     def test_start_display_idempotent(self, mock_live_class):
         """Test that calling _start_display twice doesn't create duplicate."""
         mock_live = MagicMock()
@@ -456,7 +456,7 @@ class TestDisplayManagement:
 
         manager._stop_display()
 
-    @patch("code_puppy.messaging.subagent_console.Live")
+    @patch("newcode.messaging.subagent_console.Live")
     def test_stop_display_stops_live(self, mock_live_class):
         """Test that _stop_display stops the Live instance."""
         mock_live = MagicMock()
@@ -475,7 +475,7 @@ class TestDisplayManagement:
         # Should not raise
         manager._stop_display()
 
-    @patch("code_puppy.messaging.subagent_console.Live")
+    @patch("newcode.messaging.subagent_console.Live")
     def test_stop_display_handles_live_exception(self, mock_live_class):
         """Test _stop_display handles exceptions gracefully."""
         mock_live = MagicMock()
@@ -499,7 +499,7 @@ class TestUpdateLoop:
     def teardown_method(self):
         SubAgentConsoleManager.reset_instance()
 
-    @patch("code_puppy.messaging.subagent_console.Live")
+    @patch("newcode.messaging.subagent_console.Live")
     def test_update_loop_runs_until_stopped(self, mock_live_class):
         """Test that update loop runs and can be stopped."""
         mock_live = MagicMock()
@@ -516,7 +516,7 @@ class TestUpdateLoop:
 
         manager._stop_display()
 
-    @patch("code_puppy.messaging.subagent_console.Live")
+    @patch("newcode.messaging.subagent_console.Live")
     def test_update_loop_handles_render_exception(self, mock_live_class):
         """Test update loop continues despite render exceptions."""
         mock_live = MagicMock()

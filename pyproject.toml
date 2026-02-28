@@ -62,36 +62,36 @@ HomePage = "https://github.com/janfeddersen-wq/new_code"
 Upstream = "https://github.com/mpfaffenberger/code_puppy"
 
 [project.scripts]
-newcode = "code_puppy.main:main_entry"
-nc = "code_puppy.main:main_entry"
+newcode = "newcode.main:main_entry"
+nc = "newcode.main:main_entry"
 
 [tool.logfire]
 ignore_no_config = true
 
 [tool.hatch.build]
-packages = ["code_puppy"]
+packages = ["newcode"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"code_puppy/models.json" = "code_puppy/models.json"
-"code_puppy/models_dev_api.json" = "code_puppy/models_dev_api.json"
+"newcode/models.json" = "newcode/models.json"
+"newcode/models_dev_api.json" = "newcode/models_dev_api.json"
 
 [[tool.hatch.build.targets.sdist.include]]
-path = "code_puppy/models.json"
+path = "newcode/models.json"
 
 [[tool.hatch.build.targets.sdist.include]]
-path = "code_puppy/models_dev_api.json"
+path = "newcode/models_dev_api.json"
 [tool.ruff.lint.per-file-ignores]
-"code_puppy/main.py" = ["E402"]
-"code_puppy/cli_runner.py" = ["E402"]
-"code_puppy/messaging/__init__.py" = ["E402"]
+"newcode/main.py" = ["E402"]
+"newcode/cli_runner.py" = ["E402"]
+"newcode/messaging/__init__.py" = ["E402"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=code_puppy --cov-report=term-missing"
+addopts = "--cov=newcode --cov-report=term-missing"
 testpaths = ["tests"]
 asyncio_mode = "auto"
 
 [tool.coverage.run]
-omit = ["code_puppy/main.py"]
+omit = ["newcode/main.py"]
 
 [tool.uv]
 python-preference = "only-managed"

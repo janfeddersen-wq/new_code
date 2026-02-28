@@ -1,14 +1,14 @@
 """
 IMMUTABLE TEST FILE — DO NOT MODIFY.
 
-Tests for code_puppy/plugins/claude_code_hooks/
+Tests for newcode/plugins/claude_code_hooks/
   - config.py: load_hooks_config, get_hooks_config_paths
   - register_callbacks.py: on_pre_tool_call_hook, on_post_tool_call_hook
     callbacks wired correctly into the pre_tool_call / post_tool_call phases.
 
 Implementation targets:
-  code_puppy/plugins/claude_code_hooks/config.py
-  code_puppy/plugins/claude_code_hooks/register_callbacks.py
+  newcode/plugins/claude_code_hooks/config.py
+  newcode/plugins/claude_code_hooks/register_callbacks.py
 """
 
 import json
@@ -26,30 +26,30 @@ import pytest
 
 class TestGetHooksConfigPaths:
     def test_returns_list(self):
-        from code_puppy.plugins.claude_code_hooks.config import get_hooks_config_paths
+        from newcode.plugins.claude_code_hooks.config import get_hooks_config_paths
 
         paths = get_hooks_config_paths()
         assert isinstance(paths, list)
 
     def test_returns_two_paths(self):
-        from code_puppy.plugins.claude_code_hooks.config import get_hooks_config_paths
+        from newcode.plugins.claude_code_hooks.config import get_hooks_config_paths
 
         paths = get_hooks_config_paths()
         assert len(paths) == 2
 
     def test_project_path_contains_claude_settings(self):
-        from code_puppy.plugins.claude_code_hooks.config import get_hooks_config_paths
+        from newcode.plugins.claude_code_hooks.config import get_hooks_config_paths
 
         paths = get_hooks_config_paths()
         # First path must include .claude/settings.json
         assert ".claude" in paths[0] and "settings.json" in paths[0]
 
-    def test_global_path_contains_code_puppy(self):
-        from code_puppy.plugins.claude_code_hooks.config import get_hooks_config_paths
+    def test_global_path_contains_newcode(self):
+        from newcode.plugins.claude_code_hooks.config import get_hooks_config_paths
 
         paths = get_hooks_config_paths()
-        # Second path is user-level (~/.code_puppy/hooks.json)
-        assert ".code_puppy" in paths[1] and "hooks.json" in paths[1]
+        # Second path is user-level (~/.newcode/hooks.json)
+        assert ".newcode" in paths[1] and "hooks.json" in paths[1]
 
 
 # ---------------------------------------------------------------------------
@@ -59,15 +59,15 @@ class TestGetHooksConfigPaths:
 
 class TestLoadHooksConfigNoFiles:
     def test_returns_none_when_no_config_files(self):
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     os.path.join(tmpdir, "nonexistent_hooks.json"),
                 ):
                     result = load_hooks_config()
@@ -81,7 +81,7 @@ class TestLoadHooksConfigNoFiles:
 
 class TestLoadHooksConfigProjectLevel:
     def test_loads_hooks_from_project_settings(self):
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         hooks_data = {
             "PreToolUse": [
@@ -100,11 +100,11 @@ class TestLoadHooksConfigProjectLevel:
             settings_path.write_text(json.dumps(settings))
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     os.path.join(tmpdir, "nonexistent.json"),
                 ):
                     result = load_hooks_config()
@@ -112,7 +112,7 @@ class TestLoadHooksConfigProjectLevel:
                     assert "PreToolUse" in result
 
     def test_returns_none_when_settings_has_no_hooks_key(self):
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         settings = {"other_key": "value"}  # no 'hooks' section
 
@@ -123,18 +123,18 @@ class TestLoadHooksConfigProjectLevel:
             settings_path.write_text(json.dumps(settings))
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     os.path.join(tmpdir, "nonexistent.json"),
                 ):
                     result = load_hooks_config()
                     assert result is None
 
     def test_handles_invalid_json_in_project_settings(self):
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         with tempfile.TemporaryDirectory() as tmpdir:
             claude_dir = Path(tmpdir) / ".claude"
@@ -143,11 +143,11 @@ class TestLoadHooksConfigProjectLevel:
             settings_path.write_text("{invalid json!!!")
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     os.path.join(tmpdir, "nonexistent.json"),
                 ):
                     result = load_hooks_config()
@@ -161,7 +161,7 @@ class TestLoadHooksConfigProjectLevel:
 
 class TestLoadHooksConfigGlobalLevel:
     def test_loads_from_global_hooks_file(self):
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         hooks_data = {
             "PostToolUse": [
@@ -179,11 +179,11 @@ class TestLoadHooksConfigGlobalLevel:
 
             # No project-level config
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     global_hooks,
                 ):
                     result = load_hooks_config()
@@ -191,7 +191,7 @@ class TestLoadHooksConfigGlobalLevel:
                     assert "PostToolUse" in result
 
     def test_handles_invalid_global_json(self):
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         with tempfile.TemporaryDirectory() as tmpdir:
             global_hooks = os.path.join(tmpdir, "hooks.json")
@@ -199,11 +199,11 @@ class TestLoadHooksConfigGlobalLevel:
                 f.write("{bad json")
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     global_hooks,
                 ):
                     result = load_hooks_config()
@@ -211,7 +211,7 @@ class TestLoadHooksConfigGlobalLevel:
 
     def test_project_level_merges_with_global(self):
         """When both exist, both hooks are merged with global executing first."""
-        from code_puppy.plugins.claude_code_hooks.config import load_hooks_config
+        from newcode.plugins.claude_code_hooks.config import load_hooks_config
 
         project_hooks = {
             "PreToolUse": [
@@ -247,11 +247,11 @@ class TestLoadHooksConfigGlobalLevel:
                 json.dump(global_hooks_data, f)
 
             with patch(
-                "code_puppy.plugins.claude_code_hooks.config.os.getcwd",
+                "newcode.plugins.claude_code_hooks.config.os.getcwd",
                 return_value=tmpdir,
             ):
                 with patch(
-                    "code_puppy.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
+                    "newcode.plugins.claude_code_hooks.config.GLOBAL_HOOKS_FILE",
                     global_file,
                 ):
                     result = load_hooks_config()
@@ -282,7 +282,7 @@ class TestLoadHooksConfigGlobalLevel:
 class TestOnPreToolCallHook:
     @pytest.mark.asyncio
     async def test_returns_none_when_no_engine(self):
-        from code_puppy.plugins.claude_code_hooks import register_callbacks
+        from newcode.plugins.claude_code_hooks import register_callbacks
 
         original = register_callbacks._hook_engine
         register_callbacks._hook_engine = None
@@ -296,8 +296,8 @@ class TestOnPreToolCallHook:
 
     @pytest.mark.asyncio
     async def test_returns_none_when_hook_allows(self):
-        from code_puppy.hook_engine.models import ProcessEventResult
-        from code_puppy.plugins.claude_code_hooks import register_callbacks
+        from newcode.hook_engine.models import ProcessEventResult
+        from newcode.plugins.claude_code_hooks import register_callbacks
 
         mock_engine = MagicMock()
         mock_result = ProcessEventResult(blocked=False, executed_hooks=1, results=[])
@@ -315,8 +315,8 @@ class TestOnPreToolCallHook:
 
     @pytest.mark.asyncio
     async def test_returns_blocked_dict_when_hook_blocks(self):
-        from code_puppy.hook_engine.models import ProcessEventResult
-        from code_puppy.plugins.claude_code_hooks import register_callbacks
+        from newcode.hook_engine.models import ProcessEventResult
+        from newcode.plugins.claude_code_hooks import register_callbacks
 
         mock_engine = MagicMock()
         mock_result = ProcessEventResult(
@@ -341,8 +341,8 @@ class TestOnPreToolCallHook:
 
     @pytest.mark.asyncio
     async def test_passes_tool_name_and_args_to_engine(self):
-        from code_puppy.hook_engine.models import EventData, ProcessEventResult
-        from code_puppy.plugins.claude_code_hooks import register_callbacks
+        from newcode.hook_engine.models import EventData, ProcessEventResult
+        from newcode.plugins.claude_code_hooks import register_callbacks
 
         mock_engine = MagicMock()
         mock_result = ProcessEventResult(blocked=False, executed_hooks=0, results=[])
@@ -366,7 +366,7 @@ class TestOnPreToolCallHook:
 
     @pytest.mark.asyncio
     async def test_handles_engine_exception_gracefully(self):
-        from code_puppy.plugins.claude_code_hooks import register_callbacks
+        from newcode.plugins.claude_code_hooks import register_callbacks
 
         mock_engine = MagicMock()
         mock_engine.process_event = AsyncMock(
@@ -391,7 +391,7 @@ class TestOnPreToolCallHook:
 class TestOnPostToolCallHook:
     @pytest.mark.asyncio
     async def test_does_nothing_when_no_engine(self):
-        from code_puppy.plugins.claude_code_hooks import register_callbacks
+        from newcode.plugins.claude_code_hooks import register_callbacks
 
         original = register_callbacks._hook_engine
         register_callbacks._hook_engine = None
@@ -405,8 +405,8 @@ class TestOnPostToolCallHook:
 
     @pytest.mark.asyncio
     async def test_calls_engine_with_post_tool_use(self):
-        from code_puppy.hook_engine.models import EventData, ProcessEventResult
-        from code_puppy.plugins.claude_code_hooks import register_callbacks
+        from newcode.hook_engine.models import EventData, ProcessEventResult
+        from newcode.plugins.claude_code_hooks import register_callbacks
 
         mock_engine = MagicMock()
         mock_result = ProcessEventResult(blocked=False, executed_hooks=0, results=[])
@@ -428,8 +428,8 @@ class TestOnPostToolCallHook:
 
     @pytest.mark.asyncio
     async def test_includes_result_and_duration_in_context(self):
-        from code_puppy.hook_engine.models import ProcessEventResult
-        from code_puppy.plugins.claude_code_hooks import register_callbacks
+        from newcode.hook_engine.models import ProcessEventResult
+        from newcode.plugins.claude_code_hooks import register_callbacks
 
         mock_engine = MagicMock()
         mock_result = ProcessEventResult(blocked=False, executed_hooks=0, results=[])
@@ -449,7 +449,7 @@ class TestOnPostToolCallHook:
 
     @pytest.mark.asyncio
     async def test_handles_engine_exception_gracefully(self):
-        from code_puppy.plugins.claude_code_hooks import register_callbacks
+        from newcode.plugins.claude_code_hooks import register_callbacks
 
         mock_engine = MagicMock()
         mock_engine.process_event = AsyncMock(side_effect=RuntimeError("post exploded"))
@@ -471,8 +471,8 @@ class TestOnPostToolCallHook:
 class TestCallbackRegistration:
     def test_pre_tool_call_registered(self):
         """The plugin must register on_pre_tool_call_hook under 'pre_tool_call'."""
-        from code_puppy.callbacks import _callbacks
-        from code_puppy.plugins.claude_code_hooks.register_callbacks import (
+        from newcode.callbacks import _callbacks
+        from newcode.plugins.claude_code_hooks.register_callbacks import (
             on_pre_tool_call_hook,
         )
 
@@ -480,8 +480,8 @@ class TestCallbackRegistration:
 
     def test_post_tool_call_registered(self):
         """The plugin must register on_post_tool_call_hook under 'post_tool_call'."""
-        from code_puppy.callbacks import _callbacks
-        from code_puppy.plugins.claude_code_hooks.register_callbacks import (
+        from newcode.callbacks import _callbacks
+        from newcode.plugins.claude_code_hooks.register_callbacks import (
             on_post_tool_call_hook,
         )
 

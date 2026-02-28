@@ -4,13 +4,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.browser.browser_screenshot import (
+from newcode.tools.browser.browser_screenshot import (
     _capture_screenshot,
     register_take_screenshot_and_analyze,
     take_screenshot,
 )
 
-MOD = "code_puppy.tools.browser.browser_screenshot"
+MOD = "newcode.tools.browser.browser_screenshot"
 
 
 @pytest.fixture(autouse=True)

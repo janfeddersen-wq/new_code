@@ -1,4 +1,4 @@
-"""Comprehensive tests for code_puppy.tools.common.
+"""Comprehensive tests for newcode.tools.common.
 
 This module provides extensive coverage for the common utilities module, testing:
 - Path filtering and ignore patterns
@@ -13,7 +13,7 @@ This module provides extensive coverage for the common utilities module, testing
 import os
 from unittest.mock import patch
 
-from code_puppy.tools.common import (
+from newcode.tools.common import (
     DIR_IGNORE_PATTERNS,
     FILE_IGNORE_PATTERNS,
     brighten_hex,

@@ -1,5 +1,5 @@
 """
-Tests for CircuitBreaker HALF_OPEN race condition fix (code_puppy-y10).
+Tests for CircuitBreaker HALF_OPEN race condition fix (newcode-y10).
 
 Verifies that only one test call is allowed through at a time when the
 circuit breaker is in HALF_OPEN state.
@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from code_puppy.mcp_.circuit_breaker import (
+from newcode.mcp_.circuit_breaker import (
     CircuitBreaker,
     CircuitOpenError,
     CircuitState,

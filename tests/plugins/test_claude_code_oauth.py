@@ -11,10 +11,10 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
-from code_puppy.plugins.claude_code_oauth.config import (
+from newcode.plugins.claude_code_oauth.config import (
     CLAUDE_CODE_OAUTH_CONFIG,
 )
-from code_puppy.plugins.claude_code_oauth.utils import (
+from newcode.plugins.claude_code_oauth.utils import (
     TOKEN_REFRESH_BUFFER_SECONDS,
     OAuthContext,
     _calculate_expires_at,
@@ -251,7 +251,7 @@ class TestAuthorizationCodeParsing:
 class TestTokenStorage:
     """Test token saving and loading."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_save_tokens_creates_file(self, mock_path, tmp_path, sample_token_data):
         """Test that tokens are saved to file."""
         token_file = tmp_path / "tokens.json"
@@ -265,7 +265,7 @@ class TestTokenStorage:
             saved_data = json.load(f)
         assert saved_data == sample_token_data
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_save_tokens_sets_permissions(self, mock_path, tmp_path, sample_token_data):
         """Test that saved token file has restricted permissions."""
         token_file = tmp_path / "tokens.json"
@@ -278,7 +278,7 @@ class TestTokenStorage:
         mode = stat_info.st_mode & 0o777
         assert mode == 0o600
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_load_stored_tokens_existing_file(
         self, mock_path, tmp_path, sample_token_data
     ):
@@ -291,7 +291,7 @@ class TestTokenStorage:
 
         assert loaded == sample_token_data
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_load_stored_tokens_nonexistent_file(self, mock_path, tmp_path):
         """Test loading tokens when file doesn't exist."""
         token_file = tmp_path / "nonexistent.json"
@@ -301,7 +301,7 @@ class TestTokenStorage:
 
         assert loaded is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_load_stored_tokens_corrupted_file(self, mock_path, tmp_path):
         """Test loading corrupted JSON file."""
         token_file = tmp_path / "corrupted.json"
@@ -312,7 +312,7 @@ class TestTokenStorage:
 
         assert loaded is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_save_tokens_write_failure(self, mock_path):
         """Test save tokens handles write failures."""
         mock_path.side_effect = Exception("Permission denied")
@@ -384,7 +384,7 @@ class TestTokenExpiry:
 class TestTokenExchange:
     """Test OAuth token exchange flow."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.post")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.post")
     def test_exchange_code_for_tokens_success(self, mock_post, sample_token_response):
         """Test successful token exchange."""
         clear_oauth_context()
@@ -410,7 +410,7 @@ class TestTokenExchange:
         assert call_args[1]["json"]["grant_type"] == "authorization_code"
         assert call_args[1]["json"]["code"] == "AUTH_CODE_123"
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.post")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.post")
     def test_exchange_code_for_tokens_failure(self, mock_post):
         """Test token exchange failure."""
         clear_oauth_context()
@@ -426,7 +426,7 @@ class TestTokenExchange:
 
         assert result is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.post")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.post")
     def test_exchange_code_for_tokens_network_error(self, mock_post):
         """Test token exchange with network error."""
         clear_oauth_context()
@@ -461,9 +461,9 @@ class TestTokenExchange:
 class TestTokenRefresh:
     """Test token refresh functionality."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.post")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.post")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_tokens")
     def test_refresh_access_token_success(
         self, mock_save, mock_load, mock_post, expired_token_data
     ):
@@ -490,7 +490,7 @@ class TestTokenRefresh:
         saved_data = mock_save.call_args[0][0]
         assert saved_data["access_token"] == new_token
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
     def test_refresh_access_token_no_refresh_token(self, mock_load):
         """Test refresh when no refresh token available."""
         # Token is expired to force refresh attempt
@@ -503,7 +503,7 @@ class TestTokenRefresh:
 
         assert result is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
     def test_refresh_access_token_no_tokens(self, mock_load):
         """Test refresh when no tokens stored."""
         mock_load.return_value = None
@@ -512,8 +512,8 @@ class TestTokenRefresh:
 
         assert result is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.post")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.post")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
     def test_refresh_access_token_network_error(
         self, mock_load, mock_post, expired_token_data
     ):
@@ -525,13 +525,13 @@ class TestTokenRefresh:
 
         assert result is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
     def test_refresh_access_token_forced_refresh(self, mock_load, sample_token_data):
         """Test forced refresh even for valid tokens."""
         mock_load.return_value = sample_token_data
 
         with patch(
-            "code_puppy.plugins.claude_code_oauth.utils.requests.post"
+            "newcode.plugins.claude_code_oauth.utils.requests.post"
         ) as mock_post:
             new_token = "forced_new_token"
             mock_response = Mock()
@@ -544,7 +544,7 @@ class TestTokenRefresh:
             mock_post.return_value = mock_response
 
             with patch(
-                "code_puppy.plugins.claude_code_oauth.utils.save_tokens"
+                "newcode.plugins.claude_code_oauth.utils.save_tokens"
             ) as mock_save:
                 mock_save.return_value = True
                 result = refresh_access_token(force=True)
@@ -553,9 +553,9 @@ class TestTokenRefresh:
                 # Verify post was called even though token not expired
                 mock_post.assert_called_once()
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.post")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.post")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_tokens")
     def test_refresh_access_token_missing_expires_in_reuses_existing(
         self, mock_save, mock_load, mock_post
     ):
@@ -607,7 +607,7 @@ class TestTokenRefresh:
 class TestValidAccessToken:
     """Test getting valid access token (with auto-refresh)."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
     def test_get_valid_access_token_fresh(self, mock_load, sample_token_data):
         """Test getting valid fresh token."""
         mock_load.return_value = sample_token_data
@@ -618,7 +618,7 @@ class TestValidAccessToken:
         # Verify load_stored_tokens was called
         mock_load.assert_called()
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
     def test_get_valid_access_token_no_tokens(self, mock_load):
         """Test when no tokens stored."""
         mock_load.return_value = None
@@ -627,8 +627,8 @@ class TestValidAccessToken:
 
         assert result is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.refresh_access_token")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.refresh_access_token")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
     def test_get_valid_access_token_refresh_fails_but_token_still_valid(
         self, mock_load, mock_refresh
     ):
@@ -659,8 +659,8 @@ class TestValidAccessToken:
         # Verify refresh was attempted
         mock_refresh.assert_called_once()
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.refresh_access_token")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.refresh_access_token")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
     def test_get_valid_access_token_expired_refreshes(
         self, mock_load, mock_refresh, expired_token_data
     ):
@@ -674,8 +674,8 @@ class TestValidAccessToken:
         assert result == new_token
         mock_refresh.assert_called_once()
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.refresh_access_token")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens")
+    @patch("newcode.plugins.claude_code_oauth.utils.refresh_access_token")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_stored_tokens")
     def test_get_valid_access_token_refresh_fails(
         self, mock_load, mock_refresh, expired_token_data
     ):

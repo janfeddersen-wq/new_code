@@ -1,11 +1,11 @@
-"""Tests for code_puppy/api/websocket.py."""
+"""Tests for newcode/api/websocket.py."""
 
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.api.app import create_app
+from newcode.api.app import create_app
 
 
 @pytest.fixture
@@ -37,15 +37,15 @@ async def test_ws_events(app) -> None:
 
     with (
         patch(
-            "code_puppy.plugins.frontend_emitter.emitter.subscribe",
+            "newcode.plugins.frontend_emitter.emitter.subscribe",
             return_value=event_queue,
             create=True,
         ),
         patch(
-            "code_puppy.plugins.frontend_emitter.emitter.unsubscribe", create=True
+            "newcode.plugins.frontend_emitter.emitter.unsubscribe", create=True
         ) as mock_unsub,
         patch(
-            "code_puppy.plugins.frontend_emitter.emitter.get_recent_events",
+            "newcode.plugins.frontend_emitter.emitter.get_recent_events",
             return_value=recent,
             create=True,
         ),
@@ -74,7 +74,7 @@ async def test_ws_terminal(app) -> None:
     mock_manager.close_session = AsyncMock()
 
     with patch(
-        "code_puppy.api.pty_manager.get_pty_manager",
+        "newcode.api.pty_manager.get_pty_manager",
         return_value=mock_manager,
         create=True,
     ):
@@ -105,13 +105,13 @@ async def test_ws_events_ping_on_timeout(app) -> None:
 
     with (
         patch(
-            "code_puppy.plugins.frontend_emitter.emitter.subscribe",
+            "newcode.plugins.frontend_emitter.emitter.subscribe",
             return_value=event_queue,
             create=True,
         ),
-        patch("code_puppy.plugins.frontend_emitter.emitter.unsubscribe", create=True),
+        patch("newcode.plugins.frontend_emitter.emitter.unsubscribe", create=True),
         patch(
-            "code_puppy.plugins.frontend_emitter.emitter.get_recent_events",
+            "newcode.plugins.frontend_emitter.emitter.get_recent_events",
             return_value=[],
             create=True,
         ),

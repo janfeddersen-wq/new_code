@@ -7,31 +7,31 @@ import pytest
 
 @pytest.fixture
 def test_cmd():
-    with patch("code_puppy.command_line.mcp.base.get_mcp_manager") as mock_mgr:
+    with patch("newcode.command_line.mcp.base.get_mcp_manager") as mock_mgr:
         mock_mgr.return_value = MagicMock()
-        from code_puppy.command_line.mcp.test_command import TestCommand
+        from newcode.command_line.mcp.test_command import TestCommand
 
         return TestCommand()
 
 
 class TestTestCommand:
     def test_no_args_shows_usage(self, test_cmd):
-        with patch("code_puppy.command_line.mcp.test_command.emit_info") as mock_emit:
+        with patch("newcode.command_line.mcp.test_command.emit_info") as mock_emit:
             test_cmd.execute([], group_id="g1")
             assert "Usage" in str(mock_emit.call_args)
 
     def test_generates_group_id(self, test_cmd):
-        with patch("code_puppy.command_line.mcp.test_command.emit_info"):
+        with patch("newcode.command_line.mcp.test_command.emit_info"):
             test_cmd.execute([])  # no group_id
 
     def test_server_not_found(self, test_cmd):
         with (
             patch(
-                "code_puppy.command_line.mcp.test_command.find_server_id_by_name",
+                "newcode.command_line.mcp.test_command.find_server_id_by_name",
                 return_value=None,
             ),
-            patch("code_puppy.command_line.mcp.test_command.suggest_similar_servers"),
-            patch("code_puppy.command_line.mcp.test_command.emit_info") as mock_emit,
+            patch("newcode.command_line.mcp.test_command.suggest_similar_servers"),
+            patch("newcode.command_line.mcp.test_command.emit_info") as mock_emit,
         ):
             test_cmd.execute(["missing"], group_id="g1")
             assert "not found" in str(mock_emit.call_args_list)
@@ -39,10 +39,10 @@ class TestTestCommand:
     def test_server_not_accessible(self, test_cmd):
         with (
             patch(
-                "code_puppy.command_line.mcp.test_command.find_server_id_by_name",
+                "newcode.command_line.mcp.test_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.test_command.emit_info") as mock_emit,
+            patch("newcode.command_line.mcp.test_command.emit_info") as mock_emit,
         ):
             test_cmd.manager.get_server.return_value = None
             test_cmd.execute(["myserver"], group_id="g1")
@@ -56,10 +56,10 @@ class TestTestCommand:
 
         with (
             patch(
-                "code_puppy.command_line.mcp.test_command.find_server_id_by_name",
+                "newcode.command_line.mcp.test_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.test_command.emit_info") as mock_emit,
+            patch("newcode.command_line.mcp.test_command.emit_info") as mock_emit,
         ):
             test_cmd.manager.get_server.return_value = mock_server
             test_cmd.execute(["myserver"], group_id="g1")
@@ -74,10 +74,10 @@ class TestTestCommand:
 
         with (
             patch(
-                "code_puppy.command_line.mcp.test_command.find_server_id_by_name",
+                "newcode.command_line.mcp.test_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.test_command.emit_info") as mock_emit,
+            patch("newcode.command_line.mcp.test_command.emit_info") as mock_emit,
         ):
             test_cmd.manager.get_server.return_value = mock_server
             test_cmd.execute(["myserver"], group_id="g1")
@@ -92,10 +92,10 @@ class TestTestCommand:
 
         with (
             patch(
-                "code_puppy.command_line.mcp.test_command.find_server_id_by_name",
+                "newcode.command_line.mcp.test_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.test_command.emit_info") as mock_emit,
+            patch("newcode.command_line.mcp.test_command.emit_info") as mock_emit,
         ):
             test_cmd.manager.get_server.return_value = mock_server
             test_cmd.execute(["myserver"], group_id="g1")
@@ -108,10 +108,10 @@ class TestTestCommand:
 
         with (
             patch(
-                "code_puppy.command_line.mcp.test_command.find_server_id_by_name",
+                "newcode.command_line.mcp.test_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.test_command.emit_info") as mock_emit,
+            patch("newcode.command_line.mcp.test_command.emit_info") as mock_emit,
         ):
             test_cmd.manager.get_server.return_value = mock_server
             test_cmd.execute(["myserver"], group_id="g1")
@@ -121,10 +121,10 @@ class TestTestCommand:
     def test_outer_exception(self, test_cmd):
         with (
             patch(
-                "code_puppy.command_line.mcp.test_command.find_server_id_by_name",
+                "newcode.command_line.mcp.test_command.find_server_id_by_name",
                 side_effect=Exception("boom"),
             ),
-            patch("code_puppy.command_line.mcp.test_command.emit_error") as mock_err,
+            patch("newcode.command_line.mcp.test_command.emit_error") as mock_err,
         ):
             test_cmd.execute(["myserver"], group_id="g1")
             mock_err.assert_called_once()

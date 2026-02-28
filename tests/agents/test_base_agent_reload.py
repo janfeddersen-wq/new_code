@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.agents.agent_code_agent import CodeAgent
+from newcode.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentReload:
@@ -14,17 +14,15 @@ class TestBaseAgentReload:
         """Test that reload_code_generation_agent can be called without errors."""
         # Mock all the heavy dependencies to just verify the method runs
         with (
-            patch(
-                "code_puppy.model_factory.ModelFactory.load_config"
-            ) as mock_load_config,
-            patch("code_puppy.model_factory.ModelFactory.get_model") as mock_get_model,
-            patch("code_puppy.tools.register_tools_for_agent") as mock_register,
+            patch("newcode.model_factory.ModelFactory.load_config") as mock_load_config,
+            patch("newcode.model_factory.ModelFactory.get_model") as mock_get_model,
+            patch("newcode.tools.register_tools_for_agent") as mock_register,
             patch.object(agent, "load_agent_rules", return_value="Be a good puppy!"),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=["test_tool"]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
-            patch("code_puppy.agents.base_agent.PydanticAgent") as mock_agent_class,
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             # Setup mocks
             mock_load_config.return_value = {"test-model": {"context_length": 128000}}
@@ -55,17 +53,17 @@ class TestBaseAgentReload:
     def test_reload_with_claude_code_specific_instructions(self, agent):
         """Test that claude-code models get specific instructions."""
         with (
-            patch("code_puppy.model_factory.ModelFactory.load_config"),
-            patch("code_puppy.model_factory.ModelFactory.get_model"),
-            patch("code_puppy.tools.register_tools_for_agent"),
+            patch("newcode.model_factory.ModelFactory.load_config"),
+            patch("newcode.model_factory.ModelFactory.get_model"),
+            patch("newcode.tools.register_tools_for_agent"),
             patch.object(agent, "get_model_name", return_value="claude-code-test"),
             patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "get_model_context_length", return_value=200000),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
-            patch("code_puppy.agents.base_agent.PydanticAgent") as mock_agent_class,
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
             mock_load_fallback.return_value = (mock_model, "claude-code-test")
@@ -86,20 +84,18 @@ class TestBaseAgentReload:
     def test_reload_with_gpt5_model_settings(self, agent):
         """Test that gpt-5 models get OpenAI-specific settings."""
         with (
-            patch("code_puppy.model_factory.ModelFactory.load_config"),
-            patch("code_puppy.model_factory.ModelFactory.get_model"),
-            patch("code_puppy.tools.register_tools_for_agent"),
+            patch("newcode.model_factory.ModelFactory.load_config"),
+            patch("newcode.model_factory.ModelFactory.get_model"),
+            patch("newcode.tools.register_tools_for_agent"),
             patch.object(agent, "get_model_name", return_value="gpt-5-test"),
             patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "get_model_context_length", return_value=200000),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "code_puppy.config.get_openai_reasoning_effort", return_value="medium"
-            ),
-            patch("code_puppy.agents.base_agent.PydanticAgent") as mock_agent_class,
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.config.get_openai_reasoning_effort", return_value="medium"),
+            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
             mock_load_fallback.return_value = (mock_model, "gpt-5-test")
@@ -121,17 +117,17 @@ class TestBaseAgentReload:
         agent_rules = "Always wag your tail when code compiles."
 
         with (
-            patch("code_puppy.model_factory.ModelFactory.load_config"),
-            patch("code_puppy.model_factory.ModelFactory.get_model"),
-            patch("code_puppy.tools.register_tools_for_agent"),
+            patch("newcode.model_factory.ModelFactory.load_config"),
+            patch("newcode.model_factory.ModelFactory.get_model"),
+            patch("newcode.tools.register_tools_for_agent"),
             patch.object(agent, "get_system_prompt", return_value=base_prompt),
             patch.object(agent, "load_agent_rules", return_value=agent_rules),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
             patch.object(agent, "get_model_name", return_value="test-model"),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
-            patch("code_puppy.agents.base_agent.PydanticAgent") as mock_agent_class,
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
             mock_load_fallback.return_value = (mock_model, "test-model")
@@ -153,15 +149,15 @@ class TestBaseAgentReload:
         test_tools = ["list_files", "edit_file", "shell_command"]
 
         with (
-            patch("code_puppy.model_factory.ModelFactory.load_config"),
-            patch("code_puppy.model_factory.ModelFactory.get_model"),
-            patch("code_puppy.tools.register_tools_for_agent") as mock_register,
+            patch("newcode.model_factory.ModelFactory.load_config"),
+            patch("newcode.model_factory.ModelFactory.get_model"),
+            patch("newcode.tools.register_tools_for_agent") as mock_register,
             patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=test_tools),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
-            patch("code_puppy.agents.base_agent.PydanticAgent") as mock_agent_class,
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
             mock_load_fallback.return_value = (mock_model, "test-model")
@@ -185,18 +181,18 @@ class TestBaseAgentReload:
         mock_config = {"test-model": {"context_length": 128000}}
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value=mock_config,
             ),
-            patch("code_puppy.model_factory.ModelFactory.get_model"),
-            patch("code_puppy.tools.register_tools_for_agent"),
+            patch("newcode.model_factory.ModelFactory.get_model"),
+            patch("newcode.tools.register_tools_for_agent"),
             patch.object(agent, "get_model_name", return_value="test-model"),
             patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
-            patch("code_puppy.agents.base_agent.PydanticAgent") as mock_agent_class,
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
             mock_load_fallback.return_value = (mock_model, "test-model")
@@ -221,16 +217,16 @@ class TestBaseAgentReload:
     def test_reload_with_dbos_enabled(self, agent):
         """Test reload behavior when DBOS is enabled."""
         with (
-            patch("code_puppy.model_factory.ModelFactory.load_config"),
-            patch("code_puppy.model_factory.ModelFactory.get_model"),
-            patch("code_puppy.tools.register_tools_for_agent"),
+            patch("newcode.model_factory.ModelFactory.load_config"),
+            patch("newcode.model_factory.ModelFactory.get_model"),
+            patch("newcode.tools.register_tools_for_agent"),
             patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=True),
-            patch("code_puppy.agents.base_agent.PydanticAgent") as mock_agent_class,
-            patch("code_puppy.agents.base_agent.DBOSAgent") as mock_dbos_agent_class,
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=True),
+            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
+            patch("newcode.agents.base_agent.DBOSAgent") as mock_dbos_agent_class,
         ):
             mock_model = MagicMock()
             mock_load_fallback.return_value = (mock_model, "test-model")
@@ -255,15 +251,15 @@ class TestBaseAgentReload:
     def test_reload_message_group_generation(self, agent):
         """Test that message group is generated when not provided."""
         with (
-            patch("code_puppy.model_factory.ModelFactory.load_config"),
-            patch("code_puppy.model_factory.ModelFactory.get_model"),
-            patch("code_puppy.tools.register_tools_for_agent") as mock_register,
+            patch("newcode.model_factory.ModelFactory.load_config"),
+            patch("newcode.model_factory.ModelFactory.get_model"),
+            patch("newcode.tools.register_tools_for_agent") as mock_register,
             patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
-            patch("code_puppy.agents.base_agent.PydanticAgent") as mock_agent_class,
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
             mock_load_fallback.return_value = (mock_model, "test-model")
@@ -287,17 +283,15 @@ class TestBaseAgentReload:
     def test_reload_dependencies_called(self, agent):
         """Test that all expected dependencies are called during reload."""
         with (
-            patch(
-                "code_puppy.model_factory.ModelFactory.load_config"
-            ) as mock_load_config,
-            patch("code_puppy.model_factory.ModelFactory.get_model") as mock_get_model,
-            patch("code_puppy.tools.register_tools_for_agent") as mock_register,
+            patch("newcode.model_factory.ModelFactory.load_config") as mock_load_config,
+            patch("newcode.model_factory.ModelFactory.get_model") as mock_get_model,
+            patch("newcode.tools.register_tools_for_agent") as mock_register,
             patch.object(agent, "load_agent_rules", return_value=""),
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
-            patch("code_puppy.agents.base_agent.PydanticAgent") as mock_agent_class,
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_load_config.return_value = {"test-model": {"context_length": 128000}}
             mock_model = MagicMock()
@@ -325,7 +319,7 @@ class TestBaseAgentReload:
         mock_manager.get_servers_for_agent.return_value = ["server_obj"]
 
         with patch(
-            "code_puppy.agents.base_agent.get_mcp_manager", return_value=mock_manager
+            "newcode.agents.base_agent.get_mcp_manager", return_value=mock_manager
         ):
             servers = agent.reload_mcp_servers()
 

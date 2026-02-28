@@ -1,4 +1,4 @@
-"""Tests for code_puppy.tools.subagent_context.
+"""Tests for newcode.tools.subagent_context.
 
 This module tests the sub-agent context management functionality including
 ContextVar state tracking, context manager behavior, and async isolation.
@@ -13,10 +13,7 @@ import pytest
 # Import directly from the module file
 spec = importlib.util.spec_from_file_location(
     "subagent_context_module",
-    Path(__file__).parent.parent.parent
-    / "code_puppy"
-    / "tools"
-    / "subagent_context.py",
+    Path(__file__).parent.parent.parent / "newcode" / "tools" / "subagent_context.py",
 )
 subagent_context_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(subagent_context_module)

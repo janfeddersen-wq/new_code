@@ -1,5 +1,5 @@
 """
-Comprehensive tests for code_puppy/mcp_/error_isolation.py
+Comprehensive tests for newcode/mcp_/error_isolation.py
 
 This module tests the error isolation system that prevents MCP server
 errors from crashing the application, including quarantine logic and
@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from code_puppy.mcp_.error_isolation import (
+from newcode.mcp_.error_isolation import (
     ErrorCategory,
     ErrorStats,
     MCPErrorIsolator,
@@ -605,7 +605,7 @@ class TestGetErrorIsolator:
     def teardown_method(self):
         """Clean up after each test."""
         # Reset the global isolator instance
-        import code_puppy.mcp_.error_isolation as error_isolation_module
+        import newcode.mcp_.error_isolation as error_isolation_module
 
         error_isolation_module._isolator_instance = None
 

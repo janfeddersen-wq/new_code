@@ -12,7 +12,7 @@ Tests HTTP utilities including:
 import os
 from unittest.mock import patch
 
-from code_puppy.http_utils import ProxyConfig
+from newcode.http_utils import ProxyConfig
 
 
 class TestProxyConfigClass:
@@ -72,15 +72,15 @@ class TestProxyConfigClass:
 class TestResolveProxyConfig:
     """Test proxy configuration resolution."""
 
-    @patch("code_puppy.http_utils.get_cert_bundle_path")
-    @patch("code_puppy.http_utils.get_http2")
+    @patch("newcode.http_utils.get_cert_bundle_path")
+    @patch("newcode.http_utils.get_http2")
     def test_resolve_no_proxy_no_env(
         self,
         mock_get_http2,
         mock_get_cert,
     ):
         """Test proxy resolution with no proxy environment variables."""
-        from code_puppy.http_utils import _resolve_proxy_config
+        from newcode.http_utils import _resolve_proxy_config
 
         mock_get_http2.return_value = False
         mock_get_cert.return_value = None
@@ -91,15 +91,15 @@ class TestResolveProxyConfig:
             assert config.trust_env is False
             assert config.disable_retry is False
 
-    @patch("code_puppy.http_utils.get_cert_bundle_path")
-    @patch("code_puppy.http_utils.get_http2")
+    @patch("newcode.http_utils.get_cert_bundle_path")
+    @patch("newcode.http_utils.get_http2")
     def test_resolve_with_https_proxy(
         self,
         mock_get_http2,
         mock_get_cert,
     ):
         """Test proxy resolution with HTTPS_PROXY environment variable."""
-        from code_puppy.http_utils import _resolve_proxy_config
+        from newcode.http_utils import _resolve_proxy_config
 
         mock_get_http2.return_value = False
         mock_get_cert.return_value = None
@@ -109,15 +109,15 @@ class TestResolveProxyConfig:
             assert config.proxy_url == "https://proxy.example.com:3128"
             assert config.trust_env is True
 
-    @patch("code_puppy.http_utils.get_cert_bundle_path")
-    @patch("code_puppy.http_utils.get_http2")
+    @patch("newcode.http_utils.get_cert_bundle_path")
+    @patch("newcode.http_utils.get_http2")
     def test_resolve_with_http_proxy(
         self,
         mock_get_http2,
         mock_get_cert,
     ):
         """Test proxy resolution with HTTP_PROXY environment variable."""
-        from code_puppy.http_utils import _resolve_proxy_config
+        from newcode.http_utils import _resolve_proxy_config
 
         mock_get_http2.return_value = False
         mock_get_cert.return_value = None
@@ -127,15 +127,15 @@ class TestResolveProxyConfig:
             assert config.proxy_url == "http://proxy.example.com:3128"
             assert config.trust_env is True
 
-    @patch("code_puppy.http_utils.get_cert_bundle_path")
-    @patch("code_puppy.http_utils.get_http2")
+    @patch("newcode.http_utils.get_cert_bundle_path")
+    @patch("newcode.http_utils.get_http2")
     def test_resolve_https_proxy_priority(
         self,
         mock_get_http2,
         mock_get_cert,
     ):
         """Test HTTPS_PROXY has priority over HTTP_PROXY."""
-        from code_puppy.http_utils import _resolve_proxy_config
+        from newcode.http_utils import _resolve_proxy_config
 
         mock_get_http2.return_value = False
         mock_get_cert.return_value = None
@@ -148,15 +148,15 @@ class TestResolveProxyConfig:
             config = _resolve_proxy_config()
             assert config.proxy_url == "https://https-proxy.example.com:3128"
 
-    @patch("code_puppy.http_utils.get_cert_bundle_path")
-    @patch("code_puppy.http_utils.get_http2")
+    @patch("newcode.http_utils.get_cert_bundle_path")
+    @patch("newcode.http_utils.get_http2")
     def test_resolve_lowercase_proxy_env_vars(
         self,
         mock_get_http2,
         mock_get_cert,
     ):
         """Test lowercase proxy environment variables are recognized."""
-        from code_puppy.http_utils import _resolve_proxy_config
+        from newcode.http_utils import _resolve_proxy_config
 
         mock_get_http2.return_value = False
         mock_get_cert.return_value = None
@@ -165,15 +165,15 @@ class TestResolveProxyConfig:
             config = _resolve_proxy_config()
             assert config.proxy_url == "https://proxy.example.com:3128"
 
-    @patch("code_puppy.http_utils.get_cert_bundle_path")
-    @patch("code_puppy.http_utils.get_http2")
+    @patch("newcode.http_utils.get_cert_bundle_path")
+    @patch("newcode.http_utils.get_http2")
     def test_resolve_disable_retry_transport(
         self,
         mock_get_http2,
         mock_get_cert,
     ):
         """Test disable retry transport flag."""
-        from code_puppy.http_utils import _resolve_proxy_config
+        from newcode.http_utils import _resolve_proxy_config
 
         mock_get_http2.return_value = False
         mock_get_cert.return_value = None
@@ -183,15 +183,15 @@ class TestResolveProxyConfig:
             assert config.disable_retry is True
             assert config.verify is False  # SSL disabled in test mode
 
-    @patch("code_puppy.http_utils.get_cert_bundle_path")
-    @patch("code_puppy.http_utils.get_http2")
+    @patch("newcode.http_utils.get_cert_bundle_path")
+    @patch("newcode.http_utils.get_http2")
     def test_resolve_disable_retry_transport_case_insensitive(
         self,
         mock_get_http2,
         mock_get_cert,
     ):
         """Test disable retry transport flag is case insensitive."""
-        from code_puppy.http_utils import _resolve_proxy_config
+        from newcode.http_utils import _resolve_proxy_config
 
         mock_get_http2.return_value = False
         mock_get_cert.return_value = None
@@ -201,15 +201,15 @@ class TestResolveProxyConfig:
                 config = _resolve_proxy_config()
                 assert config.disable_retry is True
 
-    @patch("code_puppy.http_utils.get_cert_bundle_path")
-    @patch("code_puppy.http_utils.get_http2")
+    @patch("newcode.http_utils.get_cert_bundle_path")
+    @patch("newcode.http_utils.get_http2")
     def test_resolve_http2_enabled(
         self,
         mock_get_http2,
         mock_get_cert,
     ):
         """Test HTTP/2 enabled flag."""
-        from code_puppy.http_utils import _resolve_proxy_config
+        from newcode.http_utils import _resolve_proxy_config
 
         mock_get_http2.return_value = True
         mock_get_cert.return_value = None
@@ -218,15 +218,15 @@ class TestResolveProxyConfig:
             config = _resolve_proxy_config()
             assert config.http2_enabled is True
 
-    @patch("code_puppy.http_utils.get_cert_bundle_path")
-    @patch("code_puppy.http_utils.get_http2")
+    @patch("newcode.http_utils.get_cert_bundle_path")
+    @patch("newcode.http_utils.get_http2")
     def test_resolve_custom_verify_path(
         self,
         mock_get_http2,
         mock_get_cert,
     ):
         """Test custom certificate bundle path."""
-        from code_puppy.http_utils import _resolve_proxy_config
+        from newcode.http_utils import _resolve_proxy_config
 
         mock_get_http2.return_value = False
         mock_get_cert.return_value = "/path/to/ca-bundle.crt"
@@ -239,13 +239,13 @@ class TestResolveProxyConfig:
 class TestCreateAsyncClient:
     """Test async HTTP client creation."""
 
-    @patch("code_puppy.http_utils._resolve_proxy_config")
+    @patch("newcode.http_utils._resolve_proxy_config")
     def test_create_async_client_basic(
         self,
         mock_resolve_proxy,
     ):
         """Test basic async client creation."""
-        from code_puppy.http_utils import create_async_client
+        from newcode.http_utils import create_async_client
 
         mock_resolve_proxy.return_value = ProxyConfig(
             verify=True,
@@ -258,13 +258,13 @@ class TestCreateAsyncClient:
         client = create_async_client()
         assert client is not None
 
-    @patch("code_puppy.http_utils._resolve_proxy_config")
+    @patch("newcode.http_utils._resolve_proxy_config")
     def test_create_async_client_with_headers(
         self,
         mock_resolve_proxy,
     ):
         """Test async client creation with custom headers."""
-        from code_puppy.http_utils import create_async_client
+        from newcode.http_utils import create_async_client
 
         mock_resolve_proxy.return_value = ProxyConfig(
             verify=True,
@@ -278,13 +278,13 @@ class TestCreateAsyncClient:
         client = create_async_client(headers=headers)
         assert client is not None
 
-    @patch("code_puppy.http_utils._resolve_proxy_config")
+    @patch("newcode.http_utils._resolve_proxy_config")
     def test_create_async_client_with_verify_false(
         self,
         mock_resolve_proxy,
     ):
         """Test async client creation with verify=False."""
-        from code_puppy.http_utils import create_async_client
+        from newcode.http_utils import create_async_client
 
         mock_resolve_proxy.return_value = ProxyConfig(
             verify=False,
@@ -303,7 +303,7 @@ class TestRetryingAsyncClientCerebras:
 
     def test_cerebras_ignores_retry_headers(self):
         """Test that Cerebras models ignore Retry-After headers."""
-        from code_puppy.http_utils import RetryingAsyncClient
+        from newcode.http_utils import RetryingAsyncClient
 
         # Cerebras model should ignore headers
         client = RetryingAsyncClient(model_name="Cerebras-GLM-4.7")
@@ -312,7 +312,7 @@ class TestRetryingAsyncClientCerebras:
 
     def test_non_cerebras_uses_retry_headers(self):
         """Test that non-Cerebras models respect Retry-After headers."""
-        from code_puppy.http_utils import RetryingAsyncClient
+        from newcode.http_utils import RetryingAsyncClient
 
         # Non-Cerebras model should use headers
         client = RetryingAsyncClient(model_name="gpt-4")
@@ -324,7 +324,7 @@ class TestRetryingAsyncClientCerebras:
 
     def test_cerebras_case_insensitive(self):
         """Test that Cerebras detection is case-insensitive."""
-        from code_puppy.http_utils import RetryingAsyncClient
+        from newcode.http_utils import RetryingAsyncClient
 
         for name in [
             "cerebras-glm",
@@ -341,7 +341,7 @@ class TestFindAvailablePort:
 
     def test_find_available_port_returns_int(self):
         """Test find_available_port returns an integer."""
-        from code_puppy.http_utils import find_available_port
+        from newcode.http_utils import find_available_port
 
         port = find_available_port()
         assert isinstance(port, int)
@@ -349,21 +349,21 @@ class TestFindAvailablePort:
 
     def test_find_available_port_in_valid_range(self):
         """Test find_available_port returns port in valid range."""
-        from code_puppy.http_utils import find_available_port
+        from newcode.http_utils import find_available_port
 
         port = find_available_port()
         assert 1024 <= port <= 65535  # Typical unprivileged port range
 
     def test_find_available_port_with_start_port(self):
         """Test find_available_port with start port."""
-        from code_puppy.http_utils import find_available_port
+        from newcode.http_utils import find_available_port
 
         port = find_available_port(start_port=8000)
         assert port >= 8000
 
     def test_find_available_port_multiple_calls(self):
         """Test multiple calls to find_available_port."""
-        from code_puppy.http_utils import find_available_port
+        from newcode.http_utils import find_available_port
 
         port1 = find_available_port()
         port2 = find_available_port()

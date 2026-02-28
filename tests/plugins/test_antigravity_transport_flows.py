@@ -7,8 +7,8 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from code_puppy.plugins.antigravity_oauth import transport
-from code_puppy.plugins.antigravity_oauth.transport import AntigravityClient
+from newcode.plugins.antigravity_oauth import transport
+from newcode.plugins.antigravity_oauth.transport import AntigravityClient
 
 
 @pytest.fixture

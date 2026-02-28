@@ -27,7 +27,7 @@ class TestResetWindowsConsoleModeCodePaths:
         with patch("platform.system", return_value="Linux"):
             import importlib
 
-            import code_puppy.terminal_utils as tu
+            import newcode.terminal_utils as tu
 
             importlib.reload(tu)
 
@@ -71,7 +71,7 @@ class TestResetWindowsConsoleModeCodePaths:
                 # Import fresh to pick up mocks
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -98,7 +98,7 @@ class TestResetWindowsConsoleModeCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -114,7 +114,7 @@ class TestFlushWindowsKeyboardBufferCodePaths:
         with patch("platform.system", return_value="Darwin"):
             import importlib
 
-            import code_puppy.terminal_utils as tu
+            import newcode.terminal_utils as tu
 
             importlib.reload(tu)
 
@@ -133,7 +133,7 @@ class TestFlushWindowsKeyboardBufferCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -153,7 +153,7 @@ class TestFlushWindowsKeyboardBufferCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -169,7 +169,7 @@ class TestResetWindowsTerminalFullCodePaths:
         with patch("platform.system", return_value="Windows"):
             import importlib
 
-            import code_puppy.terminal_utils as tu
+            import newcode.terminal_utils as tu
 
             importlib.reload(tu)
 
@@ -188,7 +188,7 @@ class TestResetWindowsTerminalFullCodePaths:
         with patch("platform.system", return_value="Linux"):
             import importlib
 
-            import code_puppy.terminal_utils as tu
+            import newcode.terminal_utils as tu
 
             importlib.reload(tu)
 
@@ -234,7 +234,7 @@ class TestDisableWindowsCtrlCCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -275,7 +275,7 @@ class TestDisableWindowsCtrlCCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -310,7 +310,7 @@ class TestDisableWindowsCtrlCCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -327,7 +327,7 @@ class TestDisableWindowsCtrlCCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -340,7 +340,7 @@ class TestDisableWindowsCtrlCCodePaths:
         with patch("platform.system", return_value="Darwin"):
             import importlib
 
-            import code_puppy.terminal_utils as tu
+            import newcode.terminal_utils as tu
 
             importlib.reload(tu)
 
@@ -366,7 +366,7 @@ class TestEnableWindowsCtrlCCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -389,7 +389,7 @@ class TestEnableWindowsCtrlCCodePaths:
         with patch("platform.system", return_value="Windows"):
             import importlib
 
-            import code_puppy.terminal_utils as tu
+            import newcode.terminal_utils as tu
 
             importlib.reload(tu)
 
@@ -414,7 +414,7 @@ class TestEnableWindowsCtrlCCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -433,7 +433,7 @@ class TestEnableWindowsCtrlCCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -448,7 +448,7 @@ class TestEnableWindowsCtrlCCodePaths:
         with patch("platform.system", return_value="Linux"):
             import importlib
 
-            import code_puppy.terminal_utils as tu
+            import newcode.terminal_utils as tu
 
             importlib.reload(tu)
 
@@ -487,7 +487,7 @@ class TestEnsureCtrlCDisabledCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -527,7 +527,7 @@ class TestEnsureCtrlCDisabledCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -564,7 +564,7 @@ class TestEnsureCtrlCDisabledCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -583,7 +583,7 @@ class TestEnsureCtrlCDisabledCodePaths:
             with patch("platform.system", return_value="Windows"):
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -598,7 +598,7 @@ class TestEnsureCtrlCDisabledCodePaths:
         with patch("platform.system", return_value="Windows"):
             import importlib
 
-            import code_puppy.terminal_utils as tu
+            import newcode.terminal_utils as tu
 
             importlib.reload(tu)
 
@@ -613,7 +613,7 @@ class TestEnsureCtrlCDisabledCodePaths:
         with patch("platform.system", return_value="Darwin"):
             import importlib
 
-            import code_puppy.terminal_utils as tu
+            import newcode.terminal_utils as tu
 
             importlib.reload(tu)
 
@@ -637,7 +637,7 @@ class TestWindowsANSIResetCodePaths:
                 with patch("sys.stderr", MagicMock()):
                     import importlib
 
-                    import code_puppy.terminal_utils as tu
+                    import newcode.terminal_utils as tu
 
                     importlib.reload(tu)
 
@@ -655,7 +655,7 @@ class TestWindowsANSIResetCodePaths:
                 with patch("sys.stderr", MagicMock()):
                     import importlib
 
-                    import code_puppy.terminal_utils as tu
+                    import newcode.terminal_utils as tu
 
                     importlib.reload(tu)
 
@@ -676,7 +676,7 @@ class TestTruecolorDetectionEdgeCases:
 
                 import importlib
 
-                import code_puppy.terminal_utils as tu
+                import newcode.terminal_utils as tu
 
                 importlib.reload(tu)
 
@@ -690,7 +690,7 @@ class TestTruecolorDetectionEdgeCases:
         import importlib
         import os
 
-        import code_puppy.terminal_utils as tu
+        import newcode.terminal_utils as tu
 
         test_cases = [
             ("TRUECOLOR", True),
@@ -717,7 +717,7 @@ class TestPrintTruecolorWarningCodePaths:
 
     def test_warning_with_provided_console(self):
         """Test warning uses provided console instance."""
-        import code_puppy.terminal_utils as tu
+        import newcode.terminal_utils as tu
 
         mock_console = MagicMock()
         mock_console.color_system = "256"
@@ -731,7 +731,7 @@ class TestPrintTruecolorWarningCodePaths:
 
     def test_warning_creates_console_when_none_provided(self):
         """Test warning creates a console when None is provided."""
-        import code_puppy.terminal_utils as tu
+        import newcode.terminal_utils as tu
 
         mock_console = MagicMock()
         mock_console.color_system = "standard"
@@ -754,7 +754,7 @@ class TestPrintTruecolorWarningCodePaths:
 
     def test_warning_skipped_when_truecolor_supported(self):
         """Test warning is completely skipped when truecolor is supported."""
-        import code_puppy.terminal_utils as tu
+        import newcode.terminal_utils as tu
 
         mock_console = MagicMock()
 
@@ -768,7 +768,7 @@ class TestPrintTruecolorWarningCodePaths:
         """Test fallback to builtins.print when console creation fails."""
         import rich.console
 
-        import code_puppy.terminal_utils as tu
+        import newcode.terminal_utils as tu
 
         printed_output = []
 
@@ -800,7 +800,7 @@ def restore_module_state():
     # Reload module to clean state
     import importlib
 
-    import code_puppy.terminal_utils as tu
+    import newcode.terminal_utils as tu
 
     try:
         importlib.reload(tu)

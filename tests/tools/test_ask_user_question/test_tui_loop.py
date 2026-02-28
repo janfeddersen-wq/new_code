@@ -8,9 +8,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.ask_user_question.models import Question, QuestionOption
-from code_puppy.tools.ask_user_question.terminal_ui import QuestionUIState
-from code_puppy.tools.ask_user_question.tui_loop import TUIResult, run_question_tui
+from newcode.tools.ask_user_question.models import Question, QuestionOption
+from newcode.tools.ask_user_question.terminal_ui import QuestionUIState
+from newcode.tools.ask_user_question.tui_loop import TUIResult, run_question_tui
 
 
 def _make_questions(multi_select=False, count=1):
@@ -65,8 +65,8 @@ async def _run_with_handler_callback(state, callback):
     captured_kb = None
 
     with (
-        patch("code_puppy.tools.ask_user_question.tui_loop.Application") as MockApp,
-        patch("code_puppy.tools.ask_user_question.tui_loop.create_output"),
+        patch("newcode.tools.ask_user_question.tui_loop.Application") as MockApp,
+        patch("newcode.tools.ask_user_question.tui_loop.create_output"),
         patch("sys.__stdout__", new=MagicMock()),
     ):
 
@@ -118,8 +118,8 @@ class TestRunQuestionTUI:
         state.last_activity_time = time.monotonic() - 1000
 
         with (
-            patch("code_puppy.tools.ask_user_question.tui_loop.Application") as MockApp,
-            patch("code_puppy.tools.ask_user_question.tui_loop.create_output"),
+            patch("newcode.tools.ask_user_question.tui_loop.Application") as MockApp,
+            patch("newcode.tools.ask_user_question.tui_loop.create_output"),
             patch("sys.__stdout__", new=MagicMock()),
         ):
             app_inst = MagicMock()
@@ -140,8 +140,8 @@ class TestRunQuestionTUI:
     async def test_exception_reraised(self):
         state = _make_state()
         with (
-            patch("code_puppy.tools.ask_user_question.tui_loop.Application") as MockApp,
-            patch("code_puppy.tools.ask_user_question.tui_loop.create_output"),
+            patch("newcode.tools.ask_user_question.tui_loop.Application") as MockApp,
+            patch("newcode.tools.ask_user_question.tui_loop.create_output"),
             patch("sys.__stdout__", new=MagicMock()),
         ):
             MockApp.return_value.run_async = AsyncMock(side_effect=RuntimeError("boom"))
@@ -649,8 +649,8 @@ class TestPanelRendering:
         captured_lambdas = []
 
         with (
-            patch("code_puppy.tools.ask_user_question.tui_loop.Application") as MockApp,
-            patch("code_puppy.tools.ask_user_question.tui_loop.create_output"),
+            patch("newcode.tools.ask_user_question.tui_loop.Application") as MockApp,
+            patch("newcode.tools.ask_user_question.tui_loop.create_output"),
             patch("sys.__stdout__", new=MagicMock()),
         ):
 
@@ -660,22 +660,22 @@ class TestPanelRendering:
 
             with (
                 patch(
-                    "code_puppy.tools.ask_user_question.tui_loop.FormattedTextControl",
+                    "newcode.tools.ask_user_question.tui_loop.FormattedTextControl",
                     CaptureFTC,
                 ),
                 patch(
-                    "code_puppy.tools.ask_user_question.tui_loop.Window",
+                    "newcode.tools.ask_user_question.tui_loop.Window",
                     return_value=MagicMock(),
                 ),
                 patch(
-                    "code_puppy.tools.ask_user_question.tui_loop.VSplit",
+                    "newcode.tools.ask_user_question.tui_loop.VSplit",
                     return_value=MagicMock(),
                 ),
                 patch(
-                    "code_puppy.tools.ask_user_question.tui_loop.Frame",
+                    "newcode.tools.ask_user_question.tui_loop.Frame",
                     return_value=MagicMock(),
                 ),
-                patch("code_puppy.tools.ask_user_question.tui_loop.Layout"),
+                patch("newcode.tools.ask_user_question.tui_loop.Layout"),
             ):
                 MockApp.side_effect = lambda **kw: MagicMock(run_async=AsyncMock())
                 await run_question_tui(state)

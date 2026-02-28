@@ -1,5 +1,5 @@
 """
-Comprehensive tests for code_puppy/mcp_/config_wizard.py
+Comprehensive tests for newcode/mcp_/config_wizard.py
 
 Tests cover:
 - Helper functions (prompt_ask, confirm_ask)
@@ -15,19 +15,19 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from code_puppy.mcp_.config_wizard import (
+from newcode.mcp_.config_wizard import (
     MCPConfigWizard,
     confirm_ask,
     prompt_ask,
     run_add_wizard,
 )
-from code_puppy.mcp_.managed_server import ServerConfig
+from newcode.mcp_.managed_server import ServerConfig
 
 
 class TestPromptAsk:
     """Tests for the prompt_ask helper function."""
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_prompt_ask_basic(self, mock_emit_prompt):
         """Test basic prompt with user input."""
         mock_emit_prompt.return_value = "test-input"
@@ -35,29 +35,29 @@ class TestPromptAsk:
         assert result == "test-input"
         mock_emit_prompt.assert_called_once_with("Enter value: ")
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_prompt_ask_with_default(self, mock_emit_prompt):
         """Test prompt with default value when no input provided."""
         mock_emit_prompt.return_value = ""
         result = prompt_ask("Enter value", default="default-val")
         assert result == "default-val"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_prompt_ask_override_default(self, mock_emit_prompt):
         """Test user input overrides default value."""
         mock_emit_prompt.return_value = "user-input"
         result = prompt_ask("Enter value", default="default-val")
         assert result == "user-input"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_prompt_ask_with_choices(self, mock_emit_prompt):
         """Test prompt with choices validation."""
         mock_emit_prompt.return_value = "yes"
         result = prompt_ask("Proceed?", choices=["yes", "no"])
         assert result == "yes"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_error")
     def test_prompt_ask_invalid_choice(self, mock_emit_error, mock_emit_prompt):
         """Test invalid choice returns None and emits error."""
         mock_emit_prompt.return_value = "invalid"
@@ -65,8 +65,8 @@ class TestPromptAsk:
         assert result is None
         mock_emit_error.assert_called_once()
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_error")
     def test_prompt_ask_exception(self, mock_emit_error, mock_emit_prompt):
         """Test exception handling in prompt_ask."""
         mock_emit_prompt.side_effect = Exception("Input error")
@@ -74,14 +74,14 @@ class TestPromptAsk:
         assert result is None
         mock_emit_error.assert_called_once()
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_prompt_ask_whitespace_stripping(self, mock_emit_prompt):
         """Test that whitespace is stripped from input."""
         mock_emit_prompt.return_value = "  test  "
         result = prompt_ask("Enter value")
         assert result == "test"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_prompt_ask_with_choices_format(self, mock_emit_prompt):
         """Test choice formatting in prompt text."""
         mock_emit_prompt.return_value = "sse"
@@ -93,53 +93,53 @@ class TestPromptAsk:
 class TestConfirmAsk:
     """Tests for the confirm_ask helper function."""
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_confirm_ask_yes(self, mock_emit_prompt):
         """Test confirm_ask with yes response."""
         mock_emit_prompt.return_value = "y"
         assert confirm_ask("Proceed?") is True
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_confirm_ask_no(self, mock_emit_prompt):
         """Test confirm_ask with no response."""
         mock_emit_prompt.return_value = "n"
         assert confirm_ask("Proceed?") is False
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_confirm_ask_yes_variants(self, mock_emit_prompt):
         """Test various yes responses."""
         for response in ["y", "Y", "yes", "YES", "true", "1"]:
             mock_emit_prompt.return_value = response
             assert confirm_ask("Proceed?") is True
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_confirm_ask_no_variants(self, mock_emit_prompt):
         """Test various no responses."""
         for response in ["n", "N", "no", "NO", "false", "0"]:
             mock_emit_prompt.return_value = response
             assert confirm_ask("Proceed?") is False
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_confirm_ask_empty_with_default_true(self, mock_emit_prompt):
         """Test empty input returns default value (true)."""
         mock_emit_prompt.return_value = ""
         assert confirm_ask("Proceed?", default=True) is True
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_confirm_ask_empty_with_default_false(self, mock_emit_prompt):
         """Test empty input returns default value (false)."""
         mock_emit_prompt.return_value = ""
         assert confirm_ask("Proceed?", default=False) is False
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
     def test_confirm_ask_invalid_response(self, mock_emit_prompt):
         """Test invalid response returns default value."""
         mock_emit_prompt.return_value = "maybe"
         assert confirm_ask("Proceed?", default=True) is True
         assert confirm_ask("Proceed?", default=False) is False
 
-    @patch("code_puppy.mcp_.config_wizard.emit_prompt")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.emit_prompt")
+    @patch("newcode.mcp_.config_wizard.emit_error")
     def test_confirm_ask_exception(self, mock_emit_error, mock_emit_prompt):
         """Test exception handling in confirm_ask."""
         mock_emit_prompt.side_effect = Exception("Input error")
@@ -151,7 +151,7 @@ class TestConfirmAsk:
 class TestMCPConfigWizardInit:
     """Tests for MCPConfigWizard initialization."""
 
-    @patch("code_puppy.mcp_.config_wizard.get_mcp_manager")
+    @patch("newcode.mcp_.config_wizard.get_mcp_manager")
     def test_wizard_init(self, mock_get_manager):
         """Test wizard initialization."""
         mock_manager = Mock()
@@ -167,7 +167,7 @@ class TestValidationMethods:
     @pytest.fixture
     def wizard(self):
         """Create wizard instance for testing."""
-        with patch("code_puppy.mcp_.config_wizard.get_mcp_manager"):
+        with patch("newcode.mcp_.config_wizard.get_mcp_manager"):
             return MCPConfigWizard()
 
     @pytest.mark.parametrize(
@@ -247,20 +247,20 @@ class TestPromptServerName:
         mock_manager = Mock()
         mock_manager.registry.get_by_name.return_value = None
         with patch(
-            "code_puppy.mcp_.config_wizard.get_mcp_manager", return_value=mock_manager
+            "newcode.mcp_.config_wizard.get_mcp_manager", return_value=mock_manager
         ):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
     def test_prompt_server_name_valid(self, mock_prompt, wizard):
         """Test prompting for valid server name."""
         mock_prompt.return_value = "my-server"
         result = wizard.prompt_server_name()
         assert result == "my-server"
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_error")
     def test_prompt_server_name_invalid_format(
         self, mock_emit_error, mock_confirm, mock_prompt, wizard
     ):
@@ -272,9 +272,9 @@ class TestPromptServerName:
         assert result is None
         mock_emit_error.assert_called()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_error")
     def test_prompt_server_name_exists(
         self, mock_emit_error, mock_confirm, mock_prompt, wizard
     ):
@@ -287,8 +287,8 @@ class TestPromptServerName:
         assert result is None
         mock_emit_error.assert_called()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
     def test_prompt_server_name_cancel(self, mock_confirm, mock_prompt, wizard):
         """Test cancellation during name prompt."""
         mock_prompt.return_value = None
@@ -296,9 +296,9 @@ class TestPromptServerName:
         result = wizard.prompt_server_name()
         assert result is None
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_error")
     def test_prompt_server_name_retry_after_invalid(
         self, mock_emit_error, mock_confirm, mock_prompt, wizard
     ):
@@ -316,36 +316,36 @@ class TestPromptServerType:
     @pytest.fixture
     def wizard(self):
         """Create wizard instance."""
-        with patch("code_puppy.mcp_.config_wizard.get_mcp_manager"):
+        with patch("newcode.mcp_.config_wizard.get_mcp_manager"):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
     def test_prompt_server_type_sse(self, mock_prompt, mock_info, wizard):
         """Test selecting SSE server type."""
         mock_prompt.return_value = "sse"
         result = wizard.prompt_server_type()
         assert result == "sse"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
     def test_prompt_server_type_http(self, mock_prompt, mock_info, wizard):
         """Test selecting HTTP server type."""
         mock_prompt.return_value = "http"
         result = wizard.prompt_server_type()
         assert result == "http"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
     def test_prompt_server_type_stdio(self, mock_prompt, mock_info, wizard):
         """Test selecting Stdio server type."""
         mock_prompt.return_value = "stdio"
         result = wizard.prompt_server_type()
         assert result == "stdio"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
     def test_prompt_server_type_invalid(
         self, mock_prompt, mock_error, mock_info, wizard
     ):
@@ -362,12 +362,12 @@ class TestPromptSSEConfig:
     @pytest.fixture
     def wizard(self):
         """Create wizard instance."""
-        with patch("code_puppy.mcp_.config_wizard.get_mcp_manager"):
+        with patch("newcode.mcp_.config_wizard.get_mcp_manager"):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_prompt_sse_config_basic(
         self, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -379,9 +379,9 @@ class TestPromptSSEConfig:
         assert config["url"] == "http://localhost:8080"
         assert config["timeout"] == 30
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_prompt_sse_config_with_headers(
         self, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -392,9 +392,9 @@ class TestPromptSSEConfig:
             config = wizard.prompt_sse_config()
         assert config["headers"] == {"Auth": "token"}
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_prompt_sse_config_invalid_timeout(
         self, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -411,12 +411,12 @@ class TestPromptHTTPConfig:
     @pytest.fixture
     def wizard(self):
         """Create wizard instance."""
-        with patch("code_puppy.mcp_.config_wizard.get_mcp_manager"):
+        with patch("newcode.mcp_.config_wizard.get_mcp_manager"):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_prompt_http_config_basic(
         self, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -435,13 +435,13 @@ class TestPromptStdioConfig:
     @pytest.fixture
     def wizard(self):
         """Create wizard instance."""
-        with patch("code_puppy.mcp_.config_wizard.get_mcp_manager"):
+        with patch("newcode.mcp_.config_wizard.get_mcp_manager"):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.emit_warning")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_warning")
     def test_prompt_stdio_config_basic(
         self, mock_warn, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -454,10 +454,10 @@ class TestPromptStdioConfig:
         assert config["args"] == []
         assert config["timeout"] == 30
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.emit_warning")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_warning")
     def test_prompt_stdio_config_with_args(
         self, mock_warn, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -468,10 +468,10 @@ class TestPromptStdioConfig:
         assert config["command"] == "python"
         assert config["args"] == ["-m", "server"]
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.emit_warning")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_warning")
     def test_prompt_stdio_config_with_cwd(
         self, mock_warn, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -483,10 +483,10 @@ class TestPromptStdioConfig:
                 config = wizard.prompt_stdio_config()
         assert config["cwd"] == "/tmp"
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.emit_warning")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_warning")
     def test_prompt_stdio_config_invalid_cwd(
         self, mock_warn, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -498,10 +498,10 @@ class TestPromptStdioConfig:
         assert "cwd" not in config
         mock_warn.assert_called()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.emit_warning")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_warning")
     def test_prompt_stdio_config_with_env(
         self, mock_warn, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -519,19 +519,19 @@ class TestPromptURL:
     @pytest.fixture
     def wizard(self):
         """Create wizard instance."""
-        with patch("code_puppy.mcp_.config_wizard.get_mcp_manager"):
+        with patch("newcode.mcp_.config_wizard.get_mcp_manager"):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
     def test_prompt_url_valid(self, mock_prompt, wizard):
         """Test prompting for valid URL."""
         mock_prompt.return_value = "http://localhost:8080"
         result = wizard.prompt_url("HTTP")
         assert result == "http://localhost:8080"
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
     def test_prompt_url_invalid_then_valid(
         self, mock_confirm, mock_error, mock_prompt, wizard
     ):
@@ -541,8 +541,8 @@ class TestPromptURL:
         assert result == "http://localhost:8080"
         mock_error.assert_called()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
     def test_prompt_url_cancel(self, mock_confirm, mock_prompt, wizard):
         """Test cancellation during URL prompt."""
         mock_prompt.return_value = None
@@ -557,12 +557,12 @@ class TestPromptHeaders:
     @pytest.fixture
     def wizard(self):
         """Create wizard instance."""
-        with patch("code_puppy.mcp_.config_wizard.get_mcp_manager"):
+        with patch("newcode.mcp_.config_wizard.get_mcp_manager"):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_prompt_headers_single(self, mock_info, mock_confirm, mock_prompt, wizard):
         """Test prompting for single header."""
         mock_prompt.side_effect = ["Authorization", "Bearer token123", ""]
@@ -570,9 +570,9 @@ class TestPromptHeaders:
         headers = wizard.prompt_headers()
         assert headers["Authorization"] == "Bearer token123"
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_prompt_headers_multiple(
         self, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -590,9 +590,9 @@ class TestPromptHeaders:
         assert headers["Authorization"] == "Bearer token"
         assert headers["Content-Type"] == "application/json"
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_prompt_headers_empty(self, mock_info, mock_confirm, mock_prompt, wizard):
         """Test prompt_headers when no headers added."""
         mock_prompt.return_value = ""
@@ -606,12 +606,12 @@ class TestPromptEnvVars:
     @pytest.fixture
     def wizard(self):
         """Create wizard instance."""
-        with patch("code_puppy.mcp_.config_wizard.get_mcp_manager"):
+        with patch("newcode.mcp_.config_wizard.get_mcp_manager"):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_prompt_env_vars_single(self, mock_info, mock_confirm, mock_prompt, wizard):
         """Test prompting for single environment variable."""
         mock_prompt.side_effect = ["DEBUG", "1", ""]
@@ -619,9 +619,9 @@ class TestPromptEnvVars:
         env = wizard.prompt_env_vars()
         assert env["DEBUG"] == "1"
 
-    @patch("code_puppy.mcp_.config_wizard.prompt_ask")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.prompt_ask")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_prompt_env_vars_multiple(
         self, mock_info, mock_confirm, mock_prompt, wizard
     ):
@@ -647,12 +647,12 @@ class TestTestConnection:
         """Create wizard with mocked manager."""
         mock_manager = Mock()
         with patch(
-            "code_puppy.mcp_.config_wizard.get_mcp_manager", return_value=mock_manager
+            "newcode.mcp_.config_wizard.get_mcp_manager", return_value=mock_manager
         ):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.emit_success")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_success")
     def test_test_connection_success(self, mock_success, mock_info, wizard):
         """Test successful connection test."""
         config = ServerConfig(
@@ -671,8 +671,8 @@ class TestTestConnection:
         assert result is True
         mock_success.assert_called()
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_error")
     def test_test_connection_failure(self, mock_error, mock_info, wizard):
         """Test failed connection test."""
         config = ServerConfig(
@@ -698,12 +698,12 @@ class TestPromptConfirmation:
         """Create wizard with mocked manager."""
         mock_manager = Mock()
         with patch(
-            "code_puppy.mcp_.config_wizard.get_mcp_manager", return_value=mock_manager
+            "newcode.mcp_.config_wizard.get_mcp_manager", return_value=mock_manager
         ):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
     def test_prompt_confirmation_accept(self, mock_confirm, mock_info, wizard):
         """Test confirming server configuration."""
         config = ServerConfig(
@@ -717,8 +717,8 @@ class TestPromptConfirmation:
         result = wizard.prompt_confirmation(config)
         assert result is True
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
     def test_prompt_confirmation_reject(self, mock_confirm, mock_info, wizard):
         """Test rejecting server configuration."""
         config = ServerConfig(
@@ -732,8 +732,8 @@ class TestPromptConfirmation:
         result = wizard.prompt_confirmation(config)
         assert result is False
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
-    @patch("code_puppy.mcp_.config_wizard.confirm_ask")
+    @patch("newcode.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.confirm_ask")
     def test_prompt_confirmation_with_test(self, mock_confirm, mock_info, wizard):
         """Test confirmation with connection test."""
         config = ServerConfig(
@@ -762,11 +762,11 @@ class TestRunWizard:
         mock_manager = Mock()
         mock_manager.registry.get_by_name.return_value = None
         with patch(
-            "code_puppy.mcp_.config_wizard.get_mcp_manager", return_value=mock_manager
+            "newcode.mcp_.config_wizard.get_mcp_manager", return_value=mock_manager
         ):
             return MCPConfigWizard()
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_run_wizard_stdio_flow(self, mock_info, wizard):
         """Test complete wizard flow for stdio server."""
         with patch.object(wizard, "prompt_server_name", return_value="test-server"):
@@ -783,7 +783,7 @@ class TestRunWizard:
         assert result.name == "test-server"
         assert result.type == "stdio"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_run_wizard_http_flow(self, mock_info, wizard):
         """Test complete wizard flow for HTTP server."""
         with patch.object(wizard, "prompt_server_name", return_value="api-server"):
@@ -803,7 +803,7 @@ class TestRunWizard:
         assert result.name == "api-server"
         assert result.type == "http"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_run_wizard_sse_flow(self, mock_info, wizard):
         """Test complete wizard flow for SSE server."""
         with patch.object(wizard, "prompt_server_name", return_value="stream-server"):
@@ -823,14 +823,14 @@ class TestRunWizard:
         assert result.name == "stream-server"
         assert result.type == "sse"
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_run_wizard_cancel_at_name(self, mock_info, wizard):
         """Test cancellation during name prompt."""
         with patch.object(wizard, "prompt_server_name", return_value=None):
             result = wizard.run_wizard()
         assert result is None
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_run_wizard_cancel_at_type(self, mock_info, wizard):
         """Test cancellation during type prompt."""
         with patch.object(wizard, "prompt_server_name", return_value="test"):
@@ -838,7 +838,7 @@ class TestRunWizard:
                 result = wizard.run_wizard()
         assert result is None
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_run_wizard_cancel_at_config(self, mock_info, wizard):
         """Test cancellation during config prompt."""
         with patch.object(wizard, "prompt_server_name", return_value="test"):
@@ -847,7 +847,7 @@ class TestRunWizard:
                     result = wizard.run_wizard()
         assert result is None
 
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     def test_run_wizard_cancel_at_confirmation(self, mock_info, wizard):
         """Test cancellation during confirmation."""
         with patch.object(wizard, "prompt_server_name", return_value="test"):
@@ -867,8 +867,8 @@ class TestRunWizard:
 class TestRunAddWizard:
     """Tests for run_add_wizard entry point function."""
 
-    @patch("code_puppy.mcp_.config_wizard.get_mcp_manager")
-    @patch("code_puppy.mcp_.config_wizard.emit_warning")
+    @patch("newcode.mcp_.config_wizard.get_mcp_manager")
+    @patch("newcode.mcp_.config_wizard.emit_warning")
     def test_run_add_wizard_cancelled(self, mock_warn, mock_get_manager):
         """Test run_add_wizard when user cancels."""
         mock_manager = Mock()
@@ -880,9 +880,9 @@ class TestRunAddWizard:
         assert result is False
         mock_warn.assert_called()
 
-    @patch("code_puppy.mcp_.config_wizard.get_mcp_manager")
-    @patch("code_puppy.mcp_.config_wizard.emit_success")
-    @patch("code_puppy.mcp_.config_wizard.emit_info")
+    @patch("newcode.mcp_.config_wizard.get_mcp_manager")
+    @patch("newcode.mcp_.config_wizard.emit_success")
+    @patch("newcode.mcp_.config_wizard.emit_info")
     @patch("builtins.open", create=True)
     @patch("os.path.exists", return_value=False)
     @patch("os.makedirs")
@@ -910,7 +910,7 @@ class TestRunAddWizard:
         mock_get_manager.return_value = mock_manager
 
         with patch.object(MCPConfigWizard, "run_wizard", return_value=config):
-            with patch("code_puppy.config.MCP_SERVERS_FILE", "/tmp/mcp_servers.json"):
+            with patch("newcode.config.MCP_SERVERS_FILE", "/tmp/mcp_servers.json"):
                 with patch("pathlib.Path.replace"):
                     result = run_add_wizard()
 
@@ -918,8 +918,8 @@ class TestRunAddWizard:
         mock_manager.register_server.assert_called_once_with(config)
         mock_success.assert_called()
 
-    @patch("code_puppy.mcp_.config_wizard.get_mcp_manager")
-    @patch("code_puppy.mcp_.config_wizard.emit_error")
+    @patch("newcode.mcp_.config_wizard.get_mcp_manager")
+    @patch("newcode.mcp_.config_wizard.emit_error")
     @patch("builtins.open", create=True)
     @patch("os.path.exists", return_value=False)
     @patch("os.makedirs")
@@ -939,7 +939,7 @@ class TestRunAddWizard:
         mock_get_manager.return_value = mock_manager
 
         with patch.object(MCPConfigWizard, "run_wizard", return_value=config):
-            with patch("code_puppy.config.MCP_SERVERS_FILE", "/tmp/mcp_servers.json"):
+            with patch("newcode.config.MCP_SERVERS_FILE", "/tmp/mcp_servers.json"):
                 result = run_add_wizard()
 
         assert result is False

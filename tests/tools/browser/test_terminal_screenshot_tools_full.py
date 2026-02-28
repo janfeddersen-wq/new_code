@@ -7,7 +7,7 @@ import pytest
 from PIL import Image
 from pydantic_ai import ToolReturn
 
-from code_puppy.tools.browser.terminal_screenshot_tools import (
+from newcode.tools.browser.terminal_screenshot_tools import (
     _capture_terminal_screenshot,
     _resize_image,
     load_image,
@@ -19,7 +19,7 @@ from code_puppy.tools.browser.terminal_screenshot_tools import (
     terminal_screenshot,
 )
 
-MOD = "code_puppy.tools.browser.terminal_screenshot_tools"
+MOD = "newcode.tools.browser.terminal_screenshot_tools"
 
 
 @pytest.fixture(autouse=True)

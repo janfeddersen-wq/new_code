@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from code_puppy.plugins.antigravity_oauth.oauth import (
+from newcode.plugins.antigravity_oauth.oauth import (
     AntigravityStatus,
     OAuthContext,
     TokenExchangeFailure,
@@ -35,14 +35,14 @@ from code_puppy.plugins.antigravity_oauth.oauth import (
 @pytest.fixture
 def mock_requests_post():
     """Create a mock for requests.post."""
-    with patch("code_puppy.plugins.antigravity_oauth.oauth.requests.post") as mock:
+    with patch("newcode.plugins.antigravity_oauth.oauth.requests.post") as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_requests_get():
     """Create a mock for requests.get."""
-    with patch("code_puppy.plugins.antigravity_oauth.oauth.requests.get") as mock:
+    with patch("newcode.plugins.antigravity_oauth.oauth.requests.get") as mock:
         yield mock
 
 
@@ -360,7 +360,7 @@ class TestTokenExchange:
 
         # Mock _fetch_project_id
         with patch(
-            "code_puppy.plugins.antigravity_oauth.oauth._fetch_project_id"
+            "newcode.plugins.antigravity_oauth.oauth._fetch_project_id"
         ) as mock_fetch_project:
             mock_fetch_project.return_value = "project_789"
 
@@ -472,7 +472,7 @@ class TestTokenExchange:
         mock_requests_get.return_value = user_response
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.oauth._fetch_project_id"
+            "newcode.plugins.antigravity_oauth.oauth._fetch_project_id"
         ) as mock_fetch_project:
             mock_fetch_project.return_value = "project_789"
 
@@ -507,7 +507,7 @@ class TestTokenExchange:
         mock_requests_get.return_value = user_response
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.oauth._fetch_project_id"
+            "newcode.plugins.antigravity_oauth.oauth._fetch_project_id"
         ) as mock_fetch_project:
             mock_fetch_project.return_value = ""
 
@@ -668,7 +668,7 @@ class TestEdgeCases:
         mock_requests_get.return_value = user_response
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.oauth._fetch_project_id"
+            "newcode.plugins.antigravity_oauth.oauth._fetch_project_id"
         ) as mock_fetch_project:
             mock_fetch_project.return_value = ""
 

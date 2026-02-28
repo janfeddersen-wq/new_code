@@ -2,7 +2,7 @@
 
 An AI-powered code generation and modification agent for the terminal.
 
-NewCode is a fork of [code-puppy](https://github.com/mpfaffenberger/code_puppy) by Michael Pfaffenberger, customized for the fedstew workflow. We wanted a clean, professional CLI agent with opinionated defaults, streamlined prompts, and a focus on practical code generation without the playful branding.
+NewCode is a fork of [code-puppy](https://github.com/mpfaffenberger/newcode) by Michael Pfaffenberger, customized for the fedstew workflow. We wanted a clean, professional CLI agent with opinionated defaults, streamlined prompts, and a focus on practical code generation without the playful branding.
 
 ## What changed from code-puppy
 
@@ -57,7 +57,7 @@ On first run, you'll be guided through a setup wizard to configure your API keys
 
 ## Configuration
 
-Configuration is stored in `~/.config/code_puppy/puppy.cfg` (XDG-compliant paths). The setup wizard handles initial configuration. You can also use CLI commands:
+Configuration is stored in `~/.config/newcode/puppy.cfg` (XDG-compliant paths). The setup wizard handles initial configuration. You can also use CLI commands:
 
 ```bash
 # Inside the agent REPL:
@@ -104,7 +104,7 @@ ruff format --check .
 
 ## Credits
 
-This project is a fork of [code-puppy](https://github.com/mpfaffenberger/code_puppy) by [Michael Pfaffenberger](https://github.com/mpfaffenberger), licensed under the MIT License. We are grateful for the original work and the open-source foundation it provides.
+This project is a fork of [code-puppy](https://github.com/mpfaffenberger/newcode) by [Michael Pfaffenberger](https://github.com/mpfaffenberger), licensed under the MIT License. We are grateful for the original work and the open-source foundation it provides.
 
 ## License
 

@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from code_puppy.mcp_.blocking_startup import (
+from newcode.mcp_.blocking_startup import (
     BlockingMCPServerStdio,
     SimpleCapturedMCPServerStdio,
     StartupMonitor,
@@ -66,9 +66,9 @@ class TestStderrFileCapture:
         capture.stop()  # Should not raise
         assert capture.log_file is None
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
     def test_start_creates_log_file(self, mock_write_log, mock_get_path, mock_rotate):
         """Test that start creates and opens log file."""
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
@@ -89,9 +89,9 @@ class TestStderrFileCapture:
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
     def test_start_and_stop_cycle(self, mock_write_log, mock_get_path, mock_rotate):
         """Test complete start and stop cycle."""
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
@@ -112,9 +112,9 @@ class TestStderrFileCapture:
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
     def test_monitor_thread_stops_cleanly(
         self, mock_write_log, mock_get_path, mock_rotate
     ):
@@ -356,7 +356,7 @@ class TestStartupMonitor:
         """Test wait_all_ready with no servers."""
         monitor = StartupMonitor()
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             results = await monitor.wait_all_ready(timeout=1)
 
         assert results == {}
@@ -369,7 +369,7 @@ class TestStartupMonitor:
         server._initialized.set()  # Mark as ready
         monitor.add_server("test", server)
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             results = await monitor.wait_all_ready(timeout=1)
 
         assert results["test"] is True
@@ -382,7 +382,7 @@ class TestStartupMonitor:
         server = BlockingMCPServerStdio(command="echo")  # Won't initialize
         monitor.add_server("test", server)
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             results = await monitor.wait_all_ready(timeout=0.1)
 
         assert results["test"] is False
@@ -399,7 +399,7 @@ class TestStartupMonitor:
         server2 = BlockingMCPServerStdio(command="cat")  # Won't initialize
         monitor.add_server("server2", server2)
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             results = await monitor.wait_all_ready(timeout=0.1)
 
         assert results["server1"] is True
@@ -528,7 +528,7 @@ class TestStartupEdgeCases:
             monitor.add_server(name, server)
             asyncio.create_task(init_server(server, delay))
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             results = await monitor.wait_all_ready(timeout=1)
 
         # All should be ready
@@ -583,7 +583,7 @@ class TestServerStartupIntegration:
             monitor.add_server(f"server-{i}", server)
             server._initialized.set()  # Mark as ready
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             results = await monitor.wait_all_ready(timeout=1)
 
         assert len(results) == 3
@@ -602,7 +602,7 @@ class TestServerStartupIntegration:
 
         asyncio.create_task(delayed_init())
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             results = await monitor.wait_all_ready(timeout=1)
 
         assert results["test"] is True

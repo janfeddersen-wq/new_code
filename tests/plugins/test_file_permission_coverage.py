@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 class TestThreadLocalHelpers:
     def test_get_set_clear_feedback(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _set_user_feedback,
             clear_user_feedback,
             get_last_user_feedback,
@@ -19,7 +19,7 @@ class TestThreadLocalHelpers:
         assert get_last_user_feedback() is None
 
     def test_diff_shown_flag(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             clear_diff_shown_flag,
             set_diff_already_shown,
             was_diff_already_shown,
@@ -33,14 +33,14 @@ class TestThreadLocalHelpers:
 
 class TestPreviewDeleteSnippet:
     def test_file_not_found(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_snippet,
         )
 
         assert _preview_delete_snippet(str(tmp_path / "nope"), "x") is None
 
     def test_snippet_not_in_file(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_snippet,
         )
 
@@ -49,7 +49,7 @@ class TestPreviewDeleteSnippet:
         assert _preview_delete_snippet(str(f), "missing") is None
 
     def test_success(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_snippet,
         )
 
@@ -60,21 +60,21 @@ class TestPreviewDeleteSnippet:
         assert "-hello world" in result or "hello" in result
 
     def test_exception_not_found(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_snippet,
         )
 
         assert _preview_delete_snippet("/dev/null/bad", "x") is None
 
     def test_exception_during_diff(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_snippet,
         )
 
         f = tmp_path / "f.txt"
         f.write_text("hello world")
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks.get_diff_context_lines",
+            "newcode.plugins.file_permission_handler.register_callbacks.get_diff_context_lines",
             side_effect=RuntimeError("boom"),
         ):
             assert _preview_delete_snippet(str(f), "world") is None
@@ -82,7 +82,7 @@ class TestPreviewDeleteSnippet:
 
 class TestPreviewWriteToFile:
     def test_new_file(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_write_to_file,
         )
 
@@ -90,7 +90,7 @@ class TestPreviewWriteToFile:
         assert result is not None
 
     def test_existing_no_overwrite(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_write_to_file,
         )
 
@@ -99,7 +99,7 @@ class TestPreviewWriteToFile:
         assert _preview_write_to_file(str(f), "new", overwrite=False) is None
 
     def test_existing_overwrite(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_write_to_file,
         )
 
@@ -111,7 +111,7 @@ class TestPreviewWriteToFile:
 
 class TestPreviewReplaceInFile:
     def test_exact_match(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_replace_in_file,
         )
 
@@ -123,7 +123,7 @@ class TestPreviewReplaceInFile:
         assert result is not None
 
     def test_no_change(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_replace_in_file,
         )
 
@@ -135,7 +135,7 @@ class TestPreviewReplaceInFile:
         assert result is None
 
     def test_fuzzy_match_failure(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_replace_in_file,
         )
 
@@ -149,7 +149,7 @@ class TestPreviewReplaceInFile:
 
 class TestPreviewDeleteFile:
     def test_success(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_file,
         )
 
@@ -159,7 +159,7 @@ class TestPreviewDeleteFile:
         assert result is not None
 
     def test_not_found(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_file,
         )
 
@@ -168,12 +168,12 @@ class TestPreviewDeleteFile:
 
 class TestPromptForFilePermission:
     def test_yolo_mode(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             prompt_for_file_permission,
         )
 
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
+            "newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
             return_value=True,
         ):
             ok, fb = prompt_for_file_permission("f.txt", "edit")
@@ -181,7 +181,7 @@ class TestPromptForFilePermission:
             assert fb is None
 
     def test_lock_contention(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _FILE_CONFIRMATION_LOCK,
             prompt_for_file_permission,
         )
@@ -190,11 +190,11 @@ class TestPromptForFilePermission:
         try:
             with (
                 patch(
-                    "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
+                    "newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
                     return_value=False,
                 ),
                 patch(
-                    "code_puppy.plugins.file_permission_handler.register_callbacks.emit_warning"
+                    "newcode.plugins.file_permission_handler.register_callbacks.emit_warning"
                 ),
             ):
                 ok, fb = prompt_for_file_permission("f.txt", "edit")
@@ -203,17 +203,17 @@ class TestPromptForFilePermission:
             _FILE_CONFIRMATION_LOCK.release()
 
     def test_approved(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             prompt_for_file_permission,
         )
 
         with (
             patch(
-                "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
+                "newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
                 return_value=False,
             ),
             patch(
-                "code_puppy.plugins.file_permission_handler.register_callbacks.get_user_approval",
+                "newcode.plugins.file_permission_handler.register_callbacks.get_user_approval",
                 return_value=(True, None),
             ),
         ):
@@ -223,17 +223,17 @@ class TestPromptForFilePermission:
 
 class TestHandleEditFilePermission:
     def test_write(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             handle_edit_file_permission,
         )
 
         with (
             patch(
-                "code_puppy.plugins.file_permission_handler.register_callbacks._preview_write_to_file",
+                "newcode.plugins.file_permission_handler.register_callbacks._preview_write_to_file",
                 return_value="diff",
             ),
             patch(
-                "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
+                "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
                 return_value=(True, None),
             ),
         ):
@@ -245,17 +245,17 @@ class TestHandleEditFilePermission:
             )
 
     def test_replace(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             handle_edit_file_permission,
         )
 
         with (
             patch(
-                "code_puppy.plugins.file_permission_handler.register_callbacks._preview_replace_in_file",
+                "newcode.plugins.file_permission_handler.register_callbacks._preview_replace_in_file",
                 return_value="diff",
             ),
             patch(
-                "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
+                "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
                 return_value=(False, "fix it"),
             ),
         ):
@@ -267,17 +267,17 @@ class TestHandleEditFilePermission:
             )
 
     def test_delete_snippet(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             handle_edit_file_permission,
         )
 
         with (
             patch(
-                "code_puppy.plugins.file_permission_handler.register_callbacks._preview_delete_snippet",
+                "newcode.plugins.file_permission_handler.register_callbacks._preview_delete_snippet",
                 return_value="diff",
             ),
             patch(
-                "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
+                "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
                 return_value=(True, None),
             ),
         ):
@@ -289,12 +289,12 @@ class TestHandleEditFilePermission:
             )
 
     def test_unknown_operation(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             handle_edit_file_permission,
         )
 
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
+            "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
             return_value=(True, None),
         ):
             assert handle_edit_file_permission(None, "f.txt", "mystery", {}) is True
@@ -302,14 +302,14 @@ class TestHandleEditFilePermission:
 
 class TestHandleDeleteFilePermission:
     def test_approved(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             handle_delete_file_permission,
         )
 
         f = tmp_path / "f.txt"
         f.write_text("x")
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
+            "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
             return_value=(True, None),
         ):
             assert handle_delete_file_permission(None, str(f)) is True
@@ -317,14 +317,14 @@ class TestHandleDeleteFilePermission:
 
 class TestHandleFilePermission:
     def test_with_operation_data(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             handle_file_permission,
         )
 
         f = tmp_path / "f.txt"
         f.write_text("content")
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
+            "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
             return_value=(True, None),
         ):
             assert (
@@ -333,12 +333,12 @@ class TestHandleFilePermission:
             )
 
     def test_without_operation_data(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             handle_file_permission,
         )
 
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
+            "newcode.plugins.file_permission_handler.register_callbacks.prompt_for_file_permission",
             return_value=(True, None),
         ):
             assert handle_file_permission(None, "f.txt", "edit", preview="diff") is True
@@ -346,7 +346,7 @@ class TestHandleFilePermission:
 
 class TestGeneratePreviewFromOperationData:
     def test_delete(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _generate_preview_from_operation_data,
         )
 
@@ -356,7 +356,7 @@ class TestGeneratePreviewFromOperationData:
         assert result is not None
 
     def test_write(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _generate_preview_from_operation_data,
         )
 
@@ -366,7 +366,7 @@ class TestGeneratePreviewFromOperationData:
         assert result is not None
 
     def test_delete_snippet(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _generate_preview_from_operation_data,
         )
 
@@ -378,7 +378,7 @@ class TestGeneratePreviewFromOperationData:
         assert result is not None
 
     def test_replace_text(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _generate_preview_from_operation_data,
         )
 
@@ -392,7 +392,7 @@ class TestGeneratePreviewFromOperationData:
         assert result is not None
 
     def test_edit_file_delete_snippet(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _generate_preview_from_operation_data,
         )
 
@@ -404,7 +404,7 @@ class TestGeneratePreviewFromOperationData:
         assert result is not None
 
     def test_edit_file_replacements(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _generate_preview_from_operation_data,
         )
 
@@ -418,7 +418,7 @@ class TestGeneratePreviewFromOperationData:
         assert result is not None
 
     def test_edit_file_content(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _generate_preview_from_operation_data,
         )
 
@@ -428,19 +428,19 @@ class TestGeneratePreviewFromOperationData:
         assert result is not None
 
     def test_unknown_returns_none(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _generate_preview_from_operation_data,
         )
 
         assert _generate_preview_from_operation_data("f", "unknown", {}) is None
 
     def test_exception_returns_none(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _generate_preview_from_operation_data,
         )
 
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks._preview_delete_file",
+            "newcode.plugins.file_permission_handler.register_callbacks._preview_delete_file",
             side_effect=RuntimeError,
         ):
             assert _generate_preview_from_operation_data("f", "delete", {}) is None
@@ -461,7 +461,7 @@ class TestUnicodeExceptBranches:
     def test_delete_snippet_unicode_error(self, tmp_path):
         from unittest.mock import MagicMock
 
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_snippet,
         )
 
@@ -479,7 +479,7 @@ class TestUnicodeExceptBranches:
     def test_replace_unicode_error(self, tmp_path):
         from unittest.mock import MagicMock
 
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_replace_in_file,
         )
 
@@ -496,7 +496,7 @@ class TestUnicodeExceptBranches:
     def test_delete_file_unicode_error(self, tmp_path):
         from unittest.mock import MagicMock
 
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_file,
         )
 
@@ -513,7 +513,7 @@ class TestUnicodeExceptBranches:
 
 class TestWriteToFileExceptionBranch:
     def test_write_general_exception(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_write_to_file,
         )
 
@@ -527,14 +527,14 @@ class TestWriteToFileExceptionBranch:
 
 class TestDeleteFileExceptionBranch:
     def test_delete_file_general_exception(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_file,
         )
 
         f = tmp_path / "f.txt"
         f.write_text("content")
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks.get_diff_context_lines",
+            "newcode.plugins.file_permission_handler.register_callbacks.get_diff_context_lines",
             side_effect=RuntimeError("boom"),
         ):
             assert _preview_delete_file(str(f)) is None
@@ -542,7 +542,7 @@ class TestDeleteFileExceptionBranch:
 
 class TestPreviewUnicodeEdgeCases:
     def test_delete_snippet_surrogate_chars(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_snippet,
         )
 
@@ -553,7 +553,7 @@ class TestPreviewUnicodeEdgeCases:
         # May or may not find it after sanitization, but shouldn't crash
 
     def test_write_exception(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_write_to_file,
         )
 
@@ -562,7 +562,7 @@ class TestPreviewUnicodeEdgeCases:
         # Should handle gracefully
 
     def test_replace_surrogate_chars(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_replace_in_file,
         )
 
@@ -571,7 +571,7 @@ class TestPreviewUnicodeEdgeCases:
         _preview_replace_in_file(str(f), [{"old_str": "hello", "new_str": "hi"}])
 
     def test_replace_fuzzy_match(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_replace_in_file,
         )
 
@@ -583,7 +583,7 @@ class TestPreviewUnicodeEdgeCases:
         )
 
     def test_delete_file_surrogate(self, tmp_path):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_file,
         )
 
@@ -593,14 +593,14 @@ class TestPreviewUnicodeEdgeCases:
         assert result is not None
 
     def test_replace_exception(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_replace_in_file,
         )
 
         assert _preview_replace_in_file("/dev/null/bad", []) is None
 
     def test_delete_file_exception(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             _preview_delete_file,
         )
 
@@ -609,7 +609,7 @@ class TestPreviewUnicodeEdgeCases:
 
 class TestGetPermissionHandlerHelp:
     def test_returns_string(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             get_permission_handler_help,
         )
 
@@ -618,23 +618,23 @@ class TestGetPermissionHandlerHelp:
 
 class TestGetFilePermissionPromptAdditions:
     def test_yolo_mode(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             get_file_permission_prompt_additions,
         )
 
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
+            "newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
             return_value=True,
         ):
             assert get_file_permission_prompt_additions() == ""
 
     def test_not_yolo(self):
-        from code_puppy.plugins.file_permission_handler.register_callbacks import (
+        from newcode.plugins.file_permission_handler.register_callbacks import (
             get_file_permission_prompt_additions,
         )
 
         with patch(
-            "code_puppy.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
+            "newcode.plugins.file_permission_handler.register_callbacks.get_yolo_mode",
             return_value=False,
         ):
             result = get_file_permission_prompt_additions()

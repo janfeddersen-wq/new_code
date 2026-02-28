@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.summarization_agent import (
+from newcode.summarization_agent import (
     _ensure_thread_pool,
     _run_agent_async,
     get_summarization_agent,
@@ -39,9 +39,9 @@ class TestSummarizationAgent:
     def test_ensure_thread_pool_creates_new(self):
         """Test _ensure_thread_pool creates new thread pool."""
         # Clear any existing thread pool
-        import code_puppy.summarization_agent
+        import newcode.summarization_agent
 
-        code_puppy.summarization_agent._thread_pool = None
+        newcode.summarization_agent._thread_pool = None
 
         pool = _ensure_thread_pool()
 
@@ -56,11 +56,11 @@ class TestSummarizationAgent:
 
     def test_ensure_thread_pool_reuses_existing(self):
         """Test _ensure_thread_pool reuses existing thread pool."""
-        import code_puppy.summarization_agent
+        import newcode.summarization_agent
 
         # Create a pool first
         original_pool = ThreadPoolExecutor(max_workers=1)
-        code_puppy.summarization_agent._thread_pool = original_pool
+        newcode.summarization_agent._thread_pool = original_pool
 
         pool = _ensure_thread_pool()
         assert pool is original_pool
@@ -93,15 +93,13 @@ class TestSummarizationAgent:
         """Test basic agent reloading."""
         with (
             patch(
-                "code_puppy.summarization_agent.ModelFactory.load_config"
+                "newcode.summarization_agent.ModelFactory.load_config"
             ) as mock_load_config,
             patch(
-                "code_puppy.summarization_agent.ModelFactory.get_model"
+                "newcode.summarization_agent.ModelFactory.get_model"
             ) as mock_get_model,
-            patch(
-                "code_puppy.summarization_agent.get_global_model_name"
-            ) as mock_get_name,
-            patch("code_puppy.summarization_agent.Agent") as mock_agent_class,
+            patch("newcode.summarization_agent.get_global_model_name") as mock_get_name,
+            patch("newcode.summarization_agent.Agent") as mock_agent_class,
         ):
             mock_load_config.return_value = mock_models_config
             mock_get_model.return_value = mock_model
@@ -130,14 +128,12 @@ class TestSummarizationAgent:
         """Test agent reloading with DBOS enabled."""
         with (
             patch(
-                "code_puppy.summarization_agent.ModelFactory.load_config"
+                "newcode.summarization_agent.ModelFactory.load_config"
             ) as mock_load_config,
             patch(
-                "code_puppy.summarization_agent.ModelFactory.get_model"
+                "newcode.summarization_agent.ModelFactory.get_model"
             ) as mock_get_model,
-            patch(
-                "code_puppy.summarization_agent.get_global_model_name"
-            ) as mock_get_name,
+            patch("newcode.summarization_agent.get_global_model_name") as mock_get_name,
             patch("pydantic_ai.durable_exec.dbos.DBOSAgent") as mock_dbos_agent,
         ):
             mock_load_config.return_value = mock_models_config
@@ -145,10 +141,10 @@ class TestSummarizationAgent:
             mock_get_name.return_value = "test-model"
 
             # Reset reload count
-            import code_puppy.summarization_agent
+            import newcode.summarization_agent
 
-            original_count = code_puppy.summarization_agent._reload_count
-            code_puppy.summarization_agent._reload_count = 0
+            original_count = newcode.summarization_agent._reload_count
+            newcode.summarization_agent._reload_count = 0
 
             try:
                 reload_summarization_agent()
@@ -157,7 +153,7 @@ class TestSummarizationAgent:
                 call_args = mock_dbos_agent.call_args[1]
                 assert call_args["name"] == "summarization-agent-1"
             finally:
-                code_puppy.summarization_agent._reload_count = original_count
+                newcode.summarization_agent._reload_count = original_count
 
     def test_reload_summarization_agent_instructions(
         self, mock_model, mock_models_config
@@ -165,15 +161,13 @@ class TestSummarizationAgent:
         """Test that summarization agent has proper instructions."""
         with (
             patch(
-                "code_puppy.summarization_agent.ModelFactory.load_config"
+                "newcode.summarization_agent.ModelFactory.load_config"
             ) as mock_load_config,
             patch(
-                "code_puppy.summarization_agent.ModelFactory.get_model"
+                "newcode.summarization_agent.ModelFactory.get_model"
             ) as mock_get_model,
-            patch(
-                "code_puppy.summarization_agent.get_global_model_name"
-            ) as mock_get_name,
-            patch("code_puppy.summarization_agent.Agent") as mock_agent_class,
+            patch("newcode.summarization_agent.get_global_model_name") as mock_get_name,
+            patch("newcode.summarization_agent.Agent") as mock_agent_class,
         ):
             mock_load_config.return_value = mock_models_config
             mock_get_model.return_value = mock_model
@@ -200,14 +194,14 @@ class TestSummarizationAgent:
     def test_get_summarization_agent_force_reload(self, mock_model, mock_models_config):
         """Test get_summarization_agent with force reload."""
         with patch(
-            "code_puppy.summarization_agent.reload_summarization_agent"
+            "newcode.summarization_agent.reload_summarization_agent"
         ) as mock_reload:
             mock_reload.return_value = mock_model
 
             # Clear global agent
-            import code_puppy.summarization_agent
+            import newcode.summarization_agent
 
-            code_puppy.summarization_agent._summarization_agent = None
+            newcode.summarization_agent._summarization_agent = None
 
             agent = get_summarization_agent(force_reload=True)
 
@@ -216,10 +210,10 @@ class TestSummarizationAgent:
 
     def test_get_summarization_agent_no_reload(self, mock_model):
         """Test get_summarization_agent without force reload (uses cached)."""
-        import code_puppy.summarization_agent
+        import newcode.summarization_agent
 
         # Set cached agent
-        code_puppy.summarization_agent._summarization_agent = mock_model
+        newcode.summarization_agent._summarization_agent = mock_model
 
         agent = get_summarization_agent(force_reload=False)
 
@@ -228,14 +222,14 @@ class TestSummarizationAgent:
     def test_get_summarization_agent_default_force_reload(self, mock_model):
         """Test get_summarization_agent default behavior (force_reload=True)."""
         with patch(
-            "code_puppy.summarization_agent.reload_summarization_agent"
+            "newcode.summarization_agent.reload_summarization_agent"
         ) as mock_reload:
             mock_reload.return_value = mock_model
 
             # Clear global agent
-            import code_puppy.summarization_agent
+            import newcode.summarization_agent
 
-            code_puppy.summarization_agent._summarization_agent = None
+            newcode.summarization_agent._summarization_agent = None
 
             agent = get_summarization_agent()  # No force_reload parameter
 
@@ -244,10 +238,10 @@ class TestSummarizationAgent:
 
     def test_get_summarization_agent_existing_cached(self):
         """Test get_summarization_agent returns existing cached agent."""
-        import code_puppy.summarization_agent
+        import newcode.summarization_agent
 
         cached_agent = MagicMock()
-        code_puppy.summarization_agent._summarization_agent = cached_agent
+        newcode.summarization_agent._summarization_agent = cached_agent
 
         agent = get_summarization_agent(force_reload=False)
 
@@ -268,9 +262,9 @@ class TestRunSummarizationSync:
         """Test run_summarization_sync uses thread pool."""
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             mock_agent = MagicMock()
             mock_get_agent.return_value = mock_agent
@@ -295,9 +289,9 @@ class TestRunSummarizationSync:
         """Test run_summarization_sync always uses thread pool."""
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             mock_agent = MagicMock()
             mock_get_agent.return_value = mock_agent
@@ -322,12 +316,12 @@ class TestRunSummarizationSync:
         """Test run_summarization_sync handles thread pool errors."""
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
             patch(
-                "code_puppy.summarization_agent.asyncio.get_running_loop"
+                "newcode.summarization_agent.asyncio.get_running_loop"
             ) as mock_get_loop,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             # Mock a running event loop
             mock_get_loop.return_value = MagicMock()
@@ -347,13 +341,13 @@ class TestRunSummarizationSync:
 
     def test_run_summarization_sync_asyncio_runtime_error(self):
         """Test run_summarization_sync handles errors from thread pool."""
-        from code_puppy.summarization_agent import SummarizationError
+        from newcode.summarization_agent import SummarizationError
 
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             mock_agent = MagicMock()
             mock_get_agent.return_value = mock_agent
@@ -379,9 +373,9 @@ class TestRunSummarizationSync:
 
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             mock_agent = MagicMock()
             mock_get_agent.return_value = mock_agent
@@ -402,9 +396,9 @@ class TestRunSummarizationSync:
         """Test run_summarization_sync with empty history."""
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             mock_agent = MagicMock()
             mock_get_agent.return_value = mock_agent
@@ -429,9 +423,9 @@ class TestRunSummarizationSync:
 
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             mock_agent = MagicMock()
             mock_get_agent.return_value = mock_agent
@@ -456,9 +450,9 @@ class TestRunSummarizationSync:
 
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             mock_agent = MagicMock()
             mock_get_agent.return_value = mock_agent
@@ -483,10 +477,10 @@ class TestSummarizationAgentEdgeCases:
         """Test agent creation when model loading fails."""
         with (
             patch(
-                "code_puppy.summarization_agent.ModelFactory.load_config"
+                "newcode.summarization_agent.ModelFactory.load_config"
             ) as mock_load_config,
-            patch("code_puppy.summarization_agent.ModelFactory.get_model"),
-            patch("code_puppy.summarization_agent.get_global_model_name"),
+            patch("newcode.summarization_agent.ModelFactory.get_model"),
+            patch("newcode.summarization_agent.get_global_model_name"),
         ):
             mock_load_config.side_effect = Exception("Config load failed")
 
@@ -496,11 +490,9 @@ class TestSummarizationAgentEdgeCases:
     def test_agent_creation_model_name_failure(self):
         """Test agent creation when getting model name fails."""
         with (
-            patch("code_puppy.summarization_agent.ModelFactory.load_config"),
-            patch("code_puppy.summarization_agent.ModelFactory.get_model"),
-            patch(
-                "code_puppy.summarization_agent.get_global_model_name"
-            ) as mock_get_name,
+            patch("newcode.summarization_agent.ModelFactory.load_config"),
+            patch("newcode.summarization_agent.ModelFactory.get_model"),
+            patch("newcode.summarization_agent.get_global_model_name") as mock_get_name,
         ):
             mock_get_name.side_effect = Exception("Model name error")
 
@@ -509,14 +501,14 @@ class TestSummarizationAgentEdgeCases:
 
     def test_thread_pool_cleanup(self):
         """Test thread pool cleanup behavior."""
-        import code_puppy.summarization_agent
+        import newcode.summarization_agent
 
         # Create thread pool
         pool = _ensure_thread_pool()
         original_pool = pool
 
         # Verify it exists
-        assert code_puppy.summarization_agent._thread_pool is not None
+        assert newcode.summarization_agent._thread_pool is not None
 
         # Call again should return same instance
         same_pool = _ensure_thread_pool()
@@ -535,15 +527,13 @@ class TestSummarizationAgentEdgeCases:
         # Mock the dependencies needed for agent reloading
         with (
             patch(
-                "code_puppy.summarization_agent.ModelFactory.load_config"
+                "newcode.summarization_agent.ModelFactory.load_config"
             ) as mock_load_config,
             patch(
-                "code_puppy.summarization_agent.ModelFactory.get_model"
+                "newcode.summarization_agent.ModelFactory.get_model"
             ) as mock_get_model,
-            patch(
-                "code_puppy.summarization_agent.get_global_model_name"
-            ) as mock_get_name,
-            patch("code_puppy.summarization_agent.Agent") as mock_agent_class,
+            patch("newcode.summarization_agent.get_global_model_name") as mock_get_name,
+            patch("newcode.summarization_agent.Agent") as mock_agent_class,
         ):
             mock_load_config.return_value = {"test-model": {"context": 128000}}
             mock_get_model.return_value = MagicMock()
@@ -585,24 +575,22 @@ class TestSummarizationAgentEdgeCases:
         """Test DBOS agent name increments properly."""
         with (
             patch(
-                "code_puppy.summarization_agent.ModelFactory.load_config"
+                "newcode.summarization_agent.ModelFactory.load_config"
             ) as mock_load_config,
             patch(
-                "code_puppy.summarization_agent.ModelFactory.get_model"
+                "newcode.summarization_agent.ModelFactory.get_model"
             ) as mock_get_model,
-            patch(
-                "code_puppy.summarization_agent.get_global_model_name"
-            ) as mock_get_name,
+            patch("newcode.summarization_agent.get_global_model_name") as mock_get_name,
             patch("pydantic_ai.durable_exec.dbos.DBOSAgent") as mock_dbos_agent,
         ):
             mock_load_config.return_value = {}
             mock_get_model.return_value = MagicMock()
             mock_get_name.return_value = "test-model"
 
-            import code_puppy.summarization_agent
+            import newcode.summarization_agent
 
-            original_count = code_puppy.summarization_agent._reload_count
-            code_puppy.summarization_agent._reload_count = 0
+            original_count = newcode.summarization_agent._reload_count
+            newcode.summarization_agent._reload_count = 0
 
             try:
                 # First reload
@@ -620,7 +608,7 @@ class TestSummarizationAgentEdgeCases:
                 call3 = mock_dbos_agent.call_args[1]
                 assert call3["name"] == "summarization-agent-3"
             finally:
-                code_puppy.summarization_agent._reload_count = original_count
+                newcode.summarization_agent._reload_count = original_count
 
     def test_prompt_content_validation(self):
         """Test that prompt content is handled correctly."""
@@ -666,15 +654,13 @@ class TestSummarizationAgentEdgeCases:
         """Test that summarization instructions are complete and proper."""
         with (
             patch(
-                "code_puppy.summarization_agent.ModelFactory.load_config"
+                "newcode.summarization_agent.ModelFactory.load_config"
             ) as mock_load_config,
             patch(
-                "code_puppy.summarization_agent.ModelFactory.get_model"
+                "newcode.summarization_agent.ModelFactory.get_model"
             ) as mock_get_model,
-            patch(
-                "code_puppy.summarization_agent.get_global_model_name"
-            ) as mock_get_name,
-            patch("code_puppy.summarization_agent.Agent") as mock_agent_class,
+            patch("newcode.summarization_agent.get_global_model_name") as mock_get_name,
+            patch("newcode.summarization_agent.Agent") as mock_agent_class,
         ):
             mock_load_config.return_value = {}
             mock_get_model.return_value = MagicMock()
@@ -708,15 +694,13 @@ class TestSummarizationAgentEdgeCases:
         """Test that agent is configured with proper parameters."""
         with (
             patch(
-                "code_puppy.summarization_agent.ModelFactory.load_config"
+                "newcode.summarization_agent.ModelFactory.load_config"
             ) as mock_load_config,
             patch(
-                "code_puppy.summarization_agent.ModelFactory.get_model"
+                "newcode.summarization_agent.ModelFactory.get_model"
             ) as mock_get_model,
-            patch(
-                "code_puppy.summarization_agent.get_global_model_name"
-            ) as mock_get_name,
-            patch("code_puppy.summarization_agent.Agent") as mock_agent_class,
+            patch("newcode.summarization_agent.get_global_model_name") as mock_get_name,
+            patch("newcode.summarization_agent.Agent") as mock_agent_class,
         ):
             mock_load_config.return_value = {}
             mock_get_model.return_value = MagicMock()
@@ -763,13 +747,13 @@ class TestSummarizationAgentEdgeCases:
 
     def test_error_propagation_and_handling(self):
         """Test that errors are properly wrapped in SummarizationError with details."""
-        from code_puppy.summarization_agent import SummarizationError
+        from newcode.summarization_agent import SummarizationError
 
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             mock_agent = MagicMock()
             mock_get_agent.return_value = mock_agent
@@ -802,9 +786,9 @@ class TestSummarizationAgentEdgeCases:
         """Test that summarization always uses thread pool."""
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent"
+                "newcode.summarization_agent.get_summarization_agent"
             ) as mock_get_agent,
-            patch("code_puppy.summarization_agent._ensure_thread_pool") as mock_pool,
+            patch("newcode.summarization_agent._ensure_thread_pool") as mock_pool,
         ):
             mock_agent = MagicMock()
             mock_get_agent.return_value = mock_agent
@@ -826,14 +810,14 @@ class TestSummarizationAgentEdgeCases:
 
     def test_reload_state_consistency(self):
         """Test that reload maintains consistent state."""
-        import code_puppy.summarization_agent
+        import newcode.summarization_agent
 
         # Clear initial state
-        code_puppy.summarization_agent._summarization_agent = None
-        code_puppy.summarization_agent._reload_count = 0
+        newcode.summarization_agent._summarization_agent = None
+        newcode.summarization_agent._reload_count = 0
 
         with patch(
-            "code_puppy.summarization_agent.reload_summarization_agent"
+            "newcode.summarization_agent.reload_summarization_agent"
         ) as mock_reload:
             mock_agent1 = MagicMock()
             mock_agent2 = MagicMock()

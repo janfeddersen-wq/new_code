@@ -5,8 +5,8 @@ import signal
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from code_puppy.scheduler.config import ScheduledTask
-from code_puppy.scheduler.daemon import (
+from newcode.scheduler.config import ScheduledTask
+from newcode.scheduler.daemon import (
     get_daemon_pid,
     remove_pid_file,
     run_scheduler_loop,
@@ -125,7 +125,7 @@ class TestShouldRunTaskExtended:
 
 class TestRunSchedulerLoop:
     def test_loop_runs_tasks(self):
-        import code_puppy.scheduler.daemon as daemon_mod
+        import newcode.scheduler.daemon as daemon_mod
 
         task = ScheduledTask(
             name="t", prompt="p", schedule_type="interval", schedule_value="1s"
@@ -150,7 +150,7 @@ class TestRunSchedulerLoop:
         daemon_mod._shutdown_requested = False
 
     def test_loop_handles_exception(self):
-        import code_puppy.scheduler.daemon as daemon_mod
+        import newcode.scheduler.daemon as daemon_mod
 
         call_count = 0
 
@@ -170,7 +170,7 @@ class TestRunSchedulerLoop:
         daemon_mod._shutdown_requested = False
 
     def test_loop_task_failure(self):
-        import code_puppy.scheduler.daemon as daemon_mod
+        import newcode.scheduler.daemon as daemon_mod
 
         task = ScheduledTask(
             name="t", prompt="p", schedule_type="interval", schedule_value="1s"
@@ -198,7 +198,7 @@ class TestRunSchedulerLoop:
 class TestWriteRemovePidFile:
     def test_write_and_remove(self, tmp_path):
         pid_file = str(tmp_path / "test.pid")
-        with patch("code_puppy.scheduler.daemon.SCHEDULER_PID_FILE", pid_file):
+        with patch("newcode.scheduler.daemon.SCHEDULER_PID_FILE", pid_file):
             write_pid_file()
             assert os.path.exists(pid_file)
             with open(pid_file) as f:
@@ -208,13 +208,13 @@ class TestWriteRemovePidFile:
 
     def test_remove_nonexistent(self, tmp_path):
         pid_file = str(tmp_path / "nope.pid")
-        with patch("code_puppy.scheduler.daemon.SCHEDULER_PID_FILE", pid_file):
+        with patch("newcode.scheduler.daemon.SCHEDULER_PID_FILE", pid_file):
             remove_pid_file()  # Should not raise
 
 
 class TestSignalHandler:
     def test_sets_shutdown(self):
-        import code_puppy.scheduler.daemon as daemon_mod
+        import newcode.scheduler.daemon as daemon_mod
 
         daemon_mod._shutdown_requested = False
         signal_handler(signal.SIGTERM, None)
@@ -225,19 +225,19 @@ class TestSignalHandler:
 class TestGetDaemonPid:
     def test_no_pid_file(self, tmp_path):
         pid_file = str(tmp_path / "nope.pid")
-        with patch("code_puppy.scheduler.daemon.SCHEDULER_PID_FILE", pid_file):
+        with patch("newcode.scheduler.daemon.SCHEDULER_PID_FILE", pid_file):
             assert get_daemon_pid() is None
 
     def test_empty_pid_file(self, tmp_path):
         pid_file = tmp_path / "test.pid"
         pid_file.write_text("")
-        with patch("code_puppy.scheduler.daemon.SCHEDULER_PID_FILE", str(pid_file)):
+        with patch("newcode.scheduler.daemon.SCHEDULER_PID_FILE", str(pid_file)):
             assert get_daemon_pid() is None
 
     def test_running_process(self, tmp_path):
         pid_file = tmp_path / "test.pid"
         pid_file.write_text(str(os.getpid()))
-        with patch("code_puppy.scheduler.daemon.SCHEDULER_PID_FILE", str(pid_file)):
+        with patch("newcode.scheduler.daemon.SCHEDULER_PID_FILE", str(pid_file)):
             result = get_daemon_pid()
             assert result == os.getpid()
 
@@ -245,7 +245,7 @@ class TestGetDaemonPid:
         pid_file = tmp_path / "test.pid"
         pid_file.write_text("99999999")  # unlikely to be running
         with (
-            patch("code_puppy.scheduler.daemon.SCHEDULER_PID_FILE", str(pid_file)),
+            patch("newcode.scheduler.daemon.SCHEDULER_PID_FILE", str(pid_file)),
             patch("os.kill", side_effect=ProcessLookupError),
         ):
             assert get_daemon_pid() is None
@@ -253,20 +253,18 @@ class TestGetDaemonPid:
     def test_invalid_pid(self, tmp_path):
         pid_file = tmp_path / "test.pid"
         pid_file.write_text("not-a-number")
-        with patch("code_puppy.scheduler.daemon.SCHEDULER_PID_FILE", str(pid_file)):
+        with patch("newcode.scheduler.daemon.SCHEDULER_PID_FILE", str(pid_file)):
             assert get_daemon_pid() is None
 
 
 class TestStartDaemonBackground:
     def test_already_running(self):
-        with patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=123):
+        with patch("newcode.scheduler.daemon.get_daemon_pid", return_value=123):
             assert start_daemon_background() is True
 
     def test_starts_new_daemon(self):
         with (
-            patch(
-                "code_puppy.scheduler.daemon.get_daemon_pid", side_effect=[None, 456]
-            ),
+            patch("newcode.scheduler.daemon.get_daemon_pid", side_effect=[None, 456]),
             patch("subprocess.Popen") as mock_popen,
             patch("time.sleep"),
         ):
@@ -275,7 +273,7 @@ class TestStartDaemonBackground:
 
     def test_fails_to_start(self):
         with (
-            patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=None),
+            patch("newcode.scheduler.daemon.get_daemon_pid", return_value=None),
             patch("subprocess.Popen"),
             patch("time.sleep"),
         ):
@@ -284,13 +282,13 @@ class TestStartDaemonBackground:
 
 class TestStopDaemon:
     def test_not_running(self):
-        with patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=None):
+        with patch("newcode.scheduler.daemon.get_daemon_pid", return_value=None):
             assert stop_daemon() is False
 
     def test_stops_successfully(self):
         with (
             patch(
-                "code_puppy.scheduler.daemon.get_daemon_pid",
+                "newcode.scheduler.daemon.get_daemon_pid",
                 side_effect=[123, 123, None],
             ),
             patch("os.kill"),
@@ -300,7 +298,7 @@ class TestStopDaemon:
 
     def test_fails_to_stop(self):
         with (
-            patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=123),
+            patch("newcode.scheduler.daemon.get_daemon_pid", return_value=123),
             patch("os.kill"),
             patch("time.sleep"),
         ):
@@ -308,7 +306,7 @@ class TestStopDaemon:
 
     def test_exception_during_stop(self):
         with (
-            patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=123),
+            patch("newcode.scheduler.daemon.get_daemon_pid", return_value=123),
             patch("os.kill", side_effect=Exception("fail")),
             patch("time.sleep"),
         ):
@@ -317,14 +315,14 @@ class TestStopDaemon:
 
 class TestStartDaemon:
     def test_start_daemon_foreground(self):
-        import code_puppy.scheduler.daemon as daemon_mod
+        import newcode.scheduler.daemon as daemon_mod
 
         daemon_mod._shutdown_requested = True  # Make loop exit immediately
 
         with (
-            patch("code_puppy.scheduler.daemon.write_pid_file"),
-            patch("code_puppy.scheduler.daemon.remove_pid_file"),
-            patch("code_puppy.scheduler.daemon.run_scheduler_loop"),
+            patch("newcode.scheduler.daemon.write_pid_file"),
+            patch("newcode.scheduler.daemon.remove_pid_file"),
+            patch("newcode.scheduler.daemon.run_scheduler_loop"),
             patch("atexit.register"),
             patch("signal.signal"),
         ):

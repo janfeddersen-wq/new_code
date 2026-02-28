@@ -188,15 +188,15 @@ Use `Bash|agent_run_shell_command` to catch shell commands with either name.
 
 **Config locations (priority order):**
 1. `.claude/settings.json` — project-level
-2. `~/.code_puppy/hooks.json` — global user hooks
+2. `~/.newcode/hooks.json` — global user hooks
 
 ---
 
 ## Implementation Notes
 
-The hook engine lives in `code_puppy/hook_engine/` and is a self-contained library with no dependency on the rest of Code Puppy.
+The hook engine lives in `newcode/hook_engine/` and is a self-contained library with no dependency on the rest of Code Puppy.
 
-Hooks are injected at the `pydantic-ai` `ToolManager._call_tool()` level via a patch in `code_puppy/pydantic_patches.py`, so they fire on every tool call regardless of which agent or model is in use.
+Hooks are injected at the `pydantic-ai` `ToolManager._call_tool()` level via a patch in `newcode/pydantic_patches.py`, so they fire on every tool call regardless of which agent or model is in use.
 
 When a `PreToolUse` hook exits with code `1`, the tool call returns an `ERROR: Hook blocked ...` string as its result. The agent reads this, understands the rejection, and reports it to the user — no crash, no retry loop.
 

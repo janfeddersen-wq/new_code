@@ -1,4 +1,4 @@
-"""Tests targeting remaining uncovered lines in code_puppy/scheduler/."""
+"""Tests targeting remaining uncovered lines in newcode/scheduler/."""
 
 import os
 import signal
@@ -14,9 +14,9 @@ import pytest
 
 def test_scheduler_main_guard():
     """Cover the if __name__ == '__main__' guard."""
-    with patch("code_puppy.scheduler.daemon.start_daemon"):
+    with patch("newcode.scheduler.daemon.start_daemon"):
         # Simulate running __main__.py
-        import code_puppy.scheduler.__main__ as mod
+        import newcode.scheduler.__main__ as mod
 
         # The guard only fires when __name__ == '__main__', which it won't be here.
         # We just need the module to import; the start_daemon call is in the guard.
@@ -30,7 +30,7 @@ def test_scheduler_main_guard():
 
 def test_platform_imports():
     """Cover platform.py - it imports correctly on current platform."""
-    from code_puppy.scheduler.platform import is_process_running, terminate_process
+    from newcode.scheduler.platform import is_process_running, terminate_process
 
     assert callable(is_process_running)
     assert callable(terminate_process)
@@ -43,7 +43,7 @@ def test_platform_imports():
 
 def test_load_tasks_json_decode_error(tmp_path):
     """Cover JSONDecodeError branch in load_tasks."""
-    from code_puppy.scheduler import config
+    from newcode.scheduler import config
 
     schedules_file = tmp_path / "schedules.json"
     schedules_file.write_text("{invalid json")
@@ -58,8 +58,8 @@ def test_load_tasks_json_decode_error(tmp_path):
 
 def test_update_task_not_found(tmp_path):
     """Cover update_task returning False (line 96)."""
-    from code_puppy.scheduler import config
-    from code_puppy.scheduler.config import ScheduledTask, update_task
+    from newcode.scheduler import config
+    from newcode.scheduler.config import ScheduledTask, update_task
 
     schedules_file = tmp_path / "schedules.json"
     schedules_file.write_text("[]")
@@ -77,8 +77,8 @@ def test_update_task_not_found(tmp_path):
 
 def test_delete_task_not_found(tmp_path):
     """Cover delete_task returning False (line 116)."""
-    from code_puppy.scheduler import config
-    from code_puppy.scheduler.config import delete_task
+    from newcode.scheduler import config
+    from newcode.scheduler.config import delete_task
 
     schedules_file = tmp_path / "schedules.json"
     schedules_file.write_text("[]")
@@ -93,8 +93,8 @@ def test_delete_task_not_found(tmp_path):
 
 def test_toggle_task_not_found(tmp_path):
     """Cover toggle_task returning None (line 126)."""
-    from code_puppy.scheduler import config
-    from code_puppy.scheduler.config import toggle_task
+    from newcode.scheduler import config
+    from newcode.scheduler.config import toggle_task
 
     schedules_file = tmp_path / "schedules.json"
     schedules_file.write_text("[]")
@@ -114,8 +114,8 @@ def test_toggle_task_not_found(tmp_path):
 
 def test_should_run_task_disabled():
     """Cover should_run_task with disabled task (line 45 area)."""
-    from code_puppy.scheduler.config import ScheduledTask
-    from code_puppy.scheduler.daemon import should_run_task
+    from newcode.scheduler.config import ScheduledTask
+    from newcode.scheduler.daemon import should_run_task
 
     task = ScheduledTask(
         id="t1", name="test", prompt="echo", schedule_value="1h", enabled=False
@@ -125,8 +125,8 @@ def test_should_run_task_disabled():
 
 def test_daemon_loop_runs_tasks():
     """Cover the daemon main loop (lines 101, 114)."""
-    from code_puppy.scheduler import daemon
-    from code_puppy.scheduler.config import ScheduledTask
+    from newcode.scheduler import daemon
+    from newcode.scheduler.config import ScheduledTask
 
     task = ScheduledTask(
         id="t1",
@@ -151,7 +151,7 @@ def test_daemon_loop_runs_tasks():
         patch.object(daemon, "load_tasks", return_value=[task]),
         patch.object(daemon, "execute_task", return_value=(True, 0, None)),
         patch.object(daemon, "should_run_task", return_value=True),
-        patch("code_puppy.scheduler.daemon.time.sleep", side_effect=fake_sleep),
+        patch("newcode.scheduler.daemon.time.sleep", side_effect=fake_sleep),
     ):
         daemon._shutdown_requested = False
         daemon.run_scheduler_loop(check_interval=1)
@@ -161,8 +161,8 @@ def test_daemon_loop_runs_tasks():
 
 def test_daemon_loop_task_failure():
     """Cover task failure branch in daemon loop."""
-    from code_puppy.scheduler import daemon
-    from code_puppy.scheduler.config import ScheduledTask
+    from newcode.scheduler import daemon
+    from newcode.scheduler.config import ScheduledTask
 
     task = ScheduledTask(
         id="t2",
@@ -185,7 +185,7 @@ def test_daemon_loop_task_failure():
         patch.object(daemon, "load_tasks", return_value=[task]),
         patch.object(daemon, "execute_task", return_value=(False, 1, "error")),
         patch.object(daemon, "should_run_task", return_value=True),
-        patch("code_puppy.scheduler.daemon.time.sleep", side_effect=fake_sleep),
+        patch("newcode.scheduler.daemon.time.sleep", side_effect=fake_sleep),
     ):
         daemon._shutdown_requested = False
         daemon.run_scheduler_loop(check_interval=1)
@@ -193,7 +193,7 @@ def test_daemon_loop_task_failure():
 
 def test_daemon_loop_exception():
     """Cover exception branch in daemon loop (line 114)."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     call_count = 0
 
@@ -205,7 +205,7 @@ def test_daemon_loop_exception():
 
     with (
         patch.object(daemon, "load_tasks", side_effect=Exception("boom")),
-        patch("code_puppy.scheduler.daemon.time.sleep", side_effect=fake_sleep),
+        patch("newcode.scheduler.daemon.time.sleep", side_effect=fake_sleep),
     ):
         daemon._shutdown_requested = False
         daemon.run_scheduler_loop(check_interval=1)
@@ -213,7 +213,7 @@ def test_daemon_loop_exception():
 
 def test_write_pid_file(tmp_path):
     """Cover write_pid_file (lines 137-142)."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     pid_file = str(tmp_path / "test.pid")
 
@@ -226,7 +226,7 @@ def test_write_pid_file(tmp_path):
 
 def test_write_pid_file_failure(tmp_path):
     """Cover write_pid_file failure cleanup (lines 150-151)."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     with (
         patch.object(daemon, "SCHEDULER_PID_FILE", "/nonexistent/dir/test.pid"),
@@ -238,7 +238,7 @@ def test_write_pid_file_failure(tmp_path):
 
 def test_remove_pid_file(tmp_path):
     """Cover remove_pid_file."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     pid_file = tmp_path / "test.pid"
     pid_file.write_text("1234")
@@ -250,7 +250,7 @@ def test_remove_pid_file(tmp_path):
 
 def test_signal_handler():
     """Cover signal_handler."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     daemon._shutdown_requested = False
     daemon.signal_handler(signal.SIGTERM, None)
@@ -260,7 +260,7 @@ def test_signal_handler():
 
 def test_get_daemon_pid_valid(tmp_path):
     """Cover get_daemon_pid with valid running process."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     pid_file = tmp_path / "sched.pid"
     pid_file.write_text(str(os.getpid()))
@@ -272,7 +272,7 @@ def test_get_daemon_pid_valid(tmp_path):
 
 def test_get_daemon_pid_stale(tmp_path):
     """Cover get_daemon_pid with stale PID (lines 197-206)."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     pid_file = tmp_path / "sched.pid"
     pid_file.write_text("999999999")  # Non-existent PID
@@ -284,7 +284,7 @@ def test_get_daemon_pid_stale(tmp_path):
 
 def test_get_daemon_pid_empty(tmp_path):
     """Cover get_daemon_pid with empty file."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     pid_file = tmp_path / "sched.pid"
     pid_file.write_text("")
@@ -296,7 +296,7 @@ def test_get_daemon_pid_empty(tmp_path):
 
 def test_get_daemon_pid_no_file(tmp_path):
     """Cover get_daemon_pid with no PID file."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     with patch.object(daemon, "SCHEDULER_PID_FILE", str(tmp_path / "nonexistent.pid")):
         pid = daemon.get_daemon_pid()
@@ -305,7 +305,7 @@ def test_get_daemon_pid_no_file(tmp_path):
 
 def test_start_daemon_background_already_running():
     """Cover start_daemon_background when already running (line 235)."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     with patch.object(daemon, "get_daemon_pid", return_value=12345):
         result = daemon.start_daemon_background()
@@ -314,13 +314,13 @@ def test_start_daemon_background_already_running():
 
 def test_start_daemon_background_unix():
     """Cover start_daemon_background unix Popen path (lines 263-268)."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     mock_popen = MagicMock()
     with (
         patch.object(daemon, "get_daemon_pid", side_effect=[None, 99999]),
         patch("subprocess.Popen", return_value=mock_popen),
-        patch("code_puppy.scheduler.daemon.time.sleep"),
+        patch("newcode.scheduler.daemon.time.sleep"),
     ):
         result = daemon.start_daemon_background()
         assert result is True
@@ -328,7 +328,7 @@ def test_start_daemon_background_unix():
 
 def test_stop_daemon_not_running():
     """Cover stop_daemon when not running."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     with patch.object(daemon, "get_daemon_pid", return_value=None):
         result = daemon.stop_daemon()
@@ -337,7 +337,7 @@ def test_stop_daemon_not_running():
 
 def test_stop_daemon_unix():
     """Cover stop_daemon on unix."""
-    from code_puppy.scheduler import daemon
+    from newcode.scheduler import daemon
 
     with (
         patch.object(daemon, "get_daemon_pid", return_value=12345),

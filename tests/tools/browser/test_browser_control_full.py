@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.browser.browser_control import (
+from newcode.tools.browser.browser_control import (
     create_new_page,
     get_browser_status,
     list_pages,
@@ -24,16 +24,16 @@ def _mock_manager(**kwargs):
 
 
 def _patch_control(target, **kwargs):
-    return patch(f"code_puppy.tools.browser.browser_control.{target}", **kwargs)
+    return patch(f"newcode.tools.browser.browser_control.{target}", **kwargs)
 
 
 @pytest.fixture(autouse=True)
 def _suppress_emit():
     with (
-        patch("code_puppy.tools.browser.browser_control.emit_info"),
-        patch("code_puppy.tools.browser.browser_control.emit_error"),
-        patch("code_puppy.tools.browser.browser_control.emit_success"),
-        patch("code_puppy.tools.browser.browser_control.emit_warning"),
+        patch("newcode.tools.browser.browser_control.emit_info"),
+        patch("newcode.tools.browser.browser_control.emit_error"),
+        patch("newcode.tools.browser.browser_control.emit_success"),
+        patch("newcode.tools.browser.browser_control.emit_warning"),
     ):
         yield
 

@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from code_puppy.tools.browser.terminal_tools import (
+from newcode.tools.browser.terminal_tools import (
     HEALTH_CHECK_TIMEOUT,
     TERMINAL_LOAD_TIMEOUT,
     check_terminal_server,
@@ -34,12 +34,12 @@ class TestCheckTerminalServer:
         mock_client.__aexit__.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.httpx.AsyncClient"
+            "newcode.tools.browser.terminal_tools.httpx.AsyncClient"
         ) as mock_async_client:
             mock_async_client.return_value = mock_client
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_tools.emit_success"
+                    "newcode.tools.browser.terminal_tools.emit_success"
                 ) as mock_success:
                     result = await check_terminal_server()
 
@@ -61,11 +61,11 @@ class TestCheckTerminalServer:
         mock_client.__aexit__.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.httpx.AsyncClient"
+            "newcode.tools.browser.terminal_tools.httpx.AsyncClient"
         ) as mock_async_client:
             mock_async_client.return_value = mock_client
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_success"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_tools.emit_success"):
                     result = await check_terminal_server(
                         host="192.168.1.100", port=9000
                     )
@@ -85,12 +85,12 @@ class TestCheckTerminalServer:
         mock_client.__aexit__.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.httpx.AsyncClient"
+            "newcode.tools.browser.terminal_tools.httpx.AsyncClient"
         ) as mock_async_client:
             mock_async_client.return_value = mock_client
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_tools.emit_error"
+                    "newcode.tools.browser.terminal_tools.emit_error"
                 ) as mock_error:
                     result = await check_terminal_server()
 
@@ -107,11 +107,11 @@ class TestCheckTerminalServer:
         mock_client.__aexit__.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.httpx.AsyncClient"
+            "newcode.tools.browser.terminal_tools.httpx.AsyncClient"
         ) as mock_async_client:
             mock_async_client.return_value = mock_client
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_error"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_tools.emit_error"):
                     result = await check_terminal_server()
 
                     assert result["success"] is False
@@ -134,11 +134,11 @@ class TestCheckTerminalServer:
         mock_client.__aexit__.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.httpx.AsyncClient"
+            "newcode.tools.browser.terminal_tools.httpx.AsyncClient"
         ) as mock_async_client:
             mock_async_client.return_value = mock_client
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_error"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_tools.emit_error"):
                     result = await check_terminal_server()
 
                     assert result["success"] is False
@@ -157,11 +157,11 @@ class TestCheckTerminalServer:
         mock_client.__aexit__.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.httpx.AsyncClient"
+            "newcode.tools.browser.terminal_tools.httpx.AsyncClient"
         ) as mock_async_client:
             mock_async_client.return_value = mock_client
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_error"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_tools.emit_error"):
                     result = await check_terminal_server()
 
                     assert result["success"] is False
@@ -176,11 +176,11 @@ class TestCheckTerminalServer:
         mock_client.__aexit__.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.httpx.AsyncClient"
+            "newcode.tools.browser.terminal_tools.httpx.AsyncClient"
         ) as mock_async_client:
             mock_async_client.return_value = mock_client
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_error"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_tools.emit_error"):
                     result = await check_terminal_server()
 
                     assert result["success"] is False
@@ -203,7 +203,7 @@ class TestOpenTerminal:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.check_terminal_server",
+            "newcode.tools.browser.terminal_tools.check_terminal_server",
             return_value={
                 "success": True,
                 "server_url": "http://localhost:8765",
@@ -211,11 +211,11 @@ class TestOpenTerminal:
             },
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_tools.get_session_manager",
+                "newcode.tools.browser.terminal_tools.get_session_manager",
                 return_value=mock_manager,
             ):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                    with patch("code_puppy.tools.browser.terminal_tools.emit_success"):
+                with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                    with patch("newcode.tools.browser.terminal_tools.emit_success"):
                         result = await open_terminal()
 
                         assert result["success"] is True
@@ -239,7 +239,7 @@ class TestOpenTerminal:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.check_terminal_server",
+            "newcode.tools.browser.terminal_tools.check_terminal_server",
             return_value={
                 "success": True,
                 "server_url": "http://192.168.1.100:9000",
@@ -247,11 +247,11 @@ class TestOpenTerminal:
             },
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_tools.get_session_manager",
+                "newcode.tools.browser.terminal_tools.get_session_manager",
                 return_value=mock_manager,
             ):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                    with patch("code_puppy.tools.browser.terminal_tools.emit_success"):
+                with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                    with patch("newcode.tools.browser.terminal_tools.emit_success"):
                         result = await open_terminal(host="192.168.1.100", port=9000)
 
                         assert result["success"] is True
@@ -263,13 +263,13 @@ class TestOpenTerminal:
     async def test_open_terminal_server_not_running(self):
         """Test opening terminal when server is not running."""
         with patch(
-            "code_puppy.tools.browser.terminal_tools.check_terminal_server",
+            "newcode.tools.browser.terminal_tools.check_terminal_server",
             return_value={
                 "success": False,
                 "error": "Server not running at http://localhost:8765.",
             },
         ):
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
                 result = await open_terminal()
 
                 assert result["success"] is False
@@ -291,7 +291,7 @@ class TestOpenTerminal:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.check_terminal_server",
+            "newcode.tools.browser.terminal_tools.check_terminal_server",
             return_value={
                 "success": True,
                 "server_url": "http://localhost:8765",
@@ -299,11 +299,11 @@ class TestOpenTerminal:
             },
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_tools.get_session_manager",
+                "newcode.tools.browser.terminal_tools.get_session_manager",
                 return_value=mock_manager,
             ):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                    with patch("code_puppy.tools.browser.terminal_tools.emit_success"):
+                with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                    with patch("newcode.tools.browser.terminal_tools.emit_success"):
                         result = await open_terminal()
 
                         # Should still succeed, just with a warning logged
@@ -317,7 +317,7 @@ class TestOpenTerminal:
         mock_manager.async_initialize.side_effect = RuntimeError("Browser init failed")
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.check_terminal_server",
+            "newcode.tools.browser.terminal_tools.check_terminal_server",
             return_value={
                 "success": True,
                 "server_url": "http://localhost:8765",
@@ -325,12 +325,12 @@ class TestOpenTerminal:
             },
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_tools.get_session_manager",
+                "newcode.tools.browser.terminal_tools.get_session_manager",
                 return_value=mock_manager,
             ):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_tools.emit_info"):
                     with patch(
-                        "code_puppy.tools.browser.terminal_tools.emit_error"
+                        "newcode.tools.browser.terminal_tools.emit_error"
                     ) as mock_error:
                         result = await open_terminal()
 
@@ -348,7 +348,7 @@ class TestOpenTerminal:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.check_terminal_server",
+            "newcode.tools.browser.terminal_tools.check_terminal_server",
             return_value={
                 "success": True,
                 "server_url": "http://localhost:8765",
@@ -356,11 +356,11 @@ class TestOpenTerminal:
             },
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_tools.get_session_manager",
+                "newcode.tools.browser.terminal_tools.get_session_manager",
                 return_value=mock_manager,
             ):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                    with patch("code_puppy.tools.browser.terminal_tools.emit_error"):
+                with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                    with patch("newcode.tools.browser.terminal_tools.emit_error"):
                         result = await open_terminal()
 
                         assert result["success"] is False
@@ -377,12 +377,12 @@ class TestCloseTerminal:
         mock_manager.close.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.get_session_manager",
+            "newcode.tools.browser.terminal_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_tools.emit_success"
+                    "newcode.tools.browser.terminal_tools.emit_success"
                 ) as mock_success:
                     result = await close_terminal()
 
@@ -398,12 +398,12 @@ class TestCloseTerminal:
         mock_manager.close.side_effect = RuntimeError("Close failed")
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.get_session_manager",
+            "newcode.tools.browser.terminal_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.terminal_tools.emit_error"
+                    "newcode.tools.browser.terminal_tools.emit_error"
                 ) as mock_error:
                     result = await close_terminal()
 
@@ -418,11 +418,11 @@ class TestCloseTerminal:
         mock_manager.close.side_effect = RuntimeError("Browser already closed")
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.get_session_manager",
+            "newcode.tools.browser.terminal_tools.get_session_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_error"):
+            with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                with patch("newcode.tools.browser.terminal_tools.emit_error"):
                     result = await close_terminal()
 
                     assert result["success"] is False
@@ -434,7 +434,7 @@ class TestToolRegistration:
 
     def test_register_check_terminal_server(self):
         """Test that check_terminal_server registration works."""
-        from code_puppy.tools.browser.terminal_tools import (
+        from newcode.tools.browser.terminal_tools import (
             register_check_terminal_server,
         )
 
@@ -448,7 +448,7 @@ class TestToolRegistration:
 
     def test_register_open_terminal(self):
         """Test that open_terminal registration works."""
-        from code_puppy.tools.browser.terminal_tools import register_open_terminal
+        from newcode.tools.browser.terminal_tools import register_open_terminal
 
         mock_agent = MagicMock()
         mock_agent.tool = MagicMock(return_value=lambda f: f)
@@ -459,7 +459,7 @@ class TestToolRegistration:
 
     def test_register_close_terminal(self):
         """Test that close_terminal registration works."""
-        from code_puppy.tools.browser.terminal_tools import register_close_terminal
+        from newcode.tools.browser.terminal_tools import register_close_terminal
 
         mock_agent = MagicMock()
         mock_agent.tool = MagicMock(return_value=lambda f: f)
@@ -498,7 +498,7 @@ class TestIntegrationScenarios:
         mock_manager.new_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.check_terminal_server",
+            "newcode.tools.browser.terminal_tools.check_terminal_server",
             return_value={
                 "success": True,
                 "server_url": "http://localhost:8765",
@@ -506,11 +506,11 @@ class TestIntegrationScenarios:
             },
         ):
             with patch(
-                "code_puppy.tools.browser.terminal_tools.get_session_manager",
+                "newcode.tools.browser.terminal_tools.get_session_manager",
                 return_value=mock_manager,
             ):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                    with patch("code_puppy.tools.browser.terminal_tools.emit_success"):
+                with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                    with patch("newcode.tools.browser.terminal_tools.emit_success"):
                         # Open terminal
                         open_result = await open_terminal()
                         assert open_result["success"] is True
@@ -540,15 +540,15 @@ class TestIntegrationScenarios:
         mock_manager.new_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.terminal_tools.httpx.AsyncClient"
+            "newcode.tools.browser.terminal_tools.httpx.AsyncClient"
         ) as mock_async_client:
             mock_async_client.return_value = mock_client
             with patch(
-                "code_puppy.tools.browser.terminal_tools.get_session_manager",
+                "newcode.tools.browser.terminal_tools.get_session_manager",
                 return_value=mock_manager,
             ):
-                with patch("code_puppy.tools.browser.terminal_tools.emit_info"):
-                    with patch("code_puppy.tools.browser.terminal_tools.emit_success"):
+                with patch("newcode.tools.browser.terminal_tools.emit_info"):
+                    with patch("newcode.tools.browser.terminal_tools.emit_success"):
                         # First check server
                         check_result = await check_terminal_server()
                         assert check_result["success"] is True
@@ -556,7 +556,7 @@ class TestIntegrationScenarios:
                         # Then open (this will check again internally)
                         # Need to re-patch for the internal check
                         with patch(
-                            "code_puppy.tools.browser.terminal_tools.check_terminal_server",
+                            "newcode.tools.browser.terminal_tools.check_terminal_server",
                             return_value={
                                 "success": True,
                                 "server_url": "http://localhost:8765",

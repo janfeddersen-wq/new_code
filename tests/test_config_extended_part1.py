@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.config import (
+from newcode.config import (
     DEFAULT_SECTION,
     get_allow_recursion,
     get_auto_save_session,
@@ -24,7 +24,7 @@ from code_puppy.config import (
 
 
 class TestConfigExtendedPart1:
-    """Test basic config operations in code_puppy/config.py"""
+    """Test basic config operations in newcode/config.py"""
 
     @pytest.fixture
     def temp_config_dir(self):
@@ -56,7 +56,7 @@ class TestConfigExtendedPart1:
     def mock_config_file(self, temp_config_dir):
         """Mock the CONFIG_FILE to use our temporary config"""
         temp_dir, config_file = temp_config_dir
-        with patch("code_puppy.config.CONFIG_FILE", config_file):
+        with patch("newcode.config.CONFIG_FILE", config_file):
             yield config_file
 
     def test_get_value_with_existing_key(self, mock_config_file):
@@ -137,7 +137,7 @@ class TestConfigExtendedPart1:
         with open(config_file, "w") as f:
             config.write(f)
 
-        with patch("code_puppy.config.CONFIG_FILE", config_file):
+        with patch("newcode.config.CONFIG_FILE", config_file):
             result = get_allow_recursion()
             assert result is True  # Default should be True
 
@@ -151,7 +151,7 @@ class TestConfigExtendedPart1:
         with open(config_file, "w") as f:
             config.write(f)
 
-        with patch("code_puppy.config.CONFIG_FILE", config_file):
+        with patch("newcode.config.CONFIG_FILE", config_file):
             result = get_yolo_mode()
             assert result is True  # Default should be True
 
@@ -165,7 +165,7 @@ class TestConfigExtendedPart1:
         with open(config_file, "w") as f:
             config.write(f)
 
-        with patch("code_puppy.config.CONFIG_FILE", config_file):
+        with patch("newcode.config.CONFIG_FILE", config_file):
             result = get_auto_save_session()
             assert result is True  # Default should be True
 
@@ -179,7 +179,7 @@ class TestConfigExtendedPart1:
         with open(config_file, "w") as f:
             config.write(f)
 
-        with patch("code_puppy.config.CONFIG_FILE", config_file):
+        with patch("newcode.config.CONFIG_FILE", config_file):
             result = get_use_dbos()
             assert result is True  # Default should be True
 
@@ -234,7 +234,7 @@ class TestConfigExtendedPart1:
         with open(config_file, "w") as f:
             config.write(f)
 
-        with patch("code_puppy.config.CONFIG_FILE", config_file):
+        with patch("newcode.config.CONFIG_FILE", config_file):
             result = get_puppy_name()
             assert result == "Agent"  # Default should be "Agent"
 
@@ -248,12 +248,12 @@ class TestConfigExtendedPart1:
         with open(config_file, "w") as f:
             config.write(f)
 
-        with patch("code_puppy.config.CONFIG_FILE", config_file):
+        with patch("newcode.config.CONFIG_FILE", config_file):
             result = get_owner_name()
             assert result == "User"  # Default should be "User"
 
-    @patch("code_puppy.config._validate_model_exists")
-    @patch("code_puppy.config._default_model_from_models_json")
+    @patch("newcode.config._validate_model_exists")
+    @patch("newcode.config._default_model_from_models_json")
     def test_get_global_model_name_with_valid_stored_model(
         self, mock_default, mock_validate, mock_config_file
     ):
@@ -266,8 +266,8 @@ class TestConfigExtendedPart1:
         mock_validate.assert_called_once_with("gpt-4")
         mock_default.assert_not_called()
 
-    @patch("code_puppy.config._validate_model_exists")
-    @patch("code_puppy.config._default_model_from_models_json")
+    @patch("newcode.config._validate_model_exists")
+    @patch("newcode.config._default_model_from_models_json")
     def test_get_global_model_name_with_invalid_stored_model(
         self, mock_default, mock_validate, mock_config_file
     ):
@@ -280,8 +280,8 @@ class TestConfigExtendedPart1:
         mock_validate.assert_called_once_with("gpt-4")
         mock_default.assert_called_once()
 
-    @patch("code_puppy.config._validate_model_exists")
-    @patch("code_puppy.config._default_model_from_models_json")
+    @patch("newcode.config._validate_model_exists")
+    @patch("newcode.config._default_model_from_models_json")
     def test_get_global_model_name_no_stored_model(
         self, mock_default, mock_validate, temp_config_dir
     ):
@@ -296,7 +296,7 @@ class TestConfigExtendedPart1:
 
         mock_default.return_value = "default-model"
 
-        with patch("code_puppy.config.CONFIG_FILE", config_file):
+        with patch("newcode.config.CONFIG_FILE", config_file):
             result = get_global_model_name()
             assert result == "default-model"  # Should return the default model
             mock_validate.assert_not_called()

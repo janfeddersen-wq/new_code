@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from pydantic_ai import BinaryContent, DocumentUrl, ImageUrl
 
-from code_puppy.agents.agent_code_agent import CodeAgent
+from newcode.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentRunMCP:
@@ -127,8 +127,8 @@ class TestBaseAgentRunMCP:
             assert attachment in call_args
 
     @pytest.mark.asyncio
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=True)
-    @patch("code_puppy.agents.base_agent.SetWorkflowID")
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=True)
+    @patch("newcode.agents.base_agent.SetWorkflowID")
     async def test_run_with_mcp_with_dbos(
         self, mock_set_workflow_id, mock_use_dbos, agent
     ):
@@ -149,8 +149,8 @@ class TestBaseAgentRunMCP:
             assert "usage_limits" in call_kwargs
 
     @pytest.mark.asyncio
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=True)
-    @patch("code_puppy.agents.base_agent.SetWorkflowID")
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=True)
+    @patch("newcode.agents.base_agent.SetWorkflowID")
     async def test_run_with_mcp_with_dbos_and_mcp_servers(
         self, mock_set_workflow_id, mock_use_dbos, agent
     ):
@@ -175,7 +175,7 @@ class TestBaseAgentRunMCP:
             mock_set_workflow_id.assert_called_once()
 
     @pytest.mark.asyncio
-    @patch("code_puppy.agents.base_agent.get_message_limit", return_value=1000)
+    @patch("newcode.agents.base_agent.get_message_limit", return_value=1000)
     async def test_run_with_mcp_with_usage_limits(self, mock_get_limit, agent):
         """Test run_with_mcp includes usage limits."""
         with patch.object(agent, "_code_generation_agent") as mock_agent:
@@ -191,9 +191,7 @@ class TestBaseAgentRunMCP:
             mock_get_limit.assert_called_once()
 
     @pytest.mark.asyncio
-    @patch.object(
-        CodeAgent, "should_attempt_delayed_compaction", return_value=False
-    )
+    @patch.object(CodeAgent, "should_attempt_delayed_compaction", return_value=False)
     async def test_run_with_mcp_skips_compaction_when_not_needed(
         self, mock_should_compact, agent
     ):
@@ -214,9 +212,7 @@ class TestBaseAgentRunMCP:
             assert agent.get_message_history() == original_messages
 
     @pytest.mark.asyncio
-    @patch.object(
-        CodeAgent, "should_attempt_delayed_compaction", return_value=False
-    )
+    @patch.object(CodeAgent, "should_attempt_delayed_compaction", return_value=False)
     async def test_run_with_mcp_without_delayed_compaction(
         self, mock_should_compact, agent
     ):

@@ -2,7 +2,7 @@ from unittest.mock import mock_open, patch
 
 import pytest
 
-from code_puppy.config import (
+from newcode.config import (
     clear_agent_pinned_model,
     get_agent_pinned_model,
     get_compaction_strategy,
@@ -14,12 +14,12 @@ from code_puppy.config import (
 
 
 class TestConfigExtendedPart2:
-    """Test advanced configuration functions in code_puppy/config.py"""
+    """Test advanced configuration functions in newcode/config.py"""
 
     @pytest.fixture
     def mock_config_file(self):
         """Mock config file operations"""
-        with patch("code_puppy.config.CONFIG_FILE", "/mock/config/puppy.cfg"):
+        with patch("newcode.config.CONFIG_FILE", "/mock/config/puppy.cfg"):
             yield
 
     def test_agent_pinned_model_get_set(self, mock_config_file):
@@ -28,19 +28,19 @@ class TestConfigExtendedPart2:
         model_name = "gpt-4"
 
         # Test getting non-existent pinned model
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = None
             result = get_agent_pinned_model(agent_name)
             assert result is None
             mock_get.assert_called_once_with(f"agent_model_{agent_name}")
 
         # Test setting pinned model
-        with patch("code_puppy.config.set_config_value") as mock_set:
+        with patch("newcode.config.set_config_value") as mock_set:
             set_agent_pinned_model(agent_name, model_name)
             mock_set.assert_called_once_with(f"agent_model_{agent_name}", model_name)
 
         # Test getting existing pinned model
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = model_name
             result = get_agent_pinned_model(agent_name)
             assert result == model_name
@@ -50,14 +50,14 @@ class TestConfigExtendedPart2:
         """Test clearing agent-specific pinned models"""
         agent_name = "test-agent"
 
-        with patch("code_puppy.config.set_config_value") as mock_set:
+        with patch("newcode.config.set_config_value") as mock_set:
             clear_agent_pinned_model(agent_name)
             mock_set.assert_called_once_with(f"agent_model_{agent_name}", "")
 
     def test_get_compaction_strategy(self, mock_config_file):
         """Test getting compaction strategy configuration"""
         # Test default strategy
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = None
             result = get_compaction_strategy()
             assert result == "truncation"  # Default value
@@ -65,13 +65,13 @@ class TestConfigExtendedPart2:
 
         # Test valid strategies
         for strategy in ["summarization", "truncation"]:
-            with patch("code_puppy.config.get_value") as mock_get:
+            with patch("newcode.config.get_value") as mock_get:
                 mock_get.return_value = strategy.upper()  # Test case normalization
                 result = get_compaction_strategy()
                 assert result == strategy.lower()
 
         # Test invalid strategy falls back to default
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = "invalid_strategy"
             result = get_compaction_strategy()
             assert result == "truncation"  # Default fallback
@@ -79,32 +79,32 @@ class TestConfigExtendedPart2:
     def test_get_compaction_threshold(self, mock_config_file):
         """Test getting compaction threshold configuration"""
         # Test default threshold
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = None
             result = get_compaction_threshold()
             assert result == 0.85  # Default value
             mock_get.assert_called_once_with("compaction_threshold")
 
         # Test valid threshold
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = "0.75"
             result = get_compaction_threshold()
             assert result == 0.75
 
         # Test threshold clamping - minimum
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = "0.3"  # Below minimum
             result = get_compaction_threshold()
             assert result == 0.5  # Clamped to minimum
 
         # Test threshold clamping - maximum
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = "0.98"  # Above maximum
             result = get_compaction_threshold()
             assert result == 0.95  # Clamped to maximum
 
         # Test invalid value falls back to default
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = "invalid"
             result = get_compaction_threshold()
             assert result == 0.85  # Default fallback
@@ -112,7 +112,7 @@ class TestConfigExtendedPart2:
     def test_get_use_dbos(self, mock_config_file):
         """Test getting DBOS usage flag"""
         # Test default (True - DBOS enabled by default)
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = None
             result = get_use_dbos()
             assert result is True
@@ -121,7 +121,7 @@ class TestConfigExtendedPart2:
         # Test various true values
         true_values = ["1", "true", "yes", "on", "TRUE", "Yes"]
         for val in true_values:
-            with patch("code_puppy.config.get_value") as mock_get:
+            with patch("newcode.config.get_value") as mock_get:
                 mock_get.return_value = val
                 result = get_use_dbos()
                 assert result is True
@@ -129,7 +129,7 @@ class TestConfigExtendedPart2:
         # Test various false values
         false_values = ["0", "false", "no", "off", "", "random"]
         for val in false_values:
-            with patch("code_puppy.config.get_value") as mock_get:
+            with patch("newcode.config.get_value") as mock_get:
                 mock_get.return_value = val
                 result = get_use_dbos()
                 assert result is False
@@ -144,7 +144,7 @@ class TestConfigExtendedPart2:
 
         # Test successful loading
         with (
-            patch("code_puppy.config.MCP_SERVERS_FILE", "/mock/mcp_servers.json"),
+            patch("newcode.config.MCP_SERVERS_FILE", "/mock/mcp_servers.json"),
             patch("pathlib.Path.exists", return_value=True),
             patch(
                 "builtins.open",
@@ -159,7 +159,7 @@ class TestConfigExtendedPart2:
 
         # Test file not exists
         with (
-            patch("code_puppy.config.MCP_SERVERS_FILE", "/mock/mcp_servers.json"),
+            patch("newcode.config.MCP_SERVERS_FILE", "/mock/mcp_servers.json"),
             patch("pathlib.Path.exists", return_value=False),
         ):
             result = load_mcp_server_configs()
@@ -167,10 +167,10 @@ class TestConfigExtendedPart2:
 
         # Test error handling
         with (
-            patch("code_puppy.config.MCP_SERVERS_FILE", "/mock/mcp_servers.json"),
+            patch("newcode.config.MCP_SERVERS_FILE", "/mock/mcp_servers.json"),
             patch("pathlib.Path.exists", return_value=True),
             patch("builtins.open", side_effect=IOError("Permission denied")),
-            patch("code_puppy.messaging.message_queue.emit_error") as mock_emit_error,
+            patch("newcode.messaging.message_queue.emit_error") as mock_emit_error,
         ):
             result = load_mcp_server_configs()
             assert result == {}
@@ -184,8 +184,8 @@ class TestConfigExtendedPart2:
 
         # Mock the underlying config operations
         with (
-            patch("code_puppy.config.set_config_value") as mock_set,
-            patch("code_puppy.config.get_value") as mock_get,
+            patch("newcode.config.set_config_value") as mock_set,
+            patch("newcode.config.get_value") as mock_get,
         ):
             # Initially no pinned model
             mock_get.return_value = None
@@ -206,14 +206,14 @@ class TestConfigExtendedPart2:
     def test_compaction_config_edge_cases(self, mock_config_file):
         """Test edge cases for compaction configuration"""
         # Test compaction strategy with whitespace (note: actual implementation doesn't strip)
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = "  summarization  "
             result = get_compaction_strategy()
             # The actual implementation doesn't strip whitespace, so it falls back to default
             assert result == "truncation"  # Default fallback for non-exact match
 
         # Test compaction strategy with exact match
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = "summarization"
             result = get_compaction_strategy()
             assert result == "summarization"
@@ -227,7 +227,7 @@ class TestConfigExtendedPart2:
         ]
 
         for input_val, expected in test_cases:
-            with patch("code_puppy.config.get_value") as mock_get:
+            with patch("newcode.config.get_value") as mock_get:
                 mock_get.return_value = input_val
                 result = get_compaction_threshold()
                 assert result == expected
@@ -235,14 +235,14 @@ class TestConfigExtendedPart2:
     def test_config_value_types(self, mock_config_file):
         """Test that config values handle different types correctly"""
         # Test with integer values for threshold
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = "1"
             result = get_compaction_threshold()
             assert isinstance(result, float)
             assert result == 0.95  # Clamped to maximum
 
         # Test with float values for threshold
-        with patch("code_puppy.config.get_value") as mock_get:
+        with patch("newcode.config.get_value") as mock_get:
             mock_get.return_value = "0.7"
             result = get_compaction_threshold()
             assert isinstance(result, float)

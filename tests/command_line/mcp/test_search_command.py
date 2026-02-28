@@ -7,9 +7,9 @@ import pytest
 
 @pytest.fixture
 def search_cmd():
-    with patch("code_puppy.command_line.mcp.base.get_mcp_manager") as mock_mgr:
+    with patch("newcode.command_line.mcp.base.get_mcp_manager") as mock_mgr:
         mock_mgr.return_value = MagicMock()
-        from code_puppy.command_line.mcp.search_command import SearchCommand
+        from newcode.command_line.mcp.search_command import SearchCommand
 
         return SearchCommand()
 
@@ -41,12 +41,12 @@ class TestSearchCommand:
         mock_catalog.get_popular.return_value = [server]
 
         with (
-            patch("code_puppy.command_line.mcp.search_command.emit_info"),
-            patch("code_puppy.command_line.mcp.search_command.emit_system_message"),
+            patch("newcode.command_line.mcp.search_command.emit_info"),
+            patch("newcode.command_line.mcp.search_command.emit_system_message"),
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.mcp_.server_registry_catalog": MagicMock(
+                    "newcode.mcp_.server_registry_catalog": MagicMock(
                         catalog=mock_catalog
                     )
                 },
@@ -59,12 +59,12 @@ class TestSearchCommand:
         mock_catalog = MagicMock()
         mock_catalog.get_popular.return_value = []
         with (
-            patch("code_puppy.command_line.mcp.search_command.emit_info"),
-            patch("code_puppy.command_line.mcp.search_command.emit_warning"),
+            patch("newcode.command_line.mcp.search_command.emit_info"),
+            patch("newcode.command_line.mcp.search_command.emit_warning"),
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.mcp_.server_registry_catalog": MagicMock(
+                    "newcode.mcp_.server_registry_catalog": MagicMock(
                         catalog=mock_catalog
                     )
                 },
@@ -78,12 +78,12 @@ class TestSearchCommand:
         mock_catalog.search.return_value = [server]
 
         with (
-            patch("code_puppy.command_line.mcp.search_command.emit_info"),
-            patch("code_puppy.command_line.mcp.search_command.emit_system_message"),
+            patch("newcode.command_line.mcp.search_command.emit_info"),
+            patch("newcode.command_line.mcp.search_command.emit_system_message"),
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.mcp_.server_registry_catalog": MagicMock(
+                    "newcode.mcp_.server_registry_catalog": MagicMock(
                         catalog=mock_catalog
                     )
                 },
@@ -97,14 +97,12 @@ class TestSearchCommand:
         mock_catalog.search.return_value = []
 
         with (
-            patch("code_puppy.command_line.mcp.search_command.emit_info") as _mock_emit,
-            patch(
-                "code_puppy.command_line.mcp.search_command.emit_warning"
-            ) as mock_warn,
+            patch("newcode.command_line.mcp.search_command.emit_info") as _mock_emit,
+            patch("newcode.command_line.mcp.search_command.emit_warning") as mock_warn,
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.mcp_.server_registry_catalog": MagicMock(
+                    "newcode.mcp_.server_registry_catalog": MagicMock(
                         catalog=mock_catalog
                     )
                 },
@@ -121,12 +119,12 @@ class TestSearchCommand:
         mock_catalog.search.return_value = [server]
 
         with (
-            patch("code_puppy.command_line.mcp.search_command.emit_info"),
-            patch("code_puppy.command_line.mcp.search_command.emit_system_message"),
+            patch("newcode.command_line.mcp.search_command.emit_info"),
+            patch("newcode.command_line.mcp.search_command.emit_system_message"),
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.mcp_.server_registry_catalog": MagicMock(
+                    "newcode.mcp_.server_registry_catalog": MagicMock(
                         catalog=mock_catalog
                     )
                 },
@@ -140,12 +138,12 @@ class TestSearchCommand:
         mock_catalog.search.return_value = [server]
 
         with (
-            patch("code_puppy.command_line.mcp.search_command.emit_info"),
-            patch("code_puppy.command_line.mcp.search_command.emit_system_message"),
+            patch("newcode.command_line.mcp.search_command.emit_info"),
+            patch("newcode.command_line.mcp.search_command.emit_system_message"),
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.mcp_.server_registry_catalog": MagicMock(
+                    "newcode.mcp_.server_registry_catalog": MagicMock(
                         catalog=mock_catalog
                     )
                 },
@@ -155,10 +153,8 @@ class TestSearchCommand:
 
     def test_import_error(self, search_cmd):
         with (
-            patch("code_puppy.command_line.mcp.search_command.emit_info") as _mock_emit,
-            patch.dict(
-                "sys.modules", {"code_puppy.mcp_.server_registry_catalog": None}
-            ),
+            patch("newcode.command_line.mcp.search_command.emit_info") as _mock_emit,
+            patch.dict("sys.modules", {"newcode.mcp_.server_registry_catalog": None}),
         ):
             search_cmd.execute([], group_id="g1")
 
@@ -167,9 +163,9 @@ class TestSearchCommand:
         mock_mod.catalog.get_popular.side_effect = Exception("boom")
 
         with (
-            patch("code_puppy.command_line.mcp.search_command.emit_info") as _mock_emit,
+            patch("newcode.command_line.mcp.search_command.emit_info") as _mock_emit,
             patch.dict(
-                "sys.modules", {"code_puppy.mcp_.server_registry_catalog": mock_mod}
+                "sys.modules", {"newcode.mcp_.server_registry_catalog": mock_mod}
             ),
         ):
             search_cmd.execute([], group_id="g1")

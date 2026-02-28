@@ -14,13 +14,13 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
-from code_puppy.plugins.chatgpt_oauth.oauth_flow import (
+from newcode.plugins.chatgpt_oauth.oauth_flow import (
     AuthBundle,
     TokenData,
     _CallbackHandler,
     _OAuthServer,
 )
-from code_puppy.plugins.chatgpt_oauth.utils import (
+from newcode.plugins.chatgpt_oauth.utils import (
     OAuthContext,
     assign_redirect_uri,
     build_authorization_url,
@@ -244,7 +244,7 @@ class TestOAuthServer:
         server = _OAuthServer(client_id="test_client_id")
 
         with patch(
-            "code_puppy.plugins.chatgpt_oauth.oauth_flow.parse_jwt_claims"
+            "newcode.plugins.chatgpt_oauth.oauth_flow.parse_jwt_claims"
         ) as mock_parse:
             mock_parse.return_value = {
                 "https://api.openai.com/auth": {"chatgpt_account_id": "acc_123"},
@@ -325,7 +325,7 @@ class TestCallbackHandler:
         """Test success endpoint returns HTML."""
         mock_request = Mock()
         with patch(
-            "code_puppy.plugins.chatgpt_oauth.oauth_flow._CallbackHandler.handle_one_request"
+            "newcode.plugins.chatgpt_oauth.oauth_flow._CallbackHandler.handle_one_request"
         ):
             handler = _CallbackHandler(mock_request, ("localhost", 1455), mock_server)
             handler.server = mock_server
@@ -344,7 +344,7 @@ class TestCallbackHandler:
         """Test invalid path returns 404."""
         mock_request = Mock()
         with patch(
-            "code_puppy.plugins.chatgpt_oauth.oauth_flow._CallbackHandler.handle_one_request"
+            "newcode.plugins.chatgpt_oauth.oauth_flow._CallbackHandler.handle_one_request"
         ):
             handler = _CallbackHandler(mock_request, ("localhost", 1455), mock_server)
             handler.server = mock_server
@@ -362,7 +362,7 @@ class TestCallbackHandler:
         """Test POST requests return 404."""
         mock_request = Mock()
         with patch(
-            "code_puppy.plugins.chatgpt_oauth.oauth_flow._CallbackHandler.handle_one_request"
+            "newcode.plugins.chatgpt_oauth.oauth_flow._CallbackHandler.handle_one_request"
         ):
             handler = _CallbackHandler(mock_request, ("localhost", 1455), mock_server)
             handler.server = mock_server

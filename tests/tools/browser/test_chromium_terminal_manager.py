@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "code_puppy"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "newcode"))
 
 from tools.browser.chromium_terminal_manager import (
     ChromiumTerminalManager,

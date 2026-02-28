@@ -1,4 +1,4 @@
-"""Tests for code_puppy.tools.command_runner core helper functions.
+"""Tests for newcode.tools.command_runner core helper functions.
 
 This module tests pure helper functions and global-state utilities from
 command_runner.py in isolation, focusing on:
@@ -16,7 +16,7 @@ import pytest
 # Import directly from the module file to avoid heavy dependencies in __init__.py
 spec = importlib.util.spec_from_file_location(
     "command_runner_module",
-    Path(__file__).parent.parent.parent / "code_puppy" / "tools" / "command_runner.py",
+    Path(__file__).parent.parent.parent / "newcode" / "tools" / "command_runner.py",
 )
 command_runner_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(command_runner_module)
@@ -108,7 +108,7 @@ class TestSetAwaitingUserInput:
         mock_spinner_module.resume_all_spinners = mock_resume
 
         with patch.dict(
-            "sys.modules", {"code_puppy.messaging.spinner": mock_spinner_module}
+            "sys.modules", {"newcode.messaging.spinner": mock_spinner_module}
         ):
             set_awaiting_user_input(True)
 
@@ -128,7 +128,7 @@ class TestSetAwaitingUserInput:
         mock_spinner_module.resume_all_spinners = mock_resume
 
         with patch.dict(
-            "sys.modules", {"code_puppy.messaging.spinner": mock_spinner_module}
+            "sys.modules", {"newcode.messaging.spinner": mock_spinner_module}
         ):
             set_awaiting_user_input(False)
 
@@ -141,8 +141,8 @@ class TestSetAwaitingUserInput:
 
         # Create a mock that raises ImportError when the import is attempted
         def mock_import(name, *args, **kwargs):
-            if name == "code_puppy.messaging.spinner":
-                raise ImportError("No module named 'code_puppy.messaging.spinner'")
+            if name == "newcode.messaging.spinner":
+                raise ImportError("No module named 'newcode.messaging.spinner'")
             # Use original import for everything else
             return __builtins__["__import__"](name, *args, **kwargs)
 
@@ -158,8 +158,8 @@ class TestSetAwaitingUserInput:
 
         # Create a mock that raises ImportError when the import is attempted
         def mock_import(name, *args, **kwargs):
-            if name == "code_puppy.messaging.spinner":
-                raise ImportError("No module named 'code_puppy.messaging.spinner'")
+            if name == "newcode.messaging.spinner":
+                raise ImportError("No module named 'newcode.messaging.spinner'")
             # Use original import for everything else
             return __builtins__["__import__"](name, *args, **kwargs)
 
@@ -327,7 +327,7 @@ class TestBackgroundMode:
 
     def test_background_mode_returns_log_file_and_pid(self):
         """Test that background=True returns log_file and pid."""
-        from code_puppy.tools.command_runner import ShellCommandOutput
+        from newcode.tools.command_runner import ShellCommandOutput
 
         output = ShellCommandOutput(
             success=True,
@@ -347,7 +347,7 @@ class TestBackgroundMode:
 
     def test_background_mode_defaults_to_false(self):
         """Test that background defaults to False."""
-        from code_puppy.tools.command_runner import ShellCommandOutput
+        from newcode.tools.command_runner import ShellCommandOutput
 
         output = ShellCommandOutput(
             success=True,

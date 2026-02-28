@@ -11,7 +11,7 @@ Tests UVX environment detection including:
 
 from unittest.mock import patch
 
-from code_puppy.uvx_detection import (
+from newcode.uvx_detection import (
     _get_parent_process_chain,
     _get_parent_process_chain_psutil,
     _get_parent_process_chain_windows_ctypes,
@@ -101,7 +101,7 @@ class TestIsWindowsDetection:
 class TestIsLaunchedViaUVX:
     """Test UVX launch detection."""
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     def test_is_launched_via_uvx_true(
         self,
         mock_get_chain,
@@ -114,7 +114,7 @@ class TestIsLaunchedViaUVX:
         result = is_launched_via_uvx()
         assert result is True
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     def test_is_launched_via_uvx_true_no_extension(
         self,
         mock_get_chain,
@@ -127,7 +127,7 @@ class TestIsLaunchedViaUVX:
         result = is_launched_via_uvx()
         assert result is True
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     def test_is_launched_via_uvx_false_no_uvx(
         self,
         mock_get_chain,
@@ -140,7 +140,7 @@ class TestIsLaunchedViaUVX:
         result = is_launched_via_uvx()
         assert result is False
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     def test_is_launched_via_uvx_empty_chain(
         self,
         mock_get_chain,
@@ -153,7 +153,7 @@ class TestIsLaunchedViaUVX:
         result = is_launched_via_uvx()
         assert result is False
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     def test_is_launched_via_uvx_ignores_uv_not_uvx(
         self,
         mock_get_chain,
@@ -171,8 +171,8 @@ class TestIsLaunchedViaUVX:
 class TestShouldUseAlternateCancelKey:
     """Test alternate cancel key decision."""
 
-    @patch("code_puppy.uvx_detection.is_windows")
-    @patch("code_puppy.uvx_detection.is_launched_via_uvx")
+    @patch("newcode.uvx_detection.is_windows")
+    @patch("newcode.uvx_detection.is_launched_via_uvx")
     def test_should_use_alternate_key_windows_uvx(
         self,
         mock_is_uvx,
@@ -184,8 +184,8 @@ class TestShouldUseAlternateCancelKey:
         result = should_use_alternate_cancel_key()
         assert result is True
 
-    @patch("code_puppy.uvx_detection.is_windows")
-    @patch("code_puppy.uvx_detection.is_launched_via_uvx")
+    @patch("newcode.uvx_detection.is_windows")
+    @patch("newcode.uvx_detection.is_launched_via_uvx")
     def test_should_use_alternate_key_windows_no_uvx(
         self,
         mock_is_uvx,
@@ -197,8 +197,8 @@ class TestShouldUseAlternateCancelKey:
         result = should_use_alternate_cancel_key()
         assert result is False
 
-    @patch("code_puppy.uvx_detection.is_windows")
-    @patch("code_puppy.uvx_detection.is_launched_via_uvx")
+    @patch("newcode.uvx_detection.is_windows")
+    @patch("newcode.uvx_detection.is_launched_via_uvx")
     def test_should_use_alternate_key_non_windows_uvx(
         self,
         mock_is_uvx,
@@ -211,8 +211,8 @@ class TestShouldUseAlternateCancelKey:
         # Only Windows + uvx = True
         assert result is False
 
-    @patch("code_puppy.uvx_detection.is_windows")
-    @patch("code_puppy.uvx_detection.is_launched_via_uvx")
+    @patch("newcode.uvx_detection.is_windows")
+    @patch("newcode.uvx_detection.is_launched_via_uvx")
     def test_should_use_alternate_key_non_windows_no_uvx(
         self,
         mock_is_uvx,
@@ -228,10 +228,10 @@ class TestShouldUseAlternateCancelKey:
 class TestGetUVXDetectionInfo:
     """Test UVX detection info gathering."""
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
-    @patch("code_puppy.uvx_detection.is_launched_via_uvx")
-    @patch("code_puppy.uvx_detection.is_windows")
-    @patch("code_puppy.uvx_detection.should_use_alternate_cancel_key")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection.is_launched_via_uvx")
+    @patch("newcode.uvx_detection.is_windows")
+    @patch("newcode.uvx_detection.should_use_alternate_cancel_key")
     def test_get_uvx_detection_info_returns_dict(
         self,
         mock_cancel_key,
@@ -254,10 +254,10 @@ class TestGetUVXDetectionInfo:
         assert "current_pid" in result
         assert "python_executable" in result
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
-    @patch("code_puppy.uvx_detection.is_launched_via_uvx")
-    @patch("code_puppy.uvx_detection.is_windows")
-    @patch("code_puppy.uvx_detection.should_use_alternate_cancel_key")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection.is_launched_via_uvx")
+    @patch("newcode.uvx_detection.is_windows")
+    @patch("newcode.uvx_detection.should_use_alternate_cancel_key")
     def test_get_uvx_detection_info_values(
         self,
         mock_cancel_key,
@@ -327,7 +327,7 @@ class TestGetParentProcessChainWindowsCtypes:
         assert isinstance(result, list)
 
     @patch("platform.system")
-    @patch("code_puppy.uvx_detection.os.getpid")
+    @patch("newcode.uvx_detection.os.getpid")
     def test_windows_ctypes_with_mock_processes(self, mock_getpid, mock_platform):
         """Test Windows ctypes with mocked process snapshot."""
         mock_platform.return_value = "Windows"
@@ -342,7 +342,7 @@ class TestGetParentProcessChainWindowsCtypes:
 class TestGetParentProcessChain:
     """Test the main process chain detection function."""
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain_psutil")
+    @patch("newcode.uvx_detection._get_parent_process_chain_psutil")
     def test_get_parent_process_chain_calls_psutil(self, mock_psutil_chain):
         """Test that psutil function is tried first."""
         mock_psutil_chain.return_value = ["python.exe", "uvx.exe"]
@@ -352,7 +352,7 @@ class TestGetParentProcessChain:
         # Result depends on whether psutil is importable
         assert isinstance(result, list)
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain_windows_ctypes")
+    @patch("newcode.uvx_detection._get_parent_process_chain_windows_ctypes")
     @patch("platform.system")
     def test_get_parent_process_chain_fallback_ctypes(
         self, mock_platform, mock_ctypes_chain
@@ -365,7 +365,7 @@ class TestGetParentProcessChain:
         # Function should return a list
         assert isinstance(result, list)
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain_psutil")
+    @patch("newcode.uvx_detection._get_parent_process_chain_psutil")
     def test_get_parent_process_chain_empty_result(self, mock_psutil_chain):
         """Test handling of empty chain result."""
         mock_psutil_chain.return_value = []
@@ -373,7 +373,7 @@ class TestGetParentProcessChain:
         result = _get_parent_process_chain()
         assert isinstance(result, list)
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain_psutil")
+    @patch("newcode.uvx_detection._get_parent_process_chain_psutil")
     def test_get_parent_process_chain_resilient_to_errors(self, mock_psutil_chain):
         """Test graceful handling of errors in chain detection."""
         mock_psutil_chain.side_effect = Exception("psutil error")
@@ -386,7 +386,7 @@ class TestGetParentProcessChain:
 class TestCacheBehavior:
     """Test caching behavior of uvx detection."""
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     def test_is_launched_via_uvx_caches_result(self, mock_get_chain):
         """Test that is_launched_via_uvx caches the result."""
         mock_get_chain.return_value = ["python.exe", "uvx.exe"]
@@ -413,7 +413,7 @@ class TestCacheBehavior:
         assert hasattr(is_launched_via_uvx, "cache_clear")
         assert hasattr(is_launched_via_uvx, "cache_info")
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     def test_is_launched_via_uvx_cache_info(self, mock_get_chain):
         """Test cache statistics via cache_info."""
         mock_get_chain.return_value = ["python"]
@@ -436,7 +436,7 @@ class TestCacheBehavior:
 class TestEdgeCasesAndErrors:
     """Test edge cases and error handling."""
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     def test_is_uvx_in_chain_with_none_values(self, mock_get_chain):
         """Test handling of None values in chain."""
         # This shouldn't happen in practice, but test robustness
@@ -449,7 +449,7 @@ class TestEdgeCasesAndErrors:
         result = is_windows()
         assert isinstance(result, bool)
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     def test_is_launched_via_uvx_always_returns_bool(self, mock_get_chain):
         """Test that is_launched_via_uvx always returns a boolean."""
         mock_get_chain.return_value = []
@@ -491,7 +491,7 @@ class TestEdgeCasesAndErrors:
 class TestUVXIntegration:
     """Test UVX detection integration scenarios."""
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     @patch("platform.system")
     def test_uvx_detection_windows_uvx_chain(
         self,
@@ -508,7 +508,7 @@ class TestUVXIntegration:
         assert is_launched_via_uvx() is True
         assert should_use_alternate_cancel_key() is True
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     @patch("platform.system")
     def test_uv_run_chain_windows(
         self,
@@ -525,7 +525,7 @@ class TestUVXIntegration:
         assert is_launched_via_uvx() is False
         assert should_use_alternate_cancel_key() is False
 
-    @patch("code_puppy.uvx_detection._get_parent_process_chain")
+    @patch("newcode.uvx_detection._get_parent_process_chain")
     @patch("platform.system")
     def test_direct_execution_linux(
         self,

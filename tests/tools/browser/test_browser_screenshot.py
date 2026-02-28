@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic_ai import BinaryContent, ToolReturn
 
-from code_puppy.tools.browser.browser_screenshot import (
+from newcode.tools.browser.browser_screenshot import (
     _capture_screenshot,
     take_screenshot,
 )
@@ -69,7 +69,7 @@ class TestScreenshotCapture:
         mock_page.screenshot.return_value = screenshot_data
 
         with patch(
-            "code_puppy.tools.browser.browser_screenshot._TEMP_SCREENSHOT_ROOT",
+            "newcode.tools.browser.browser_screenshot._TEMP_SCREENSHOT_ROOT",
             tmp_path,
         ):
             result = await _capture_screenshot(mock_page, save_screenshot=True)
@@ -102,7 +102,7 @@ class TestScreenshotCapture:
         mock_page.screenshot.return_value = b"screenshot_data"
 
         with patch(
-            "code_puppy.tools.browser.browser_screenshot.emit_success"
+            "newcode.tools.browser.browser_screenshot.emit_success"
         ) as mock_emit:
             result = await _capture_screenshot(
                 mock_page,
@@ -143,10 +143,10 @@ class TestTakeScreenshot:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.browser_screenshot.get_session_browser_manager",
+            "newcode.tools.browser.browser_screenshot.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_screenshot.emit_info"):
+            with patch("newcode.tools.browser.browser_screenshot.emit_info"):
                 result = await take_screenshot(full_page=False)
 
                 # Should be a ToolReturn with rich content
@@ -173,11 +173,11 @@ class TestTakeScreenshot:
         mock_manager.get_current_page.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.browser_screenshot.get_session_browser_manager",
+            "newcode.tools.browser.browser_screenshot.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_screenshot.emit_info"):
-                with patch("code_puppy.tools.browser.browser_screenshot.emit_error"):
+            with patch("newcode.tools.browser.browser_screenshot.emit_info"):
+                with patch("newcode.tools.browser.browser_screenshot.emit_error"):
                     result = await take_screenshot()
 
                     # Error case returns dict, not ToolReturn
@@ -194,10 +194,10 @@ class TestTakeScreenshot:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.browser_screenshot.get_session_browser_manager",
+            "newcode.tools.browser.browser_screenshot.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_screenshot.emit_info"):
+            with patch("newcode.tools.browser.browser_screenshot.emit_info"):
                 result = await take_screenshot(full_page=True)
 
                 assert isinstance(result, ToolReturn)
@@ -221,10 +221,10 @@ class TestScreenshotIntegration:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.browser_screenshot.get_session_browser_manager",
+            "newcode.tools.browser.browser_screenshot.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_screenshot.emit_info"):
+            with patch("newcode.tools.browser.browser_screenshot.emit_info"):
                 # Take first screenshot
                 result1 = await _capture_screenshot(mock_page, save_screenshot=False)
                 assert result1["success"] is True
@@ -246,10 +246,10 @@ class TestScreenshotIntegration:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.browser_screenshot.get_session_browser_manager",
+            "newcode.tools.browser.browser_screenshot.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_screenshot.emit_info"):
+            with patch("newcode.tools.browser.browser_screenshot.emit_info"):
                 result = await take_screenshot()
 
                 # Must be ToolReturn for pydantic-ai to handle properly

@@ -4,7 +4,7 @@ import threading
 from collections import Counter
 from unittest.mock import AsyncMock, MagicMock
 
-from code_puppy.round_robin_model import RoundRobinModel
+from newcode.round_robin_model import RoundRobinModel
 
 
 class MockModel:

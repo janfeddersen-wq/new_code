@@ -2,8 +2,8 @@
 
 from datetime import datetime, timedelta
 
-from code_puppy.mcp_.managed_server import ServerState
-from code_puppy.mcp_.status_tracker import ServerStatusTracker
+from newcode.mcp_.managed_server import ServerState
+from newcode.mcp_.status_tracker import ServerStatusTracker
 
 
 class TestServerStatusTracker:
@@ -122,7 +122,7 @@ class TestServerStatusTracker:
         # Add old event
         from collections import deque
 
-        from code_puppy.mcp_.status_tracker import Event
+        from newcode.mcp_.status_tracker import Event
 
         old_event = Event(
             timestamp=datetime.now() - timedelta(days=10),

@@ -1,10 +1,10 @@
-"""Tests for code_puppy/plugins/scheduler/scheduler_wizard.py"""
+"""Tests for newcode/plugins/scheduler/scheduler_wizard.py"""
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-_MOD = "code_puppy.plugins.scheduler.scheduler_wizard"
+_MOD = "newcode.plugins.scheduler.scheduler_wizard"
 
 
 # ---------------------------------------------------------------------------
@@ -14,7 +14,7 @@ _MOD = "code_puppy.plugins.scheduler.scheduler_wizard"
 
 class TestSelectionMenu:
     def test_render(self):
-        from code_puppy.plugins.scheduler.scheduler_wizard import SelectionMenu
+        from newcode.plugins.scheduler.scheduler_wizard import SelectionMenu
 
         menu = SelectionMenu("Pick one", ["A", "B"], ["desc a", "desc b"])
         lines = menu._render()
@@ -24,7 +24,7 @@ class TestSelectionMenu:
         assert "desc a" in text
 
     def test_render_no_descriptions(self):
-        from code_puppy.plugins.scheduler.scheduler_wizard import SelectionMenu
+        from newcode.plugins.scheduler.scheduler_wizard import SelectionMenu
 
         menu = SelectionMenu("Pick", ["A", "B"])
         lines = menu._render()
@@ -32,7 +32,7 @@ class TestSelectionMenu:
         assert "A" in text
 
     def test_render_selected_idx(self):
-        from code_puppy.plugins.scheduler.scheduler_wizard import SelectionMenu
+        from newcode.plugins.scheduler.scheduler_wizard import SelectionMenu
 
         menu = SelectionMenu("Pick", ["A", "B", "C"], ["da", "db", "dc"])
         menu.selected_idx = 2
@@ -43,7 +43,7 @@ class TestSelectionMenu:
     @patch(f"{_MOD}.set_awaiting_user_input")
     @patch(f"{_MOD}.Application")
     def test_run_select(self, mock_app_cls, mock_await):
-        from code_puppy.plugins.scheduler.scheduler_wizard import SelectionMenu
+        from newcode.plugins.scheduler.scheduler_wizard import SelectionMenu
 
         menu = SelectionMenu("Pick", ["A", "B"])
         mock_app = MagicMock()
@@ -59,7 +59,7 @@ class TestSelectionMenu:
     @patch(f"{_MOD}.set_awaiting_user_input")
     @patch(f"{_MOD}.Application")
     def test_run_cancelled(self, mock_app_cls, mock_await):
-        from code_puppy.plugins.scheduler.scheduler_wizard import SelectionMenu
+        from newcode.plugins.scheduler.scheduler_wizard import SelectionMenu
 
         menu = SelectionMenu("Pick", ["A"])
         mock_app = MagicMock()
@@ -96,7 +96,7 @@ class TestSelectionMenu:
                         return event
             raise ValueError(f"No handler: {key_name}")
 
-        from code_puppy.plugins.scheduler.scheduler_wizard import SelectionMenu
+        from newcode.plugins.scheduler.scheduler_wizard import SelectionMenu
 
         menu = SelectionMenu("Pick", ["A", "B", "C"], ["da", "db", "dc"])
 
@@ -148,37 +148,37 @@ class TestSelectionMenu:
 
 
 class TestTextInputMenu:
-    @patch("code_puppy.command_line.utils.safe_input", return_value="hello")
+    @patch("newcode.command_line.utils.safe_input", return_value="hello")
     def test_input(self, mock_input):
-        from code_puppy.plugins.scheduler.scheduler_wizard import TextInputMenu
+        from newcode.plugins.scheduler.scheduler_wizard import TextInputMenu
 
         menu = TextInputMenu("Name")
         assert menu.run() == "hello"
 
-    @patch("code_puppy.command_line.utils.safe_input", return_value="")
+    @patch("newcode.command_line.utils.safe_input", return_value="")
     def test_default(self, mock_input):
-        from code_puppy.plugins.scheduler.scheduler_wizard import TextInputMenu
+        from newcode.plugins.scheduler.scheduler_wizard import TextInputMenu
 
         menu = TextInputMenu("Name", default="default-val")
         assert menu.run() == "default-val"
 
-    @patch("code_puppy.command_line.utils.safe_input", return_value="")
+    @patch("newcode.command_line.utils.safe_input", return_value="")
     def test_empty_no_default(self, mock_input):
-        from code_puppy.plugins.scheduler.scheduler_wizard import TextInputMenu
+        from newcode.plugins.scheduler.scheduler_wizard import TextInputMenu
 
         menu = TextInputMenu("Name")
         assert menu.run() is None
 
-    @patch("code_puppy.command_line.utils.safe_input", side_effect=KeyboardInterrupt)
+    @patch("newcode.command_line.utils.safe_input", side_effect=KeyboardInterrupt)
     def test_cancelled(self, mock_input):
-        from code_puppy.plugins.scheduler.scheduler_wizard import TextInputMenu
+        from newcode.plugins.scheduler.scheduler_wizard import TextInputMenu
 
         menu = TextInputMenu("Name")
         assert menu.run() is None
 
-    @patch("code_puppy.command_line.utils.safe_input", side_effect=EOFError)
+    @patch("newcode.command_line.utils.safe_input", side_effect=EOFError)
     def test_eof(self, mock_input):
-        from code_puppy.plugins.scheduler.scheduler_wizard import TextInputMenu
+        from newcode.plugins.scheduler.scheduler_wizard import TextInputMenu
 
         menu = TextInputMenu("Name")
         assert menu.run() is None
@@ -190,26 +190,24 @@ class TestTextInputMenu:
 
 
 class TestMultilineInputMenu:
-    @patch(
-        "code_puppy.command_line.utils.safe_input", side_effect=["line1", "line2", ""]
-    )
+    @patch("newcode.command_line.utils.safe_input", side_effect=["line1", "line2", ""])
     def test_multiline(self, mock_input):
-        from code_puppy.plugins.scheduler.scheduler_wizard import MultilineInputMenu
+        from newcode.plugins.scheduler.scheduler_wizard import MultilineInputMenu
 
         menu = MultilineInputMenu("Prompt")
         result = menu.run()
         assert result == "line1\nline2"
 
-    @patch("code_puppy.command_line.utils.safe_input", side_effect=[""])
+    @patch("newcode.command_line.utils.safe_input", side_effect=[""])
     def test_empty(self, mock_input):
-        from code_puppy.plugins.scheduler.scheduler_wizard import MultilineInputMenu
+        from newcode.plugins.scheduler.scheduler_wizard import MultilineInputMenu
 
         menu = MultilineInputMenu("Prompt")
         assert menu.run() is None
 
-    @patch("code_puppy.command_line.utils.safe_input", side_effect=KeyboardInterrupt)
+    @patch("newcode.command_line.utils.safe_input", side_effect=KeyboardInterrupt)
     def test_cancelled(self, mock_input):
-        from code_puppy.plugins.scheduler.scheduler_wizard import MultilineInputMenu
+        from newcode.plugins.scheduler.scheduler_wizard import MultilineInputMenu
 
         menu = MultilineInputMenu("Prompt")
         assert menu.run() is None
@@ -222,49 +220,49 @@ class TestMultilineInputMenu:
 
 class TestGetAgentsAndModels:
     def test_get_agents(self):
-        from code_puppy.plugins.scheduler import scheduler_wizard as sw
+        from newcode.plugins.scheduler import scheduler_wizard as sw
 
         agents_mod = MagicMock()
         agents_mod.get_available_agents.return_value = {"a": "Agent A"}
         agents_mod.get_agent_descriptions.return_value = {"a": "Desc A"}
-        with patch.dict("sys.modules", {"code_puppy.agents": agents_mod}):
+        with patch.dict("sys.modules", {"newcode.agents": agents_mod}):
             result = sw.get_available_agents_list()
         assert len(result) >= 1
 
     def test_get_agents_error(self):
-        from code_puppy.plugins.scheduler import scheduler_wizard as sw
+        from newcode.plugins.scheduler import scheduler_wizard as sw
 
-        with patch.dict("sys.modules", {"code_puppy.agents": None}):
+        with patch.dict("sys.modules", {"newcode.agents": None}):
             result = sw.get_available_agents_list()
         assert result == [("code-agent", "Default agent")]
 
     def test_get_models(self):
-        from code_puppy.plugins.scheduler import scheduler_wizard as sw
+        from newcode.plugins.scheduler import scheduler_wizard as sw
 
         mpc_mod = MagicMock()
         mpc_mod.load_model_names.return_value = ["m1", "m2"]
         with patch.dict(
-            "sys.modules", {"code_puppy.command_line.model_picker_completion": mpc_mod}
+            "sys.modules", {"newcode.command_line.model_picker_completion": mpc_mod}
         ):
             result = sw.get_available_models_list()
         assert "m1" in result
 
     def test_get_models_empty(self):
-        from code_puppy.plugins.scheduler import scheduler_wizard as sw
+        from newcode.plugins.scheduler import scheduler_wizard as sw
 
         mpc_mod = MagicMock()
         mpc_mod.load_model_names.return_value = []
         with patch.dict(
-            "sys.modules", {"code_puppy.command_line.model_picker_completion": mpc_mod}
+            "sys.modules", {"newcode.command_line.model_picker_completion": mpc_mod}
         ):
             result = sw.get_available_models_list()
         assert result == ["(default)"]
 
     def test_get_models_error(self):
-        from code_puppy.plugins.scheduler import scheduler_wizard as sw
+        from newcode.plugins.scheduler import scheduler_wizard as sw
 
         with patch.dict(
-            "sys.modules", {"code_puppy.command_line.model_picker_completion": None}
+            "sys.modules", {"newcode.command_line.model_picker_completion": None}
         ):
             result = sw.get_available_models_list()
         assert result == ["(default)"]
@@ -276,7 +274,7 @@ class TestGetAgentsAndModels:
 
 
 class TestCreateTaskWizard:
-    @patch("code_puppy.command_line.utils.safe_input", return_value="y")
+    @patch("newcode.command_line.utils.safe_input", return_value="y")
     @patch(f"{_MOD}.MultilineInputMenu")
     @patch(f"{_MOD}.TextInputMenu")
     @patch(f"{_MOD}.SelectionMenu")
@@ -287,7 +285,7 @@ class TestCreateTaskWizard:
     def test_full_wizard(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
     ):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         # TextInputMenu: name, working_dir
         text_instances = [MagicMock(), MagicMock()]
@@ -315,7 +313,7 @@ class TestCreateTaskWizard:
 
     @patch(f"{_MOD}.TextInputMenu")
     def test_wizard_cancel_name(self, mock_text):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         inst = MagicMock()
         inst.run.return_value = None
@@ -325,7 +323,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.SelectionMenu")
     @patch(f"{_MOD}.TextInputMenu")
     def test_wizard_cancel_schedule(self, mock_text, mock_sel):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_inst = MagicMock()
         text_inst.run.return_value = "Task"
@@ -335,7 +333,7 @@ class TestCreateTaskWizard:
         mock_sel.return_value = sel_inst
         assert create_task_wizard() is None
 
-    @patch("code_puppy.command_line.utils.safe_input", return_value="y")
+    @patch("newcode.command_line.utils.safe_input", return_value="y")
     @patch(f"{_MOD}.MultilineInputMenu")
     @patch(f"{_MOD}.TextInputMenu")
     @patch(f"{_MOD}.SelectionMenu")
@@ -346,7 +344,7 @@ class TestCreateTaskWizard:
     def test_wizard_custom_interval(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
     ):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         # TextInputMenu: name, custom_interval, working_dir
         text_instances = [MagicMock(), MagicMock(), MagicMock()]
@@ -372,7 +370,7 @@ class TestCreateTaskWizard:
     @patch(f"{_MOD}.TextInputMenu")
     @patch(f"{_MOD}.SelectionMenu")
     def test_wizard_cancel_custom_interval(self, mock_sel, mock_text):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_instances = [MagicMock(), MagicMock()]
         text_instances[0].run.return_value = "Task"
@@ -391,7 +389,7 @@ class TestCreateTaskWizard:
         f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_wizard_cancel_agent(self, mock_agents, mock_sel, mock_text):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_inst = MagicMock()
         text_inst.run.return_value = "Task"
@@ -411,7 +409,7 @@ class TestCreateTaskWizard:
         f"{_MOD}.get_available_agents_list", return_value=[("code-agent", "Default")]
     )
     def test_wizard_cancel_model(self, mock_agents, mock_models, mock_sel, mock_text):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_inst = MagicMock()
         text_inst.run.return_value = "Task"
@@ -435,7 +433,7 @@ class TestCreateTaskWizard:
     def test_wizard_cancel_prompt(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi
     ):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_inst = MagicMock()
         text_inst.run.return_value = "Task"
@@ -463,7 +461,7 @@ class TestCreateTaskWizard:
     def test_wizard_cancel_workdir(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi
     ):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_instances = [MagicMock(), MagicMock()]
         text_instances[0].run.return_value = "Task"
@@ -482,7 +480,7 @@ class TestCreateTaskWizard:
 
         assert create_task_wizard() is None
 
-    @patch("code_puppy.command_line.utils.safe_input", return_value="n")
+    @patch("newcode.command_line.utils.safe_input", return_value="n")
     @patch(f"{_MOD}.MultilineInputMenu")
     @patch(f"{_MOD}.TextInputMenu")
     @patch(f"{_MOD}.SelectionMenu")
@@ -493,7 +491,7 @@ class TestCreateTaskWizard:
     def test_wizard_decline_confirm(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
     ):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_instances = [MagicMock(), MagicMock()]
         text_instances[0].run.return_value = "Task"
@@ -512,7 +510,7 @@ class TestCreateTaskWizard:
 
         assert create_task_wizard() is None
 
-    @patch("code_puppy.command_line.utils.safe_input", side_effect=KeyboardInterrupt)
+    @patch("newcode.command_line.utils.safe_input", side_effect=KeyboardInterrupt)
     @patch(f"{_MOD}.MultilineInputMenu")
     @patch(f"{_MOD}.TextInputMenu")
     @patch(f"{_MOD}.SelectionMenu")
@@ -523,7 +521,7 @@ class TestCreateTaskWizard:
     def test_wizard_confirm_interrupt(
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
     ):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_instances = [MagicMock(), MagicMock()]
         text_instances[0].run.return_value = "Task"
@@ -542,7 +540,7 @@ class TestCreateTaskWizard:
 
         assert create_task_wizard() is None
 
-    @patch("code_puppy.command_line.utils.safe_input", return_value="y")
+    @patch("newcode.command_line.utils.safe_input", return_value="y")
     @patch(f"{_MOD}.MultilineInputMenu")
     @patch(f"{_MOD}.TextInputMenu")
     @patch(f"{_MOD}.SelectionMenu")
@@ -555,7 +553,7 @@ class TestCreateTaskWizard:
         self, mock_agents, mock_models, mock_sel, mock_text, mock_multi, mock_confirm
     ):
         """Verify code-agent is moved to front of agent list."""
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_instances = [MagicMock(), MagicMock()]
         text_instances[0].run.return_value = "Task"
@@ -586,7 +584,7 @@ class TestCreateTaskWizard:
             ("Every 6 hours", "interval", "6h"),
         ],
     )
-    @patch("code_puppy.command_line.utils.safe_input", return_value="y")
+    @patch("newcode.command_line.utils.safe_input", return_value="y")
     @patch(f"{_MOD}.MultilineInputMenu")
     @patch(f"{_MOD}.TextInputMenu")
     @patch(f"{_MOD}.SelectionMenu")
@@ -606,7 +604,7 @@ class TestCreateTaskWizard:
         expected_type,
         expected_value,
     ):
-        from code_puppy.plugins.scheduler.scheduler_wizard import create_task_wizard
+        from newcode.plugins.scheduler.scheduler_wizard import create_task_wizard
 
         text_instances = [MagicMock(), MagicMock()]
         text_instances[0].run.return_value = "Task"

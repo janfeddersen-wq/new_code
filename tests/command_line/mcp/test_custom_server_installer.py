@@ -1,17 +1,17 @@
-"""Tests for code_puppy/command_line/mcp/custom_server_installer.py"""
+"""Tests for newcode/command_line/mcp/custom_server_installer.py"""
 
 import json
 from unittest.mock import MagicMock, patch
 
-MODULE = "code_puppy.command_line.mcp.custom_server_installer"
-UTILS = "code_puppy.command_line.mcp.utils"
+MODULE = "newcode.command_line.mcp.custom_server_installer"
+UTILS = "newcode.command_line.mcp.utils"
 
 
 class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.safe_input")
     @patch(f"{MODULE}.emit_warning")
     def test_empty_name_returns_false(self, mock_warn, mock_input):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -22,7 +22,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_info")
     @patch(f"{MODULE}.emit_warning")
     def test_keyboard_interrupt_on_name(self, mock_warn, mock_info, mock_input):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -32,7 +32,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_info")
     @patch(f"{MODULE}.emit_warning")
     def test_eof_on_name(self, mock_warn, mock_info, mock_input):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -45,7 +45,7 @@ class TestPromptAndInstallCustomServer:
     def test_existing_server_declined(
         self, mock_info, mock_warn, mock_input, mock_find
     ):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -59,7 +59,7 @@ class TestPromptAndInstallCustomServer:
     def test_existing_server_keyboard_interrupt(
         self, mock_info, mock_warn, mock_input, mock_find
     ):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -71,7 +71,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_warning")
     @patch(f"{MODULE}.emit_info")
     def test_existing_server_eof(self, mock_info, mock_warn, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -85,7 +85,7 @@ class TestPromptAndInstallCustomServer:
     def test_existing_server_override_accepted(
         self, mock_info, mock_warn, mock_input, mock_find
     ):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -98,7 +98,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_warning")
     @patch(f"{MODULE}.emit_info")
     def test_invalid_type_choice(self, mock_info, mock_warn, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -110,7 +110,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_warning")
     @patch(f"{MODULE}.emit_info")
     def test_type_keyboard_interrupt(self, mock_info, mock_warn, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -122,7 +122,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_warning")
     @patch(f"{MODULE}.emit_info")
     def test_type_eof(self, mock_info, mock_warn, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -134,7 +134,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_warning")
     @patch(f"{MODULE}.emit_info")
     def test_empty_json(self, mock_info, mock_warn, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -146,7 +146,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_error")
     @patch(f"{MODULE}.emit_info")
     def test_invalid_json(self, mock_info, mock_error, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -158,7 +158,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_error")
     @patch(f"{MODULE}.emit_info")
     def test_stdio_missing_command(self, mock_info, mock_error, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -170,7 +170,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_error")
     @patch(f"{MODULE}.emit_info")
     def test_http_missing_url(self, mock_info, mock_error, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -182,7 +182,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_error")
     @patch(f"{MODULE}.emit_info")
     def test_sse_missing_url(self, mock_info, mock_error, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -196,7 +196,7 @@ class TestPromptAndInstallCustomServer:
     def test_successful_stdio_install(
         self, mock_info, mock_success, mock_input, mock_find, tmp_path
     ):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -207,7 +207,7 @@ class TestPromptAndInstallCustomServer:
         manager.register_server.return_value = "srv-id"
         mcp_file = tmp_path / "mcp_servers.json"
 
-        with patch("code_puppy.config.MCP_SERVERS_FILE", str(mcp_file)):
+        with patch("newcode.config.MCP_SERVERS_FILE", str(mcp_file)):
             result = prompt_and_install_custom_server(manager)
         assert result is True
         data = json.loads(mcp_file.read_text())
@@ -220,7 +220,7 @@ class TestPromptAndInstallCustomServer:
     def test_successful_http_install(
         self, mock_info, mock_success, mock_input, mock_find, tmp_path
     ):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -231,7 +231,7 @@ class TestPromptAndInstallCustomServer:
         manager.register_server.return_value = "srv-id"
         mcp_file = tmp_path / "mcp_servers.json"
 
-        with patch("code_puppy.config.MCP_SERVERS_FILE", str(mcp_file)):
+        with patch("newcode.config.MCP_SERVERS_FILE", str(mcp_file)):
             result = prompt_and_install_custom_server(manager)
         assert result is True
 
@@ -242,7 +242,7 @@ class TestPromptAndInstallCustomServer:
     def test_successful_sse_install(
         self, mock_info, mock_success, mock_input, mock_find, tmp_path
     ):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -253,7 +253,7 @@ class TestPromptAndInstallCustomServer:
         manager.register_server.return_value = "srv-id"
         mcp_file = tmp_path / "mcp_servers.json"
 
-        with patch("code_puppy.config.MCP_SERVERS_FILE", str(mcp_file)):
+        with patch("newcode.config.MCP_SERVERS_FILE", str(mcp_file)):
             result = prompt_and_install_custom_server(manager)
         assert result is True
 
@@ -262,7 +262,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_error")
     @patch(f"{MODULE}.emit_info")
     def test_register_fails(self, mock_info, mock_error, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -280,7 +280,7 @@ class TestPromptAndInstallCustomServer:
     @patch(f"{MODULE}.emit_error")
     @patch(f"{MODULE}.emit_info")
     def test_register_exception(self, mock_info, mock_error, mock_input, mock_find):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -300,7 +300,7 @@ class TestPromptAndInstallCustomServer:
     def test_install_with_existing_config_file(
         self, mock_info, mock_success, mock_input, mock_find, tmp_path
     ):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -313,7 +313,7 @@ class TestPromptAndInstallCustomServer:
         manager = MagicMock()
         manager.register_server.return_value = "id"
 
-        with patch("code_puppy.config.MCP_SERVERS_FILE", str(mcp_file)):
+        with patch("newcode.config.MCP_SERVERS_FILE", str(mcp_file)):
             result = prompt_and_install_custom_server(manager)
         assert result is True
         data = json.loads(mcp_file.read_text())
@@ -327,7 +327,7 @@ class TestPromptAndInstallCustomServer:
     def test_json_input_keyboard_interrupt(
         self, mock_info, mock_warn, mock_input, mock_find
     ):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -342,7 +342,7 @@ class TestPromptAndInstallCustomServer:
         self, mock_info, mock_error, mock_input, mock_find
     ):
         """Test multi-line JSON input that results in invalid JSON."""
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             prompt_and_install_custom_server,
         )
 
@@ -352,7 +352,7 @@ class TestPromptAndInstallCustomServer:
 
 class TestCustomServerExamples:
     def test_examples_exist(self):
-        from code_puppy.command_line.mcp.custom_server_installer import (
+        from newcode.command_line.mcp.custom_server_installer import (
             CUSTOM_SERVER_EXAMPLES,
         )
 

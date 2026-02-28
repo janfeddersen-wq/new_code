@@ -1,11 +1,11 @@
-"""Tests for code_puppy/command_line/onboarding_wizard.py"""
+"""Tests for newcode/command_line/onboarding_wizard.py"""
 
 import os
 from unittest.mock import AsyncMock, MagicMock, mock_open, patch
 
 import pytest
 
-MODULE = "code_puppy.command_line.onboarding_wizard"
+MODULE = "newcode.command_line.onboarding_wizard"
 
 
 # ---------------------------------------------------------------------------
@@ -16,13 +16,13 @@ MODULE = "code_puppy.command_line.onboarding_wizard"
 class TestHasCompletedOnboarding:
     @patch(f"{MODULE}.os.path.exists", return_value=True)
     def test_returns_true_when_file_exists(self, mock_exists):
-        from code_puppy.command_line.onboarding_wizard import has_completed_onboarding
+        from newcode.command_line.onboarding_wizard import has_completed_onboarding
 
         assert has_completed_onboarding() is True
 
     @patch(f"{MODULE}.os.path.exists", return_value=False)
     def test_returns_false_when_file_missing(self, mock_exists):
-        from code_puppy.command_line.onboarding_wizard import has_completed_onboarding
+        from newcode.command_line.onboarding_wizard import has_completed_onboarding
 
         assert has_completed_onboarding() is False
 
@@ -31,7 +31,7 @@ class TestMarkOnboardingComplete:
     @patch(f"{MODULE}.os.makedirs")
     @patch("builtins.open", new_callable=mock_open)
     def test_creates_file(self, m_open, m_makedirs):
-        from code_puppy.command_line.onboarding_wizard import mark_onboarding_complete
+        from newcode.command_line.onboarding_wizard import mark_onboarding_complete
 
         mark_onboarding_complete()
         m_makedirs.assert_called_once()
@@ -41,13 +41,13 @@ class TestMarkOnboardingComplete:
 class TestShouldShowOnboarding:
     @patch(f"{MODULE}.has_completed_onboarding", return_value=True)
     def test_returns_false_when_completed(self, mock_completed):
-        from code_puppy.command_line.onboarding_wizard import should_show_onboarding
+        from newcode.command_line.onboarding_wizard import should_show_onboarding
 
         assert should_show_onboarding() is False
 
     @patch(f"{MODULE}.has_completed_onboarding", return_value=False)
     def test_returns_true_when_not_completed(self, mock_completed):
-        from code_puppy.command_line.onboarding_wizard import should_show_onboarding
+        from newcode.command_line.onboarding_wizard import should_show_onboarding
 
         with patch.dict(os.environ, {}, clear=False):
             # Make sure skip env var is not set
@@ -56,21 +56,21 @@ class TestShouldShowOnboarding:
 
     @patch(f"{MODULE}.has_completed_onboarding", return_value=False)
     def test_returns_false_when_env_skip_1(self, mock_completed):
-        from code_puppy.command_line.onboarding_wizard import should_show_onboarding
+        from newcode.command_line.onboarding_wizard import should_show_onboarding
 
         with patch.dict(os.environ, {"CODE_PUPPY_SKIP_TUTORIAL": "1"}):
             assert should_show_onboarding() is False
 
     @patch(f"{MODULE}.has_completed_onboarding", return_value=False)
     def test_returns_false_when_env_skip_true(self, mock_completed):
-        from code_puppy.command_line.onboarding_wizard import should_show_onboarding
+        from newcode.command_line.onboarding_wizard import should_show_onboarding
 
         with patch.dict(os.environ, {"CODE_PUPPY_SKIP_TUTORIAL": "true"}):
             assert should_show_onboarding() is False
 
     @patch(f"{MODULE}.has_completed_onboarding", return_value=False)
     def test_returns_false_when_env_skip_yes(self, mock_completed):
-        from code_puppy.command_line.onboarding_wizard import should_show_onboarding
+        from newcode.command_line.onboarding_wizard import should_show_onboarding
 
         with patch.dict(os.environ, {"CODE_PUPPY_SKIP_TUTORIAL": "yes"}):
             assert should_show_onboarding() is False
@@ -80,7 +80,7 @@ class TestResetOnboarding:
     @patch(f"{MODULE}.os.path.exists", return_value=True)
     @patch(f"{MODULE}.os.remove")
     def test_removes_file(self, mock_remove, mock_exists):
-        from code_puppy.command_line.onboarding_wizard import reset_onboarding
+        from newcode.command_line.onboarding_wizard import reset_onboarding
 
         reset_onboarding()
         mock_remove.assert_called_once()
@@ -88,7 +88,7 @@ class TestResetOnboarding:
     @patch(f"{MODULE}.os.path.exists", return_value=False)
     @patch(f"{MODULE}.os.remove")
     def test_no_op_when_missing(self, mock_remove, mock_exists):
-        from code_puppy.command_line.onboarding_wizard import reset_onboarding
+        from newcode.command_line.onboarding_wizard import reset_onboarding
 
         reset_onboarding()
         mock_remove.assert_not_called()
@@ -101,7 +101,7 @@ class TestResetOnboarding:
 
 class TestOnboardingWizard:
     def _make_wizard(self):
-        from code_puppy.command_line.onboarding_wizard import OnboardingWizard
+        from newcode.command_line.onboarding_wizard import OnboardingWizard
 
         return OnboardingWizard()
 
@@ -271,7 +271,7 @@ class TestGetSlidePanelContent:
     def test_returns_ansi(self):
         from prompt_toolkit.formatted_text import ANSI
 
-        from code_puppy.command_line.onboarding_wizard import (
+        from newcode.command_line.onboarding_wizard import (
             OnboardingWizard,
             _get_slide_panel_content,
         )
@@ -292,7 +292,7 @@ class TestRunOnboardingWizardKeyBindings:
     def _capture_kb(self):
         import asyncio
 
-        from code_puppy.command_line.onboarding_wizard import (
+        from newcode.command_line.onboarding_wizard import (
             OnboardingWizard,
             run_onboarding_wizard,
         )
@@ -301,10 +301,10 @@ class TestRunOnboardingWizardKeyBindings:
         wizard = OnboardingWizard()
 
         with (
-            patch("code_puppy.tools.command_runner.set_awaiting_user_input"),
+            patch("newcode.tools.command_runner.set_awaiting_user_input"),
             patch(f"{MODULE}.sys") as mock_sys,
             patch(f"{MODULE}.asyncio") as mock_asyncio,
-            patch("code_puppy.messaging.emit_info"),
+            patch("newcode.messaging.emit_info"),
             patch(f"{MODULE}.mark_onboarding_complete"),
             patch(f"{MODULE}.Application") as MockApp,
             patch(f"{MODULE}.OnboardingWizard", return_value=wizard),
@@ -430,12 +430,12 @@ class TestRunOnboardingWizardKeyBindings:
 class TestRunOnboardingWizard:
     @pytest.mark.asyncio
     @patch(f"{MODULE}.mark_onboarding_complete")
-    @patch("code_puppy.messaging.emit_info")
-    @patch("code_puppy.tools.command_runner.set_awaiting_user_input")
+    @patch("newcode.messaging.emit_info")
+    @patch("newcode.tools.command_runner.set_awaiting_user_input")
     @patch(f"{MODULE}.sys")
     @patch(f"{MODULE}.Application")
     async def test_skipped(self, MockApp, mock_sys, mock_set, mock_emit, mock_mark):
-        from code_puppy.command_line.onboarding_wizard import run_onboarding_wizard
+        from newcode.command_line.onboarding_wizard import run_onboarding_wizard
 
         mock_sys.stdout = MagicMock()
         app_instance = MagicMock()
@@ -460,12 +460,12 @@ class TestRunOnboardingWizard:
 
     @pytest.mark.asyncio
     @patch(f"{MODULE}.mark_onboarding_complete")
-    @patch("code_puppy.messaging.emit_info")
-    @patch("code_puppy.tools.command_runner.set_awaiting_user_input")
+    @patch("newcode.messaging.emit_info")
+    @patch("newcode.tools.command_runner.set_awaiting_user_input")
     @patch(f"{MODULE}.sys")
     @patch(f"{MODULE}.Application")
     async def test_completed(self, MockApp, mock_sys, mock_set, mock_emit, mock_mark):
-        from code_puppy.command_line.onboarding_wizard import run_onboarding_wizard
+        from newcode.command_line.onboarding_wizard import run_onboarding_wizard
 
         mock_sys.stdout = MagicMock()
         app_instance = MagicMock()
@@ -489,14 +489,14 @@ class TestRunOnboardingWizard:
 
     @pytest.mark.asyncio
     @patch(f"{MODULE}.mark_onboarding_complete")
-    @patch("code_puppy.messaging.emit_info")
-    @patch("code_puppy.tools.command_runner.set_awaiting_user_input")
+    @patch("newcode.messaging.emit_info")
+    @patch("newcode.tools.command_runner.set_awaiting_user_input")
     @patch(f"{MODULE}.sys")
     @patch(f"{MODULE}.Application")
     async def test_trigger_oauth(
         self, MockApp, mock_sys, mock_set, mock_emit, mock_mark
     ):
-        from code_puppy.command_line.onboarding_wizard import run_onboarding_wizard
+        from newcode.command_line.onboarding_wizard import run_onboarding_wizard
 
         mock_sys.stdout = MagicMock()
         app_instance = MagicMock()
@@ -519,12 +519,12 @@ class TestRunOnboardingWizard:
             assert result == "chatgpt"
 
     @pytest.mark.asyncio
-    @patch("code_puppy.messaging.emit_info")
-    @patch("code_puppy.tools.command_runner.set_awaiting_user_input")
+    @patch("newcode.messaging.emit_info")
+    @patch("newcode.tools.command_runner.set_awaiting_user_input")
     @patch(f"{MODULE}.sys")
     @patch(f"{MODULE}.Application")
     async def test_keyboard_interrupt(self, MockApp, mock_sys, mock_set, mock_emit):
-        from code_puppy.command_line.onboarding_wizard import run_onboarding_wizard
+        from newcode.command_line.onboarding_wizard import run_onboarding_wizard
 
         mock_sys.stdout = MagicMock()
         app_instance = MagicMock()
@@ -536,12 +536,12 @@ class TestRunOnboardingWizard:
             assert result == "skipped"
 
     @pytest.mark.asyncio
-    @patch("code_puppy.messaging.emit_info")
-    @patch("code_puppy.tools.command_runner.set_awaiting_user_input")
+    @patch("newcode.messaging.emit_info")
+    @patch("newcode.tools.command_runner.set_awaiting_user_input")
     @patch(f"{MODULE}.sys")
     @patch(f"{MODULE}.Application")
     async def test_exception(self, MockApp, mock_sys, mock_set, mock_emit):
-        from code_puppy.command_line.onboarding_wizard import run_onboarding_wizard
+        from newcode.command_line.onboarding_wizard import run_onboarding_wizard
 
         mock_sys.stdout = MagicMock()
         app_instance = MagicMock()
@@ -562,7 +562,7 @@ class TestRunOnboardingIfNeeded:
     @pytest.mark.asyncio
     @patch(f"{MODULE}.should_show_onboarding", return_value=False)
     async def test_skips_if_not_needed(self, mock_should):
-        from code_puppy.command_line.onboarding_wizard import run_onboarding_if_needed
+        from newcode.command_line.onboarding_wizard import run_onboarding_if_needed
 
         result = await run_onboarding_if_needed()
         assert result is None
@@ -575,7 +575,7 @@ class TestRunOnboardingIfNeeded:
     )
     @patch(f"{MODULE}.should_show_onboarding", return_value=True)
     async def test_runs_if_needed(self, mock_should, mock_run):
-        from code_puppy.command_line.onboarding_wizard import run_onboarding_if_needed
+        from newcode.command_line.onboarding_wizard import run_onboarding_if_needed
 
         result = await run_onboarding_if_needed()
         assert result == "completed"

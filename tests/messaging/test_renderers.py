@@ -1,4 +1,4 @@
-"""Tests for code_puppy.messaging.renderers."""
+"""Tests for newcode.messaging.renderers."""
 
 import asyncio
 import time
@@ -10,8 +10,8 @@ from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
-from code_puppy.messaging.message_queue import MessageQueue, MessageType, UIMessage
-from code_puppy.messaging.renderers import (
+from newcode.messaging.message_queue import MessageQueue, MessageType, UIMessage
+from newcode.messaging.renderers import (
     InteractiveRenderer,
     MessageRenderer,
     SynchronousInteractiveRenderer,
@@ -278,7 +278,7 @@ def test_sync_renderer_markdown_fallback(mq):
     r = SynchronousInteractiveRenderer(mq, console=console)
     # Patch Markdown to raise
     with patch(
-        "code_puppy.messaging.renderers.Markdown",
+        "newcode.messaging.renderers.Markdown",
         side_effect=Exception("bad markdown"),
     ):
         msg = UIMessage(type=MessageType.AGENT_RESPONSE, content="**bold**")
@@ -293,7 +293,7 @@ async def test_interactive_renderer_markdown_fallback(mq):
     console = make_console()
     r = InteractiveRenderer(mq, console=console)
     with patch(
-        "code_puppy.messaging.renderers.Markdown",
+        "newcode.messaging.renderers.Markdown",
         side_effect=Exception("bad"),
     ):
         msg = UIMessage(type=MessageType.AGENT_RESPONSE, content="**text**")

@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "code_puppy"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "newcode"))
 
 from tools.browser.browser_manager import (
     BrowserManager,
@@ -93,7 +93,7 @@ class TestBrowserManagerInitialization(TestBrowserManagerBase):
     def test_profile_directory_creation_per_session(self):
         """Test that each session gets its own profile directory."""
         with tempfile.TemporaryDirectory() as temp_dir:
-            from code_puppy.tools.browser import browser_manager
+            from newcode.tools.browser import browser_manager
 
             original_cache_dir = browser_manager.config.CACHE_DIR
             try:
@@ -121,7 +121,7 @@ class TestBrowserManagerInitialization(TestBrowserManagerBase):
     def test_profile_dir_attribute_set(self):
         """Test that profile_dir attribute is set during initialization."""
         with tempfile.TemporaryDirectory() as temp_dir:
-            from code_puppy.tools.browser import browser_manager
+            from newcode.tools.browser import browser_manager
 
             original_cache_dir = browser_manager.config.CACHE_DIR
             try:

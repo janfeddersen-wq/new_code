@@ -1,4 +1,4 @@
-"""Coverage tests for agents & small gaps (code_puppy-ont).
+"""Coverage tests for agents & small gaps (newcode-ont).
 
 Targeted tests to reach 100% on specific missed lines.
 """
@@ -16,17 +16,17 @@ import pytest
 
 
 _REVIEWER_AGENTS = [
-    ("code_puppy.agents.agent_c_reviewer", "CReviewerAgent"),
-    ("code_puppy.agents.agent_code_reviewer", "CodeQualityReviewerAgent"),
-    ("code_puppy.agents.agent_cpp_reviewer", "CppReviewerAgent"),
-    ("code_puppy.agents.agent_golang_reviewer", "GolangReviewerAgent"),
-    ("code_puppy.agents.agent_javascript_reviewer", "JavaScriptReviewerAgent"),
-    ("code_puppy.agents.agent_python_reviewer", "PythonReviewerAgent"),
-    ("code_puppy.agents.agent_python_programmer", "PythonProgrammerAgent"),
-    ("code_puppy.agents.agent_qa_expert", "QAExpertAgent"),
-    ("code_puppy.agents.agent_qa_browser", "QABrowserAgent"),
-    ("code_puppy.agents.agent_security_auditor", "SecurityAuditorAgent"),
-    ("code_puppy.agents.agent_typescript_reviewer", "TypeScriptReviewerAgent"),
+    ("newcode.agents.agent_c_reviewer", "CReviewerAgent"),
+    ("newcode.agents.agent_code_reviewer", "CodeQualityReviewerAgent"),
+    ("newcode.agents.agent_cpp_reviewer", "CppReviewerAgent"),
+    ("newcode.agents.agent_golang_reviewer", "GolangReviewerAgent"),
+    ("newcode.agents.agent_javascript_reviewer", "JavaScriptReviewerAgent"),
+    ("newcode.agents.agent_python_reviewer", "PythonReviewerAgent"),
+    ("newcode.agents.agent_python_programmer", "PythonProgrammerAgent"),
+    ("newcode.agents.agent_qa_expert", "QAExpertAgent"),
+    ("newcode.agents.agent_qa_browser", "QABrowserAgent"),
+    ("newcode.agents.agent_security_auditor", "SecurityAuditorAgent"),
+    ("newcode.agents.agent_typescript_reviewer", "TypeScriptReviewerAgent"),
 ]
 
 
@@ -50,7 +50,7 @@ def test_reviewer_agent_tools_and_prompt(module_path, class_name):
 
 class TestPlanningAgent:
     def test_tools_and_prompt(self):
-        from code_puppy.agents.agent_planning import PlanningAgent
+        from newcode.agents.agent_planning import PlanningAgent
 
         agent = PlanningAgent()
         tools = agent.get_available_tools()
@@ -64,7 +64,7 @@ class TestPlanningAgent:
 
 class TestPromptReviewerAgent:
     def test_tools_and_prompt(self):
-        from code_puppy.agents.prompt_reviewer import PromptReviewerAgent
+        from newcode.agents.prompt_reviewer import PromptReviewerAgent
 
         agent = PromptReviewerAgent()
         tools = agent.get_available_tools()
@@ -77,7 +77,7 @@ class TestPromptReviewerAgent:
 
 class TestSchedulerAgent:
     def test_tools_and_prompt(self):
-        from code_puppy.agents.agent_scheduler import SchedulerAgent
+        from newcode.agents.agent_scheduler import SchedulerAgent
 
         agent = SchedulerAgent()
         tools = agent.get_available_tools()
@@ -89,7 +89,7 @@ class TestSchedulerAgent:
 
 class TestCodeAgentTools:
     def test_get_available_tools(self):
-        from code_puppy.agents.agent_code_agent import CodeAgent
+        from newcode.agents.agent_code_agent import CodeAgent
 
         agent = CodeAgent()
         tools = agent.get_available_tools()
@@ -105,7 +105,7 @@ class TestCodeAgentTools:
 class TestSummarizationGaps:
     def test_ensure_thread_pool_recreates_after_shutdown(self):
         """Cover lines 38-40: pool._shutdown check."""
-        import code_puppy.summarization_agent as mod
+        import newcode.summarization_agent as mod
 
         pool = ThreadPoolExecutor(max_workers=1)
         pool.shutdown(wait=False)
@@ -117,7 +117,7 @@ class TestSummarizationGaps:
 
     def test_summarization_error_with_original(self):
         """Cover lines 66-67: SummarizationError.__init__."""
-        from code_puppy.summarization_agent import SummarizationError
+        from newcode.summarization_agent import SummarizationError
 
         orig = ValueError("boom")
         err = SummarizationError("wrapper", original_error=orig)
@@ -126,13 +126,13 @@ class TestSummarizationGaps:
 
     def test_run_summarization_sync_agent_init_failure(self):
         """Cover the except branch when get_summarization_agent raises."""
-        from code_puppy.summarization_agent import (
+        from newcode.summarization_agent import (
             SummarizationError,
             run_summarization_sync,
         )
 
         with patch(
-            "code_puppy.summarization_agent.get_summarization_agent",
+            "newcode.summarization_agent.get_summarization_agent",
             side_effect=RuntimeError("no model"),
         ):
             with pytest.raises(SummarizationError, match="Failed to initialize"):
@@ -140,7 +140,7 @@ class TestSummarizationGaps:
 
     def test_run_summarization_sync_llm_failure(self):
         """Cover lines 88-105: the _run_in_thread path and LLM error wrapping."""
-        from code_puppy.summarization_agent import (
+        from newcode.summarization_agent import (
             SummarizationError,
             run_summarization_sync,
         )
@@ -150,14 +150,14 @@ class TestSummarizationGaps:
 
         with (
             patch(
-                "code_puppy.summarization_agent.get_summarization_agent",
+                "newcode.summarization_agent.get_summarization_agent",
                 return_value=mock_agent,
             ),
             patch(
-                "code_puppy.summarization_agent.get_global_model_name",
+                "newcode.summarization_agent.get_global_model_name",
                 return_value="test",
             ),
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
         ):
             mock_prep.return_value = MagicMock(user_prompt="p", instructions="i")
             with pytest.raises(SummarizationError, match="LLM call failed"):
@@ -172,12 +172,12 @@ class TestSummarizationGaps:
 class TestDisplaySubagentSkip:
     def test_skips_when_subagent_not_verbose(self):
         """Cover line 39: early return for subagent without verbose."""
-        from code_puppy.tools.display import display_non_streamed_result
+        from newcode.tools.display import display_non_streamed_result
 
         with (
-            patch("code_puppy.tools.display.is_subagent", return_value=True),
-            patch("code_puppy.tools.display.get_subagent_verbose", return_value=False),
-            patch("code_puppy.messaging.spinner.pause_all_spinners") as mock_pause,
+            patch("newcode.tools.display.is_subagent", return_value=True),
+            patch("newcode.tools.display.get_subagent_verbose", return_value=False),
+            patch("newcode.messaging.spinner.pause_all_spinners") as mock_pause,
         ):
             display_non_streamed_result("hello")
             mock_pause.assert_not_called()  # Should have returned early
@@ -195,20 +195,20 @@ class TestInitVersionFallback:
             # Re-exec the module code
             import importlib
 
-            import code_puppy
+            import newcode
 
-            importlib.reload(code_puppy)
-            assert code_puppy.__version__ == "0.0.0-dev"
+            importlib.reload(newcode)
+            assert newcode.__version__ == "0.0.0-dev"
 
     def test_version_fallback_on_empty(self):
         """Cover the empty-string branch."""
         with patch("importlib.metadata.version", return_value=""):
             import importlib
 
-            import code_puppy
+            import newcode
 
-            importlib.reload(code_puppy)
-            assert code_puppy.__version__ == "0.0.0-dev"
+            importlib.reload(newcode)
+            assert newcode.__version__ == "0.0.0-dev"
 
 
 # =============================================================================
@@ -219,7 +219,7 @@ class TestInitVersionFallback:
 class TestMainModule:
     def test_main_module_importable(self):
         """Cover the import of __main__ (lines 7-10 minus __name__ guard)."""
-        import code_puppy.__main__  # noqa: F401
+        import newcode.__main__  # noqa: F401
         # The if __name__ == '__main__' guard won't fire, but the import covers lines 7-8
 
 
@@ -231,7 +231,7 @@ class TestMainModule:
 class TestSpinnerBaseGaps:
     def _make_spinner(self):
         """Create a concrete spinner subclass for testing."""
-        from code_puppy.messaging.spinner.spinner_base import SpinnerBase
+        from newcode.messaging.spinner.spinner_base import SpinnerBase
 
         class DummySpinner(SpinnerBase):
             def start(self):
@@ -260,7 +260,7 @@ class TestSpinnerBaseGaps:
 
     def test_clear_context_info(self):
         """Cover line 70: clear_context_info."""
-        from code_puppy.messaging.spinner.spinner_base import SpinnerBase
+        from newcode.messaging.spinner.spinner_base import SpinnerBase
 
         SpinnerBase.set_context_info("something")
         assert SpinnerBase.get_context_info() == "something"
@@ -269,13 +269,13 @@ class TestSpinnerBaseGaps:
 
     def test_format_context_info_zero_capacity(self):
         """Cover line 93: capacity <= 0 returns empty."""
-        from code_puppy.messaging.spinner.spinner_base import SpinnerBase
+        from newcode.messaging.spinner.spinner_base import SpinnerBase
 
         assert SpinnerBase.format_context_info(100, 0, 0.0) == ""
         assert SpinnerBase.format_context_info(100, -1, 0.0) == ""
 
     def test_format_context_info_normal(self):
-        from code_puppy.messaging.spinner.spinner_base import SpinnerBase
+        from newcode.messaging.spinner.spinner_base import SpinnerBase
 
         result = SpinnerBase.format_context_info(5000, 10000, 0.5)
         assert "5,000" in result
@@ -290,7 +290,7 @@ class TestSpinnerBaseGaps:
 class TestAskUserQuestionModelsGaps:
     def test_timeout_response(self):
         """Cover lines 57-59: timeout_response classmethod."""
-        from code_puppy.tools.ask_user_question.models import AskUserQuestionOutput
+        from newcode.tools.ask_user_question.models import AskUserQuestionOutput
 
         resp = AskUserQuestionOutput.timeout_response(30)
         assert resp.timed_out is True
@@ -307,17 +307,17 @@ class TestAskUserQuestionModelsGaps:
 class TestAskUserRegistrationGap:
     def test_handler_called(self):
         """Cover line 87: the actual handler invocation."""
-        from code_puppy.tools.ask_user_question.models import AskUserQuestionOutput
+        from newcode.tools.ask_user_question.models import AskUserQuestionOutput
 
         mock_output = AskUserQuestionOutput(cancelled=True)
 
         with patch(
-            "code_puppy.tools.ask_user_question.registration._ask_user_question_impl",
+            "newcode.tools.ask_user_question.registration._ask_user_question_impl",
             return_value=mock_output,
         ) as mock_impl:
             # We need to register the tool on a real agent, or just call the inner function
             # Simplest: import and call the impl wrapper directly
-            from code_puppy.tools.ask_user_question.registration import (
+            from newcode.tools.ask_user_question.registration import (
                 register_ask_user_question,
             )
 
@@ -358,7 +358,7 @@ class TestAsyncLifecycleGaps:
     @pytest.mark.asyncio
     async def test_start_server_timeout(self):
         """Cover lines 99-103: timeout waiting for server to start."""
-        from code_puppy.mcp_.async_lifecycle import AsyncServerLifecycleManager
+        from newcode.mcp_.async_lifecycle import AsyncServerLifecycleManager
 
         manager = AsyncServerLifecycleManager()
         mock_server = MagicMock()
@@ -383,7 +383,7 @@ class TestAsyncLifecycleGaps:
     @pytest.mark.asyncio
     async def test_start_server_task_fails_during_startup(self):
         """Cover the task.done() + exception path after timeout."""
-        from code_puppy.mcp_.async_lifecycle import AsyncServerLifecycleManager
+        from newcode.mcp_.async_lifecycle import AsyncServerLifecycleManager
 
         manager = AsyncServerLifecycleManager()
         mock_server = MagicMock()

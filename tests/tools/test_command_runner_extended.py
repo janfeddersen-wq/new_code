@@ -1,4 +1,4 @@
-"""Extended tests for code_puppy.tools.command_runner - filling coverage gaps.
+"""Extended tests for newcode.tools.command_runner - filling coverage gaps.
 
 This module tests previously uncovered code paths including:
 - Windows-specific pipe checking and keyboard handling
@@ -27,7 +27,7 @@ import pytest
 # Import directly from the module file
 spec = importlib.util.spec_from_file_location(
     "command_runner_module",
-    Path(__file__).parent.parent.parent / "code_puppy" / "tools" / "command_runner.py",
+    Path(__file__).parent.parent.parent / "newcode" / "tools" / "command_runner.py",
 )
 command_runner_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(command_runner_module)
@@ -550,7 +550,7 @@ class TestRunShellCommandAsync:
 
         # Mock callback to block command
         with patch(
-            "code_puppy.callbacks.on_run_shell_command", new_callable=AsyncMock
+            "newcode.callbacks.on_run_shell_command", new_callable=AsyncMock
         ) as mock_callback:
             mock_callback.return_value = [
                 {
@@ -631,7 +631,7 @@ class TestRegisterAgentRunShellCommand:
 
     def test_register_agent_run_shell_command(self, monkeypatch):
         """Test that agent tool is properly registered."""
-        from code_puppy.tools.command_runner import register_agent_run_shell_command
+        from newcode.tools.command_runner import register_agent_run_shell_command
 
         # Create a mock agent
         mock_agent = MagicMock()

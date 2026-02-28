@@ -1,13 +1,13 @@
-"""Tests for code_puppy/command_line/mcp/install_command.py"""
+"""Tests for newcode/command_line/mcp/install_command.py"""
 
 import os
 from dataclasses import dataclass
 from unittest.mock import MagicMock, patch
 
-MODULE = "code_puppy.command_line.mcp.install_command"
-UTILS = "code_puppy.command_line.mcp.utils"
-WIZARD = "code_puppy.command_line.mcp.wizard_utils"
-MESSAGING = "code_puppy.messaging"
+MODULE = "newcode.command_line.mcp.install_command"
+UTILS = "newcode.command_line.mcp.utils"
+WIZARD = "newcode.command_line.mcp.wizard_utils"
+MESSAGING = "newcode.messaging"
 
 
 @dataclass
@@ -32,9 +32,9 @@ class FakeServer:
 
 def make_cmd():
     """Create an InstallCommand with mocked manager."""
-    with patch("code_puppy.command_line.mcp.base.get_mcp_manager") as mock_mgr:
+    with patch("newcode.command_line.mcp.base.get_mcp_manager") as mock_mgr:
         mock_mgr.return_value = MagicMock()
-        from code_puppy.command_line.mcp.install_command import InstallCommand
+        from newcode.command_line.mcp.install_command import InstallCommand
 
         cmd = InstallCommand()
     return cmd
@@ -58,14 +58,14 @@ class TestExecute:
         with patch.object(
             cmd, "_install_from_catalog", return_value=True
         ) as mock_install:
-            with patch.dict("sys.modules", {"code_puppy.agent": MagicMock()}):
+            with patch.dict("sys.modules", {"newcode.agent": MagicMock()}):
                 cmd.execute(["some-server"], "grp")
         mock_install.assert_called_once_with("some-server", "grp")
 
     def test_with_args_reloads_on_success(self):
         cmd = make_cmd()
         with patch.object(cmd, "_install_from_catalog", return_value=True):
-            with patch.dict("sys.modules", {"code_puppy.agent": MagicMock()}):
+            with patch.dict("sys.modules", {"newcode.agent": MagicMock()}):
                 cmd.execute(["srv"], "grp")
 
     def test_with_args_no_reload_on_failure(self):
@@ -77,7 +77,7 @@ class TestExecute:
         """Test that ImportError on reload_mcp_servers is handled."""
         cmd = make_cmd()
         with patch.object(cmd, "_install_from_catalog", return_value=True):
-            # Don't mock code_puppy.agent so it raises ImportError
+            # Don't mock newcode.agent so it raises ImportError
             cmd.execute(["srv"], "grp")
 
     @patch(f"{MODULE}.emit_info")
@@ -105,11 +105,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             result = cmd._install_from_catalog("nonexistent", "grp")
         assert result is False
@@ -126,11 +122,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             result = cmd._install_from_catalog("test", "grp")
         assert result is False
@@ -148,11 +140,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             with patch(f"{UTILS}.find_server_id_by_name", return_value=None):
                 result = cmd._install_from_catalog("test", "grp")
@@ -170,11 +158,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             with patch(f"{UTILS}.find_server_id_by_name", return_value=None):
                 result = cmd._install_from_catalog("test-server", "grp")
@@ -190,11 +174,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             with patch(f"{UTILS}.find_server_id_by_name", return_value="existing"):
                 result = cmd._install_from_catalog("test-server", "grp")
@@ -213,11 +193,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             with patch(f"{UTILS}.find_server_id_by_name", return_value="existing"):
                 result = cmd._install_from_catalog("test-server", "grp")
@@ -241,11 +217,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             with patch(f"{UTILS}.find_server_id_by_name", return_value=None):
                 os.environ.pop("TOKEN", None)
@@ -265,11 +237,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             with patch(f"{UTILS}.find_server_id_by_name", return_value=None):
                 with patch.dict(os.environ, {"PRESET_VAR": "value"}):
@@ -279,9 +247,7 @@ class TestInstallFromCatalog:
     @patch(f"{MODULE}.emit_info")
     def test_import_error(self, mock_info):
         cmd = make_cmd()
-        with patch.dict(
-            "sys.modules", {"code_puppy.mcp_.server_registry_catalog": None}
-        ):
+        with patch.dict("sys.modules", {"newcode.mcp_.server_registry_catalog": None}):
             result = cmd._install_from_catalog("srv", "grp")
         assert result is False
 
@@ -294,11 +260,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             result = cmd._install_from_catalog("srv", "grp")
         assert result is False
@@ -316,11 +278,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             result = cmd._install_from_catalog("test", "grp")
         assert result is False
@@ -337,11 +295,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             with patch(f"{UTILS}.find_server_id_by_name", return_value=None):
                 result = cmd._install_from_catalog("test-server", "grp")
@@ -365,11 +319,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             with patch(f"{UTILS}.find_server_id_by_name", return_value=None):
                 result = cmd._install_from_catalog("test-server", "grp")
@@ -385,11 +335,7 @@ class TestInstallFromCatalog:
 
         with patch.dict(
             "sys.modules",
-            {
-                "code_puppy.mcp_.server_registry_catalog": MagicMock(
-                    catalog=mock_catalog
-                )
-            },
+            {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
         ):
             result = cmd._install_from_catalog("test", "grp")
         assert result is False

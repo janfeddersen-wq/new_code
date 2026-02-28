@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.browser.browser_locators import find_by_role
+from newcode.tools.browser.browser_locators import find_by_role
 
 
 @pytest.mark.asyncio
@@ -35,11 +35,11 @@ async def test_find_by_role_basic():
     mock_page.get_by_role = MagicMock(return_value=mock_locator)
 
     with patch(
-        "code_puppy.tools.browser.browser_locators.get_session_browser_manager",
+        "newcode.tools.browser.browser_locators.get_session_browser_manager",
         return_value=mock_manager,
     ):
         with patch(
-            "code_puppy.tools.browser.browser_locators.emit_info"
+            "newcode.tools.browser.browser_locators.emit_info"
         ):  # Mock emit_info to avoid side effects
             result = await find_by_role("button")
 
@@ -55,10 +55,10 @@ async def test_find_by_role_no_page():
     mock_manager.get_current_page.return_value = None
 
     with patch(
-        "code_puppy.tools.browser.browser_locators.get_session_browser_manager",
+        "newcode.tools.browser.browser_locators.get_session_browser_manager",
         return_value=mock_manager,
     ):
-        with patch("code_puppy.tools.browser.browser_locators.emit_info"):
+        with patch("newcode.tools.browser.browser_locators.emit_info"):
             result = await find_by_role("button")
 
             assert result["success"] is False
@@ -72,10 +72,10 @@ async def test_find_by_role_exception():
     mock_manager.get_current_page.side_effect = Exception("Browser error")
 
     with patch(
-        "code_puppy.tools.browser.browser_locators.get_session_browser_manager",
+        "newcode.tools.browser.browser_locators.get_session_browser_manager",
         return_value=mock_manager,
     ):
-        with patch("code_puppy.tools.browser.browser_locators.emit_info"):
+        with patch("newcode.tools.browser.browser_locators.emit_info"):
             result = await find_by_role("button")
 
             assert result["success"] is False

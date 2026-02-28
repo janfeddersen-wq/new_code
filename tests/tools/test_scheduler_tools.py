@@ -1,4 +1,4 @@
-"""Tests for code_puppy/tools/scheduler_tools.py - 100% coverage."""
+"""Tests for newcode/tools/scheduler_tools.py - 100% coverage."""
 
 from unittest.mock import MagicMock, mock_open, patch
 
@@ -31,23 +31,23 @@ def _make_agent():
     return agent, captured
 
 
-@patch("code_puppy.tools.scheduler_tools.generate_group_id", return_value="grp")
-@patch("code_puppy.tools.scheduler_tools.emit_info")
+@patch("newcode.tools.scheduler_tools.generate_group_id", return_value="grp")
+@patch("newcode.tools.scheduler_tools.emit_info")
 class TestSchedulerListTasks:
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=None)
-    @patch("code_puppy.scheduler.load_tasks", return_value=[])
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=None)
+    @patch("newcode.scheduler.load_tasks", return_value=[])
     def test_no_tasks(self, mock_load, mock_pid, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_list_tasks
+        from newcode.tools.scheduler_tools import register_scheduler_list_tasks
 
         agent, cap = _make_agent()
         register_scheduler_list_tasks(agent)
         result = cap["fn"]()
         assert "No scheduled tasks" in result
 
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=1234)
-    @patch("code_puppy.scheduler.load_tasks")
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=1234)
+    @patch("newcode.scheduler.load_tasks")
     def test_with_tasks(self, mock_load, mock_pid, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_list_tasks
+        from newcode.tools.scheduler_tools import register_scheduler_list_tasks
 
         tasks = [
             FakeTask(last_status="success", last_run="2024-01-01T00:00:00Z"),
@@ -66,16 +66,16 @@ class TestSchedulerListTasks:
         assert "⏳" in result
 
 
-@patch("code_puppy.tools.scheduler_tools.generate_group_id", return_value="grp")
-@patch("code_puppy.tools.scheduler_tools.emit_info")
-@patch("code_puppy.tools.scheduler_tools.emit_success")
+@patch("newcode.tools.scheduler_tools.generate_group_id", return_value="grp")
+@patch("newcode.tools.scheduler_tools.emit_info")
+@patch("newcode.tools.scheduler_tools.emit_success")
 class TestSchedulerCreateTask:
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=None)
-    @patch("code_puppy.scheduler.add_task")
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=None)
+    @patch("newcode.scheduler.add_task")
     def test_create_no_daemon(
         self, mock_add, mock_pid, mock_success, mock_emit, mock_grp
     ):
-        from code_puppy.tools.scheduler_tools import register_scheduler_create_task
+        from newcode.tools.scheduler_tools import register_scheduler_create_task
 
         agent, cap = _make_agent()
         register_scheduler_create_task(agent)
@@ -83,12 +83,12 @@ class TestSchedulerCreateTask:
         assert "Created" in result or "✅" in result
         assert "not running" in result
 
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=42)
-    @patch("code_puppy.scheduler.add_task")
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=42)
+    @patch("newcode.scheduler.add_task")
     def test_create_with_daemon(
         self, mock_add, mock_pid, mock_success, mock_emit, mock_grp
     ):
-        from code_puppy.tools.scheduler_tools import register_scheduler_create_task
+        from newcode.tools.scheduler_tools import register_scheduler_create_task
 
         agent, cap = _make_agent()
         register_scheduler_create_task(agent)
@@ -96,34 +96,34 @@ class TestSchedulerCreateTask:
         assert "42" in result
 
 
-@patch("code_puppy.tools.scheduler_tools.generate_group_id", return_value="grp")
-@patch("code_puppy.tools.scheduler_tools.emit_info")
+@patch("newcode.tools.scheduler_tools.generate_group_id", return_value="grp")
+@patch("newcode.tools.scheduler_tools.emit_info")
 class TestSchedulerDeleteTask:
-    @patch("code_puppy.scheduler.get_task", return_value=None)
-    @patch("code_puppy.tools.scheduler_tools.emit_warning")
+    @patch("newcode.scheduler.get_task", return_value=None)
+    @patch("newcode.tools.scheduler_tools.emit_warning")
     def test_not_found(self, mock_warn, mock_get, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_delete_task
+        from newcode.tools.scheduler_tools import register_scheduler_delete_task
 
         agent, cap = _make_agent()
         register_scheduler_delete_task(agent)
         result = cap["fn"](task_id="bad")
         assert "not found" in result
 
-    @patch("code_puppy.scheduler.delete_task", return_value=True)
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
-    @patch("code_puppy.tools.scheduler_tools.emit_success")
+    @patch("newcode.scheduler.delete_task", return_value=True)
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.tools.scheduler_tools.emit_success")
     def test_success(self, mock_succ, mock_get, mock_del, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_delete_task
+        from newcode.tools.scheduler_tools import register_scheduler_delete_task
 
         agent, cap = _make_agent()
         register_scheduler_delete_task(agent)
         result = cap["fn"](task_id="task-1")
         assert "Deleted" in result or "✅" in result
 
-    @patch("code_puppy.scheduler.delete_task", return_value=False)
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.scheduler.delete_task", return_value=False)
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
     def test_fail(self, mock_get, mock_del, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_delete_task
+        from newcode.tools.scheduler_tools import register_scheduler_delete_task
 
         agent, cap = _make_agent()
         register_scheduler_delete_task(agent)
@@ -131,45 +131,45 @@ class TestSchedulerDeleteTask:
         assert "Failed" in result or "❌" in result
 
 
-@patch("code_puppy.tools.scheduler_tools.generate_group_id", return_value="grp")
-@patch("code_puppy.tools.scheduler_tools.emit_info")
+@patch("newcode.tools.scheduler_tools.generate_group_id", return_value="grp")
+@patch("newcode.tools.scheduler_tools.emit_info")
 class TestSchedulerToggleTask:
-    @patch("code_puppy.scheduler.get_task", return_value=None)
-    @patch("code_puppy.tools.scheduler_tools.emit_warning")
+    @patch("newcode.scheduler.get_task", return_value=None)
+    @patch("newcode.tools.scheduler_tools.emit_warning")
     def test_not_found(self, mock_warn, mock_get, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_toggle_task
+        from newcode.tools.scheduler_tools import register_scheduler_toggle_task
 
         agent, cap = _make_agent()
         register_scheduler_toggle_task(agent)
         result = cap["fn"](task_id="bad")
         assert "not found" in result
 
-    @patch("code_puppy.scheduler.toggle_task", return_value=True)
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
-    @patch("code_puppy.tools.scheduler_tools.emit_success")
+    @patch("newcode.scheduler.toggle_task", return_value=True)
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.tools.scheduler_tools.emit_success")
     def test_enable(self, mock_succ, mock_get, mock_toggle, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_toggle_task
+        from newcode.tools.scheduler_tools import register_scheduler_toggle_task
 
         agent, cap = _make_agent()
         register_scheduler_toggle_task(agent)
         result = cap["fn"](task_id="task-1")
         assert "Enabled" in result
 
-    @patch("code_puppy.scheduler.toggle_task", return_value=False)
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
-    @patch("code_puppy.tools.scheduler_tools.emit_success")
+    @patch("newcode.scheduler.toggle_task", return_value=False)
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.tools.scheduler_tools.emit_success")
     def test_disable(self, mock_succ, mock_get, mock_toggle, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_toggle_task
+        from newcode.tools.scheduler_tools import register_scheduler_toggle_task
 
         agent, cap = _make_agent()
         register_scheduler_toggle_task(agent)
         result = cap["fn"](task_id="task-1")
         assert "Disabled" in result
 
-    @patch("code_puppy.scheduler.toggle_task", return_value=None)
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.scheduler.toggle_task", return_value=None)
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
     def test_toggle_fail(self, mock_get, mock_toggle, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_toggle_task
+        from newcode.tools.scheduler_tools import register_scheduler_toggle_task
 
         agent, cap = _make_agent()
         register_scheduler_toggle_task(agent)
@@ -177,16 +177,16 @@ class TestSchedulerToggleTask:
         assert "Failed" in result or "❌" in result
 
 
-@patch("code_puppy.tools.scheduler_tools.generate_group_id", return_value="grp")
-@patch("code_puppy.tools.scheduler_tools.emit_info")
+@patch("newcode.tools.scheduler_tools.generate_group_id", return_value="grp")
+@patch("newcode.tools.scheduler_tools.emit_info")
 class TestSchedulerDaemonStatus:
     @patch(
-        "code_puppy.scheduler.load_tasks",
+        "newcode.scheduler.load_tasks",
         return_value=[FakeTask(), FakeTask(enabled=False)],
     )
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=99)
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=99)
     def test_running(self, mock_pid, mock_tasks, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_daemon_status
+        from newcode.tools.scheduler_tools import register_scheduler_daemon_status
 
         agent, cap = _make_agent()
         register_scheduler_daemon_status(agent)
@@ -194,10 +194,10 @@ class TestSchedulerDaemonStatus:
         assert "RUNNING" in result
         assert "99" in result
 
-    @patch("code_puppy.scheduler.load_tasks", return_value=[])
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=None)
+    @patch("newcode.scheduler.load_tasks", return_value=[])
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=None)
     def test_stopped(self, mock_pid, mock_tasks, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_daemon_status
+        from newcode.tools.scheduler_tools import register_scheduler_daemon_status
 
         agent, cap = _make_agent()
         register_scheduler_daemon_status(agent)
@@ -205,35 +205,35 @@ class TestSchedulerDaemonStatus:
         assert "STOPPED" in result
 
 
-@patch("code_puppy.tools.scheduler_tools.generate_group_id", return_value="grp")
-@patch("code_puppy.tools.scheduler_tools.emit_info")
+@patch("newcode.tools.scheduler_tools.generate_group_id", return_value="grp")
+@patch("newcode.tools.scheduler_tools.emit_info")
 class TestSchedulerStartDaemon:
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=55)
-    @patch("code_puppy.tools.scheduler_tools.emit_warning")
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=55)
+    @patch("newcode.tools.scheduler_tools.emit_warning")
     def test_already_running(self, mock_warn, mock_pid, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_start_daemon
+        from newcode.tools.scheduler_tools import register_scheduler_start_daemon
 
         agent, cap = _make_agent()
         register_scheduler_start_daemon(agent)
         result = cap["fn"]()
         assert "already running" in result
 
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", side_effect=[None, 77])
-    @patch("code_puppy.scheduler.daemon.start_daemon_background", return_value=True)
-    @patch("code_puppy.tools.scheduler_tools.emit_success")
+    @patch("newcode.scheduler.daemon.get_daemon_pid", side_effect=[None, 77])
+    @patch("newcode.scheduler.daemon.start_daemon_background", return_value=True)
+    @patch("newcode.tools.scheduler_tools.emit_success")
     def test_start_success(self, mock_succ, mock_start, mock_pid, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_start_daemon
+        from newcode.tools.scheduler_tools import register_scheduler_start_daemon
 
         agent, cap = _make_agent()
         register_scheduler_start_daemon(agent)
         result = cap["fn"]()
         assert "started" in result.lower()
 
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=None)
-    @patch("code_puppy.scheduler.daemon.start_daemon_background", return_value=False)
-    @patch("code_puppy.tools.scheduler_tools.emit_warning")
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=None)
+    @patch("newcode.scheduler.daemon.start_daemon_background", return_value=False)
+    @patch("newcode.tools.scheduler_tools.emit_warning")
     def test_start_fail(self, mock_warn, mock_start, mock_pid, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_start_daemon
+        from newcode.tools.scheduler_tools import register_scheduler_start_daemon
 
         agent, cap = _make_agent()
         register_scheduler_start_daemon(agent)
@@ -241,35 +241,35 @@ class TestSchedulerStartDaemon:
         assert "Failed" in result
 
 
-@patch("code_puppy.tools.scheduler_tools.generate_group_id", return_value="grp")
-@patch("code_puppy.tools.scheduler_tools.emit_info")
+@patch("newcode.tools.scheduler_tools.generate_group_id", return_value="grp")
+@patch("newcode.tools.scheduler_tools.emit_info")
 class TestSchedulerStopDaemon:
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=None)
-    @patch("code_puppy.tools.scheduler_tools.emit_warning")
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=None)
+    @patch("newcode.tools.scheduler_tools.emit_warning")
     def test_not_running(self, mock_warn, mock_pid, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_stop_daemon
+        from newcode.tools.scheduler_tools import register_scheduler_stop_daemon
 
         agent, cap = _make_agent()
         register_scheduler_stop_daemon(agent)
         result = cap["fn"]()
         assert "not running" in result
 
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=88)
-    @patch("code_puppy.scheduler.daemon.stop_daemon", return_value=True)
-    @patch("code_puppy.tools.scheduler_tools.emit_success")
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=88)
+    @patch("newcode.scheduler.daemon.stop_daemon", return_value=True)
+    @patch("newcode.tools.scheduler_tools.emit_success")
     def test_stop_success(self, mock_succ, mock_stop, mock_pid, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_stop_daemon
+        from newcode.tools.scheduler_tools import register_scheduler_stop_daemon
 
         agent, cap = _make_agent()
         register_scheduler_stop_daemon(agent)
         result = cap["fn"]()
         assert "stopped" in result.lower()
 
-    @patch("code_puppy.scheduler.daemon.get_daemon_pid", return_value=88)
-    @patch("code_puppy.scheduler.daemon.stop_daemon", return_value=False)
-    @patch("code_puppy.tools.scheduler_tools.emit_warning")
+    @patch("newcode.scheduler.daemon.get_daemon_pid", return_value=88)
+    @patch("newcode.scheduler.daemon.stop_daemon", return_value=False)
+    @patch("newcode.tools.scheduler_tools.emit_warning")
     def test_stop_fail(self, mock_warn, mock_stop, mock_pid, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_stop_daemon
+        from newcode.tools.scheduler_tools import register_scheduler_stop_daemon
 
         agent, cap = _make_agent()
         register_scheduler_stop_daemon(agent)
@@ -277,35 +277,35 @@ class TestSchedulerStopDaemon:
         assert "Failed" in result
 
 
-@patch("code_puppy.tools.scheduler_tools.generate_group_id", return_value="grp")
-@patch("code_puppy.tools.scheduler_tools.emit_info")
+@patch("newcode.tools.scheduler_tools.generate_group_id", return_value="grp")
+@patch("newcode.tools.scheduler_tools.emit_info")
 class TestSchedulerRunTask:
-    @patch("code_puppy.scheduler.get_task", return_value=None)
-    @patch("code_puppy.tools.scheduler_tools.emit_warning")
+    @patch("newcode.scheduler.get_task", return_value=None)
+    @patch("newcode.tools.scheduler_tools.emit_warning")
     def test_not_found(self, mock_warn, mock_get, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_run_task
+        from newcode.tools.scheduler_tools import register_scheduler_run_task
 
         agent, cap = _make_agent()
         register_scheduler_run_task(agent)
         result = cap["fn"](task_id="bad")
         assert "not found" in result
 
-    @patch("code_puppy.scheduler.executor.run_task_by_id", return_value=(True, "ok"))
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
-    @patch("code_puppy.tools.scheduler_tools.emit_success")
+    @patch("newcode.scheduler.executor.run_task_by_id", return_value=(True, "ok"))
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.tools.scheduler_tools.emit_success")
     def test_success(self, mock_succ, mock_get, mock_run, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_run_task
+        from newcode.tools.scheduler_tools import register_scheduler_run_task
 
         agent, cap = _make_agent()
         register_scheduler_run_task(agent)
         result = cap["fn"](task_id="task-1")
         assert "completed" in result.lower()
 
-    @patch("code_puppy.scheduler.executor.run_task_by_id", return_value=(False, "err"))
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
-    @patch("code_puppy.tools.scheduler_tools.emit_warning")
+    @patch("newcode.scheduler.executor.run_task_by_id", return_value=(False, "err"))
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.tools.scheduler_tools.emit_warning")
     def test_fail(self, mock_warn, mock_get, mock_run, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_run_task
+        from newcode.tools.scheduler_tools import register_scheduler_run_task
 
         agent, cap = _make_agent()
         register_scheduler_run_task(agent)
@@ -313,13 +313,13 @@ class TestSchedulerRunTask:
         assert "failed" in result.lower()
 
 
-@patch("code_puppy.tools.scheduler_tools.generate_group_id", return_value="grp")
-@patch("code_puppy.tools.scheduler_tools.emit_info")
+@patch("newcode.tools.scheduler_tools.generate_group_id", return_value="grp")
+@patch("newcode.tools.scheduler_tools.emit_info")
 class TestSchedulerViewLog:
-    @patch("code_puppy.scheduler.get_task", return_value=None)
-    @patch("code_puppy.tools.scheduler_tools.emit_warning")
+    @patch("newcode.scheduler.get_task", return_value=None)
+    @patch("newcode.tools.scheduler_tools.emit_warning")
     def test_not_found(self, mock_warn, mock_get, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_view_log
+        from newcode.tools.scheduler_tools import register_scheduler_view_log
 
         agent, cap = _make_agent()
         register_scheduler_view_log(agent)
@@ -327,9 +327,9 @@ class TestSchedulerViewLog:
         assert "not found" in result
 
     @patch("os.path.exists", return_value=False)
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
     def test_no_log_file(self, mock_get, mock_exists, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_view_log
+        from newcode.tools.scheduler_tools import register_scheduler_view_log
 
         agent, cap = _make_agent()
         register_scheduler_view_log(agent)
@@ -338,9 +338,9 @@ class TestSchedulerViewLog:
 
     @patch("builtins.open", mock_open(read_data="line1\nline2\nline3\n"))
     @patch("os.path.exists", return_value=True)
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
     def test_read_log(self, mock_get, mock_exists, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_view_log
+        from newcode.tools.scheduler_tools import register_scheduler_view_log
 
         agent, cap = _make_agent()
         register_scheduler_view_log(agent)
@@ -349,9 +349,9 @@ class TestSchedulerViewLog:
 
     @patch("builtins.open", side_effect=IOError("fail"))
     @patch("os.path.exists", return_value=True)
-    @patch("code_puppy.scheduler.get_task", return_value=FakeTask())
+    @patch("newcode.scheduler.get_task", return_value=FakeTask())
     def test_read_error(self, mock_get, mock_exists, mock_open, mock_emit, mock_grp):
-        from code_puppy.tools.scheduler_tools import register_scheduler_view_log
+        from newcode.tools.scheduler_tools import register_scheduler_view_log
 
         agent, cap = _make_agent()
         register_scheduler_view_log(agent)

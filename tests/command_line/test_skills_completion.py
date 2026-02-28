@@ -4,14 +4,14 @@ from unittest.mock import MagicMock, patch
 
 from prompt_toolkit.document import Document
 
-from code_puppy.command_line.skills_completion import (
+from newcode.command_line.skills_completion import (
     SkillsCompleter,
     load_catalog_skill_ids,
 )
 
 
 class TestLoadCatalogSkillIds:
-    @patch("code_puppy.plugins.agent_skills.skill_catalog.catalog")
+    @patch("newcode.plugins.agent_skills.skill_catalog.catalog")
     def test_success(self, mock_catalog):
         mock_entry = MagicMock()
         mock_entry.id = "test-skill"
@@ -21,7 +21,7 @@ class TestLoadCatalogSkillIds:
 
     def test_import_failure(self):
         with patch.dict(
-            "sys.modules", {"code_puppy.plugins.agent_skills.skill_catalog": None}
+            "sys.modules", {"newcode.plugins.agent_skills.skill_catalog": None}
         ):
             result = load_catalog_skill_ids()
             assert result == []
@@ -88,7 +88,7 @@ class TestSkillsCompleter:
         self.completer._skill_ids_cache = None
         self.completer._cache_timestamp = None
         with patch(
-            "code_puppy.command_line.skills_completion.load_catalog_skill_ids",
+            "newcode.command_line.skills_completion.load_catalog_skill_ids",
             return_value=["new"],
         ):
             result = self.completer._get_skill_ids()

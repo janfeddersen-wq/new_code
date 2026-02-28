@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.scheduler.config import (
+from newcode.scheduler.config import (
     ScheduledTask,
     add_task,
     delete_task,
@@ -80,27 +80,23 @@ class TestTaskPersistence:
         schedules_dir = tmp_path / "scheduler_logs"
         schedules_dir.mkdir()
         schedules_file = tmp_path / "scheduled_tasks.json"
-        with patch("code_puppy.scheduler.config.SCHEDULES_FILE", str(schedules_file)):
+        with patch("newcode.scheduler.config.SCHEDULES_FILE", str(schedules_file)):
             with patch(
-                "code_puppy.scheduler.config.SCHEDULER_LOG_DIR", str(schedules_dir)
+                "newcode.scheduler.config.SCHEDULER_LOG_DIR", str(schedules_dir)
             ):
                 yield schedules_file
 
     def test_load_tasks_empty_file(self, temp_schedules_file):
         """Test loading tasks when file doesn't exist."""
-        with patch(
-            "code_puppy.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)
-        ):
+        with patch("newcode.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)):
             tasks = load_tasks()
             assert tasks == []
 
     def test_save_and_load_tasks(self, temp_schedules_file):
         """Test saving and loading tasks."""
-        with patch(
-            "code_puppy.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)
-        ):
+        with patch("newcode.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)):
             with patch(
-                "code_puppy.scheduler.config.SCHEDULER_LOG_DIR",
+                "newcode.scheduler.config.SCHEDULER_LOG_DIR",
                 str(temp_schedules_file.parent / "logs"),
             ):
                 tasks = [
@@ -115,11 +111,9 @@ class TestTaskPersistence:
 
     def test_add_task(self, temp_schedules_file):
         """Test adding a task."""
-        with patch(
-            "code_puppy.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)
-        ):
+        with patch("newcode.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)):
             with patch(
-                "code_puppy.scheduler.config.SCHEDULER_LOG_DIR",
+                "newcode.scheduler.config.SCHEDULER_LOG_DIR",
                 str(temp_schedules_file.parent / "logs"),
             ):
                 task = ScheduledTask(name="New Task", prompt="New prompt")
@@ -130,11 +124,9 @@ class TestTaskPersistence:
 
     def test_delete_task(self, temp_schedules_file):
         """Test deleting a task."""
-        with patch(
-            "code_puppy.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)
-        ):
+        with patch("newcode.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)):
             with patch(
-                "code_puppy.scheduler.config.SCHEDULER_LOG_DIR",
+                "newcode.scheduler.config.SCHEDULER_LOG_DIR",
                 str(temp_schedules_file.parent / "logs"),
             ):
                 task = ScheduledTask(id="del123", name="To Delete", prompt="Delete me")
@@ -144,18 +136,14 @@ class TestTaskPersistence:
 
     def test_delete_nonexistent_task(self, temp_schedules_file):
         """Test deleting a task that doesn't exist."""
-        with patch(
-            "code_puppy.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)
-        ):
+        with patch("newcode.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)):
             assert delete_task("nonexistent") is False
 
     def test_toggle_task(self, temp_schedules_file):
         """Test toggling a task's enabled state."""
-        with patch(
-            "code_puppy.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)
-        ):
+        with patch("newcode.scheduler.config.SCHEDULES_FILE", str(temp_schedules_file)):
             with patch(
-                "code_puppy.scheduler.config.SCHEDULER_LOG_DIR",
+                "newcode.scheduler.config.SCHEDULER_LOG_DIR",
                 str(temp_schedules_file.parent / "logs"),
             ):
                 task = ScheduledTask(

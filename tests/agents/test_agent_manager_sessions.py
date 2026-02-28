@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.agents.agent_manager import (
+from newcode.agents.agent_manager import (
     _cleanup_dead_sessions,
     _ensure_session_cache_loaded,
     _get_session_file_path,
@@ -136,13 +136,11 @@ class TestSessionDataPersistence:
         """Test that session file path is correctly constructed."""
         session_file = _get_session_file_path()
         assert session_file.name == "terminal_sessions.json"
-        assert "code_puppy" in str(session_file)
+        assert "newcode" in str(session_file)
 
     def test_save_session_data_creates_directory(self, temp_session_dir):
         """Test that save_session_data creates directory if missing."""
-        with patch(
-            "code_puppy.agents.agent_manager._get_session_file_path"
-        ) as mock_path:
+        with patch("newcode.agents.agent_manager._get_session_file_path") as mock_path:
             session_file = temp_session_dir / "sessions" / "terminal_sessions.json"
             mock_path.return_value = session_file
 
@@ -153,16 +151,14 @@ class TestSessionDataPersistence:
 
     def test_save_session_data_writes_json(self, temp_session_dir):
         """Test that save_session_data writes valid JSON."""
-        with patch(
-            "code_puppy.agents.agent_manager._get_session_file_path"
-        ) as mock_path:
+        with patch("newcode.agents.agent_manager._get_session_file_path") as mock_path:
             session_file = temp_session_dir / "terminal_sessions.json"
             mock_path.return_value = session_file
 
             sessions = {"session_123": "code-agent", "session_456": "planning-agent"}
             # Mock _is_process_alive to return True so sessions aren't filtered out during cleanup
             with patch(
-                "code_puppy.agents.agent_manager._is_process_alive", return_value=True
+                "newcode.agents.agent_manager._is_process_alive", return_value=True
             ):
                 _save_session_data(sessions)
 
@@ -174,9 +170,7 @@ class TestSessionDataPersistence:
 
     def test_save_session_data_handles_io_error(self):
         """Test that save_session_data handles IO errors gracefully."""
-        with patch(
-            "code_puppy.agents.agent_manager._get_session_file_path"
-        ) as mock_path:
+        with patch("newcode.agents.agent_manager._get_session_file_path") as mock_path:
             session_file = Path("/invalid/path/sessions.json")
             mock_path.return_value = session_file
             # Should not raise even with invalid path
@@ -184,18 +178,14 @@ class TestSessionDataPersistence:
 
     def test_load_session_data_returns_empty_dict_if_file_missing(self):
         """Test that load returns empty dict if file doesn't exist."""
-        with patch(
-            "code_puppy.agents.agent_manager._get_session_file_path"
-        ) as mock_path:
+        with patch("newcode.agents.agent_manager._get_session_file_path") as mock_path:
             mock_path.return_value = Path("/nonexistent/path/sessions.json")
             result = _load_session_data()
             assert result == {}
 
     def test_load_session_data_parses_valid_json(self, temp_session_dir):
         """Test that load_session_data parses valid JSON."""
-        with patch(
-            "code_puppy.agents.agent_manager._get_session_file_path"
-        ) as mock_path:
+        with patch("newcode.agents.agent_manager._get_session_file_path") as mock_path:
             session_file = temp_session_dir / "terminal_sessions.json"
             mock_path.return_value = session_file
 
@@ -207,16 +197,14 @@ class TestSessionDataPersistence:
 
             # Mock _is_process_alive to return True (so cleanup doesn't remove it)
             with patch(
-                "code_puppy.agents.agent_manager._is_process_alive", return_value=True
+                "newcode.agents.agent_manager._is_process_alive", return_value=True
             ):
                 result = _load_session_data()
                 assert result["session_789"] == "python-programmer"
 
     def test_load_session_data_handles_corrupted_json(self, temp_session_dir):
         """Test that load handles corrupted JSON gracefully."""
-        with patch(
-            "code_puppy.agents.agent_manager._get_session_file_path"
-        ) as mock_path:
+        with patch("newcode.agents.agent_manager._get_session_file_path") as mock_path:
             session_file = temp_session_dir / "terminal_sessions.json"
             mock_path.return_value = session_file
 
@@ -229,9 +217,7 @@ class TestSessionDataPersistence:
 
     def test_load_session_data_handles_io_error(self):
         """Test that load handles IO errors gracefully."""
-        with patch(
-            "code_puppy.agents.agent_manager._get_session_file_path"
-        ) as mock_path:
+        with patch("newcode.agents.agent_manager._get_session_file_path") as mock_path:
             # Point to a path that doesn't exist
             mock_path.return_value = Path("/invalid/nonexistent/path.json")
             result = _load_session_data()
@@ -239,9 +225,7 @@ class TestSessionDataPersistence:
 
     def test_save_load_roundtrip(self, temp_session_dir):
         """Test that data survives save -> load roundtrip."""
-        with patch(
-            "code_puppy.agents.agent_manager._get_session_file_path"
-        ) as mock_path:
+        with patch("newcode.agents.agent_manager._get_session_file_path") as mock_path:
             session_file = temp_session_dir / "terminal_sessions.json"
             mock_path.return_value = session_file
 
@@ -258,9 +242,7 @@ class TestSessionDataPersistence:
 
     def test_save_atomically_uses_temp_file(self, temp_session_dir):
         """Test that save uses atomic temp file approach."""
-        with patch(
-            "code_puppy.agents.agent_manager._get_session_file_path"
-        ) as mock_path:
+        with patch("newcode.agents.agent_manager._get_session_file_path") as mock_path:
             session_file = temp_session_dir / "terminal_sessions.json"
             mock_path.return_value = session_file
 
@@ -282,7 +264,7 @@ class TestDeadSessionCleanup:
             "session_99999": "planning-agent",  # Will be dead
         }
 
-        with patch("code_puppy.agents.agent_manager._is_process_alive") as mock_alive:
+        with patch("newcode.agents.agent_manager._is_process_alive") as mock_alive:
             mock_alive.return_value = False  # All processes are dead
             result = _cleanup_dead_sessions(sessions)
             assert result == {}
@@ -294,7 +276,7 @@ class TestDeadSessionCleanup:
             "session_99999": "planning-agent",
         }
 
-        with patch("code_puppy.agents.agent_manager._is_process_alive") as mock_alive:
+        with patch("newcode.agents.agent_manager._is_process_alive") as mock_alive:
             mock_alive.return_value = True  # All processes are alive
             result = _cleanup_dead_sessions(sessions)
             assert result == sessions
@@ -311,7 +293,7 @@ class TestDeadSessionCleanup:
             return pid in [111, 333]  # Only these are alive
 
         with patch(
-            "code_puppy.agents.agent_manager._is_process_alive", side_effect=is_alive
+            "newcode.agents.agent_manager._is_process_alive", side_effect=is_alive
         ):
             result = _cleanup_dead_sessions(sessions)
             assert "session_111" in result
@@ -326,7 +308,7 @@ class TestDeadSessionCleanup:
             "invalid": "code-reviewer",  # Also non-standard
         }
 
-        with patch("code_puppy.agents.agent_manager._is_process_alive") as mock_alive:
+        with patch("newcode.agents.agent_manager._is_process_alive") as mock_alive:
             mock_alive.return_value = False
             result = _cleanup_dead_sessions(sessions)
 
@@ -343,7 +325,7 @@ class TestDeadSessionCleanup:
             "session_12345": "planning-agent",
         }
 
-        with patch("code_puppy.agents.agent_manager._is_process_alive"):
+        with patch("newcode.agents.agent_manager._is_process_alive"):
             result = _cleanup_dead_sessions(sessions)
 
             # Invalid format should be kept
@@ -361,7 +343,7 @@ class TestDeadSessionCleanup:
             "session_456": "planning-agent",
         }
 
-        with patch("code_puppy.agents.agent_manager._is_process_alive") as mock_alive:
+        with patch("newcode.agents.agent_manager._is_process_alive") as mock_alive:
             mock_alive.return_value = True
             _cleanup_dead_sessions(sessions)
 
@@ -377,12 +359,12 @@ class TestSessionCaching:
     def test_ensure_session_cache_loaded_loads_once(self):
         """Test that session cache is loaded only once."""
         # Reset module globals
-        import code_puppy.agents.agent_manager as am
+        import newcode.agents.agent_manager as am
 
         am._SESSION_FILE_LOADED = False
         am._SESSION_AGENTS_CACHE.clear()
 
-        with patch("code_puppy.agents.agent_manager._load_session_data") as mock_load:
+        with patch("newcode.agents.agent_manager._load_session_data") as mock_load:
             mock_load.return_value = {"session_123": "code-agent"}
 
             # First call should load
@@ -395,7 +377,7 @@ class TestSessionCaching:
 
     def test_ensure_session_cache_loaded_updates_cache(self):
         """Test that ensure updates the cache dict."""
-        import code_puppy.agents.agent_manager as am
+        import newcode.agents.agent_manager as am
 
         am._SESSION_FILE_LOADED = False
         am._SESSION_AGENTS_CACHE.clear()
@@ -405,7 +387,7 @@ class TestSessionCaching:
             "session_222": "planning-agent",
         }
 
-        with patch("code_puppy.agents.agent_manager._load_session_data") as mock_load:
+        with patch("newcode.agents.agent_manager._load_session_data") as mock_load:
             mock_load.return_value = test_sessions
 
             _ensure_session_cache_loaded()
@@ -414,11 +396,11 @@ class TestSessionCaching:
 
     def test_ensure_session_cache_loaded_marks_as_loaded(self):
         """Test that ensure sets the loaded flag."""
-        import code_puppy.agents.agent_manager as am
+        import newcode.agents.agent_manager as am
 
         am._SESSION_FILE_LOADED = False
 
-        with patch("code_puppy.agents.agent_manager._load_session_data") as mock_load:
+        with patch("newcode.agents.agent_manager._load_session_data") as mock_load:
             mock_load.return_value = {}
 
             _ensure_session_cache_loaded()

@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from pydantic_ai import ToolReturn
 
-from code_puppy.tools.browser.terminal_command_tools import (
+from newcode.tools.browser.terminal_command_tools import (
     _focus_terminal,
     _normalize_modifier,
     register_run_terminal_command,
@@ -16,7 +16,7 @@ from code_puppy.tools.browser.terminal_command_tools import (
     wait_for_terminal_output,
 )
 
-MOD = "code_puppy.tools.browser.terminal_command_tools"
+MOD = "newcode.tools.browser.terminal_command_tools"
 
 
 @pytest.fixture(autouse=True)

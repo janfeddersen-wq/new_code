@@ -14,7 +14,7 @@ import pytest
 
 class TestAntigravityCallbackHandler:
     def test_do_get_success(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _CallbackHandler,
             _OAuthResult,
         )
@@ -39,7 +39,7 @@ class TestAntigravityCallbackHandler:
         assert event.is_set()
 
     def test_do_get_missing_params(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _CallbackHandler,
             _OAuthResult,
         )
@@ -62,7 +62,7 @@ class TestAntigravityCallbackHandler:
         assert result.error == "Missing code or state"
 
     def test_log_message_noop(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _CallbackHandler,
         )
 
@@ -72,40 +72,40 @@ class TestAntigravityCallbackHandler:
 
 class TestAntigravityStartCallbackServer:
     def test_all_ports_busy(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _start_callback_server,
         )
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
+                "newcode.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
                 {"callback_port_range": [19000, 19001]},
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.HTTPServer",
+                "newcode.plugins.antigravity_oauth.register_callbacks.HTTPServer",
                 side_effect=OSError,
             ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_error"),
         ):
             assert _start_callback_server(MagicMock()) is None
 
     def test_success(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _start_callback_server,
         )
 
         mock_server = MagicMock(spec=HTTPServer)
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
+                "newcode.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
                 {"callback_port_range": [19000, 19000]},
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.HTTPServer",
+                "newcode.plugins.antigravity_oauth.register_callbacks.HTTPServer",
                 return_value=mock_server,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.assign_redirect_uri",
+                "newcode.plugins.antigravity_oauth.register_callbacks.assign_redirect_uri",
                 return_value="http://localhost:19000/cb",
             ),
             patch("threading.Thread"),
@@ -117,18 +117,18 @@ class TestAntigravityStartCallbackServer:
 
 class TestAntigravityAwaitCallback:
     def test_server_fails(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _await_callback,
         )
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks._start_callback_server",
+            "newcode.plugins.antigravity_oauth.register_callbacks._start_callback_server",
             return_value=None,
         ):
             assert _await_callback(MagicMock()) is None
 
     def test_timeout(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -136,7 +136,7 @@ class TestAntigravityAwaitCallback:
         event = threading.Event()
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.antigravity_oauth.register_callbacks._start_callback_server",
                 return_value=(
                     MagicMock(),
                     _OAuthResult(),
@@ -145,24 +145,24 @@ class TestAntigravityAwaitCallback:
                 ),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
+                "newcode.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
                 {"callback_timeout": 0.01},
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 return_value=True,
             ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_error"),
         ):
             assert _await_callback(MagicMock()) is None
 
     def test_result_error(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -174,28 +174,28 @@ class TestAntigravityAwaitCallback:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.antigravity_oauth.register_callbacks._start_callback_server",
                 return_value=(MagicMock(), result, event, "http://localhost/cb"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
+                "newcode.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
                 {"callback_timeout": 5},
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 return_value=True,
             ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_error"),
         ):
             assert _await_callback(MagicMock()) is None
 
     def test_success_headless(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -208,28 +208,28 @@ class TestAntigravityAwaitCallback:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.antigravity_oauth.register_callbacks._start_callback_server",
                 return_value=(MagicMock(), result, event, "http://localhost/cb"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
+                "newcode.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
                 {"callback_timeout": 5},
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 return_value=True,
             ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
         ):
             r = _await_callback(MagicMock())
             assert r == ("c", "s", "http://localhost/cb")
 
     def test_success_browser(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -242,29 +242,29 @@ class TestAntigravityAwaitCallback:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.antigravity_oauth.register_callbacks._start_callback_server",
                 return_value=(MagicMock(), result, event, "http://localhost/cb"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
+                "newcode.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
                 {"callback_timeout": 5},
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 return_value=False,
             ),
             patch("webbrowser.open"),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
         ):
             r = _await_callback(MagicMock())
             assert r is not None
 
     def test_browser_exception(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -277,25 +277,23 @@ class TestAntigravityAwaitCallback:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.antigravity_oauth.register_callbacks._start_callback_server",
                 return_value=(MagicMock(), result, event, "http://localhost/cb"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
+                "newcode.plugins.antigravity_oauth.register_callbacks.ANTIGRAVITY_OAUTH_CONFIG",
                 {"callback_timeout": 5},
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.antigravity_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 side_effect=RuntimeError("nope"),
             ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning"
-            ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
         ):
             r = _await_callback(MagicMock())
             assert r is not None
@@ -303,60 +301,60 @@ class TestAntigravityAwaitCallback:
 
 class TestAntigravityPerformAuth:
     def test_callback_fails(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _perform_authentication,
         )
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback",
+                "newcode.plugins.antigravity_oauth.register_callbacks._await_callback",
                 return_value=None,
             ),
         ):
             assert _perform_authentication() is False
 
     def test_token_exchange_fails(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import TokenExchangeFailure
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.oauth import TokenExchangeFailure
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _perform_authentication,
         )
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback",
+                "newcode.plugins.antigravity_oauth.register_callbacks._await_callback",
                 return_value=("code", "state", "redirect"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens",
                 return_value=TokenExchangeFailure(error="fail"),
             ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_error"),
         ):
             assert _perform_authentication() is False
 
     def test_save_fails(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _perform_authentication,
         )
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback",
+                "newcode.plugins.antigravity_oauth.register_callbacks._await_callback",
                 return_value=("code", "state", "redirect"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens",
                 return_value=TokenExchangeSuccess(
                     refresh_token="rt",
                     access_token="at",
@@ -366,17 +364,17 @@ class TestAntigravityPerformAuth:
                 ),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.save_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.save_tokens",
                 return_value=False,
             ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_error"),
         ):
             assert _perform_authentication() is False
 
     def test_full_success_with_add_account(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _perform_authentication,
         )
 
@@ -385,14 +383,14 @@ class TestAntigravityPerformAuth:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback",
+                "newcode.plugins.antigravity_oauth.register_callbacks._await_callback",
                 return_value=("code", "state", "redirect"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens",
                 return_value=TokenExchangeSuccess(
                     refresh_token="rt",
                     access_token="at",
@@ -402,30 +400,28 @@ class TestAntigravityPerformAuth:
                 ),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.save_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.save_tokens",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
+                "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
                 return_value=mock_manager,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.add_models_to_config",
+                "newcode.plugins.antigravity_oauth.register_callbacks.add_models_to_config",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.reload_current_agent"
+                "newcode.plugins.antigravity_oauth.register_callbacks.reload_current_agent"
             ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success"
-            ),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_success"),
         ):
             assert _perform_authentication(add_account=True) is True
 
     def test_success_no_email(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.oauth import TokenExchangeSuccess
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _perform_authentication,
         )
 
@@ -434,14 +430,14 @@ class TestAntigravityPerformAuth:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.antigravity_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._await_callback",
+                "newcode.plugins.antigravity_oauth.register_callbacks._await_callback",
                 return_value=("code", "state", "redirect"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.exchange_code_for_tokens",
                 return_value=TokenExchangeSuccess(
                     refresh_token="rt",
                     access_token="at",
@@ -451,49 +447,43 @@ class TestAntigravityPerformAuth:
                 ),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.save_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.save_tokens",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
+                "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
                 return_value=mock_manager,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.add_models_to_config",
+                "newcode.plugins.antigravity_oauth.register_callbacks.add_models_to_config",
                 return_value=False,
             ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success"
-            ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning"
-            ),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_success"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning"),
         ):
             assert _perform_authentication(reload_agent=False) is True
 
 
 class TestAntigravityHandleStatus:
     def test_not_authenticated(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_status,
         )
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value=None,
             ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning"
-            ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
         ):
             _handle_status()
 
     def test_authenticated_with_status(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import AntigravityStatus
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.oauth import AntigravityStatus
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_status,
         )
 
@@ -506,7 +496,7 @@ class TestAntigravityHandleStatus:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value={
                     "access_token": "at",
                     "email": "e@e.com",
@@ -514,7 +504,7 @@ class TestAntigravityHandleStatus:
                 },
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status",
+                "newcode.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status",
                 return_value=AntigravityStatus(
                     project_id="pid",
                     current_tier="free-tier",
@@ -523,27 +513,25 @@ class TestAntigravityHandleStatus:
                 ),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
+                "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
                 return_value=mock_manager,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_antigravity_models",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_antigravity_models",
                 return_value={
                     "antigravity-gemini": {"oauth_source": "antigravity-plugin"},
                     "antigravity-claude": {"oauth_source": "antigravity-plugin"},
                     "other": {"oauth_source": "antigravity-plugin"},
                 },
             ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success"
-            ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_success"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
         ):
             _handle_status()
 
     def test_status_error(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import AntigravityStatus
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.oauth import AntigravityStatus
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_status,
         )
 
@@ -552,35 +540,31 @@ class TestAntigravityHandleStatus:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value={"access_token": "at"},
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status",
+                "newcode.plugins.antigravity_oauth.register_callbacks.fetch_antigravity_status",
                 return_value=AntigravityStatus(error="failed"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
+                "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
                 return_value=mock_manager,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_antigravity_models",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_antigravity_models",
                 return_value={},
             ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success"
-            ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning"
-            ),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_success"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning"),
         ):
             _handle_status()
 
 
 class TestAntigravityHandleLogout:
     def test_logout_all(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_logout,
         )
 
@@ -591,29 +575,27 @@ class TestAntigravityHandleLogout:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.get_token_storage_path",
+                "newcode.plugins.antigravity_oauth.register_callbacks.get_token_storage_path",
                 return_value=mock_token_path,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.get_accounts_storage_path",
+                "newcode.plugins.antigravity_oauth.register_callbacks.get_accounts_storage_path",
                 return_value=mock_accounts_path,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.clear_accounts"
+                "newcode.plugins.antigravity_oauth.register_callbacks.clear_accounts"
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.remove_antigravity_models",
+                "newcode.plugins.antigravity_oauth.register_callbacks.remove_antigravity_models",
                 return_value=5,
             ),
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success"
-            ),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_success"),
         ):
             _handle_logout()
 
     def test_logout_nothing(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_logout,
         )
 
@@ -622,59 +604,55 @@ class TestAntigravityHandleLogout:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.get_token_storage_path",
+                "newcode.plugins.antigravity_oauth.register_callbacks.get_token_storage_path",
                 return_value=mock_path,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.get_accounts_storage_path",
+                "newcode.plugins.antigravity_oauth.register_callbacks.get_accounts_storage_path",
                 return_value=mock_path,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.remove_antigravity_models",
+                "newcode.plugins.antigravity_oauth.register_callbacks.remove_antigravity_models",
                 return_value=0,
             ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_success"
-            ),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_success"),
         ):
             _handle_logout()
 
 
 class TestAntigravityHandleCustomCommand:
     def test_empty_name(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         assert _handle_custom_command("/x", "") is None
 
     def test_unknown(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         assert _handle_custom_command("/x", "unknown") is None
 
     def test_auth_success(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         with (
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning"),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning"
-            ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value={"access_token": "at"},
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._perform_authentication",
+                "newcode.plugins.antigravity_oauth.register_callbacks._perform_authentication",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.set_model_and_reload_agent"
+                "newcode.plugins.antigravity_oauth.register_callbacks.set_model_and_reload_agent"
             ),
         ):
             assert (
@@ -682,18 +660,18 @@ class TestAntigravityHandleCustomCommand:
             )
 
     def test_auth_failure(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         with (
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value=None,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._perform_authentication",
+                "newcode.plugins.antigravity_oauth.register_callbacks._perform_authentication",
                 return_value=False,
             ),
         ):
@@ -702,31 +680,31 @@ class TestAntigravityHandleCustomCommand:
             )
 
     def test_add(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         mock_manager = MagicMock()
         mock_manager.account_count = 1
         with (
-            patch("code_puppy.plugins.antigravity_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_info"),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
+                "newcode.plugins.antigravity_oauth.register_callbacks.AccountManager.load_from_disk",
                 return_value=mock_manager,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks._perform_authentication"
+                "newcode.plugins.antigravity_oauth.register_callbacks._perform_authentication"
             ),
         ):
             assert _handle_custom_command("/antigravity-add", "antigravity-add") is True
 
     def test_status(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks._handle_status"
+            "newcode.plugins.antigravity_oauth.register_callbacks._handle_status"
         ):
             assert (
                 _handle_custom_command("/antigravity-status", "antigravity-status")
@@ -734,12 +712,12 @@ class TestAntigravityHandleCustomCommand:
             )
 
     def test_logout(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks._handle_logout"
+            "newcode.plugins.antigravity_oauth.register_callbacks._handle_logout"
         ):
             assert (
                 _handle_custom_command("/antigravity-logout", "antigravity-logout")
@@ -749,53 +727,49 @@ class TestAntigravityHandleCustomCommand:
 
 class TestCreateAntigravityModel:
     def test_no_api_key(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _create_antigravity_model,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.get_custom_config",
+                "newcode.model_factory.get_custom_config",
                 return_value=("http://url", {}, None, None),
             ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning"
-            ),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning"),
         ):
             assert _create_antigravity_model("m", {"name": "m"}, {}) is None
 
     def test_no_tokens(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _create_antigravity_model,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.get_custom_config",
+                "newcode.model_factory.get_custom_config",
                 return_value=("http://url", {}, None, "key"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value=None,
             ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning"
-            ),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning"),
         ):
             assert _create_antigravity_model("m", {"name": "m"}, {}) is None
 
     def test_refresh_fails(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _create_antigravity_model,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.get_custom_config",
+                "newcode.model_factory.get_custom_config",
                 return_value=("http://url", {}, None, "key"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value={
                     "access_token": "at",
                     "refresh_token": "rt",
@@ -803,21 +777,19 @@ class TestCreateAntigravityModel:
                 },
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.is_token_expired",
+                "newcode.plugins.antigravity_oauth.register_callbacks.is_token_expired",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.refresh_access_token",
+                "newcode.plugins.antigravity_oauth.register_callbacks.refresh_access_token",
                 return_value=None,
             ),
-            patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.emit_warning"
-            ),
+            patch("newcode.plugins.antigravity_oauth.register_callbacks.emit_warning"),
         ):
             assert _create_antigravity_model("m", {"name": "m"}, {}) is None
 
     def test_success_with_refresh(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _create_antigravity_model,
         )
 
@@ -830,11 +802,11 @@ class TestCreateAntigravityModel:
 
         with (
             patch(
-                "code_puppy.model_factory.get_custom_config",
+                "newcode.model_factory.get_custom_config",
                 return_value=("http://url", {}, None, "key"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value={
                     "access_token": "at",
                     "refresh_token": "rt",
@@ -842,22 +814,22 @@ class TestCreateAntigravityModel:
                 },
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.is_token_expired",
+                "newcode.plugins.antigravity_oauth.register_callbacks.is_token_expired",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.refresh_access_token",
+                "newcode.plugins.antigravity_oauth.register_callbacks.refresh_access_token",
                 return_value=new_tokens,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.save_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.save_tokens",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.create_antigravity_client"
+                "newcode.plugins.antigravity_oauth.register_callbacks.create_antigravity_client"
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.antigravity_model.AntigravityModel",
+                "newcode.plugins.antigravity_oauth.antigravity_model.AntigravityModel",
                 return_value=mock_model,
             ),
         ):
@@ -865,18 +837,18 @@ class TestCreateAntigravityModel:
             assert result is mock_model
 
     def test_success_no_refresh_needed(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _create_antigravity_model,
         )
 
         mock_model = MagicMock()
         with (
             patch(
-                "code_puppy.model_factory.get_custom_config",
+                "newcode.model_factory.get_custom_config",
                 return_value=("http://url", {}, None, "key"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value={
                     "access_token": "at",
                     "refresh_token": "rt",
@@ -884,14 +856,14 @@ class TestCreateAntigravityModel:
                 },
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.is_token_expired",
+                "newcode.plugins.antigravity_oauth.register_callbacks.is_token_expired",
                 return_value=False,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.create_antigravity_client"
+                "newcode.plugins.antigravity_oauth.register_callbacks.create_antigravity_client"
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.antigravity_model.AntigravityModel",
+                "newcode.plugins.antigravity_oauth.antigravity_model.AntigravityModel",
                 return_value=mock_model,
             ),
         ):
@@ -899,18 +871,18 @@ class TestCreateAntigravityModel:
             assert result is mock_model
 
     def test_fallback_to_gemini_model(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _create_antigravity_model,
         )
 
         mock_model = MagicMock()
         with (
             patch(
-                "code_puppy.model_factory.get_custom_config",
+                "newcode.model_factory.get_custom_config",
                 return_value=("http://url", {}, None, "key"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value={
                     "access_token": "at",
                     "refresh_token": "rt",
@@ -918,18 +890,18 @@ class TestCreateAntigravityModel:
                 },
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.is_token_expired",
+                "newcode.plugins.antigravity_oauth.register_callbacks.is_token_expired",
                 return_value=False,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.create_antigravity_client"
+                "newcode.plugins.antigravity_oauth.register_callbacks.create_antigravity_client"
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.antigravity_model.AntigravityModel",
+                "newcode.plugins.antigravity_oauth.antigravity_model.AntigravityModel",
                 None,  # Simulates ImportError leading to None
             ),
             patch(
-                "code_puppy.gemini_model.GeminiModel",
+                "newcode.gemini_model.GeminiModel",
                 return_value=mock_model,
             ),
         ):
@@ -938,7 +910,7 @@ class TestCreateAntigravityModel:
 
     def test_on_token_refreshed_callback(self):
         """Test the on_token_refreshed closure."""
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _create_antigravity_model,
         )
 
@@ -952,11 +924,11 @@ class TestCreateAntigravityModel:
         mock_model = MagicMock()
         with (
             patch(
-                "code_puppy.model_factory.get_custom_config",
+                "newcode.model_factory.get_custom_config",
                 return_value=("http://url", {}, None, "key"),
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
                 return_value={
                     "access_token": "at",
                     "refresh_token": "rt",
@@ -964,19 +936,19 @@ class TestCreateAntigravityModel:
                 },
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.is_token_expired",
+                "newcode.plugins.antigravity_oauth.register_callbacks.is_token_expired",
                 return_value=False,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.create_antigravity_client",
+                "newcode.plugins.antigravity_oauth.register_callbacks.create_antigravity_client",
                 side_effect=capture_client,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.antigravity_model.AntigravityModel",
+                "newcode.plugins.antigravity_oauth.antigravity_model.AntigravityModel",
                 return_value=mock_model,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.register_callbacks.save_tokens",
+                "newcode.plugins.antigravity_oauth.register_callbacks.save_tokens",
                 return_value=True,
             ),
         ):
@@ -992,7 +964,7 @@ class TestCreateAntigravityModel:
 
         # Test exception handling
         with patch(
-            "code_puppy.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
+            "newcode.plugins.antigravity_oauth.register_callbacks.load_stored_tokens",
             side_effect=RuntimeError("fail"),
         ):
             captured_callback(new_tokens)  # Should not raise
@@ -1003,7 +975,7 @@ class TestCreateAntigravityModel:
 
 class TestAntigravityOAuthOnboardUser:
     def test_onboard_success(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _onboard_user
+        from newcode.plugins.antigravity_oauth.oauth import _onboard_user
 
         mock_resp = MagicMock()
         mock_resp.ok = True
@@ -1017,7 +989,7 @@ class TestAntigravityOAuthOnboardUser:
             assert result == "proj-123"
 
     def test_onboard_not_done_retries(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _onboard_user
+        from newcode.plugins.antigravity_oauth.oauth import _onboard_user
 
         # First call not done, second done
         resp_not_done = MagicMock()
@@ -1039,7 +1011,7 @@ class TestAntigravityOAuthOnboardUser:
             assert result == "p"
 
     def test_onboard_http_error(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _onboard_user
+        from newcode.plugins.antigravity_oauth.oauth import _onboard_user
 
         mock_resp = MagicMock()
         mock_resp.ok = False
@@ -1051,14 +1023,14 @@ class TestAntigravityOAuthOnboardUser:
             assert result == ""
 
     def test_onboard_exception(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _onboard_user
+        from newcode.plugins.antigravity_oauth.oauth import _onboard_user
 
         with patch("requests.post", side_effect=RuntimeError("boom")):
             result = _onboard_user("token")
             assert result == ""
 
     def test_onboard_standard_tier(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _onboard_user
+        from newcode.plugins.antigravity_oauth.oauth import _onboard_user
 
         mock_resp = MagicMock()
         mock_resp.ok = True
@@ -1074,7 +1046,7 @@ class TestAntigravityOAuthOnboardUser:
 
 class TestFetchAntigravityStatus:
     def test_success_string_project(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             fetch_antigravity_status,
         )
 
@@ -1091,7 +1063,7 @@ class TestFetchAntigravityStatus:
             assert status.current_tier == "free-tier"
 
     def test_success_dict_project(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             fetch_antigravity_status,
         )
 
@@ -1107,7 +1079,7 @@ class TestFetchAntigravityStatus:
             assert status.project_id == "proj-dict"
 
     def test_all_endpoints_fail(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             fetch_antigravity_status,
         )
 
@@ -1116,7 +1088,7 @@ class TestFetchAntigravityStatus:
             assert status.error is not None
 
     def test_http_error(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             fetch_antigravity_status,
         )
 
@@ -1130,7 +1102,7 @@ class TestFetchAntigravityStatus:
 
 class TestFetchProjectId:
     def test_string_project(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _fetch_project_id
+        from newcode.plugins.antigravity_oauth.oauth import _fetch_project_id
 
         mock_resp = MagicMock()
         mock_resp.ok = True
@@ -1140,7 +1112,7 @@ class TestFetchProjectId:
             assert _fetch_project_id("token") == "proj"
 
     def test_dict_project(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _fetch_project_id
+        from newcode.plugins.antigravity_oauth.oauth import _fetch_project_id
 
         mock_resp = MagicMock()
         mock_resp.ok = True
@@ -1151,7 +1123,7 @@ class TestFetchProjectId:
 
     def test_no_project_free_tier_default(self):
         """Test when no project, free-tier is default and needs onboard."""
-        from code_puppy.plugins.antigravity_oauth.oauth import _fetch_project_id
+        from newcode.plugins.antigravity_oauth.oauth import _fetch_project_id
 
         mock_resp = MagicMock()
         mock_resp.ok = True
@@ -1162,14 +1134,14 @@ class TestFetchProjectId:
         with (
             patch("requests.post", return_value=mock_resp),
             patch(
-                "code_puppy.plugins.antigravity_oauth.oauth._onboard_user",
+                "newcode.plugins.antigravity_oauth.oauth._onboard_user",
                 return_value="onboarded",
             ),
         ):
             assert _fetch_project_id("token") == "onboarded"
 
     def test_no_project_onboard_success(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _fetch_project_id
+        from newcode.plugins.antigravity_oauth.oauth import _fetch_project_id
 
         mock_resp = MagicMock()
         mock_resp.ok = True
@@ -1180,14 +1152,14 @@ class TestFetchProjectId:
         with (
             patch("requests.post", return_value=mock_resp),
             patch(
-                "code_puppy.plugins.antigravity_oauth.oauth._onboard_user",
+                "newcode.plugins.antigravity_oauth.oauth._onboard_user",
                 return_value="onboarded-proj",
             ),
         ):
             assert _fetch_project_id("token") == "onboarded-proj"
 
     def test_all_fail(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _fetch_project_id
+        from newcode.plugins.antigravity_oauth.oauth import _fetch_project_id
 
         mock_resp = MagicMock()
         mock_resp.ok = False
@@ -1198,7 +1170,7 @@ class TestFetchProjectId:
             assert _fetch_project_id("token") == ""
 
     def test_exception(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _fetch_project_id
+        from newcode.plugins.antigravity_oauth.oauth import _fetch_project_id
 
         with patch("requests.post", side_effect=RuntimeError("boom")):
             assert _fetch_project_id("token") == ""
@@ -1206,7 +1178,7 @@ class TestFetchProjectId:
 
 class TestExchangeCodeForTokens:
     def test_success(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import exchange_code_for_tokens
+        from newcode.plugins.antigravity_oauth.oauth import exchange_code_for_tokens
 
         mock_token_resp = MagicMock()
         mock_token_resp.ok = True
@@ -1221,7 +1193,7 @@ class TestExchangeCodeForTokens:
         mock_user_resp.json.return_value = {"email": "e@e.com"}
 
         # Build a valid state
-        from code_puppy.plugins.antigravity_oauth.oauth import _encode_state
+        from newcode.plugins.antigravity_oauth.oauth import _encode_state
 
         state = _encode_state("verifier", "proj")
 
@@ -1234,7 +1206,7 @@ class TestExchangeCodeForTokens:
             assert result.email == "e@e.com"
 
     def test_http_error(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             TokenExchangeFailure,
             _encode_state,
             exchange_code_for_tokens,
@@ -1250,7 +1222,7 @@ class TestExchangeCodeForTokens:
             assert isinstance(result, TokenExchangeFailure)
 
     def test_no_refresh_token(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             TokenExchangeFailure,
             _encode_state,
             exchange_code_for_tokens,
@@ -1266,7 +1238,7 @@ class TestExchangeCodeForTokens:
             assert isinstance(result, TokenExchangeFailure)
 
     def test_exception(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             TokenExchangeFailure,
             exchange_code_for_tokens,
         )
@@ -1277,7 +1249,7 @@ class TestExchangeCodeForTokens:
             assert isinstance(result, TokenExchangeFailure)
 
     def test_email_fetch_exception(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             _encode_state,
             exchange_code_for_tokens,
         )
@@ -1301,7 +1273,7 @@ class TestExchangeCodeForTokens:
             assert result.email is None
 
     def test_no_project_id_fetches(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             _encode_state,
             exchange_code_for_tokens,
         )
@@ -1323,7 +1295,7 @@ class TestExchangeCodeForTokens:
             patch("requests.post", return_value=mock_token_resp),
             patch("requests.get", return_value=mock_user_resp),
             patch(
-                "code_puppy.plugins.antigravity_oauth.oauth._fetch_project_id",
+                "newcode.plugins.antigravity_oauth.oauth._fetch_project_id",
                 return_value="fetched-proj",
             ),
         ):
@@ -1333,13 +1305,13 @@ class TestExchangeCodeForTokens:
 
 class TestOAuthHelpers:
     def test_decode_state_invalid(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _decode_state
+        from newcode.plugins.antigravity_oauth.oauth import _decode_state
 
         with pytest.raises(ValueError):
             _decode_state("!!!invalid!!!")
 
     def test_build_auth_url_no_redirect(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             OAuthContext,
             build_authorization_url,
         )
@@ -1351,26 +1323,26 @@ class TestOAuthHelpers:
 
 class TestAntigravityOAuthHelpers:
     def test_urlsafe_b64encode(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _urlsafe_b64encode
+        from newcode.plugins.antigravity_oauth.oauth import _urlsafe_b64encode
 
         result = _urlsafe_b64encode(b"hello")
         assert isinstance(result, str)
         assert "=" not in result
 
     def test_generate_code_verifier(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _generate_code_verifier
+        from newcode.plugins.antigravity_oauth.oauth import _generate_code_verifier
 
         v = _generate_code_verifier()
         assert len(v) > 10
 
     def test_compute_code_challenge(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import _compute_code_challenge
+        from newcode.plugins.antigravity_oauth.oauth import _compute_code_challenge
 
         c = _compute_code_challenge("verifier")
         assert isinstance(c, str)
 
     def test_prepare_oauth_context(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import prepare_oauth_context
+        from newcode.plugins.antigravity_oauth.oauth import prepare_oauth_context
 
         ctx = prepare_oauth_context()
         assert ctx.state
@@ -1378,7 +1350,7 @@ class TestAntigravityOAuthHelpers:
         assert ctx.code_challenge
 
     def test_assign_redirect_uri(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             OAuthContext,
             assign_redirect_uri,
         )
@@ -1389,7 +1361,7 @@ class TestAntigravityOAuthHelpers:
         assert ctx.redirect_uri == uri
 
     def test_build_authorization_url(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             OAuthContext,
             build_authorization_url,
         )
@@ -1401,7 +1373,7 @@ class TestAntigravityOAuthHelpers:
         assert "code_challenge" in url
 
     def test_encode_decode_state_roundtrip(self):
-        from code_puppy.plugins.antigravity_oauth.oauth import (
+        from newcode.plugins.antigravity_oauth.oauth import (
             _decode_state,
             _encode_state,
         )
@@ -1418,7 +1390,7 @@ class TestAntigravityOAuthHelpers:
 
         payload = json.dumps({"verifier": "v", "projectId": 123}).encode()
         state = base64.urlsafe_b64encode(payload).decode().rstrip("=")
-        from code_puppy.plugins.antigravity_oauth.oauth import _decode_state
+        from newcode.plugins.antigravity_oauth.oauth import _decode_state
 
         v, p = _decode_state(state)
         assert v == "v"
@@ -1427,7 +1399,7 @@ class TestAntigravityOAuthHelpers:
 
 class TestAntigravityCustomHelp:
     def test_returns_entries(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _custom_help,
         )
 
@@ -1438,7 +1410,7 @@ class TestAntigravityCustomHelp:
 
 class TestRegisterModelTypes:
     def test_returns_handler(self):
-        from code_puppy.plugins.antigravity_oauth.register_callbacks import (
+        from newcode.plugins.antigravity_oauth.register_callbacks import (
             _register_model_types,
         )
 

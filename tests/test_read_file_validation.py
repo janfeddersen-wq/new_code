@@ -4,7 +4,7 @@ import os
 import tempfile
 from unittest.mock import MagicMock
 
-from code_puppy.tools.file_operations import _read_file
+from newcode.tools.file_operations import _read_file
 
 
 def _make_context():

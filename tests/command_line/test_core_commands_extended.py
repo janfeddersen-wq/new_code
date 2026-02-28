@@ -9,7 +9,7 @@ from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.command_line.core_commands import (
+from newcode.command_line.core_commands import (
     handle_agent_command,
     handle_cd_command,
     handle_exit_command,
@@ -31,10 +31,10 @@ class TestHandleHelpCommand:
         mock_help_text = "🐕 Commands:\n• /help - Show help\n• /exit - Exit"
 
         with patch(
-            "code_puppy.command_line.core_commands.get_commands_help",
+            "newcode.command_line.core_commands.get_commands_help",
             return_value=mock_help_text,
         ):
-            with patch("code_puppy.messaging.emit_info") as mock_emit:
+            with patch("newcode.messaging.emit_info") as mock_emit:
                 result = handle_help_command("/help")
                 assert result is True
                 mock_emit.assert_called_once()
@@ -49,10 +49,10 @@ class TestHandleHelpCommand:
         mock_help_text = "Commands:\n• /help - 显示帮助\n• /exit - 出口"
 
         with patch(
-            "code_puppy.command_line.core_commands.get_commands_help",
+            "newcode.command_line.core_commands.get_commands_help",
             return_value=mock_help_text,
         ):
-            with patch("code_puppy.messaging.emit_info") as mock_emit:
+            with patch("newcode.messaging.emit_info") as mock_emit:
                 result = handle_help_command("/h")  # Test alias
                 assert result is True
                 mock_emit.assert_called_once()
@@ -60,10 +60,10 @@ class TestHandleHelpCommand:
     def test_help_command_uses_unique_group_ids(self):
         """Test that each help call generates a unique group ID."""
         with patch(
-            "code_puppy.command_line.core_commands.get_commands_help",
+            "newcode.command_line.core_commands.get_commands_help",
             return_value="Help text",
         ):
-            with patch("code_puppy.messaging.emit_info") as mock_emit:
+            with patch("newcode.messaging.emit_info") as mock_emit:
                 # Call help command twice
                 handle_help_command("/help")
                 handle_help_command("/help")
@@ -84,7 +84,7 @@ class TestHandleCdCommand:
 
     def test_cd_with_tilde_expansion(self):
         """Test cd command handles tilde (~) expansion correctly."""
-        with patch("code_puppy.messaging.emit_success"):
+        with patch("newcode.messaging.emit_success"):
             with patch("os.path.expanduser", return_value="/home/user"):
                 with patch("os.path.isabs", return_value=True):
                     with patch("os.path.isdir", return_value=True):
@@ -95,7 +95,7 @@ class TestHandleCdCommand:
 
     def test_cd_with_relative_path(self):
         """Test cd command handles relative paths correctly."""
-        with patch("code_puppy.messaging.emit_success"):
+        with patch("newcode.messaging.emit_success"):
             with patch("os.path.expanduser", side_effect=lambda x: x):
                 with patch("os.path.isabs", return_value=False):
                     with patch("os.getcwd", return_value="/current/dir"):
@@ -111,7 +111,7 @@ class TestHandleCdCommand:
         """Test cd command handles special characters in paths."""
         special_path = "/path with spaces & symbols"
 
-        with patch("code_puppy.messaging.emit_success"):
+        with patch("newcode.messaging.emit_success"):
             with patch("os.path.expanduser", return_value=special_path):
                 with patch("os.path.isabs", return_value=True):
                     with patch("os.path.isdir", return_value=True):
@@ -123,10 +123,10 @@ class TestHandleCdCommand:
     def test_cd_listing_with_permission_error(self):
         """Test cd listing handles permission errors gracefully."""
         with patch(
-            "code_puppy.command_line.core_commands.make_directory_table",
+            "newcode.command_line.core_commands.make_directory_table",
             side_effect=PermissionError("Access denied"),
         ):
-            with patch("code_puppy.messaging.emit_error") as mock_error:
+            with patch("newcode.messaging.emit_error") as mock_error:
                 result = handle_cd_command("/cd")
                 assert result is True
                 mock_error.assert_called_once()
@@ -136,7 +136,7 @@ class TestHandleCdCommand:
 
     def test_cd_with_nonexistent_parent(self):
         """Test cd command with path containing nonexistent parent directories."""
-        with patch("code_puppy.messaging.emit_error") as mock_error:
+        with patch("newcode.messaging.emit_error") as mock_error:
             with patch("os.path.expanduser", side_effect=lambda x: x):
                 with patch("os.path.isabs", return_value=True):
                     with patch("os.path.isdir", return_value=False):
@@ -157,9 +157,9 @@ class TestHandleToolsCommand:
         )
 
         with patch(
-            "code_puppy.command_line.core_commands.tools_content", mock_tools_content
+            "newcode.command_line.core_commands.tools_content", mock_tools_content
         ):
-            with patch("code_puppy.messaging.emit_info") as mock_emit:
+            with patch("newcode.messaging.emit_info") as mock_emit:
                 result = handle_tools_command("/tools")
                 assert result is True
                 mock_emit.assert_called_once()
@@ -174,8 +174,8 @@ class TestHandleToolsCommand:
 
     def test_tools_command_with_empty_content(self):
         """Test tools command handles empty tools content gracefully."""
-        with patch("code_puppy.command_line.core_commands.tools_content", ""):
-            with patch("code_puppy.messaging.emit_info") as mock_emit:
+        with patch("newcode.command_line.core_commands.tools_content", ""):
+            with patch("newcode.messaging.emit_info") as mock_emit:
                 result = handle_tools_command("/tools")
                 assert result is True
                 mock_emit.assert_called_once()
@@ -184,10 +184,8 @@ class TestHandleToolsCommand:
         """Test tools command handles unicode content properly."""
         unicode_content = "# 工具\n\n- 工具 1: 描述\n- 工具 2: 描述 🐕"
 
-        with patch(
-            "code_puppy.command_line.core_commands.tools_content", unicode_content
-        ):
-            with patch("code_puppy.messaging.emit_info") as mock_emit:
+        with patch("newcode.command_line.core_commands.tools_content", unicode_content):
+            with patch("newcode.messaging.emit_info") as mock_emit:
                 result = handle_tools_command("/tools")
                 assert result is True
                 mock_emit.assert_called_once()
@@ -198,7 +196,7 @@ class TestHandleMotdCommand:
 
     def test_motd_command_force_refresh(self):
         """Test motd command with force parameter."""
-        with patch("code_puppy.command_line.core_commands.print_motd") as mock_print:
+        with patch("newcode.command_line.core_commands.print_motd") as mock_print:
             result = handle_motd_command("/motd")
             assert result is True
             mock_print.assert_called_once_with(force=True)
@@ -206,7 +204,7 @@ class TestHandleMotdCommand:
     def test_motd_command_with_print_error(self):
         """Test motd command handles printing errors gracefully."""
         with patch(
-            "code_puppy.command_line.core_commands.print_motd",
+            "newcode.command_line.core_commands.print_motd",
             side_effect=Exception("Print failed"),
         ):
             # Should not raise an exception
@@ -219,14 +217,14 @@ class TestHandleExitCommand:
 
     def test_exit_command_with_success_message(self):
         """Test exit command shows appropriate success message."""
-        with patch("code_puppy.messaging.emit_success") as mock_success:
+        with patch("newcode.messaging.emit_success") as mock_success:
             result = handle_exit_command("/exit")
             assert result is True
             mock_success.assert_called_once_with("Goodbye!")
 
     def test_quit_alias_functionality(self):
         """Test that quit alias works the same as exit."""
-        with patch("code_puppy.messaging.emit_success") as mock_success:
+        with patch("newcode.messaging.emit_success") as mock_success:
             result = handle_exit_command("/quit")
             assert result is True
             mock_success.assert_called_once_with("Goodbye!")
@@ -234,7 +232,7 @@ class TestHandleExitCommand:
     def test_exit_command_with_emit_error(self):
         """Test exit command handles emit errors gracefully."""
         with patch(
-            "code_puppy.messaging.emit_success", side_effect=Exception("Emit failed")
+            "newcode.messaging.emit_success", side_effect=Exception("Emit failed")
         ):
             # Should not raise an exception
             result = handle_exit_command("/exit")
@@ -262,25 +260,23 @@ class TestHandleAgentCommand:
 
         # Force the picker to fail so it falls back to text display
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker",
+            "newcode.command_line.core_commands.interactive_agent_picker",
             side_effect=Exception("Picker failed"),
         ):
-            with patch(
-                "code_puppy.agents.get_current_agent", return_value=mock_current
-            ):
+            with patch("newcode.agents.get_current_agent", return_value=mock_current):
                 with patch(
-                    "code_puppy.agents.get_available_agents", return_value=mock_agents
+                    "newcode.agents.get_available_agents", return_value=mock_agents
                 ):
                     with patch(
-                        "code_puppy.agents.get_agent_descriptions",
+                        "newcode.agents.get_agent_descriptions",
                         return_value=mock_descriptions,
                     ):
-                        with patch("code_puppy.messaging.emit_info") as mock_info:
+                        with patch("newcode.messaging.emit_info") as mock_info:
                             with patch(
-                                "code_puppy.messaging.emit_warning"
+                                "newcode.messaging.emit_warning"
                             ) as mock_warning:
                                 with patch(
-                                    "code_puppy.config.finalize_autosave_session",
+                                    "newcode.config.finalize_autosave_session",
                                     return_value="test_session",
                                 ):
                                     result = handle_agent_command("/agent")
@@ -300,13 +296,11 @@ class TestHandleAgentCommand:
         mock_current.description = "A test agent for testing"
 
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker",
+            "newcode.command_line.core_commands.interactive_agent_picker",
             return_value="test_agent",
         ):
-            with patch(
-                "code_puppy.agents.get_current_agent", return_value=mock_current
-            ):
-                with patch("code_puppy.messaging.emit_info") as mock_info:
+            with patch("newcode.agents.get_current_agent", return_value=mock_current):
+                with patch("newcode.messaging.emit_info") as mock_info:
                     result = handle_agent_command("/agent")
                     assert result is True
 
@@ -328,20 +322,20 @@ class TestHandleAgentCommand:
         mock_new_agent.reload_code_generation_agent = MagicMock()
 
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker",
+            "newcode.command_line.core_commands.interactive_agent_picker",
             return_value="new_agent",
         ):
             with patch(
-                "code_puppy.agents.get_current_agent",
+                "newcode.agents.get_current_agent",
                 side_effect=[mock_old_agent, mock_new_agent],
             ):
-                with patch("code_puppy.agents.set_current_agent", return_value=True):
+                with patch("newcode.agents.set_current_agent", return_value=True):
                     with patch(
-                        "code_puppy.config.finalize_autosave_session",
+                        "newcode.config.finalize_autosave_session",
                         return_value="new_session",
                     ):
-                        with patch("code_puppy.messaging.emit_success") as mock_success:
-                            with patch("code_puppy.messaging.emit_info"):
+                        with patch("newcode.messaging.emit_success") as mock_success:
+                            with patch("newcode.messaging.emit_info"):
                                 result = handle_agent_command("/agent")
                                 assert result is True
 
@@ -364,17 +358,17 @@ class TestHandleAgentCommand:
 
         mock_agents = {"target_agent": "Target Agent"}
 
-        with patch("code_puppy.agents.get_available_agents", return_value=mock_agents):
+        with patch("newcode.agents.get_available_agents", return_value=mock_agents):
             with patch(
-                "code_puppy.agents.get_current_agent",
+                "newcode.agents.get_current_agent",
                 side_effect=[mock_current, mock_target],
             ):
-                with patch("code_puppy.agents.set_current_agent", return_value=True):
+                with patch("newcode.agents.set_current_agent", return_value=True):
                     with patch(
-                        "code_puppy.config.finalize_autosave_session",
+                        "newcode.config.finalize_autosave_session",
                         return_value="session_id",
                     ):
-                        with patch("code_puppy.messaging.emit_success") as mock_success:
+                        with patch("newcode.messaging.emit_success") as mock_success:
                             result = handle_agent_command("/agent target_agent")
                             assert result is True
 
@@ -385,9 +379,9 @@ class TestHandleAgentCommand:
         """Test agent command with invalid agent name."""
         mock_agents = {"valid_agent": "Valid Agent"}
 
-        with patch("code_puppy.agents.get_available_agents", return_value=mock_agents):
-            with patch("code_puppy.messaging.emit_error") as mock_error:
-                with patch("code_puppy.messaging.emit_warning") as mock_warning:
+        with patch("newcode.agents.get_available_agents", return_value=mock_agents):
+            with patch("newcode.messaging.emit_error") as mock_error:
+                with patch("newcode.messaging.emit_warning") as mock_warning:
                     result = handle_agent_command("/agent invalid_agent")
                     assert result is True
 
@@ -402,19 +396,17 @@ class TestHandleAgentCommand:
         mock_current.name = "current_agent"
 
         with patch(
-            "code_puppy.agents.get_available_agents", return_value={"target": "Target"}
+            "newcode.agents.get_available_agents", return_value={"target": "Target"}
         ):
-            with patch(
-                "code_puppy.agents.get_current_agent", return_value=mock_current
-            ):
+            with patch("newcode.agents.get_current_agent", return_value=mock_current):
                 with patch(
-                    "code_puppy.agents.set_current_agent", return_value=False
+                    "newcode.agents.set_current_agent", return_value=False
                 ):  # Switch fails
                     with patch(
-                        "code_puppy.config.finalize_autosave_session",
+                        "newcode.config.finalize_autosave_session",
                         return_value="session",
                     ):
-                        with patch("code_puppy.messaging.emit_warning") as mock_warning:
+                        with patch("newcode.messaging.emit_warning") as mock_warning:
                             result = handle_agent_command("/agent target")
                             assert result is True
 
@@ -440,7 +432,7 @@ class TestHandleAgentCommand:
             mock_future.result.side_effect = concurrent.futures.TimeoutError()
             mock_executor.submit.return_value = mock_future
 
-            with patch("code_puppy.messaging.emit_warning") as mock_warning:
+            with patch("newcode.messaging.emit_warning") as mock_warning:
                 result = handle_agent_command("/agent")
                 assert result is True
 
@@ -470,28 +462,28 @@ class TestInteractiveAgentPicker:
         # Mock the interactive_agent_picker using AsyncMock
         mock_picker = AsyncMock(return_value="agent1")
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker",
+            "newcode.command_line.core_commands.interactive_agent_picker",
             mock_picker,
         ):
-            with patch("code_puppy.agents.get_current_agent") as mock_get_current:
+            with patch("newcode.agents.get_current_agent") as mock_get_current:
                 # First call returns current agent, second call returns new agent
                 mock_get_current.side_effect = [mock_current, mock_new_agent]
                 with patch(
-                    "code_puppy.agents.get_available_agents", return_value=mock_agents
+                    "newcode.agents.get_available_agents", return_value=mock_agents
                 ):
                     with patch(
-                        "code_puppy.agents.get_agent_descriptions",
+                        "newcode.agents.get_agent_descriptions",
                         return_value=mock_descriptions,
                     ):
                         with patch(
-                            "code_puppy.agents.set_current_agent", return_value=True
+                            "newcode.agents.set_current_agent", return_value=True
                         ):
                             with patch(
-                                "code_puppy.config.finalize_autosave_session",
+                                "newcode.config.finalize_autosave_session",
                                 return_value="session-123",
                             ):
-                                with patch("code_puppy.messaging.emit_success"):
-                                    with patch("code_puppy.messaging.emit_info"):
+                                with patch("newcode.messaging.emit_success"):
+                                    with patch("newcode.messaging.emit_info"):
                                         result = handle_agent_command("/agent")
                                         assert result is True
 
@@ -508,20 +500,18 @@ class TestInteractiveAgentPicker:
         # Simulate picker returning None (cancelled) using AsyncMock
         mock_picker = AsyncMock(return_value=None)
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker",
+            "newcode.command_line.core_commands.interactive_agent_picker",
             mock_picker,
         ):
-            with patch(
-                "code_puppy.agents.get_current_agent", return_value=mock_current
-            ):
+            with patch("newcode.agents.get_current_agent", return_value=mock_current):
                 with patch(
-                    "code_puppy.agents.get_available_agents", return_value=mock_agents
+                    "newcode.agents.get_available_agents", return_value=mock_agents
                 ):
                     with patch(
-                        "code_puppy.agents.get_agent_descriptions",
+                        "newcode.agents.get_agent_descriptions",
                         return_value=mock_descriptions,
                     ):
-                        with patch("code_puppy.messaging.emit_warning") as mock_warning:
+                        with patch("newcode.messaging.emit_warning") as mock_warning:
                             result = handle_agent_command("/agent")
                             assert result is True
                             mock_warning.assert_called_with("Agent selection cancelled")
@@ -539,20 +529,18 @@ class TestInteractiveAgentPicker:
         # Simulate picker returning None (cancelled/error) using AsyncMock
         mock_picker = AsyncMock(return_value=None)
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker",
+            "newcode.command_line.core_commands.interactive_agent_picker",
             mock_picker,
         ):
-            with patch(
-                "code_puppy.agents.get_current_agent", return_value=mock_current
-            ):
+            with patch("newcode.agents.get_current_agent", return_value=mock_current):
                 with patch(
-                    "code_puppy.agents.get_available_agents", return_value=mock_agents
+                    "newcode.agents.get_available_agents", return_value=mock_agents
                 ):
                     with patch(
-                        "code_puppy.agents.get_agent_descriptions",
+                        "newcode.agents.get_agent_descriptions",
                         return_value=mock_descriptions,
                     ):
-                        with patch("code_puppy.messaging.emit_warning") as mock_warning:
+                        with patch("newcode.messaging.emit_warning") as mock_warning:
                             result = handle_agent_command("/agent")
                             assert result is True
                             mock_warning.assert_called_with("Agent selection cancelled")
@@ -560,10 +548,10 @@ class TestInteractiveAgentPicker:
     def test_agent_picker_integration(self):
         """Test that interactive_agent_picker is properly imported from agent_menu."""
         # Verify the import works correctly
-        from code_puppy.command_line.agent_menu import (
+        from newcode.command_line.agent_menu import (
             interactive_agent_picker as picker2,
         )
-        from code_puppy.command_line.core_commands import (
+        from newcode.command_line.core_commands import (
             interactive_agent_picker as picker1,
         )
 
@@ -577,17 +565,17 @@ class TestHandleModelCommand:
     def test_model_command_interactive_success(self):
         """Test model command with successful interactive selection."""
         with patch(
-            "code_puppy.command_line.core_commands.interactive_model_picker",
+            "newcode.command_line.core_commands.interactive_model_picker",
             return_value="gpt-4",
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.set_active_model"
+                "newcode.command_line.model_picker_completion.set_active_model"
             ) as mock_set:
                 with patch(
-                    "code_puppy.command_line.model_picker_completion.get_active_model",
+                    "newcode.command_line.model_picker_completion.get_active_model",
                     return_value="gpt-4",
                 ):
-                    with patch("code_puppy.messaging.emit_success") as mock_success:
+                    with patch("newcode.messaging.emit_success") as mock_success:
                         result = handle_model_command("/model")
                         assert result is True
                         mock_set.assert_called_once_with("gpt-4")
@@ -598,10 +586,10 @@ class TestHandleModelCommand:
     def test_model_command_interactive_cancelled(self):
         """Test model command when interactive selection is cancelled."""
         with patch(
-            "code_puppy.command_line.core_commands.interactive_model_picker",
+            "newcode.command_line.core_commands.interactive_model_picker",
             return_value=None,
         ):
-            with patch("code_puppy.messaging.emit_warning") as mock_warning:
+            with patch("newcode.messaging.emit_warning") as mock_warning:
                 result = handle_model_command("/model")
                 assert result is True
                 mock_warning.assert_called_with("Model selection cancelled")
@@ -609,14 +597,14 @@ class TestHandleModelCommand:
     def test_model_command_picker_error_fallback(self):
         """Test model command fallback when picker fails."""
         with patch(
-            "code_puppy.command_line.core_commands.interactive_model_picker",
+            "newcode.command_line.core_commands.interactive_model_picker",
             side_effect=Exception("Picker failed"),
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.load_model_names",
+                "newcode.command_line.model_picker_completion.load_model_names",
                 return_value=["gpt-3.5", "gpt-4"],
             ):
-                with patch("code_puppy.messaging.emit_warning") as mock_warning:
+                with patch("newcode.messaging.emit_warning") as mock_warning:
                     result = handle_model_command("/model")
                     assert result is True
 
@@ -631,14 +619,14 @@ class TestHandleModelCommand:
     def test_model_command_with_valid_argument(self):
         """Test model command with a valid model name argument."""
         with patch(
-            "code_puppy.command_line.model_picker_completion.update_model_in_input",
+            "newcode.command_line.model_picker_completion.update_model_in_input",
             return_value="/m synthetic-GLM-4.7",
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.get_active_model",
+                "newcode.command_line.model_picker_completion.get_active_model",
                 return_value="synthetic-GLM-4.7",
             ):
-                with patch("code_puppy.messaging.emit_success") as mock_success:
+                with patch("newcode.messaging.emit_success") as mock_success:
                     result = handle_model_command("/model synthetic-GLM-4.7")
                     assert result is True
                     mock_success.assert_called_with(
@@ -648,14 +636,14 @@ class TestHandleModelCommand:
     def test_model_command_with_invalid_argument(self):
         """Test model command with invalid model name argument."""
         with patch(
-            "code_puppy.command_line.model_picker_completion.update_model_in_input",
+            "newcode.command_line.model_picker_completion.update_model_in_input",
             return_value=None,
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.load_model_names",
+                "newcode.command_line.model_picker_completion.load_model_names",
                 return_value=["gpt-3.5", "gpt-4"],
             ):
-                with patch("code_puppy.messaging.emit_warning") as mock_warning:
+                with patch("newcode.messaging.emit_warning") as mock_warning:
                     result = handle_model_command("/model invalid-model")
                     assert result is True
 
@@ -665,14 +653,14 @@ class TestHandleModelCommand:
     def test_model_command_m_alias(self):
         """Test model command with /m alias."""
         with patch(
-            "code_puppy.command_line.model_picker_completion.update_model_in_input",
+            "newcode.command_line.model_picker_completion.update_model_in_input",
             return_value="",
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.get_active_model",
+                "newcode.command_line.model_picker_completion.get_active_model",
                 return_value="synthetic-GLM-4.7",
             ):
-                with patch("code_puppy.messaging.emit_success") as mock_success:
+                with patch("newcode.messaging.emit_success") as mock_success:
                     result = handle_model_command("/m synthetic-GLM-4.7")
                     assert result is True
                     mock_success.assert_called_with(
@@ -689,7 +677,7 @@ class TestHandleModelCommand:
             mock_future.result.side_effect = concurrent.futures.TimeoutError()
             mock_executor.submit.return_value = mock_future
 
-            with patch("code_puppy.messaging.emit_warning") as mock_warning:
+            with patch("newcode.messaging.emit_warning") as mock_warning:
                 result = handle_model_command("/model")
                 assert result is True
                 assert mock_warning.call_count >= 1
@@ -709,15 +697,15 @@ class TestInteractiveModelPicker:
         current_model = "gpt-4"
 
         with patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=models,
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.get_active_model",
+                "newcode.command_line.model_picker_completion.get_active_model",
                 return_value=current_model,
             ):
                 with patch(
-                    "code_puppy.tools.common.arrow_select_async", return_value="gpt-3.5"
+                    "newcode.tools.common.arrow_select_async", return_value="gpt-3.5"
                 ):
                     result = await interactive_model_picker()
                     assert result == "gpt-3.5"
@@ -742,15 +730,15 @@ class TestInteractiveModelPicker:
             ]  # Return the gpt-4 choice (which should be marked current)
 
         with patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=models,
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.get_active_model",
+                "newcode.command_line.model_picker_completion.get_active_model",
                 return_value=current_model,
             ):
                 with patch(
-                    "code_puppy.tools.common.arrow_select_async",
+                    "newcode.tools.common.arrow_select_async",
                     side_effect=capture_selector,
                 ):
                     await interactive_model_picker()
@@ -779,15 +767,15 @@ class TestInteractiveModelPicker:
     ):
         """Test model picker handles keyboard interrupt gracefully."""
         with patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=["gpt-4"],
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.get_active_model",
+                "newcode.command_line.model_picker_completion.get_active_model",
                 return_value="gpt-4",
             ):
                 with patch(
-                    "code_puppy.tools.common.arrow_select_async",
+                    "newcode.tools.common.arrow_select_async",
                     side_effect=KeyboardInterrupt(),
                 ):
                     result = await interactive_model_picker()
@@ -799,9 +787,7 @@ class TestHandleMcpCommand:
 
     def test_mcp_command_delegates_to_handler(self):
         """Test MCP command properly delegates to MCPCommandHandler."""
-        with patch(
-            "code_puppy.command_line.mcp.MCPCommandHandler"
-        ) as mock_handler_class:
+        with patch("newcode.command_line.mcp.MCPCommandHandler") as mock_handler_class:
             mock_handler = MagicMock()
             mock_handler_class.return_value = mock_handler
             mock_handler.handle_mcp_command.return_value = True
@@ -814,9 +800,7 @@ class TestHandleMcpCommand:
 
     def test_mcp_command_handler_error(self):
         """Test MCP command handles handler errors gracefully."""
-        with patch(
-            "code_puppy.command_line.mcp.MCPCommandHandler"
-        ) as mock_handler_class:
+        with patch("newcode.command_line.mcp.MCPCommandHandler") as mock_handler_class:
             mock_handler = MagicMock()
             mock_handler_class.return_value = mock_handler
             mock_handler.handle_mcp_command.side_effect = Exception("Handler failed")
@@ -909,7 +893,7 @@ class TestEdgeCasesAndErrorHandling:
         """Test commands handle unicode arguments gracefully."""
         unicode_path = "/路径/with/世界"
 
-        with patch("code_puppy.messaging.emit_error"):
+        with patch("newcode.messaging.emit_error"):
             with patch("os.path.expanduser", return_value=unicode_path):
                 with patch("os.path.isabs", return_value=True):
                     with patch("os.path.isdir", return_value=False):
@@ -918,26 +902,26 @@ class TestEdgeCasesAndErrorHandling:
 
     def test_agent_command_with_unicode_agent_name(self):
         """Test agent command with unicode agent name."""
-        with patch("code_puppy.messaging.emit_error"):
-            with patch("code_puppy.agents.get_available_agents", return_value={}):
+        with patch("newcode.messaging.emit_error"):
+            with patch("newcode.agents.get_available_agents", return_value={}):
                 result = handle_agent_command("/agent 世界")
                 assert result is True
 
     def test_model_command_with_unicode_model_name(self):
         """Test model command with unicode model name."""
         with patch(
-            "code_puppy.command_line.model_picker_completion.update_model_in_input",
+            "newcode.command_line.model_picker_completion.update_model_in_input",
             return_value="",
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.load_model_names",
+                "newcode.command_line.model_picker_completion.load_model_names",
                 return_value=["gpt-4", "世界-model"],
             ):
                 with patch(
-                    "code_puppy.command_line.model_picker_completion.get_active_model",
+                    "newcode.command_line.model_picker_completion.get_active_model",
                     return_value="世界-model",
                 ):
-                    with patch("code_puppy.messaging.emit_success") as mock_success:
+                    with patch("newcode.messaging.emit_success") as mock_success:
                         result = handle_model_command("/m 世界-model")
                         assert result is True
                         mock_success.assert_called_with(
@@ -947,10 +931,10 @@ class TestEdgeCasesAndErrorHandling:
     def test_help_command_lazy_import_handling(self):
         """Test help command handles lazy import edge cases."""
         with patch(
-            "code_puppy.command_line.core_commands.get_commands_help",
+            "newcode.command_line.core_commands.get_commands_help",
             side_effect=ImportError("Module not found"),
         ):
-            with patch("code_puppy.messaging.emit_info"):
+            with patch("newcode.messaging.emit_info"):
                 with pytest.raises(ImportError):
                     handle_help_command("/help")
 
@@ -959,9 +943,9 @@ class TestEdgeCasesAndErrorHandling:
         malformed_content = "# Header\n\n- Unclosed list item\n- Another item\n\n```\nUnclosed code block"
 
         with patch(
-            "code_puppy.command_line.core_commands.tools_content", malformed_content
+            "newcode.command_line.core_commands.tools_content", malformed_content
         ):
-            with patch("code_puppy.messaging.emit_info") as mock_info:
+            with patch("newcode.messaging.emit_info") as mock_info:
                 result = handle_tools_command("/tools")
                 assert result is True
                 mock_info.assert_called_once()
@@ -986,22 +970,20 @@ class TestEdgeCasesAndErrorHandling:
 
         # Simulate the picker throwing an exception
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker"
+            "newcode.command_line.core_commands.interactive_agent_picker"
         ) as mock_picker:
             # Simulate asyncio.run raising RuntimeError
             mock_picker.side_effect = RuntimeError("Picker failed")
 
-            with patch(
-                "code_puppy.agents.get_current_agent", return_value=mock_current
-            ):
+            with patch("newcode.agents.get_current_agent", return_value=mock_current):
                 with patch(
-                    "code_puppy.agents.get_available_agents", return_value=mock_agents
+                    "newcode.agents.get_available_agents", return_value=mock_agents
                 ):
                     with patch(
-                        "code_puppy.agents.get_agent_descriptions",
+                        "newcode.agents.get_agent_descriptions",
                         return_value=mock_descriptions,
                     ):
-                        with patch("code_puppy.messaging.emit_warning") as mock_warning:
+                        with patch("newcode.messaging.emit_warning") as mock_warning:
                             # Should handle gracefully and fall back
                             result = handle_agent_command("/agent")
                             assert result is True
@@ -1021,7 +1003,7 @@ class TestEdgeCasesAndErrorHandling:
             )
             mock_executor.submit.return_value = mock_future
 
-            with patch("code_puppy.messaging.emit_warning") as mock_warning:
+            with patch("newcode.messaging.emit_warning") as mock_warning:
                 result = handle_agent_command("/agent")
                 assert result is True
 
@@ -1046,20 +1028,20 @@ class TestIntegrationScenarios:
 
         # Simulate successful workflow
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker",
+            "newcode.command_line.core_commands.interactive_agent_picker",
             return_value="new_agent",
         ):
             with patch(
-                "code_puppy.agents.get_current_agent",
+                "newcode.agents.get_current_agent",
                 side_effect=[mock_old_agent, mock_new_agent],
             ):
-                with patch("code_puppy.agents.set_current_agent", return_value=True):
+                with patch("newcode.agents.set_current_agent", return_value=True):
                     with patch(
-                        "code_puppy.config.finalize_autosave_session",
+                        "newcode.config.finalize_autosave_session",
                         return_value="new_session_123",
                     ):
-                        with patch("code_puppy.messaging.emit_success") as mock_success:
-                            with patch("code_puppy.messaging.emit_info") as mock_info:
+                        with patch("newcode.messaging.emit_success") as mock_success:
+                            with patch("newcode.messaging.emit_info") as mock_info:
                                 result = handle_agent_command("/agent")
                                 assert result is True
 
@@ -1083,17 +1065,17 @@ class TestIntegrationScenarios:
     def test_complete_model_switch_workflow(self):
         """Test complete model switching workflow."""
         with patch(
-            "code_puppy.command_line.core_commands.interactive_model_picker",
+            "newcode.command_line.core_commands.interactive_model_picker",
             return_value="claude-3-opus",
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.set_active_model"
+                "newcode.command_line.model_picker_completion.set_active_model"
             ) as mock_set:
                 with patch(
-                    "code_puppy.command_line.model_picker_completion.get_active_model",
+                    "newcode.command_line.model_picker_completion.get_active_model",
                     return_value="claude-3-opus",
                 ):
-                    with patch("code_puppy.messaging.emit_success") as mock_success:
+                    with patch("newcode.messaging.emit_success") as mock_success:
                         result = handle_model_command("/model")
                         assert result is True
 
@@ -1122,29 +1104,29 @@ class TestIntegrationScenarios:
         """Test various error recovery scenarios."""
         # Test picker failure recovery for agent command
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker",
+            "newcode.command_line.core_commands.interactive_agent_picker",
             side_effect=ConnectionError("Network failed"),
         ):
-            with patch("code_puppy.agents.get_current_agent"):
+            with patch("newcode.agents.get_current_agent"):
                 with patch(
-                    "code_puppy.agents.get_available_agents",
+                    "newcode.agents.get_available_agents",
                     return_value={"test": "Test Agent"},
                 ):
-                    with patch("code_puppy.messaging.emit_warning") as mock_warning:
+                    with patch("newcode.messaging.emit_warning") as mock_warning:
                         result = handle_agent_command("/agent")
                         assert result is True
                         assert mock_warning.call_count >= 1
 
         # Test picker failure recovery for model command
         with patch(
-            "code_puppy.command_line.core_commands.interactive_model_picker",
+            "newcode.command_line.core_commands.interactive_model_picker",
             side_effect=RuntimeError("Runtime failed"),
         ):
             with patch(
-                "code_puppy.command_line.model_picker_completion.load_model_names",
+                "newcode.command_line.model_picker_completion.load_model_names",
                 return_value=["model1"],
             ):
-                with patch("code_puppy.messaging.emit_warning") as mock_warning:
+                with patch("newcode.messaging.emit_warning") as mock_warning:
                     result = handle_model_command("/model")
                     assert result is True
                     assert mock_warning.call_count >= 2
@@ -1164,20 +1146,18 @@ class TestIntegrationScenarios:
         # Simulate cancelled picker using AsyncMock
         mock_picker = AsyncMock(return_value=None)
         with patch(
-            "code_puppy.command_line.core_commands.interactive_agent_picker",
+            "newcode.command_line.core_commands.interactive_agent_picker",
             mock_picker,
         ):
-            with patch(
-                "code_puppy.agents.get_current_agent", return_value=mock_current
-            ):
+            with patch("newcode.agents.get_current_agent", return_value=mock_current):
                 with patch(
-                    "code_puppy.agents.get_available_agents", return_value=mock_agents
+                    "newcode.agents.get_available_agents", return_value=mock_agents
                 ):
                     with patch(
-                        "code_puppy.agents.get_agent_descriptions",
+                        "newcode.agents.get_agent_descriptions",
                         return_value=mock_descriptions,
                     ):
-                        with patch("code_puppy.messaging.emit_warning") as mock_warning:
+                        with patch("newcode.messaging.emit_warning") as mock_warning:
                             result = handle_agent_command("/agent")
                             # Should return True (command handled)
                             assert result is True

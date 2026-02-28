@@ -1,4 +1,4 @@
-"""Tests targeting remaining uncovered lines in code_puppy/agents/ (non-base_agent)."""
+"""Tests targeting remaining uncovered lines in newcode/agents/ (non-base_agent)."""
 
 import json
 from unittest.mock import MagicMock, patch
@@ -26,55 +26,51 @@ def _test_reviewer_agent(module_path, class_name):
 
 
 def test_c_reviewer():
-    _test_reviewer_agent("code_puppy.agents.agent_c_reviewer", "CReviewerAgent")
+    _test_reviewer_agent("newcode.agents.agent_c_reviewer", "CReviewerAgent")
 
 
 def test_code_reviewer():
     _test_reviewer_agent(
-        "code_puppy.agents.agent_code_reviewer", "CodeQualityReviewerAgent"
+        "newcode.agents.agent_code_reviewer", "CodeQualityReviewerAgent"
     )
 
 
 def test_cpp_reviewer():
-    _test_reviewer_agent("code_puppy.agents.agent_cpp_reviewer", "CppReviewerAgent")
+    _test_reviewer_agent("newcode.agents.agent_cpp_reviewer", "CppReviewerAgent")
 
 
 def test_golang_reviewer():
-    _test_reviewer_agent(
-        "code_puppy.agents.agent_golang_reviewer", "GolangReviewerAgent"
-    )
+    _test_reviewer_agent("newcode.agents.agent_golang_reviewer", "GolangReviewerAgent")
 
 
 def test_javascript_reviewer():
     _test_reviewer_agent(
-        "code_puppy.agents.agent_javascript_reviewer", "JavaScriptReviewerAgent"
+        "newcode.agents.agent_javascript_reviewer", "JavaScriptReviewerAgent"
     )
 
 
 def test_python_reviewer():
-    _test_reviewer_agent(
-        "code_puppy.agents.agent_python_reviewer", "PythonReviewerAgent"
-    )
+    _test_reviewer_agent("newcode.agents.agent_python_reviewer", "PythonReviewerAgent")
 
 
 def test_typescript_reviewer():
     _test_reviewer_agent(
-        "code_puppy.agents.agent_typescript_reviewer", "TypeScriptReviewerAgent"
+        "newcode.agents.agent_typescript_reviewer", "TypeScriptReviewerAgent"
     )
 
 
 def test_security_auditor():
     _test_reviewer_agent(
-        "code_puppy.agents.agent_security_auditor", "SecurityAuditorAgent"
+        "newcode.agents.agent_security_auditor", "SecurityAuditorAgent"
     )
 
 
 def test_qa_expert():
-    _test_reviewer_agent("code_puppy.agents.agent_qa_expert", "QAExpertAgent")
+    _test_reviewer_agent("newcode.agents.agent_qa_expert", "QAExpertAgent")
 
 
 def test_qa_browser():
-    from code_puppy.agents.agent_qa_browser import QABrowserAgent
+    from newcode.agents.agent_qa_browser import QABrowserAgent
 
     agent = QABrowserAgent()
     tools = agent.get_available_tools()
@@ -84,11 +80,11 @@ def test_qa_browser():
 
 
 def test_scheduler_agent():
-    _test_reviewer_agent("code_puppy.agents.agent_scheduler", "SchedulerAgent")
+    _test_reviewer_agent("newcode.agents.agent_scheduler", "SchedulerAgent")
 
 
 def test_python_programmer():
-    from code_puppy.agents.agent_python_programmer import PythonProgrammerAgent
+    from newcode.agents.agent_python_programmer import PythonProgrammerAgent
 
     agent = PythonProgrammerAgent()
     tools = agent.get_available_tools()
@@ -97,8 +93,8 @@ def test_python_programmer():
     assert isinstance(prompt, str)
 
 
-def test_code_puppy_agent():
-    from code_puppy.agents.agent_code_agent import CodeAgent
+def test_newcode_agent():
+    from newcode.agents.agent_code_agent import CodeAgent
 
     agent = CodeAgent()
     tools = agent.get_available_tools()
@@ -113,7 +109,7 @@ def test_code_puppy_agent():
 
 
 def test_planning_agent():
-    from code_puppy.agents.agent_planning import PlanningAgent
+    from newcode.agents.agent_planning import PlanningAgent
 
     agent = PlanningAgent()
     tools = agent.get_available_tools()
@@ -124,7 +120,7 @@ def test_planning_agent():
 
 
 def test_prompt_reviewer_agent():
-    from code_puppy.agents.prompt_reviewer import PromptReviewerAgent
+    from newcode.agents.prompt_reviewer import PromptReviewerAgent
 
     agent = PromptReviewerAgent()
     tools = agent.get_available_tools()
@@ -140,70 +136,70 @@ def test_prompt_reviewer_agent():
 
 
 def test_pack_bloodhound():
-    from code_puppy.agents.pack.bloodhound import BloodhoundAgent
+    from newcode.agents.pack.bloodhound import BloodhoundAgent
 
     agent = BloodhoundAgent()
-    with patch("code_puppy.agents.pack.bloodhound.callbacks") as mock_cb:
+    with patch("newcode.agents.pack.bloodhound.callbacks") as mock_cb:
         mock_cb.on_load_prompt.return_value = ["extra prompt"]
         prompt = agent.get_system_prompt()
         assert "extra prompt" in prompt
 
 
 def test_pack_husky():
-    from code_puppy.agents.pack.husky import HuskyAgent
+    from newcode.agents.pack.husky import HuskyAgent
 
     agent = HuskyAgent()
-    with patch("code_puppy.agents.pack.husky.callbacks") as mock_cb:
+    with patch("newcode.agents.pack.husky.callbacks") as mock_cb:
         mock_cb.on_load_prompt.return_value = ["extra"]
         prompt = agent.get_system_prompt()
         assert "extra" in prompt
 
 
 def test_pack_retriever():
-    from code_puppy.agents.pack.retriever import RetrieverAgent
+    from newcode.agents.pack.retriever import RetrieverAgent
 
     agent = RetrieverAgent()
-    with patch("code_puppy.agents.pack.retriever.callbacks") as mock_cb:
+    with patch("newcode.agents.pack.retriever.callbacks") as mock_cb:
         mock_cb.on_load_prompt.return_value = ["extra"]
         prompt = agent.get_system_prompt()
         assert "extra" in prompt
 
 
 def test_pack_shepherd():
-    from code_puppy.agents.pack.shepherd import ShepherdAgent
+    from newcode.agents.pack.shepherd import ShepherdAgent
 
     agent = ShepherdAgent()
-    with patch("code_puppy.agents.pack.shepherd.callbacks") as mock_cb:
+    with patch("newcode.agents.pack.shepherd.callbacks") as mock_cb:
         mock_cb.on_load_prompt.return_value = ["extra"]
         prompt = agent.get_system_prompt()
         assert "extra" in prompt
 
 
 def test_pack_terrier():
-    from code_puppy.agents.pack.terrier import TerrierAgent
+    from newcode.agents.pack.terrier import TerrierAgent
 
     agent = TerrierAgent()
-    with patch("code_puppy.agents.pack.terrier.callbacks") as mock_cb:
+    with patch("newcode.agents.pack.terrier.callbacks") as mock_cb:
         mock_cb.on_load_prompt.return_value = ["extra"]
         prompt = agent.get_system_prompt()
         assert "extra" in prompt
 
 
 def test_pack_watchdog():
-    from code_puppy.agents.pack.watchdog import WatchdogAgent
+    from newcode.agents.pack.watchdog import WatchdogAgent
 
     agent = WatchdogAgent()
-    with patch("code_puppy.agents.pack.watchdog.callbacks") as mock_cb:
+    with patch("newcode.agents.pack.watchdog.callbacks") as mock_cb:
         mock_cb.on_load_prompt.return_value = ["extra"]
         prompt = agent.get_system_prompt()
         assert "extra" in prompt
 
 
 def test_pack_leader():
-    from code_puppy.agents.agent_pack_leader import PackLeaderAgent
+    from newcode.agents.agent_pack_leader import PackLeaderAgent
 
     agent = PackLeaderAgent()
-    with patch("code_puppy.agents.agent_pack_leader.callbacks") as mock_cb:
+    with patch("newcode.agents.agent_pack_leader.callbacks") as mock_cb:
         mock_cb.on_load_prompt.return_value = ["extra"]
         prompt = agent.get_system_prompt()
         assert "extra" in prompt
@@ -216,7 +212,7 @@ def test_pack_leader():
 
 def test_creator_agent_get_system_prompt_with_uc_tools():
     """Cover UC tools loading in get_system_prompt."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
 
@@ -229,7 +225,7 @@ def test_creator_agent_get_system_prompt_with_uc_tools():
     mock_registry.list_tools.return_value = [mock_tool]
 
     with patch(
-        "code_puppy.plugins.universal_constructor.registry.get_registry",
+        "newcode.plugins.universal_constructor.registry.get_registry",
         return_value=mock_registry,
     ):
         prompt = agent.get_system_prompt()
@@ -238,12 +234,12 @@ def test_creator_agent_get_system_prompt_with_uc_tools():
 
 def test_creator_agent_get_system_prompt_uc_import_error():
     """Cover ImportError branch for UC tools."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
 
     with patch(
-        "code_puppy.plugins.universal_constructor.registry.get_registry",
+        "newcode.plugins.universal_constructor.registry.get_registry",
         side_effect=Exception("boom"),
     ):
         prompt = agent.get_system_prompt()
@@ -252,12 +248,12 @@ def test_creator_agent_get_system_prompt_uc_import_error():
 
 def test_creator_validate_agent_json_valid():
     """Cover validate_agent_json with valid config."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
 
     with patch(
-        "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+        "newcode.agents.agent_creator_agent.get_available_tool_names",
         return_value=["list_files", "read_file"],
     ):
         errors = agent.validate_agent_json(
@@ -273,7 +269,7 @@ def test_creator_validate_agent_json_valid():
 
 def test_creator_validate_agent_json_missing_fields():
     """Cover missing required fields."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
     errors = agent.validate_agent_json({})
@@ -282,12 +278,12 @@ def test_creator_validate_agent_json_missing_fields():
 
 def test_creator_validate_agent_json_bad_name():
     """Cover name validation: spaces, empty."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
 
     with patch(
-        "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+        "newcode.agents.agent_creator_agent.get_available_tool_names",
         return_value=["list_files"],
     ):
         # Space in name
@@ -315,12 +311,12 @@ def test_creator_validate_agent_json_bad_name():
 
 def test_creator_validate_agent_json_bad_tools():
     """Cover tools validation: not a list, invalid tools."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
 
     with patch(
-        "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+        "newcode.agents.agent_creator_agent.get_available_tool_names",
         return_value=["list_files"],
     ):
         # tools not a list
@@ -348,12 +344,12 @@ def test_creator_validate_agent_json_bad_tools():
 
 def test_creator_validate_agent_json_bad_prompt():
     """Cover system_prompt validation: not string/list, bad list items."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
 
     with patch(
-        "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+        "newcode.agents.agent_creator_agent.get_available_tool_names",
         return_value=["list_files"],
     ):
         # prompt is number
@@ -381,11 +377,11 @@ def test_creator_validate_agent_json_bad_prompt():
 
 def test_creator_get_agent_file_path():
     """Cover get_agent_file_path."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
     with patch(
-        "code_puppy.agents.agent_creator_agent.get_user_agents_directory",
+        "newcode.agents.agent_creator_agent.get_user_agents_directory",
         return_value="/tmp/agents",
     ):
         path = agent.get_agent_file_path("my-agent")
@@ -394,17 +390,17 @@ def test_creator_get_agent_file_path():
 
 def test_creator_create_agent_json_success(tmp_path):
     """Cover create_agent_json success path."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
 
     with (
         patch(
-            "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+            "newcode.agents.agent_creator_agent.get_available_tool_names",
             return_value=["list_files"],
         ),
         patch(
-            "code_puppy.agents.agent_creator_agent.get_user_agents_directory",
+            "newcode.agents.agent_creator_agent.get_user_agents_directory",
             return_value=str(tmp_path),
         ),
     ):
@@ -423,18 +419,18 @@ def test_creator_create_agent_json_success(tmp_path):
 
 def test_creator_create_agent_json_already_exists(tmp_path):
     """Cover create_agent_json when file exists."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
     (tmp_path / "existing.json").write_text("{}")
 
     with (
         patch(
-            "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+            "newcode.agents.agent_creator_agent.get_available_tool_names",
             return_value=["list_files"],
         ),
         patch(
-            "code_puppy.agents.agent_creator_agent.get_user_agents_directory",
+            "newcode.agents.agent_creator_agent.get_user_agents_directory",
             return_value=str(tmp_path),
         ),
     ):
@@ -452,7 +448,7 @@ def test_creator_create_agent_json_already_exists(tmp_path):
 
 def test_creator_create_agent_json_validation_error():
     """Cover create_agent_json with validation errors."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
     success, msg = agent.create_agent_json({})
@@ -462,17 +458,17 @@ def test_creator_create_agent_json_validation_error():
 
 def test_creator_create_agent_json_write_failure(tmp_path):
     """Cover create_agent_json write failure."""
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
 
     with (
         patch(
-            "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+            "newcode.agents.agent_creator_agent.get_available_tool_names",
             return_value=["list_files"],
         ),
         patch(
-            "code_puppy.agents.agent_creator_agent.get_user_agents_directory",
+            "newcode.agents.agent_creator_agent.get_user_agents_directory",
             return_value=str(tmp_path),
         ),
         patch("builtins.open", side_effect=PermissionError("denied")),
@@ -490,7 +486,7 @@ def test_creator_create_agent_json_write_failure(tmp_path):
 
 
 def test_creator_get_user_prompt():
-    from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+    from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
     agent = AgentCreatorAgent()
     prompt = agent.get_user_prompt()
@@ -506,7 +502,7 @@ def test_agent_manager_is_process_alive_dead_process():
     """Cover ProcessLookupError branch in _is_process_alive."""
     import sys
 
-    from code_puppy.agents.agent_manager import _is_process_alive
+    from newcode.agents.agent_manager import _is_process_alive
 
     if sys.platform == "win32":
         pytest.skip("Unix-only")
@@ -519,7 +515,7 @@ def test_agent_manager_is_process_alive_permission():
     """Cover PermissionError branch (process exists but no permission)."""
     import sys
 
-    from code_puppy.agents.agent_manager import _is_process_alive
+    from newcode.agents.agent_manager import _is_process_alive
 
     if sys.platform == "win32":
         pytest.skip("Unix-only")
@@ -530,7 +526,7 @@ def test_agent_manager_is_process_alive_permission():
 
 def test_agent_manager_discover_agents_error():
     """Cover error loading agent sub-packages (lines 267-279)."""
-    from code_puppy.agents.agent_manager import _discover_agents
+    from newcode.agents.agent_manager import _discover_agents
 
     # Should not raise even with import errors
     with patch("importlib.import_module", side_effect=Exception("boom")):
@@ -541,7 +537,7 @@ def test_next_clone_index():
     """Cover _next_clone_index (line 585)."""
     from pathlib import Path
 
-    from code_puppy.agents.agent_manager import _next_clone_index
+    from newcode.agents.agent_manager import _next_clone_index
 
     # No existing clones
     with patch("pathlib.Path.exists", return_value=False):
@@ -557,9 +553,9 @@ def test_next_clone_index():
 
 def test_clone_agent_failure():
     """Cover clone_agent failure paths (lines 673-674)."""
-    from code_puppy.agents.agent_manager import clone_agent
+    from newcode.agents.agent_manager import clone_agent
 
-    with patch("code_puppy.agents.agent_manager.emit_warning"):
+    with patch("newcode.agents.agent_manager.emit_warning"):
         result = clone_agent("totally-nonexistent-agent-xyz")
         # Should return None for nonexistent agent
         assert result is None
@@ -572,17 +568,17 @@ def test_clone_agent_failure():
 
 def test_fire_stream_event_import_error():
     """Cover ImportError branch in _fire_stream_event."""
-    from code_puppy.agents.event_stream_handler import _fire_stream_event
+    from newcode.agents.event_stream_handler import _fire_stream_event
 
-    with patch("code_puppy.callbacks.on_stream_event", side_effect=ImportError):
+    with patch("newcode.callbacks.on_stream_event", side_effect=ImportError):
         _fire_stream_event("test", {})  # Should not raise
 
 
 def test_fire_stream_event_exception():
     """Cover Exception branch in _fire_stream_event."""
-    from code_puppy.agents.event_stream_handler import _fire_stream_event
+    from newcode.agents.event_stream_handler import _fire_stream_event
 
-    with patch("code_puppy.callbacks.on_stream_event", side_effect=Exception("boom")):
+    with patch("newcode.callbacks.on_stream_event", side_effect=Exception("boom")):
         _fire_stream_event("test", {})  # Should not raise
 
 
@@ -593,7 +589,7 @@ def test_fire_stream_event_exception():
 
 def _make_json_agent(tmp_path, config):
     """Helper to create a JSONAgent from a dict config."""
-    from code_puppy.agents.json_agent import JSONAgent
+    from newcode.agents.json_agent import JSONAgent
 
     path = tmp_path / f"{config['name']}.json"
     path.write_text(json.dumps(config))
@@ -621,7 +617,7 @@ def test_json_agent_uc_tools(tmp_path):
     mock_registry.list_tools.return_value = [mock_tool]
 
     with patch(
-        "code_puppy.plugins.universal_constructor.registry.get_registry",
+        "newcode.plugins.universal_constructor.registry.get_registry",
         return_value=mock_registry,
     ):
         tools = agent.get_available_tools()
@@ -643,7 +639,7 @@ def test_json_agent_uc_import_error(tmp_path):
 
     # The import is inside get_available_tools, so we patch at source
     with patch.dict(
-        "sys.modules", {"code_puppy.plugins.universal_constructor.registry": None}
+        "sys.modules", {"newcode.plugins.universal_constructor.registry": None}
     ):
         tools = agent.get_available_tools()
         assert "list_files" in tools
@@ -672,7 +668,7 @@ def test_json_agent_get_user_prompt(tmp_path):
 
 def test_subagent_fire_callback_no_loop():
     """Cover RuntimeError branch (no event loop) in _fire_callback."""
-    from code_puppy.agents.subagent_stream_handler import _fire_callback
+    from newcode.agents.subagent_stream_handler import _fire_callback
 
     # Called outside async context - should not raise
     _fire_callback("test", {}, None)
@@ -680,9 +676,9 @@ def test_subagent_fire_callback_no_loop():
 
 def test_subagent_fire_callback_import_error():
     """Cover ImportError branch in _fire_callback."""
-    from code_puppy.agents.subagent_stream_handler import _fire_callback
+    from newcode.agents.subagent_stream_handler import _fire_callback
 
-    with patch("code_puppy.callbacks.on_stream_event", side_effect=ImportError):
+    with patch("newcode.callbacks.on_stream_event", side_effect=ImportError):
         _fire_callback("test", {}, None)
 
 
@@ -690,5 +686,5 @@ def test_subagent_stream_handler_module():
     """Verify the module is importable."""
     import importlib
 
-    mod = importlib.import_module("code_puppy.agents.subagent_stream_handler")
+    mod = importlib.import_module("newcode.agents.subagent_stream_handler")
     assert hasattr(mod, "_fire_callback")

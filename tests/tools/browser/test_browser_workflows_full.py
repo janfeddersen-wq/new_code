@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.browser.browser_workflows import (
+from newcode.tools.browser.browser_workflows import (
     list_workflows,
     read_workflow,
     register_list_workflows,
@@ -12,7 +12,7 @@ from code_puppy.tools.browser.browser_workflows import (
     register_save_workflow,
 )
 
-MOD = "code_puppy.tools.browser.browser_workflows"
+MOD = "newcode.tools.browser.browser_workflows"
 
 
 @pytest.fixture(autouse=True)

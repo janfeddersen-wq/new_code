@@ -16,8 +16,8 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
 
-from code_puppy.messaging.message_queue import MessageQueue, MessageType
-from code_puppy.messaging.queue_console import QueueConsole, get_queue_console
+from newcode.messaging.message_queue import MessageQueue, MessageType
+from newcode.messaging.queue_console import QueueConsole, get_queue_console
 
 
 class TestQueueConsoleInitialization:
@@ -26,7 +26,7 @@ class TestQueueConsoleInitialization:
     def test_init_default_queue(self):
         """Test initialization with default global queue."""
         with patch(
-            "code_puppy.messaging.queue_console.get_global_queue"
+            "newcode.messaging.queue_console.get_global_queue"
         ) as mock_get_queue:
             mock_queue = Mock(spec=MessageQueue)
             mock_get_queue.return_value = mock_queue
@@ -531,7 +531,7 @@ class TestInputMethod:
         console = QueueConsole(queue=mock_queue)
 
         with patch("builtins.input", return_value="user response"):
-            with patch("code_puppy.tools.command_runner.set_awaiting_user_input"):
+            with patch("newcode.tools.command_runner.set_awaiting_user_input"):
                 result = console.input("Enter name: ")
 
         assert result == "user response"
@@ -548,7 +548,7 @@ class TestInputMethod:
         console = QueueConsole(queue=mock_queue)
 
         with patch("builtins.input", return_value="test"):
-            with patch("code_puppy.tools.command_runner.set_awaiting_user_input"):
+            with patch("newcode.tools.command_runner.set_awaiting_user_input"):
                 result = console.input()
 
         assert result == "test"
@@ -562,7 +562,7 @@ class TestInputMethod:
         console = QueueConsole(queue=mock_queue)
 
         with patch("builtins.input", side_effect=KeyboardInterrupt):
-            with patch("code_puppy.tools.command_runner.set_awaiting_user_input"):
+            with patch("newcode.tools.command_runner.set_awaiting_user_input"):
                 result = console.input("Prompt: ")
 
         assert result == ""
@@ -578,7 +578,7 @@ class TestInputMethod:
         console = QueueConsole(queue=mock_queue)
 
         with patch("builtins.input", side_effect=EOFError):
-            with patch("code_puppy.tools.command_runner.set_awaiting_user_input"):
+            with patch("newcode.tools.command_runner.set_awaiting_user_input"):
                 result = console.input("Prompt: ")
 
         assert result == ""
@@ -591,7 +591,7 @@ class TestInputMethod:
 
         with patch("builtins.input", return_value="test"):
             with patch(
-                "code_puppy.tools.command_runner.set_awaiting_user_input"
+                "newcode.tools.command_runner.set_awaiting_user_input"
             ) as mock_set_flag:
                 result = console.input("test: ")
 

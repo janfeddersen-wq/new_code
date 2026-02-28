@@ -1,4 +1,4 @@
-"""Tests for code_puppy/tools/skills_tools.py - 100% coverage."""
+"""Tests for newcode/tools/skills_tools.py - 100% coverage."""
 
 from unittest.mock import MagicMock, patch
 
@@ -19,13 +19,13 @@ def _make_agent():
 
 class TestSkillModels:
     def test_skill_list_output(self):
-        from code_puppy.tools.skills_tools import SkillListOutput
+        from newcode.tools.skills_tools import SkillListOutput
 
         out = SkillListOutput(skills=[], total_count=0, query="test", error=None)
         assert out.total_count == 0
 
     def test_skill_activate_output(self):
-        from code_puppy.tools.skills_tools import SkillActivateOutput
+        from newcode.tools.skills_tools import SkillActivateOutput
 
         out = SkillActivateOutput(skill_name="x", content="c", resources=[], error=None)
         assert out.skill_name == "x"
@@ -33,11 +33,9 @@ class TestSkillModels:
 
 class TestActivateSkill:
     @pytest.mark.asyncio
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=False
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=False)
     async def test_disabled(self, mock_enabled):
-        from code_puppy.tools.skills_tools import register_activate_skill
+        from newcode.tools.skills_tools import register_activate_skill
 
         agent, cap = _make_agent()
         register_activate_skill(agent)
@@ -46,19 +44,17 @@ class TestActivateSkill:
         assert result.error and "disabled" in result.error
 
     @pytest.mark.asyncio
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
     @patch(
-        "code_puppy.plugins.agent_skills.discovery.discover_skills",
+        "newcode.plugins.agent_skills.discovery.discover_skills",
         side_effect=Exception("boom"),
     )
     async def test_discover_error(self, mock_disc, mock_dirs, mock_enabled):
-        from code_puppy.tools.skills_tools import register_activate_skill
+        from newcode.tools.skills_tools import register_activate_skill
 
         agent, cap = _make_agent()
         register_activate_skill(agent)
@@ -67,17 +63,15 @@ class TestActivateSkill:
         assert result.error and "discover" in result.error.lower()
 
     @pytest.mark.asyncio
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
-    @patch("code_puppy.plugins.agent_skills.discovery.discover_skills")
+    @patch("newcode.plugins.agent_skills.discovery.discover_skills")
     async def test_skill_not_found(self, mock_disc, mock_dirs, mock_enabled):
         mock_disc.return_value = []
-        from code_puppy.tools.skills_tools import register_activate_skill
+        from newcode.tools.skills_tools import register_activate_skill
 
         agent, cap = _make_agent()
         register_activate_skill(agent)
@@ -86,22 +80,18 @@ class TestActivateSkill:
         assert result.error and "not found" in result.error
 
     @pytest.mark.asyncio
-    @patch("code_puppy.tools.skills_tools.get_message_bus")
+    @patch("newcode.tools.skills_tools.get_message_bus")
+    @patch("newcode.plugins.agent_skills.metadata.get_skill_resources", return_value=[])
     @patch(
-        "code_puppy.plugins.agent_skills.metadata.get_skill_resources", return_value=[]
-    )
-    @patch(
-        "code_puppy.plugins.agent_skills.metadata.load_full_skill_content",
+        "newcode.plugins.agent_skills.metadata.load_full_skill_content",
         return_value=None,
     )
-    @patch("code_puppy.plugins.agent_skills.discovery.discover_skills")
+    @patch("newcode.plugins.agent_skills.discovery.discover_skills")
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     async def test_load_content_fails(
         self, mock_en, mock_dirs, mock_disc, mock_load, mock_res, mock_bus
     ):
@@ -110,7 +100,7 @@ class TestActivateSkill:
         skill.has_skill_md = True
         skill.path = "/tmp/test"
         mock_disc.return_value = [skill]
-        from code_puppy.tools.skills_tools import register_activate_skill
+        from newcode.tools.skills_tools import register_activate_skill
 
         agent, cap = _make_agent()
         register_activate_skill(agent)
@@ -119,23 +109,21 @@ class TestActivateSkill:
         assert result.error and "Failed to load" in result.error
 
     @pytest.mark.asyncio
-    @patch("code_puppy.tools.skills_tools.get_message_bus")
+    @patch("newcode.tools.skills_tools.get_message_bus")
     @patch(
-        "code_puppy.plugins.agent_skills.metadata.get_skill_resources",
+        "newcode.plugins.agent_skills.metadata.get_skill_resources",
         return_value=["/tmp/r.txt"],
     )
     @patch(
-        "code_puppy.plugins.agent_skills.metadata.load_full_skill_content",
+        "newcode.plugins.agent_skills.metadata.load_full_skill_content",
         return_value="# Skill content",
     )
-    @patch("code_puppy.plugins.agent_skills.discovery.discover_skills")
+    @patch("newcode.plugins.agent_skills.discovery.discover_skills")
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     async def test_success(
         self, mock_en, mock_dirs, mock_disc, mock_load, mock_res, mock_bus
     ):
@@ -144,7 +132,7 @@ class TestActivateSkill:
         skill.has_skill_md = True
         skill.path = "/tmp/test"
         mock_disc.return_value = [skill]
-        from code_puppy.tools.skills_tools import register_activate_skill
+        from newcode.tools.skills_tools import register_activate_skill
 
         agent, cap = _make_agent()
         register_activate_skill(agent)
@@ -156,11 +144,9 @@ class TestActivateSkill:
 
 class TestListOrSearchSkills:
     @pytest.mark.asyncio
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=False
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=False)
     async def test_disabled(self, mock_enabled):
-        from code_puppy.tools.skills_tools import register_list_or_search_skills
+        from newcode.tools.skills_tools import register_list_or_search_skills
 
         agent, cap = _make_agent()
         register_list_or_search_skills(agent)
@@ -169,22 +155,20 @@ class TestListOrSearchSkills:
         assert result.error and "disabled" in result.error
 
     @pytest.mark.asyncio
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
+        "newcode.plugins.agent_skills.config.get_disabled_skills", return_value=set()
     )
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_disabled_skills", return_value=set()
-    )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
     @patch(
-        "code_puppy.plugins.agent_skills.discovery.discover_skills",
+        "newcode.plugins.agent_skills.discovery.discover_skills",
         side_effect=Exception("boom"),
     )
     async def test_discover_error(self, mock_disc, mock_dirs, mock_dis, mock_en):
-        from code_puppy.tools.skills_tools import register_list_or_search_skills
+        from newcode.tools.skills_tools import register_list_or_search_skills
 
         agent, cap = _make_agent()
         register_list_or_search_skills(agent)
@@ -193,20 +177,18 @@ class TestListOrSearchSkills:
         assert result.error
 
     @pytest.mark.asyncio
-    @patch("code_puppy.tools.skills_tools.get_message_bus")
-    @patch("code_puppy.plugins.agent_skills.metadata.parse_skill_metadata")
-    @patch("code_puppy.plugins.agent_skills.discovery.discover_skills")
+    @patch("newcode.tools.skills_tools.get_message_bus")
+    @patch("newcode.plugins.agent_skills.metadata.parse_skill_metadata")
+    @patch("newcode.plugins.agent_skills.discovery.discover_skills")
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_disabled_skills",
+        "newcode.plugins.agent_skills.config.get_disabled_skills",
         return_value={"disabled-skill"},
     )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     async def test_list_with_filter(
         self, mock_en, mock_dis, mock_dirs, mock_disc, mock_meta, mock_bus
     ):
@@ -236,7 +218,7 @@ class TestListOrSearchSkills:
         meta.author = "test"
         mock_meta.return_value = meta
 
-        from code_puppy.tools.skills_tools import register_list_or_search_skills
+        from newcode.tools.skills_tools import register_list_or_search_skills
 
         agent, cap = _make_agent()
         register_list_or_search_skills(agent)
@@ -246,19 +228,17 @@ class TestListOrSearchSkills:
         assert result.skills[0]["name"] == "good-skill"
 
     @pytest.mark.asyncio
-    @patch("code_puppy.tools.skills_tools.get_message_bus")
-    @patch("code_puppy.plugins.agent_skills.metadata.parse_skill_metadata")
-    @patch("code_puppy.plugins.agent_skills.discovery.discover_skills")
+    @patch("newcode.tools.skills_tools.get_message_bus")
+    @patch("newcode.plugins.agent_skills.metadata.parse_skill_metadata")
+    @patch("newcode.plugins.agent_skills.discovery.discover_skills")
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_disabled_skills", return_value=set()
+        "newcode.plugins.agent_skills.config.get_disabled_skills", return_value=set()
     )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     async def test_search_by_name(
         self, mock_en, mock_dis, mock_dirs, mock_disc, mock_meta, mock_bus
     ):
@@ -277,7 +257,7 @@ class TestListOrSearchSkills:
         meta.author = "test"
         mock_meta.return_value = meta
 
-        from code_puppy.tools.skills_tools import register_list_or_search_skills
+        from newcode.tools.skills_tools import register_list_or_search_skills
 
         agent, cap = _make_agent()
         register_list_or_search_skills(agent)
@@ -288,19 +268,17 @@ class TestListOrSearchSkills:
         assert result.total_count == 1
 
     @pytest.mark.asyncio
-    @patch("code_puppy.tools.skills_tools.get_message_bus")
-    @patch("code_puppy.plugins.agent_skills.metadata.parse_skill_metadata")
-    @patch("code_puppy.plugins.agent_skills.discovery.discover_skills")
+    @patch("newcode.tools.skills_tools.get_message_bus")
+    @patch("newcode.plugins.agent_skills.metadata.parse_skill_metadata")
+    @patch("newcode.plugins.agent_skills.discovery.discover_skills")
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_disabled_skills", return_value=set()
+        "newcode.plugins.agent_skills.config.get_disabled_skills", return_value=set()
     )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     async def test_search_by_description(
         self, mock_en, mock_dis, mock_dirs, mock_disc, mock_meta, mock_bus
     ):
@@ -319,7 +297,7 @@ class TestListOrSearchSkills:
         meta.author = "test"
         mock_meta.return_value = meta
 
-        from code_puppy.tools.skills_tools import register_list_or_search_skills
+        from newcode.tools.skills_tools import register_list_or_search_skills
 
         agent, cap = _make_agent()
         register_list_or_search_skills(agent)
@@ -329,19 +307,17 @@ class TestListOrSearchSkills:
         assert result.total_count == 1
 
     @pytest.mark.asyncio
-    @patch("code_puppy.tools.skills_tools.get_message_bus")
-    @patch("code_puppy.plugins.agent_skills.metadata.parse_skill_metadata")
-    @patch("code_puppy.plugins.agent_skills.discovery.discover_skills")
+    @patch("newcode.tools.skills_tools.get_message_bus")
+    @patch("newcode.plugins.agent_skills.metadata.parse_skill_metadata")
+    @patch("newcode.plugins.agent_skills.discovery.discover_skills")
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_disabled_skills", return_value=set()
+        "newcode.plugins.agent_skills.config.get_disabled_skills", return_value=set()
     )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     async def test_search_by_tag(
         self, mock_en, mock_dis, mock_dirs, mock_disc, mock_meta, mock_bus
     ):
@@ -360,7 +336,7 @@ class TestListOrSearchSkills:
         meta.author = "test"
         mock_meta.return_value = meta
 
-        from code_puppy.tools.skills_tools import register_list_or_search_skills
+        from newcode.tools.skills_tools import register_list_or_search_skills
 
         agent, cap = _make_agent()
         register_list_or_search_skills(agent)
@@ -370,19 +346,17 @@ class TestListOrSearchSkills:
         assert result.total_count == 1
 
     @pytest.mark.asyncio
-    @patch("code_puppy.tools.skills_tools.get_message_bus")
-    @patch("code_puppy.plugins.agent_skills.metadata.parse_skill_metadata")
-    @patch("code_puppy.plugins.agent_skills.discovery.discover_skills")
+    @patch("newcode.tools.skills_tools.get_message_bus")
+    @patch("newcode.plugins.agent_skills.metadata.parse_skill_metadata")
+    @patch("newcode.plugins.agent_skills.discovery.discover_skills")
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_disabled_skills", return_value=set()
+        "newcode.plugins.agent_skills.config.get_disabled_skills", return_value=set()
     )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     async def test_search_no_match(
         self, mock_en, mock_dis, mock_dirs, mock_disc, mock_meta, mock_bus
     ):
@@ -401,7 +375,7 @@ class TestListOrSearchSkills:
         meta.author = "test"
         mock_meta.return_value = meta
 
-        from code_puppy.tools.skills_tools import register_list_or_search_skills
+        from newcode.tools.skills_tools import register_list_or_search_skills
 
         agent, cap = _make_agent()
         register_list_or_search_skills(agent)
@@ -411,22 +385,20 @@ class TestListOrSearchSkills:
         assert result.total_count == 0
 
     @pytest.mark.asyncio
-    @patch("code_puppy.tools.skills_tools.get_message_bus")
+    @patch("newcode.tools.skills_tools.get_message_bus")
     @patch(
-        "code_puppy.plugins.agent_skills.metadata.parse_skill_metadata",
+        "newcode.plugins.agent_skills.metadata.parse_skill_metadata",
         return_value=None,
     )
-    @patch("code_puppy.plugins.agent_skills.discovery.discover_skills")
+    @patch("newcode.plugins.agent_skills.discovery.discover_skills")
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_skill_directories",
+        "newcode.plugins.agent_skills.config.get_skill_directories",
         return_value=["/tmp"],
     )
     @patch(
-        "code_puppy.plugins.agent_skills.config.get_disabled_skills", return_value=set()
+        "newcode.plugins.agent_skills.config.get_disabled_skills", return_value=set()
     )
-    @patch(
-        "code_puppy.plugins.agent_skills.config.get_skills_enabled", return_value=True
-    )
+    @patch("newcode.plugins.agent_skills.config.get_skills_enabled", return_value=True)
     async def test_no_metadata(
         self, mock_en, mock_dis, mock_dirs, mock_disc, mock_meta, mock_bus
     ):
@@ -436,7 +408,7 @@ class TestListOrSearchSkills:
         skill.path = "/tmp/bad"
         mock_disc.return_value = [skill]
 
-        from code_puppy.tools.skills_tools import register_list_or_search_skills
+        from newcode.tools.skills_tools import register_list_or_search_skills
 
         agent, cap = _make_agent()
         register_list_or_search_skills(agent)

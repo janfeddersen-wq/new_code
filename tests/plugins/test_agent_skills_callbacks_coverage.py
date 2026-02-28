@@ -5,15 +5,15 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 # Patch targets for lazy imports inside _get_skills_prompt_section
-_CFG = "code_puppy.plugins.agent_skills.config"
-_DISC = "code_puppy.plugins.agent_skills.discovery"
-_META = "code_puppy.plugins.agent_skills.metadata"
-_PB = "code_puppy.plugins.agent_skills.prompt_builder"
+_CFG = "newcode.plugins.agent_skills.config"
+_DISC = "newcode.plugins.agent_skills.discovery"
+_META = "newcode.plugins.agent_skills.metadata"
+_PB = "newcode.plugins.agent_skills.prompt_builder"
 
 
 class TestGetSkillsPromptSection:
     def test_disabled(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _get_skills_prompt_section,
         )
 
@@ -21,7 +21,7 @@ class TestGetSkillsPromptSection:
             assert _get_skills_prompt_section() is None
 
     def test_no_skills_discovered(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _get_skills_prompt_section,
         )
 
@@ -33,7 +33,7 @@ class TestGetSkillsPromptSection:
             assert _get_skills_prompt_section() is None
 
     def test_disabled_and_no_skill_md(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _get_skills_prompt_section,
         )
 
@@ -52,7 +52,7 @@ class TestGetSkillsPromptSection:
             assert _get_skills_prompt_section() is None
 
     def test_metadata_parse_fails(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _get_skills_prompt_section,
         )
 
@@ -69,7 +69,7 @@ class TestGetSkillsPromptSection:
             assert _get_skills_prompt_section() is None
 
     def test_success(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _get_skills_prompt_section,
         )
 
@@ -93,23 +93,23 @@ class TestGetSkillsPromptSection:
 
 class TestInjectSkillsIntoPrompt:
     def test_no_skills(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _inject_skills_into_prompt,
         )
 
         with patch(
-            "code_puppy.plugins.agent_skills.register_callbacks._get_skills_prompt_section",
+            "newcode.plugins.agent_skills.register_callbacks._get_skills_prompt_section",
             return_value=None,
         ):
             assert _inject_skills_into_prompt("model", "prompt", "user") is None
 
     def test_with_skills(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _inject_skills_into_prompt,
         )
 
         with patch(
-            "code_puppy.plugins.agent_skills.register_callbacks._get_skills_prompt_section",
+            "newcode.plugins.agent_skills.register_callbacks._get_skills_prompt_section",
             return_value="SKILLS SECTION",
         ):
             result = _inject_skills_into_prompt("model", "base prompt", "user input")
@@ -120,7 +120,7 @@ class TestInjectSkillsIntoPrompt:
 
 class TestRegisterSkillsTools:
     def test_returns_tools(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _register_skills_tools,
         )
 
@@ -133,7 +133,7 @@ class TestRegisterSkillsTools:
 
 class TestSkillsCommandHelp:
     def test_returns_entries(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _skills_command_help,
         )
 
@@ -144,21 +144,21 @@ class TestSkillsCommandHelp:
 
 
 # Patch targets for lazy imports inside _handle_skills_command
-_MSG = "code_puppy.messaging"
-_SKILLS_MENU = "code_puppy.plugins.agent_skills.skills_menu"
-_SKILLS_INSTALL = "code_puppy.plugins.agent_skills.skills_install_menu"
+_MSG = "newcode.messaging"
+_SKILLS_MENU = "newcode.plugins.agent_skills.skills_menu"
+_SKILLS_INSTALL = "newcode.plugins.agent_skills.skills_install_menu"
 
 
 class TestHandleSkillsCommand:
     def test_unrelated_command(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
         assert _handle_skills_command("/other", "other") is None
 
     def test_skills_list_no_skills(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
@@ -171,7 +171,7 @@ class TestHandleSkillsCommand:
             assert _handle_skills_command("/skills list", "skills") is True
 
     def test_skills_list_with_skills(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
@@ -192,7 +192,7 @@ class TestHandleSkillsCommand:
             assert _handle_skills_command("/skills list", "skills") is True
 
     def test_skills_list_disabled_skill(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
@@ -211,7 +211,7 @@ class TestHandleSkillsCommand:
             assert _handle_skills_command("/skills list", "skills") is True
 
     def test_skills_list_no_metadata(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
@@ -228,7 +228,7 @@ class TestHandleSkillsCommand:
             assert _handle_skills_command("/skills list", "skills") is True
 
     def test_skills_install(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
@@ -236,7 +236,7 @@ class TestHandleSkillsCommand:
             assert _handle_skills_command("/skills install", "skills") is True
 
     def test_skills_enable(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
@@ -247,7 +247,7 @@ class TestHandleSkillsCommand:
             assert _handle_skills_command("/skills enable", "skills") is True
 
     def test_skills_disable(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
@@ -258,7 +258,7 @@ class TestHandleSkillsCommand:
             assert _handle_skills_command("/skills disable", "skills") is True
 
     def test_skills_unknown_subcommand(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
@@ -269,7 +269,7 @@ class TestHandleSkillsCommand:
             assert _handle_skills_command("/skills bogus", "skills") is True
 
     def test_skills_no_subcommand_launches_menu(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 
@@ -278,7 +278,7 @@ class TestHandleSkillsCommand:
             mock_menu.assert_called_once()
 
     def test_skill_alias(self):
-        from code_puppy.plugins.agent_skills.register_callbacks import (
+        from newcode.plugins.agent_skills.register_callbacks import (
             _handle_skills_command,
         )
 

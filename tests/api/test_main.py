@@ -1,4 +1,4 @@
-"""Tests for code_puppy/api/main.py."""
+"""Tests for newcode/api/main.py."""
 
 from unittest.mock import patch
 
@@ -7,15 +7,15 @@ from fastapi import FastAPI
 
 def test_app_module_level():
     """The module-level `app` is a FastAPI instance."""
-    from code_puppy.api.main import app
+    from newcode.api.main import app
 
     assert isinstance(app, FastAPI)
 
 
 def test_main_calls_uvicorn():
     """main() calls uvicorn.run with correct defaults."""
-    with patch("code_puppy.api.main.uvicorn") as mock_uvicorn:
-        from code_puppy.api.main import main
+    with patch("newcode.api.main.uvicorn") as mock_uvicorn:
+        from newcode.api.main import main
 
         main()
         mock_uvicorn.run.assert_called_once()
@@ -29,8 +29,8 @@ def test_main_calls_uvicorn():
 
 def test_main_custom_host_port():
     """main() passes custom host and port."""
-    with patch("code_puppy.api.main.uvicorn") as mock_uvicorn:
-        from code_puppy.api.main import main
+    with patch("newcode.api.main.uvicorn") as mock_uvicorn:
+        from newcode.api.main import main
 
         main(host="0.0.0.0", port=9999)
         args, kwargs = mock_uvicorn.run.call_args
@@ -39,7 +39,7 @@ def test_main_custom_host_port():
 
 def test_routers_init_imports():
     """Test that routers __init__ exports the expected modules."""
-    from code_puppy.api.routers import agents, commands, config, sessions
+    from newcode.api.routers import agents, commands, config, sessions
 
     assert agents is not None
     assert commands is not None

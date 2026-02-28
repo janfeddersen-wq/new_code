@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import code_puppy.status_display
-from code_puppy.status_display import CURRENT_TOKEN_RATE, StatusDisplay
+import newcode.status_display
+from newcode.status_display import CURRENT_TOKEN_RATE, StatusDisplay
 
 
 class TestStatusDisplay:
@@ -73,7 +73,7 @@ class TestStatusDisplay:
         assert rate > 0
         assert rate > 5.0  # Should be higher than the previous rate component
         # Global rate should be updated - check from module namespace
-        assert code_puppy.status_display.CURRENT_TOKEN_RATE == rate
+        assert newcode.status_display.CURRENT_TOKEN_RATE == rate
 
     def test_calculate_rate_negative_rates_handled(self, status_display):
         """Test that negative rates are clamped to 0."""
@@ -84,14 +84,14 @@ class TestStatusDisplay:
 
         rate = status_display._calculate_rate()
         assert rate >= 0
-        assert code_puppy.status_display.CURRENT_TOKEN_RATE >= 0
+        assert newcode.status_display.CURRENT_TOKEN_RATE >= 0
 
     def test_update_rate_from_sse(self, status_display):
         """Test updating token rate from SSE stream data."""
         status_display.update_rate_from_sse(completion_tokens=100, completion_time=2.0)
 
         assert status_display.current_rate == 50  # 100/2 = 50
-        assert code_puppy.status_display.CURRENT_TOKEN_RATE == 50
+        assert newcode.status_display.CURRENT_TOKEN_RATE == 50
 
     def test_update_rate_from_sse_with_smoothing(self, status_display):
         """Test SSE rate updates with smoothing."""
@@ -115,14 +115,14 @@ class TestStatusDisplay:
     def test_get_current_rate_static(self):
         """Test static method for getting current rate."""
         # Set global rate
-        import code_puppy.status_display
+        import newcode.status_display
 
         original_rate = CURRENT_TOKEN_RATE
         try:
-            code_puppy.status_display.CURRENT_TOKEN_RATE = 42.0
+            newcode.status_display.CURRENT_TOKEN_RATE = 42.0
             assert StatusDisplay.get_current_rate() == 42.0
         finally:
-            code_puppy.status_display.CURRENT_TOKEN_RATE = original_rate
+            newcode.status_display.CURRENT_TOKEN_RATE = original_rate
 
     def test_update_token_count_first_update(self, status_display):
         """Test token count update on first call."""
@@ -239,7 +239,7 @@ class TestStatusDisplay:
         """Test starting the status display."""
         assert not status_display.is_active
 
-        with patch("code_puppy.status_display.asyncio.create_task") as mock_create_task:
+        with patch("newcode.status_display.asyncio.create_task") as mock_create_task:
             mock_task = MagicMock()
             mock_create_task.return_value = mock_task
 
@@ -256,7 +256,7 @@ class TestStatusDisplay:
     @pytest.mark.asyncio
     async def test_start_already_active(self, status_display):
         """Test starting when already active."""
-        with patch("code_puppy.status_display.asyncio.create_task") as mock_create_task:
+        with patch("newcode.status_display.asyncio.create_task") as mock_create_task:
             mock_task = MagicMock()
             mock_create_task.return_value = mock_task
 
@@ -270,11 +270,11 @@ class TestStatusDisplay:
     @pytest.mark.asyncio
     async def test_stop_after_start(self, status_display):
         """Test stopping the status display after starting."""
-        with patch("code_puppy.status_display.asyncio.create_task") as mock_create_task:
+        with patch("newcode.status_display.asyncio.create_task") as mock_create_task:
             mock_task = MagicMock()
             mock_create_task.return_value = mock_task
 
-            with patch("code_puppy.messaging.emit_info") as mock_emit_info:
+            with patch("newcode.messaging.emit_info") as mock_emit_info:
                 status_display.start()
                 status_display.stop()
 
@@ -291,7 +291,7 @@ class TestStatusDisplay:
                 # State should be reset
                 assert status_display.start_time is None
                 assert status_display.token_count == 0
-                assert code_puppy.status_display.CURRENT_TOKEN_RATE == 0.0
+                assert newcode.status_display.CURRENT_TOKEN_RATE == 0.0
 
     def test_stop_without_start(self, status_display):
         """Test stopping when not active."""
@@ -303,7 +303,7 @@ class TestStatusDisplay:
     @pytest.mark.asyncio
     async def test_stop_with_cancellation(self, status_display):
         """Test stopping handles task cancellation properly."""
-        with patch("code_puppy.status_display.asyncio.create_task") as mock_create_task:
+        with patch("newcode.status_display.asyncio.create_task") as mock_create_task:
             mock_task = MagicMock()
             mock_create_task.return_value = mock_task
 
@@ -323,7 +323,7 @@ class TestStatusDisplay:
         status_display.token_count = 50
         status_display.start_time = 1.0
 
-        with patch("code_puppy.messaging.emit_info") as mock_emit_info:
+        with patch("newcode.messaging.emit_info") as mock_emit_info:
             status_display.stop()
 
             # Should have called emit_info
@@ -333,9 +333,9 @@ class TestStatusDisplay:
     async def test_update_display_integration(self, status_display):
         """Test the display update loop (integration test)."""
         with (
-            patch("code_puppy.status_display.asyncio.create_task"),
-            patch("code_puppy.status_display.Live") as mock_live,
-            patch("code_puppy.messaging.emit_info") as mock_emit_info,
+            patch("newcode.status_display.asyncio.create_task"),
+            patch("newcode.status_display.Live") as mock_live,
+            patch("newcode.messaging.emit_info") as mock_emit_info,
         ):
             mock_live_instance = MagicMock()
             mock_live.return_value.__enter__.return_value = mock_live_instance
@@ -427,7 +427,7 @@ class TestStatusDisplay:
     def test_global_rate_reset_on_stop(self, status_display):
         """Test that global rate is reset to 0 on stop."""
         # Need to start the display first for stop() to work properly
-        with patch("code_puppy.status_display.asyncio.create_task") as mock_create_task:
+        with patch("newcode.status_display.asyncio.create_task") as mock_create_task:
             mock_task = MagicMock()
             mock_create_task.return_value = mock_task
             status_display.start()
@@ -438,7 +438,7 @@ class TestStatusDisplay:
         status_display.stop()
 
         # Global rate should be reset
-        assert code_puppy.status_display.CURRENT_TOKEN_RATE == 0.0
+        assert newcode.status_display.CURRENT_TOKEN_RATE == 0.0
 
     def test_panel_styling(self, status_display):
         """Test that status panel has appropriate styling."""

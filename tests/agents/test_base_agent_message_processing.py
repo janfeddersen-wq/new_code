@@ -19,7 +19,7 @@ from pydantic_ai.messages import (
     ToolReturnPart,
 )
 
-from code_puppy.agents.agent_code_agent import CodeAgent
+from newcode.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentMessageProcessing:
@@ -357,7 +357,7 @@ class TestBaseAgentMessageProcessing:
 
             part = MockPart(kind)
 
-            with patch("code_puppy.agents.base_agent.emit_warning") as mock_emit:
+            with patch("newcode.agents.base_agent.emit_warning") as mock_emit:
                 agent._stringify_part(part)
                 # Should NOT emit warning for known kinds
                 mock_emit.assert_not_called()

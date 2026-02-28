@@ -7,8 +7,8 @@ This file focuses on testing the uncovered functions and branches:
 - _load_antigravity_prompt() fallback paths
 """
 
-from code_puppy import model_utils
-from code_puppy.model_utils import (
+from newcode import model_utils
+from newcode.model_utils import (
     PreparedPrompt,
     get_antigravity_instructions,
     is_antigravity_model,
@@ -181,7 +181,7 @@ class TestEdgeCases:
         """Test that model type detection happens in expected order."""
         # Claude-code should take priority if a model somehow matched multiple
         # (though this shouldn't happen with real model names)
-        from code_puppy.model_utils import CLAUDE_CODE_INSTRUCTIONS
+        from newcode.model_utils import CLAUDE_CODE_INSTRUCTIONS
 
         result = prepare_prompt_for_model("claude-code-sonnet", "System", "User")
         assert result.instructions == CLAUDE_CODE_INSTRUCTIONS

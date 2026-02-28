@@ -20,7 +20,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import pytest
 
 # Import directly - avoid conftest autouse fixtures
-from code_puppy.mcp_.blocking_startup import (
+from newcode.mcp_.blocking_startup import (
     BlockingMCPServerStdio,
     SimpleCapturedMCPServerStdio,
     StartupMonitor,
@@ -31,10 +31,10 @@ from code_puppy.mcp_.blocking_startup import (
 class TestStderrFileCaptureMonitoring:
     """Test _monitor_file method and emit_to_user path."""
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
-    @patch("code_puppy.mcp_.blocking_startup.emit_info")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.emit_info")
     def test_monitor_file_emits_to_user_when_enabled(
         self, mock_emit_info, mock_write_log, mock_get_path, mock_rotate
     ):
@@ -78,9 +78,9 @@ class TestStderrFileCaptureMonitoring:
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
     def test_monitor_file_handles_missing_file(
         self, mock_write_log, mock_get_path, mock_rotate
     ):
@@ -111,9 +111,9 @@ class TestStderrFileCaptureMonitoring:
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
     def test_monitor_file_skips_empty_lines(
         self, mock_write_log, mock_get_path, mock_rotate
     ):
@@ -150,10 +150,10 @@ class TestStderrFileCaptureMonitoring:
 class TestStderrFileCaptureStopBranches:
     """Test stop() method edge cases and branches."""
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
-    @patch("code_puppy.mcp_.blocking_startup.emit_info")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.emit_info")
     def test_stop_reads_remaining_content_with_emit(
         self, mock_emit_info, mock_write_log, mock_get_path, mock_rotate
     ):
@@ -185,9 +185,9 @@ class TestStderrFileCaptureStopBranches:
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
     def test_stop_handles_log_file_close_exception(
         self, mock_write_log, mock_get_path, mock_rotate
     ):
@@ -211,9 +211,9 @@ class TestStderrFileCaptureStopBranches:
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
     def test_stop_handles_read_remaining_exception(
         self, mock_write_log, mock_get_path, mock_rotate
     ):
@@ -266,12 +266,10 @@ class TestSimpleCapturedMCPServerStdioClientStreams:
             yield mock_read_stream, mock_write_stream
 
         with (
-            patch("code_puppy.mcp_.blocking_startup.stdio_client", mock_stdio_client),
-            patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed"),
-            patch(
-                "code_puppy.mcp_.blocking_startup.get_log_file_path"
-            ) as mock_get_path,
-            patch("code_puppy.mcp_.blocking_startup.write_log"),
+            patch("newcode.mcp_.blocking_startup.stdio_client", mock_stdio_client),
+            patch("newcode.mcp_.blocking_startup.rotate_log_if_needed"),
+            patch("newcode.mcp_.blocking_startup.get_log_file_path") as mock_get_path,
+            patch("newcode.mcp_.blocking_startup.write_log"),
         ):
             # Create a temp file for the log
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp:
@@ -297,12 +295,10 @@ class TestSimpleCapturedMCPServerStdioClientStreams:
             yield AsyncMock(), AsyncMock()
 
         with (
-            patch("code_puppy.mcp_.blocking_startup.stdio_client", mock_stdio_client),
-            patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed"),
-            patch(
-                "code_puppy.mcp_.blocking_startup.get_log_file_path"
-            ) as mock_get_path,
-            patch("code_puppy.mcp_.blocking_startup.write_log"),
+            patch("newcode.mcp_.blocking_startup.stdio_client", mock_stdio_client),
+            patch("newcode.mcp_.blocking_startup.rotate_log_if_needed"),
+            patch("newcode.mcp_.blocking_startup.get_log_file_path") as mock_get_path,
+            patch("newcode.mcp_.blocking_startup.write_log"),
         ):
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp:
                 mock_get_path.return_value = tmp.name
@@ -327,12 +323,10 @@ class TestSimpleCapturedMCPServerStdioClientStreams:
             yield AsyncMock(), AsyncMock()
 
         with (
-            patch("code_puppy.mcp_.blocking_startup.stdio_client", mock_stdio_client),
-            patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed"),
-            patch(
-                "code_puppy.mcp_.blocking_startup.get_log_file_path"
-            ) as mock_get_path,
-            patch("code_puppy.mcp_.blocking_startup.write_log"),
+            patch("newcode.mcp_.blocking_startup.stdio_client", mock_stdio_client),
+            patch("newcode.mcp_.blocking_startup.rotate_log_if_needed"),
+            patch("newcode.mcp_.blocking_startup.get_log_file_path") as mock_get_path,
+            patch("newcode.mcp_.blocking_startup.write_log"),
         ):
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp:
                 mock_get_path.return_value = tmp.name
@@ -393,7 +387,7 @@ class TestBlockingMCPServerStdioExceptionGroup:
             patch.object(
                 SimpleCapturedMCPServerStdio, "__aenter__", new_callable=AsyncMock
             ) as mock_aenter,
-            patch("code_puppy.mcp_.blocking_startup.emit_info") as mock_emit,
+            patch("newcode.mcp_.blocking_startup.emit_info") as mock_emit,
         ):
             mock_aenter.side_effect = exc_group
 
@@ -421,7 +415,7 @@ class TestBlockingMCPServerStdioExceptionGroup:
             patch.object(
                 SimpleCapturedMCPServerStdio, "__aenter__", new_callable=AsyncMock
             ) as mock_aenter,
-            patch("code_puppy.mcp_.blocking_startup.emit_info") as mock_emit,
+            patch("newcode.mcp_.blocking_startup.emit_info") as mock_emit,
         ):
             mock_aenter.side_effect = regular_error
 
@@ -448,7 +442,7 @@ class TestStartServersWithBlocking:
         server2.tool_prefix = "tool2"
         server2._initialized.set()
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             # Since actual server startup is complex, we test the monitor part
             monitor = StartupMonitor()
             monitor.add_server("tool1", server1)
@@ -466,7 +460,7 @@ class TestStartServersWithBlocking:
         server.tool_prefix = "custom-name"
         server._initialized.set()
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             monitor = StartupMonitor()
             # The function uses getattr(server, "tool_prefix", ...)
             name = getattr(server, "tool_prefix", "server-0")
@@ -482,7 +476,7 @@ class TestStartServersWithBlocking:
         # Don't set tool_prefix
         server._initialized.set()
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             monitor = StartupMonitor()
             # Simulate the function's naming logic
             name = getattr(server, "tool_prefix", "server-0")
@@ -507,7 +501,7 @@ class TestStartupMonitorEdgeCases:
         server._initialized.set()
         monitor.add_server("failing", server)
 
-        with patch("code_puppy.mcp_.blocking_startup.emit_info"):
+        with patch("newcode.mcp_.blocking_startup.emit_info"):
             results = await monitor.wait_all_ready(timeout=1)
 
         # Server should be marked as failed
@@ -535,9 +529,7 @@ class TestStartupMonitorEdgeCases:
         # Not initialized - will timeout
         monitor.add_server("s3", server3)
 
-        with patch(
-            "code_puppy.mcp_.blocking_startup.emit_info", side_effect=capture_emit
-        ):
+        with patch("newcode.mcp_.blocking_startup.emit_info", side_effect=capture_emit):
             results = await monitor.wait_all_ready(timeout=0.1)
 
         # Check results
@@ -583,9 +575,9 @@ class TestStartupMonitorEdgeCases:
 class TestOsPathExistsEdgeCases:
     """Test edge cases with os.path.exists in stop()."""
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
     def test_stop_when_log_path_not_exists(
         self, mock_write_log, mock_get_path, mock_rotate
     ):
@@ -598,10 +590,10 @@ class TestOsPathExistsEdgeCases:
         # stop() should handle missing file gracefully
         capture.stop()  # Should not raise
 
-    @patch("code_puppy.mcp_.blocking_startup.rotate_log_if_needed")
-    @patch("code_puppy.mcp_.blocking_startup.get_log_file_path")
-    @patch("code_puppy.mcp_.blocking_startup.write_log")
-    @patch("code_puppy.mcp_.blocking_startup.emit_info")
+    @patch("newcode.mcp_.blocking_startup.rotate_log_if_needed")
+    @patch("newcode.mcp_.blocking_startup.get_log_file_path")
+    @patch("newcode.mcp_.blocking_startup.write_log")
+    @patch("newcode.mcp_.blocking_startup.emit_info")
     def test_stop_deduplicates_captured_lines(
         self, mock_emit_info, mock_write_log, mock_get_path, mock_rotate
     ):

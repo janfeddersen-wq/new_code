@@ -24,7 +24,7 @@ from pydantic_ai.messages import (
 )
 from rich.console import Console
 
-from code_puppy.agents.event_stream_handler import (
+from newcode.agents.event_stream_handler import (
     event_stream_handler,
     get_streaming_console,
     set_streaming_console,
@@ -122,8 +122,8 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 await event_stream_handler(mock_ctx, event_stream())
 
         # Console should have printed something
@@ -141,8 +141,8 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 await event_stream_handler(mock_ctx, event_stream())
 
         assert console.print.called
@@ -159,8 +159,8 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 await event_stream_handler(mock_ctx, event_stream())
 
     @pytest.mark.asyncio
@@ -175,10 +175,10 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     await event_stream_handler(mock_ctx, event_stream())
@@ -198,10 +198,10 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     with patch("termflow.Parser"):
@@ -225,10 +225,10 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     await event_stream_handler(mock_ctx, event_stream())
@@ -252,10 +252,10 @@ class TestEventStreamHandler:
         console.file = StringIO()
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     with patch("termflow.Parser") as mock_parser_cls:
@@ -285,8 +285,8 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 await event_stream_handler(mock_ctx, event_stream())
 
         # Should have printed tool call info
@@ -307,8 +307,8 @@ class TestEventStreamHandler:
         console.file = StringIO()
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch("termflow.Parser") as mock_parser_cls:
                     mock_parser = MagicMock()
                     mock_parser.finalize.return_value = []
@@ -335,8 +335,8 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 await event_stream_handler(mock_ctx, event_stream())
 
         # Should have handled the end event without error
@@ -357,10 +357,10 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     await event_stream_handler(mock_ctx, event_stream())
@@ -385,8 +385,8 @@ class TestEventStreamHandler:
         console.file = StringIO()
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch("termflow.Parser") as mock_parser_cls:
                     mock_parser = MagicMock()
                     mock_parser.finalize.return_value = []
@@ -419,10 +419,10 @@ class TestEventStreamHandler:
         console.file = StringIO()
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     with patch("termflow.Parser") as mock_parser_cls:
@@ -453,10 +453,10 @@ class TestEventStreamHandler:
         console.file = StringIO()
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     with patch("termflow.Parser") as mock_parser_cls:
@@ -483,8 +483,8 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 # Should not raise an error
                 await event_stream_handler(mock_ctx, event_stream())
 
@@ -511,8 +511,8 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 await event_stream_handler(mock_ctx, event_stream())
 
         # Console should show token counts
@@ -534,10 +534,10 @@ class TestEventStreamHandler:
         console = MagicMock(spec=Console)
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     await event_stream_handler(mock_ctx, event_stream())
@@ -558,10 +558,10 @@ class TestEventStreamHandler:
         console.file = StringIO()
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     with patch("termflow.Parser") as mock_parser_cls:
@@ -589,10 +589,10 @@ class TestEventStreamHandler:
         console.file = StringIO()
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     with patch("termflow.Parser") as mock_parser_cls:
@@ -628,10 +628,10 @@ class TestEventStreamHandler:
         console.file = StringIO()
         set_streaming_console(console)
 
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     with patch("termflow.Parser") as mock_parser_cls:
@@ -661,11 +661,11 @@ class TestSubAgentSuppression:
         self, mock_ctx, monkeypatch
     ):
         """Sub-agent with verbose=False suppresses output."""
-        from code_puppy.tools.subagent_context import subagent_context
+        from newcode.tools.subagent_context import subagent_context
 
         # Mock verbose to be False (default)
         monkeypatch.setattr(
-            "code_puppy.agents.event_stream_handler.get_subagent_verbose",
+            "newcode.agents.event_stream_handler.get_subagent_verbose",
             lambda: False,
         )
 
@@ -697,11 +697,11 @@ class TestSubAgentSuppression:
     @pytest.mark.asyncio
     async def test_subagent_shows_output_when_verbose_true(self, mock_ctx, monkeypatch):
         """Sub-agent with verbose=True does NOT suppress output."""
-        from code_puppy.tools.subagent_context import subagent_context
+        from newcode.tools.subagent_context import subagent_context
 
         # Mock verbose to be True (verbose mode enabled)
         monkeypatch.setattr(
-            "code_puppy.agents.event_stream_handler.get_subagent_verbose",
+            "newcode.agents.event_stream_handler.get_subagent_verbose",
             lambda: True,
         )
 
@@ -718,12 +718,10 @@ class TestSubAgentSuppression:
 
         # Run in sub-agent context BUT with verbose=True
         with subagent_context("test-agent"):
-            with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-                with patch(
-                    "code_puppy.agents.event_stream_handler.resume_all_spinners"
-                ):
+            with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+                with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                     with patch(
-                        "code_puppy.agents.event_stream_handler.get_banner_color",
+                        "newcode.agents.event_stream_handler.get_banner_color",
                         return_value="blue",
                     ):
                         with patch("termflow.Parser") as mock_parser_cls:
@@ -742,7 +740,7 @@ class TestSubAgentSuppression:
         """Main agent output is never suppressed regardless of verbose setting."""
         # Mock verbose to be False
         monkeypatch.setattr(
-            "code_puppy.agents.event_stream_handler.get_subagent_verbose",
+            "newcode.agents.event_stream_handler.get_subagent_verbose",
             lambda: False,
         )
 
@@ -758,10 +756,10 @@ class TestSubAgentSuppression:
         set_streaming_console(console)
 
         # NOT in subagent_context - main agent
-        with patch("code_puppy.agents.event_stream_handler.pause_all_spinners"):
-            with patch("code_puppy.agents.event_stream_handler.resume_all_spinners"):
+        with patch("newcode.agents.event_stream_handler.pause_all_spinners"):
+            with patch("newcode.agents.event_stream_handler.resume_all_spinners"):
                 with patch(
-                    "code_puppy.agents.event_stream_handler.get_banner_color",
+                    "newcode.agents.event_stream_handler.get_banner_color",
                     return_value="blue",
                 ):
                     with patch("termflow.Parser") as mock_parser_cls:
@@ -778,11 +776,11 @@ class TestSubAgentSuppression:
     @pytest.mark.asyncio
     async def test_suppression_works_with_tool_calls(self, mock_ctx, monkeypatch):
         """Test that suppression also works for tool call parts."""
-        from code_puppy.tools.subagent_context import subagent_context
+        from newcode.tools.subagent_context import subagent_context
 
         # Mock verbose to be False
         monkeypatch.setattr(
-            "code_puppy.agents.event_stream_handler.get_subagent_verbose",
+            "newcode.agents.event_stream_handler.get_subagent_verbose",
             lambda: False,
         )
 
@@ -809,11 +807,11 @@ class TestSubAgentSuppression:
     @pytest.mark.asyncio
     async def test_suppression_consumes_all_events(self, mock_ctx, monkeypatch):
         """Test that suppression still consumes all events from the stream."""
-        from code_puppy.tools.subagent_context import subagent_context
+        from newcode.tools.subagent_context import subagent_context
 
         # Mock verbose to be False
         monkeypatch.setattr(
-            "code_puppy.agents.event_stream_handler.get_subagent_verbose",
+            "newcode.agents.event_stream_handler.get_subagent_verbose",
             lambda: False,
         )
 

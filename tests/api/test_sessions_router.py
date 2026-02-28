@@ -1,4 +1,4 @@
-"""Tests for code_puppy/api/routers/sessions.py."""
+"""Tests for newcode/api/routers/sessions.py."""
 
 import json
 import pickle
@@ -7,8 +7,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from code_puppy.api.app import create_app
-from code_puppy.api.routers.sessions import _serialize_message
+from newcode.api.app import create_app
+from newcode.api.routers.sessions import _serialize_message
 
 
 @pytest.fixture
@@ -40,7 +40,7 @@ def sessions_dir(tmp_path):
 
 @pytest.fixture
 async def client(sessions_dir):
-    with patch("code_puppy.config.DATA_DIR", str(sessions_dir.parent), create=True):
+    with patch("newcode.config.DATA_DIR", str(sessions_dir.parent), create=True):
         app = create_app()
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as c:
@@ -60,7 +60,7 @@ async def test_list_sessions(client: AsyncClient) -> None:
 
 @pytest.mark.asyncio
 async def test_list_sessions_no_dir() -> None:
-    with patch("code_puppy.config.DATA_DIR", "/nonexistent", create=True):
+    with patch("newcode.config.DATA_DIR", "/nonexistent", create=True):
         app = create_app()
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as c:
@@ -159,10 +159,10 @@ async def test_delete_session_pkl_only(client: AsyncClient, sessions_dir) -> Non
 async def test_list_sessions_timeout(sessions_dir) -> None:
     """Test timeout handling in list_sessions."""
     with (
-        patch("code_puppy.config.DATA_DIR", str(sessions_dir.parent), create=True),
-        patch("code_puppy.api.routers.sessions.FILE_IO_TIMEOUT", 0.0001),
+        patch("newcode.config.DATA_DIR", str(sessions_dir.parent), create=True),
+        patch("newcode.api.routers.sessions.FILE_IO_TIMEOUT", 0.0001),
         patch(
-            "code_puppy.api.routers.sessions._load_json_sync",
+            "newcode.api.routers.sessions._load_json_sync",
             side_effect=lambda *a: __import__("time").sleep(1),
         ),
     ):
@@ -180,10 +180,10 @@ async def test_list_sessions_timeout(sessions_dir) -> None:
 async def test_get_session_timeout(sessions_dir) -> None:
     """Test timeout handling in get_session."""
     with (
-        patch("code_puppy.config.DATA_DIR", str(sessions_dir.parent), create=True),
-        patch("code_puppy.api.routers.sessions.FILE_IO_TIMEOUT", 0.0001),
+        patch("newcode.config.DATA_DIR", str(sessions_dir.parent), create=True),
+        patch("newcode.api.routers.sessions.FILE_IO_TIMEOUT", 0.0001),
         patch(
-            "code_puppy.api.routers.sessions._load_json_sync",
+            "newcode.api.routers.sessions._load_json_sync",
             side_effect=lambda *a: __import__("time").sleep(1),
         ),
     ):
@@ -198,10 +198,10 @@ async def test_get_session_timeout(sessions_dir) -> None:
 async def test_get_messages_timeout(sessions_dir) -> None:
     """Test timeout handling in get_session_messages."""
     with (
-        patch("code_puppy.config.DATA_DIR", str(sessions_dir.parent), create=True),
-        patch("code_puppy.api.routers.sessions.FILE_IO_TIMEOUT", 0.0001),
+        patch("newcode.config.DATA_DIR", str(sessions_dir.parent), create=True),
+        patch("newcode.api.routers.sessions.FILE_IO_TIMEOUT", 0.0001),
         patch(
-            "code_puppy.api.routers.sessions._load_pickle_sync",
+            "newcode.api.routers.sessions._load_pickle_sync",
             side_effect=lambda *a: __import__("time").sleep(1),
         ),
     ):

@@ -5,11 +5,11 @@ import os
 import tempfile
 from unittest.mock import MagicMock, patch
 
-from code_puppy.command_line.add_model_menu import (
+from newcode.command_line.add_model_menu import (
     AddModelMenu,
     interactive_model_picker,
 )
-from code_puppy.models_dev_parser import ModelInfo, ProviderInfo
+from newcode.models_dev_parser import ModelInfo, ProviderInfo
 
 
 def _make_provider(
@@ -74,7 +74,7 @@ def _make_model(
 
 def _make_menu_with_providers(providers=None, models=None):
     """Create an AddModelMenu with mocked registry."""
-    with patch("code_puppy.command_line.add_model_menu.ModelsDevRegistry") as mock_cls:
+    with patch("newcode.command_line.add_model_menu.ModelsDevRegistry") as mock_cls:
         mock_reg = MagicMock()
         mock_reg.get_providers.return_value = providers or [_make_provider()]
         mock_reg.get_models.return_value = models or []
@@ -354,9 +354,7 @@ class TestAddModelToExtraConfig:
         p = _make_provider()
         with tempfile.TemporaryDirectory() as td:
             path = os.path.join(td, "extra_models.json")
-            with patch(
-                "code_puppy.command_line.add_model_menu.EXTRA_MODELS_FILE", path
-            ):
+            with patch("newcode.command_line.add_model_menu.EXTRA_MODELS_FILE", path):
                 result = menu._add_model_to_extra_config(m, p)
             assert result is True
             with open(path) as f:
@@ -371,9 +369,7 @@ class TestAddModelToExtraConfig:
             path = os.path.join(td, "extra_models.json")
             with open(path, "w") as f:
                 json.dump({"openai-gpt-4": {}}, f)
-            with patch(
-                "code_puppy.command_line.add_model_menu.EXTRA_MODELS_FILE", path
-            ):
+            with patch("newcode.command_line.add_model_menu.EXTRA_MODELS_FILE", path):
                 result = menu._add_model_to_extra_config(m, p)
             assert result is True  # Not an error
 
@@ -385,9 +381,7 @@ class TestAddModelToExtraConfig:
             path = os.path.join(td, "extra_models.json")
             with open(path, "w") as f:
                 f.write("not json")
-            with patch(
-                "code_puppy.command_line.add_model_menu.EXTRA_MODELS_FILE", path
-            ):
+            with patch("newcode.command_line.add_model_menu.EXTRA_MODELS_FILE", path):
                 result = menu._add_model_to_extra_config(m, p)
             assert result is False
 
@@ -399,9 +393,7 @@ class TestAddModelToExtraConfig:
             path = os.path.join(td, "extra_models.json")
             with open(path, "w") as f:
                 json.dump(["not", "a", "dict"], f)
-            with patch(
-                "code_puppy.command_line.add_model_menu.EXTRA_MODELS_FILE", path
-            ):
+            with patch("newcode.command_line.add_model_menu.EXTRA_MODELS_FILE", path):
                 result = menu._add_model_to_extra_config(m, p)
             assert result is False
 
@@ -410,7 +402,7 @@ class TestAddModelToExtraConfig:
         m = _make_model()
         p = _make_provider()
         with patch(
-            "code_puppy.command_line.add_model_menu.EXTRA_MODELS_FILE",
+            "newcode.command_line.add_model_menu.EXTRA_MODELS_FILE",
             "/nonexistent/path/extra.json",
         ):
             result = menu._add_model_to_extra_config(m, p)
@@ -532,9 +524,7 @@ class TestNavigationMethods:
     def test_enter_provider(self):
         p = _make_provider()
         models = [_make_model()]
-        with patch(
-            "code_puppy.command_line.add_model_menu.ModelsDevRegistry"
-        ) as mock_cls:
+        with patch("newcode.command_line.add_model_menu.ModelsDevRegistry") as mock_cls:
             mock_reg = MagicMock()
             mock_reg.get_providers.return_value = [p]
             mock_reg.get_models.return_value = models
@@ -624,8 +614,8 @@ class TestCredentialHandling:
             result = menu._prompt_for_credentials(p)
         assert result is True
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
-    @patch("code_puppy.command_line.add_model_menu.set_config_value")
+    @patch("newcode.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.set_config_value")
     def test_prompt_for_credentials_provides_key(self, mock_set, mock_input):
         mock_input.return_value = "sk-test"
         menu = _make_menu_with_providers()
@@ -636,7 +626,7 @@ class TestCredentialHandling:
         assert result is True
         mock_set.assert_called()
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_credentials_skipped(self, mock_input):
         mock_input.return_value = ""
         menu = _make_menu_with_providers()
@@ -646,7 +636,7 @@ class TestCredentialHandling:
             result = menu._prompt_for_credentials(p)
         assert result is True
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_credentials_cancelled(self, mock_input):
         mock_input.side_effect = KeyboardInterrupt
         menu = _make_menu_with_providers()
@@ -669,7 +659,7 @@ class TestCustomModel:
         assert info.context_length == 200000
         assert info.tool_call is True
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_custom_model_success(self, mock_input):
         mock_input.side_effect = ["my-model", "128k"]
         menu = _make_menu_with_providers()
@@ -677,7 +667,7 @@ class TestCustomModel:
         result = menu._prompt_for_custom_model()
         assert result == ("my-model", 128000)
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_custom_model_m_suffix(self, mock_input):
         mock_input.side_effect = ["my-model", "1m"]
         menu = _make_menu_with_providers()
@@ -685,7 +675,7 @@ class TestCustomModel:
         result = menu._prompt_for_custom_model()
         assert result == ("my-model", 1000000)
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_custom_model_plain_number(self, mock_input):
         mock_input.side_effect = ["my-model", "200000"]
         menu = _make_menu_with_providers()
@@ -693,7 +683,7 @@ class TestCustomModel:
         result = menu._prompt_for_custom_model()
         assert result == ("my-model", 200000)
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_custom_model_default_context(self, mock_input):
         mock_input.side_effect = ["my-model", ""]
         menu = _make_menu_with_providers()
@@ -701,7 +691,7 @@ class TestCustomModel:
         result = menu._prompt_for_custom_model()
         assert result == ("my-model", 128000)
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_custom_model_invalid_k(self, mock_input):
         mock_input.side_effect = ["my-model", "abck"]
         menu = _make_menu_with_providers()
@@ -709,7 +699,7 @@ class TestCustomModel:
         result = menu._prompt_for_custom_model()
         assert result == ("my-model", 128000)
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_custom_model_invalid_m(self, mock_input):
         mock_input.side_effect = ["my-model", "abcm"]
         menu = _make_menu_with_providers()
@@ -717,7 +707,7 @@ class TestCustomModel:
         result = menu._prompt_for_custom_model()
         assert result == ("my-model", 128000)
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_custom_model_invalid_number(self, mock_input):
         mock_input.side_effect = ["my-model", "abc"]
         menu = _make_menu_with_providers()
@@ -725,7 +715,7 @@ class TestCustomModel:
         result = menu._prompt_for_custom_model()
         assert result == ("my-model", 128000)
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_custom_model_empty_name(self, mock_input):
         mock_input.return_value = ""
         menu = _make_menu_with_providers()
@@ -733,7 +723,7 @@ class TestCustomModel:
         result = menu._prompt_for_custom_model()
         assert result is None
 
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     def test_prompt_for_custom_model_cancelled(self, mock_input):
         mock_input.side_effect = KeyboardInterrupt
         menu = _make_menu_with_providers()
@@ -766,8 +756,8 @@ class TestGetEnvVarHint:
 
 
 class TestRun:
-    @patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.add_model_menu.Application")
+    @patch("newcode.command_line.add_model_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.add_model_menu.Application")
     def test_run_no_registry(self, mock_app, mock_set_await):
         menu = _make_menu_with_providers([])
         menu.providers = []
@@ -775,8 +765,8 @@ class TestRun:
         result = menu.run()
         assert result is False
 
-    @patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.add_model_menu.Application")
+    @patch("newcode.command_line.add_model_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.add_model_menu.Application")
     @patch("sys.stdout")
     @patch("time.sleep")
     def test_run_exit_no_result(
@@ -789,8 +779,8 @@ class TestRun:
         result = menu.run()
         assert result is False
 
-    @patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.add_model_menu.Application")
+    @patch("newcode.command_line.add_model_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.add_model_menu.Application")
     @patch("sys.stdout")
     @patch("time.sleep")
     def test_run_unsupported_result(
@@ -811,9 +801,9 @@ class TestRun:
         result = menu.run()
         assert result is False
 
-    @patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.add_model_menu.Application")
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.add_model_menu.Application")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     @patch("sys.stdout")
     @patch("time.sleep")
     def test_run_pending_credentials_success(
@@ -834,15 +824,13 @@ class TestRun:
 
         with tempfile.TemporaryDirectory() as td:
             path = os.path.join(td, "extra_models.json")
-            with patch(
-                "code_puppy.command_line.add_model_menu.EXTRA_MODELS_FILE", path
-            ):
+            with patch("newcode.command_line.add_model_menu.EXTRA_MODELS_FILE", path):
                 result = menu.run()
         assert result is True
 
-    @patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.add_model_menu.Application")
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.add_model_menu.Application")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     @patch("sys.stdout")
     @patch("time.sleep")
     def test_run_pending_credentials_no_tool_call_confirm(
@@ -864,15 +852,13 @@ class TestRun:
 
         with tempfile.TemporaryDirectory() as td:
             path = os.path.join(td, "extra_models.json")
-            with patch(
-                "code_puppy.command_line.add_model_menu.EXTRA_MODELS_FILE", path
-            ):
+            with patch("newcode.command_line.add_model_menu.EXTRA_MODELS_FILE", path):
                 result = menu.run()
         assert result is True
 
-    @patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.add_model_menu.Application")
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.add_model_menu.Application")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     @patch("sys.stdout")
     @patch("time.sleep")
     def test_run_pending_credentials_no_tool_call_decline(
@@ -894,9 +880,9 @@ class TestRun:
         result = menu.run()
         assert result is False
 
-    @patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.add_model_menu.Application")
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.add_model_menu.Application")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     @patch("sys.stdout")
     @patch("time.sleep")
     def test_run_pending_credentials_no_tool_call_interrupt(
@@ -918,9 +904,9 @@ class TestRun:
         result = menu.run()
         assert result is False
 
-    @patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.add_model_menu.Application")
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.add_model_menu.Application")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     @patch("sys.stdout")
     @patch("time.sleep")
     def test_run_pending_custom_model_success(
@@ -940,15 +926,13 @@ class TestRun:
 
         with tempfile.TemporaryDirectory() as td:
             path = os.path.join(td, "extra_models.json")
-            with patch(
-                "code_puppy.command_line.add_model_menu.EXTRA_MODELS_FILE", path
-            ):
+            with patch("newcode.command_line.add_model_menu.EXTRA_MODELS_FILE", path):
                 result = menu.run()
         assert result is True
 
-    @patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.add_model_menu.Application")
-    @patch("code_puppy.command_line.add_model_menu.safe_input")
+    @patch("newcode.command_line.add_model_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.add_model_menu.Application")
+    @patch("newcode.command_line.add_model_menu.safe_input")
     @patch("sys.stdout")
     @patch("time.sleep")
     def test_run_pending_custom_model_cancelled(
@@ -973,7 +957,7 @@ class TestRun:
 
 
 class TestInteractiveModelPicker:
-    @patch("code_puppy.command_line.add_model_menu.AddModelMenu")
+    @patch("newcode.command_line.add_model_menu.AddModelMenu")
     def test_calls_run(self, mock_menu_cls):
         mock_menu = MagicMock()
         mock_menu.run.return_value = True
@@ -1009,7 +993,7 @@ class TestRenderNavigationHints:
 
 
 class TestInitializeRegistryErrors:
-    @patch("code_puppy.command_line.add_model_menu.ModelsDevRegistry")
+    @patch("newcode.command_line.add_model_menu.ModelsDevRegistry")
     def test_empty_providers(self, mock_cls):
         mock_reg = MagicMock()
         mock_reg.get_providers.return_value = []
@@ -1018,7 +1002,7 @@ class TestInitializeRegistryErrors:
         assert menu.providers == []
 
     @patch(
-        "code_puppy.command_line.add_model_menu.ModelsDevRegistry",
+        "newcode.command_line.add_model_menu.ModelsDevRegistry",
         side_effect=FileNotFoundError("missing"),
     )
     def test_file_not_found(self, mock_cls):
@@ -1026,7 +1010,7 @@ class TestInitializeRegistryErrors:
         assert menu.providers == []
 
     @patch(
-        "code_puppy.command_line.add_model_menu.ModelsDevRegistry",
+        "newcode.command_line.add_model_menu.ModelsDevRegistry",
         side_effect=RuntimeError("boom"),
     )
     def test_general_exception(self, mock_cls):

@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 from prompt_toolkit.document import Document
 
-from code_puppy.command_line.load_context_completion import LoadContextCompleter
+from newcode.command_line.load_context_completion import LoadContextCompleter
 
 
 class TestLoadContextCompleter:
@@ -31,9 +31,7 @@ class TestLoadContextCompleter:
 
     def test_trigger_with_space_no_contexts(self):
         with tempfile.TemporaryDirectory() as td:
-            with patch(
-                "code_puppy.command_line.load_context_completion.CONFIG_DIR", td
-            ):
+            with patch("newcode.command_line.load_context_completion.CONFIG_DIR", td):
                 result = self._get_completions("/load_context ")
                 assert result == []
 
@@ -45,9 +43,7 @@ class TestLoadContextCompleter:
             for name in ["session1.pkl", "session2.pkl"]:
                 with open(os.path.join(contexts_dir, name), "w") as f:
                     f.write("")
-            with patch(
-                "code_puppy.command_line.load_context_completion.CONFIG_DIR", td
-            ):
+            with patch("newcode.command_line.load_context_completion.CONFIG_DIR", td):
                 result = self._get_completions("/load_context ")
                 names = [c.text for c in result]
                 assert "session1" in names
@@ -60,9 +56,7 @@ class TestLoadContextCompleter:
             for name in ["alpha.pkl", "beta.pkl"]:
                 with open(os.path.join(contexts_dir, name), "w") as f:
                     f.write("")
-            with patch(
-                "code_puppy.command_line.load_context_completion.CONFIG_DIR", td
-            ):
+            with patch("newcode.command_line.load_context_completion.CONFIG_DIR", td):
                 result = self._get_completions("/load_context al")
                 names = [c.text for c in result]
                 assert "alpha" in names
@@ -70,7 +64,7 @@ class TestLoadContextCompleter:
 
     def test_exception_in_listing(self):
         with patch(
-            "code_puppy.command_line.load_context_completion.CONFIG_DIR",
+            "newcode.command_line.load_context_completion.CONFIG_DIR",
             "/nonexistent_xyz",
         ):
             result = self._get_completions("/load_context ")

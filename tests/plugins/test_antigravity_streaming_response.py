@@ -7,7 +7,7 @@ from datetime import datetime
 import pytest
 from pydantic_ai.models import ModelRequestParameters
 
-from code_puppy.plugins.antigravity_oauth.antigravity_model import (
+from newcode.plugins.antigravity_oauth.antigravity_model import (
     AntigravityStreamingResponse,
 )
 

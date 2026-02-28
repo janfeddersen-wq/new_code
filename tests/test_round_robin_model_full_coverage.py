@@ -48,7 +48,7 @@ class TestDummySpanFallback:
         # Force reimport without opentelemetry
         with patch.dict(sys.modules, {"opentelemetry.context": None}):
             # We need to test the actual DummySpan class by importing the function
-            from code_puppy.round_robin_model import get_current_span
+            from newcode.round_robin_model import get_current_span
 
             get_current_span()
             # It may be real or dummy depending on env - test _set_span_attributes instead
@@ -59,7 +59,7 @@ class TestRequestStream:
 
     @pytest.mark.anyio
     async def test_request_stream_basic(self):
-        from code_puppy.round_robin_model import RoundRobinModel
+        from newcode.round_robin_model import RoundRobinModel
 
         m1 = MockModel("model1")
         m2 = MockModel("model2")
@@ -70,7 +70,7 @@ class TestRequestStream:
 
     @pytest.mark.anyio
     async def test_request_stream_rotates(self):
-        from code_puppy.round_robin_model import RoundRobinModel
+        from newcode.round_robin_model import RoundRobinModel
 
         m1 = MockModel("model1")
         m2 = MockModel("model2")
@@ -86,7 +86,7 @@ class TestRequestStream:
 
     @pytest.mark.anyio
     async def test_request_stream_with_run_context(self):
-        from code_puppy.round_robin_model import RoundRobinModel
+        from newcode.round_robin_model import RoundRobinModel
 
         m1 = MockModel("model1")
         rrm = RoundRobinModel(m1)
@@ -100,7 +100,7 @@ class TestSetSpanAttributes:
     """Test _set_span_attributes for observability."""
 
     def test_set_span_attributes_recording_matching_model(self):
-        from code_puppy.round_robin_model import RoundRobinModel
+        from newcode.round_robin_model import RoundRobinModel
 
         m1 = MockModel("model1")
         m2 = MockModel("model2")
@@ -111,14 +111,14 @@ class TestSetSpanAttributes:
         mock_span.attributes = {"gen_ai.request.model": rrm.model_name}
 
         with patch(
-            "code_puppy.round_robin_model.get_current_span", return_value=mock_span
+            "newcode.round_robin_model.get_current_span", return_value=mock_span
         ):
             rrm._set_span_attributes(m1)
 
         mock_span.set_attributes.assert_called_once_with({"model_name": "model1"})
 
     def test_set_span_attributes_recording_non_matching_model(self):
-        from code_puppy.round_robin_model import RoundRobinModel
+        from newcode.round_robin_model import RoundRobinModel
 
         m1 = MockModel("model1")
         rrm = RoundRobinModel(m1)
@@ -128,14 +128,14 @@ class TestSetSpanAttributes:
         mock_span.attributes = {"gen_ai.request.model": "something_else"}
 
         with patch(
-            "code_puppy.round_robin_model.get_current_span", return_value=mock_span
+            "newcode.round_robin_model.get_current_span", return_value=mock_span
         ):
             rrm._set_span_attributes(m1)
 
         mock_span.set_attributes.assert_not_called()
 
     def test_set_span_attributes_not_recording(self):
-        from code_puppy.round_robin_model import RoundRobinModel
+        from newcode.round_robin_model import RoundRobinModel
 
         m1 = MockModel("model1")
         rrm = RoundRobinModel(m1)
@@ -144,7 +144,7 @@ class TestSetSpanAttributes:
         mock_span.is_recording.return_value = False
 
         with patch(
-            "code_puppy.round_robin_model.get_current_span", return_value=mock_span
+            "newcode.round_robin_model.get_current_span", return_value=mock_span
         ):
             rrm._set_span_attributes(m1)
 
@@ -152,7 +152,7 @@ class TestSetSpanAttributes:
 
     def test_set_span_attributes_no_attributes(self):
         """When span has no attributes attr."""
-        from code_puppy.round_robin_model import RoundRobinModel
+        from newcode.round_robin_model import RoundRobinModel
 
         m1 = MockModel("model1")
         rrm = RoundRobinModel(m1)
@@ -163,19 +163,19 @@ class TestSetSpanAttributes:
         del mock_span.attributes
 
         with patch(
-            "code_puppy.round_robin_model.get_current_span", return_value=mock_span
+            "newcode.round_robin_model.get_current_span", return_value=mock_span
         ):
             # Should not raise
             rrm._set_span_attributes(m1)
 
     def test_set_span_attributes_exception_suppressed(self):
-        from code_puppy.round_robin_model import RoundRobinModel
+        from newcode.round_robin_model import RoundRobinModel
 
         m1 = MockModel("model1")
         rrm = RoundRobinModel(m1)
 
         with patch(
-            "code_puppy.round_robin_model.get_current_span",
+            "newcode.round_robin_model.get_current_span",
             side_effect=Exception("boom"),
         ):
             # Should not raise

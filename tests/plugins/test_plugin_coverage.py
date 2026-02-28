@@ -16,14 +16,14 @@ class TestSchedulerCallbacks:
     """Tests for scheduler command handler (lines 20, 41-84)."""
 
     def _get_handler(self):
-        from code_puppy.plugins.scheduler.register_callbacks import (
+        from newcode.plugins.scheduler.register_callbacks import (
             _handle_scheduler_command,
         )
 
         return _handle_scheduler_command
 
     def _get_help(self):
-        from code_puppy.plugins.scheduler.register_callbacks import _scheduler_help
+        from newcode.plugins.scheduler.register_callbacks import _scheduler_help
 
         return _scheduler_help
 
@@ -40,53 +40,53 @@ class TestSchedulerCallbacks:
 
     def test_no_subcommand_launches_menu(self):
         with patch(
-            "code_puppy.plugins.scheduler.scheduler_menu.show_scheduler_menu"
+            "newcode.plugins.scheduler.scheduler_menu.show_scheduler_menu"
         ) as mock_menu:
             result = self._get_handler()("scheduler", "scheduler")
             assert result is True
             mock_menu.assert_called_once()
 
-    @patch("code_puppy.scheduler.cli.handle_scheduler_start")
+    @patch("newcode.scheduler.cli.handle_scheduler_start")
     def test_start_subcommand(self, mock_fn):
         assert self._get_handler()("scheduler start", "scheduler") is True
         mock_fn.assert_called_once()
 
-    @patch("code_puppy.scheduler.cli.handle_scheduler_stop")
+    @patch("newcode.scheduler.cli.handle_scheduler_stop")
     def test_stop_subcommand(self, mock_fn):
         assert self._get_handler()("scheduler stop", "scheduler") is True
         mock_fn.assert_called_once()
 
-    @patch("code_puppy.scheduler.cli.handle_scheduler_status")
+    @patch("newcode.scheduler.cli.handle_scheduler_status")
     def test_status_subcommand(self, mock_fn):
         assert self._get_handler()("scheduler status", "scheduler") is True
         mock_fn.assert_called_once()
 
-    @patch("code_puppy.scheduler.cli.handle_scheduler_list")
+    @patch("newcode.scheduler.cli.handle_scheduler_list")
     def test_list_subcommand(self, mock_fn):
         assert self._get_handler()("scheduler list", "scheduler") is True
         mock_fn.assert_called_once()
 
-    @patch("code_puppy.scheduler.cli.handle_scheduler_run")
+    @patch("newcode.scheduler.cli.handle_scheduler_run")
     def test_run_subcommand_with_id(self, mock_fn):
         assert self._get_handler()("scheduler run task-1", "scheduler") is True
         mock_fn.assert_called_once_with("task-1")
 
-    @patch("code_puppy.scheduler.cli.handle_scheduler_run")
+    @patch("newcode.scheduler.cli.handle_scheduler_run")
     def test_run_subcommand_missing_id(self, mock_fn):
         assert self._get_handler()("scheduler run", "scheduler") is True
         mock_fn.assert_not_called()
 
-    @patch("code_puppy.scheduler.cli.handle_scheduler_start")
+    @patch("newcode.scheduler.cli.handle_scheduler_start")
     def test_unknown_subcommand(self, _mock):
         # Need to mock one import so the function body succeeds
         assert self._get_handler()("scheduler bogus", "scheduler") is True
 
-    @patch("code_puppy.scheduler.cli.handle_scheduler_start")
+    @patch("newcode.scheduler.cli.handle_scheduler_start")
     def test_alias_sched(self, mock_fn):
         assert self._get_handler()("sched start", "sched") is True
         mock_fn.assert_called_once()
 
-    @patch("code_puppy.scheduler.cli.handle_scheduler_start")
+    @patch("newcode.scheduler.cli.handle_scheduler_start")
     def test_alias_cron(self, mock_fn):
         assert self._get_handler()("cron start", "cron") is True
         mock_fn.assert_called_once()
@@ -99,14 +99,14 @@ class TestExampleCustomCommand:
     """Tests for example custom command (lines 6, 23-47)."""
 
     def _get_handler(self):
-        from code_puppy.plugins.example_custom_command.register_callbacks import (
+        from newcode.plugins.example_custom_command.register_callbacks import (
             _handle_custom_command,
         )
 
         return _handle_custom_command
 
     def _get_help(self):
-        from code_puppy.plugins.example_custom_command.register_callbacks import (
+        from newcode.plugins.example_custom_command.register_callbacks import (
             _custom_help,
         )
 
@@ -149,12 +149,12 @@ class TestUniversalConstructorCallbacks:
     """Tests for UC startup callback (lines 19-38)."""
 
     def test_startup_disabled(self):
-        from code_puppy.plugins.universal_constructor.register_callbacks import (
+        from newcode.plugins.universal_constructor.register_callbacks import (
             _on_startup,
         )
 
         with patch(
-            "code_puppy.config.get_universal_constructor_enabled",
+            "newcode.config.get_universal_constructor_enabled",
             return_value=False,
         ) as mock_enabled:
             _on_startup()
@@ -166,21 +166,21 @@ class TestUniversalConstructorCallbacks:
         mock_registry = MagicMock()
         mock_registry.list_tools.return_value = [mock_tool]
 
-        from code_puppy.plugins.universal_constructor.register_callbacks import (
+        from newcode.plugins.universal_constructor.register_callbacks import (
             _on_startup,
         )
 
         with (
             patch(
-                "code_puppy.config.get_universal_constructor_enabled",
+                "newcode.config.get_universal_constructor_enabled",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.universal_constructor.register_callbacks.get_registry",
+                "newcode.plugins.universal_constructor.register_callbacks.get_registry",
                 return_value=mock_registry,
             ),
             patch(
-                "code_puppy.plugins.universal_constructor.register_callbacks.USER_UC_DIR",
+                "newcode.plugins.universal_constructor.register_callbacks.USER_UC_DIR",
             ) as mock_dir,
         ):
             _on_startup()
@@ -196,7 +196,7 @@ class TestDiscoveryMissedLines:
 
     def test_discover_skills_none_directories_uses_config(self, tmp_path):
         """Lines 72-79: when directories=None, merges config + defaults."""
-        from code_puppy.plugins.agent_skills.discovery import discover_skills
+        from newcode.plugins.agent_skills.discovery import discover_skills
 
         skill_dir = tmp_path / "skills" / "my-skill"
         skill_dir.mkdir(parents=True)
@@ -204,11 +204,11 @@ class TestDiscoveryMissedLines:
 
         with (
             patch(
-                "code_puppy.plugins.agent_skills.discovery.get_skill_directories",
+                "newcode.plugins.agent_skills.discovery.get_skill_directories",
                 return_value=[str(tmp_path / "skills")],
             ),
             patch(
-                "code_puppy.plugins.agent_skills.discovery.get_default_skill_directories",
+                "newcode.plugins.agent_skills.discovery.get_default_skill_directories",
                 return_value=[tmp_path / "skills"],  # same as config, tests dedup
             ),
         ):
@@ -221,7 +221,7 @@ class TestDiscoveryMissedLines:
         not_a_dir = tmp_path / "not-a-dir"
         not_a_dir.write_text("I'm a file")
 
-        from code_puppy.plugins.agent_skills.discovery import discover_skills
+        from newcode.plugins.agent_skills.discovery import discover_skills
 
         results = discover_skills(directories=[not_a_dir])
         assert results == []

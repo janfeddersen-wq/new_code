@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.api.pty_manager import (
+from newcode.api.pty_manager import (
     PTYManager,
     PTYSession,
     get_pty_manager,
@@ -26,7 +26,7 @@ class TestPTYManager:
         assert mgr.get_session("nonexistent") is None
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", False)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", False)
     async def test_create_unix_session(self):
         mgr = PTYManager()
         mock_task = MagicMock()
@@ -47,7 +47,7 @@ class TestPTYManager:
             assert "test-1" in mgr.list_sessions()
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", False)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", False)
     async def test_create_session_replaces_existing(self):
         mgr = PTYManager()
         # Pre-populate a session
@@ -64,7 +64,7 @@ class TestPTYManager:
             assert session.pid == 456
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", False)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", False)
     async def test_write_unix(self):
         mgr = PTYManager()
         session = PTYSession(session_id="w", master_fd=10)
@@ -82,7 +82,7 @@ class TestPTYManager:
         assert result is False
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", False)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", False)
     async def test_write_exception(self):
         mgr = PTYManager()
         session = PTYSession(session_id="e", master_fd=10)
@@ -93,7 +93,7 @@ class TestPTYManager:
             assert result is False
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", False)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", False)
     async def test_resize_unix(self):
         mgr = PTYManager()
         session = PTYSession(session_id="r", master_fd=10)
@@ -112,7 +112,7 @@ class TestPTYManager:
         assert result is False
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", False)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", False)
     async def test_resize_exception(self):
         mgr = PTYManager()
         session = PTYSession(session_id="re", master_fd=10)
@@ -123,7 +123,7 @@ class TestPTYManager:
             assert result is False
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", False)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", False)
     async def test_close_session(self):
         mgr = PTYManager()
         task = asyncio.ensure_future(asyncio.sleep(100))
@@ -148,7 +148,7 @@ class TestPTYManager:
         assert result is False
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", False)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", False)
     async def test_close_all(self):
         mgr = PTYManager()
         s1 = PTYSession(session_id="a")
@@ -160,7 +160,7 @@ class TestPTYManager:
         assert len(mgr._sessions) == 0
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", False)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", False)
     async def test_close_session_os_errors(self):
         """close handles OSError on close/kill gracefully."""
         mgr = PTYManager()
@@ -194,7 +194,7 @@ class TestPTYManager:
             assert result == b""
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", True)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", True)
     async def test_write_windows(self):
         mgr = PTYManager()
         mock_winpty = MagicMock()
@@ -206,7 +206,7 @@ class TestPTYManager:
         mock_winpty.write.assert_called_once_with("hello")
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", True)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", True)
     async def test_resize_windows(self):
         mgr = PTYManager()
         mock_winpty = MagicMock()
@@ -218,7 +218,7 @@ class TestPTYManager:
         mock_winpty.setwinsize.assert_called_once_with(30, 100)
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", True)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", True)
     async def test_close_windows(self):
         mgr = PTYManager()
         mock_winpty = MagicMock()
@@ -230,7 +230,7 @@ class TestPTYManager:
         mock_winpty.terminate.assert_called_once()
 
     @pytest.mark.anyio
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", True)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", True)
     async def test_close_windows_terminate_error(self):
         mgr = PTYManager()
         mock_winpty = MagicMock()
@@ -244,7 +244,7 @@ class TestPTYManager:
 
 class TestGetPtyManager:
     def test_singleton(self):
-        import code_puppy.api.pty_manager as mod
+        import newcode.api.pty_manager as mod
 
         mod._pty_manager = None
         mgr1 = get_pty_manager()
@@ -254,7 +254,7 @@ class TestGetPtyManager:
 
 
 class TestPTYSessionIsAliveWindows:
-    @patch("code_puppy.api.pty_manager.IS_WINDOWS", True)
+    @patch("newcode.api.pty_manager.IS_WINDOWS", True)
     def test_windows_no_winpty(self):
         session = PTYSession(session_id="x", winpty_process=None)
         assert session.is_alive() is False

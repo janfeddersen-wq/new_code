@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.command_line.autosave_menu import (
+from newcode.command_line.autosave_menu import (
     PAGE_SIZE,
     _extract_last_user_message,
     _extract_message_content,
@@ -64,8 +64,8 @@ class TestGetSessionMetadata:
 class TestGetSessionEntries:
     """Test the _get_session_entries function."""
 
-    @patch("code_puppy.command_line.autosave_menu.list_sessions")
-    @patch("code_puppy.command_line.autosave_menu._get_session_metadata")
+    @patch("newcode.command_line.autosave_menu.list_sessions")
+    @patch("newcode.command_line.autosave_menu._get_session_metadata")
     def test_sorts_entries_by_timestamp_desc(self, mock_metadata, mock_list):
         """Test that entries are sorted by timestamp (most recent first)."""
         # Setup mock sessions
@@ -86,8 +86,8 @@ class TestGetSessionEntries:
         assert result[1][0] == "session3"
         assert result[2][0] == "session1"
 
-    @patch("code_puppy.command_line.autosave_menu.list_sessions")
-    @patch("code_puppy.command_line.autosave_menu._get_session_metadata")
+    @patch("newcode.command_line.autosave_menu.list_sessions")
+    @patch("newcode.command_line.autosave_menu._get_session_metadata")
     def test_handles_missing_timestamps(self, mock_metadata, mock_list):
         """Test handling of entries without timestamps."""
         mock_list.return_value = ["no_timestamp", "valid_timestamp"]
@@ -103,8 +103,8 @@ class TestGetSessionEntries:
         assert result[0][0] == "valid_timestamp"
         assert result[1][0] == "no_timestamp"
 
-    @patch("code_puppy.command_line.autosave_menu.list_sessions")
-    @patch("code_puppy.command_line.autosave_menu._get_session_metadata")
+    @patch("newcode.command_line.autosave_menu.list_sessions")
+    @patch("newcode.command_line.autosave_menu._get_session_metadata")
     def test_handles_invalid_timestamps(self, mock_metadata, mock_list):
         """Test handling of entries with invalid timestamps."""
         mock_list.return_value = ["invalid_ts", "valid_ts"]
@@ -120,7 +120,7 @@ class TestGetSessionEntries:
         assert result[0][0] == "valid_ts"
         assert result[1][0] == "invalid_ts"
 
-    @patch("code_puppy.command_line.autosave_menu.list_sessions")
+    @patch("newcode.command_line.autosave_menu.list_sessions")
     def test_empty_sessions_list(self, mock_list):
         """Test handling of empty sessions list."""
         mock_list.return_value = []
@@ -296,7 +296,7 @@ class TestRenderPreviewPanel:
         entry = ("test_session", {})
 
         with patch(
-            "code_puppy.command_line.autosave_menu.load_session",
+            "newcode.command_line.autosave_menu.load_session",
             side_effect=Exception("Load failed"),
         ):
             result = _render_preview_panel(Path("/fake"), entry)
@@ -305,8 +305,8 @@ class TestRenderPreviewPanel:
             assert "Error loading preview" in lines_str
             assert "Load failed" in lines_str
 
-    @patch("code_puppy.command_line.autosave_menu.load_session")
-    @patch("code_puppy.command_line.autosave_menu._extract_last_user_message")
+    @patch("newcode.command_line.autosave_menu.load_session")
+    @patch("newcode.command_line.autosave_menu._extract_last_user_message")
     def test_renders_markdown_content(self, mock_extract, mock_load):
         """Test rendering of markdown content in preview."""
         # Setup mock scenario
@@ -323,8 +323,8 @@ class TestRenderPreviewPanel:
         assert "bold" in lines_str
         assert "List item" in lines_str
 
-    @patch("code_puppy.command_line.autosave_menu.load_session")
-    @patch("code_puppy.command_line.autosave_menu._extract_last_user_message")
+    @patch("newcode.command_line.autosave_menu.load_session")
+    @patch("newcode.command_line.autosave_menu._extract_last_user_message")
     def test_renders_long_messages_in_full(self, mock_extract, mock_load):
         """Test that long messages are rendered in full without truncation."""
         # Create a very long message (simulated through console output)
@@ -349,7 +349,7 @@ class TestRenderPreviewPanel:
 class TestInteractiveAutosavePicker:
     """Test the interactive_autosave_picker function."""
 
-    @patch("code_puppy.command_line.autosave_menu._get_session_entries")
+    @patch("newcode.command_line.autosave_menu._get_session_entries")
     async def test_returns_none_for_no_sessions(self, mock_entries):
         """Test that function returns None when no sessions exist."""
         mock_entries.return_value = []
@@ -358,10 +358,10 @@ class TestInteractiveAutosavePicker:
 
         assert result is None
 
-    @patch("code_puppy.command_line.autosave_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.autosave_menu._get_session_entries")
-    @patch("code_puppy.command_line.autosave_menu._render_menu_panel")
-    @patch("code_puppy.command_line.autosave_menu._render_preview_panel")
+    @patch("newcode.command_line.autosave_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.autosave_menu._get_session_entries")
+    @patch("newcode.command_line.autosave_menu._render_menu_panel")
+    @patch("newcode.command_line.autosave_menu._render_preview_panel")
     @patch("sys.stdout.write")
     @patch("time.sleep")
     async def test_application_setup_and_cleanup(
@@ -381,7 +381,7 @@ class TestInteractiveAutosavePicker:
         mock_preview.return_value = [("", "Test preview")]
 
         # Mock the application to avoid actual TUI
-        with patch("code_puppy.command_line.autosave_menu.Application") as mock_app:
+        with patch("newcode.command_line.autosave_menu.Application") as mock_app:
             mock_instance = MagicMock()
             mock_app.return_value = mock_instance
             mock_instance.run_async = AsyncMock()
@@ -395,8 +395,8 @@ class TestInteractiveAutosavePicker:
             mock_stdout.assert_any_call("\033[?1049l")  # Exit alt buffer
             mock_instance.run_async.assert_called_once()
 
-    @patch("code_puppy.command_line.autosave_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.autosave_menu._get_session_entries")
+    @patch("newcode.command_line.autosave_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.autosave_menu._get_session_entries")
     @patch("sys.stdout.write")
     async def test_handles_keyboard_interrupt(
         self, mock_stdout, mock_entries, mock_awaiting
@@ -407,7 +407,7 @@ class TestInteractiveAutosavePicker:
         mock_entries.return_value = entries
 
         # Mock application to raise KeyboardInterrupt
-        with patch("code_puppy.command_line.autosave_menu.Application") as mock_app:
+        with patch("newcode.command_line.autosave_menu.Application") as mock_app:
             mock_instance = MagicMock()
             mock_app.return_value = mock_instance
             mock_instance.run_async = AsyncMock(side_effect=KeyboardInterrupt())
@@ -420,10 +420,10 @@ class TestInteractiveAutosavePicker:
             mock_awaiting.assert_called_with(False)  # Should reset to False
             mock_stdout.assert_any_call("\033[?1049l")  # Exit alt buffer
 
-    @patch("code_puppy.command_line.autosave_menu.set_awaiting_user_input")
-    @patch("code_puppy.command_line.autosave_menu._get_session_entries")
-    @patch("code_puppy.command_line.autosave_menu._render_menu_panel")
-    @patch("code_puppy.command_line.autosave_menu._render_preview_panel")
+    @patch("newcode.command_line.autosave_menu.set_awaiting_user_input")
+    @patch("newcode.command_line.autosave_menu._get_session_entries")
+    @patch("newcode.command_line.autosave_menu._render_menu_panel")
+    @patch("newcode.command_line.autosave_menu._render_preview_panel")
     @patch("sys.stdout.write")
     async def test_navigation_key_bindings(
         self, mock_stdout, mock_preview, mock_menu, mock_entries, mock_awaiting
@@ -435,7 +435,7 @@ class TestInteractiveAutosavePicker:
         mock_menu.return_value = [("", "Test")]
         mock_preview.return_value = [("", "Test")]
 
-        with patch("code_puppy.command_line.autosave_menu.Application") as mock_app:
+        with patch("newcode.command_line.autosave_menu.Application") as mock_app:
             mock_instance = MagicMock()
             mock_app.return_value = mock_instance
             mock_instance.run_async = AsyncMock()
@@ -449,7 +449,7 @@ class TestInteractiveAutosavePicker:
                 return mock_instance
 
             with patch(
-                "code_puppy.command_line.autosave_menu.Application",
+                "newcode.command_line.autosave_menu.Application",
                 side_effect=capture_app,
             ):
                 await interactive_autosave_picker()
@@ -492,10 +492,10 @@ class TestEdgeCasesAndErrorHandling:
     def test_with_nonexistent_autosave_dir(self):
         """Test behavior with nonexistent autosave directory."""
         with patch(
-            "code_puppy.command_line.autosave_menu.AUTOSAVE_DIR", "/nonexistent/path"
+            "newcode.command_line.autosave_menu.AUTOSAVE_DIR", "/nonexistent/path"
         ):
             with patch(
-                "code_puppy.command_line.autosave_menu.list_sessions",
+                "newcode.command_line.autosave_menu.list_sessions",
                 side_effect=FileNotFoundError(),
             ):
                 entries = _get_session_entries(Path("/nonexistent/path"))
@@ -505,11 +505,11 @@ class TestEdgeCasesAndErrorHandling:
     def test_with_permission_denied_access(self):
         """Test behavior when permission is denied."""
         with patch(
-            "code_puppy.command_line.autosave_menu._get_session_metadata",
+            "newcode.command_line.autosave_menu._get_session_metadata",
             side_effect=PermissionError("Access denied"),
         ):
             with patch(
-                "code_puppy.command_line.autosave_menu.list_sessions",
+                "newcode.command_line.autosave_menu.list_sessions",
                 return_value=["session1"],
             ):
                 entries = _get_session_entries(Path("/protected/path"))
@@ -575,8 +575,8 @@ class MockPart:
 class TestIntegrationScenarios:
     """Integration-style tests covering common usage patterns."""
 
-    @patch("code_puppy.command_line.autosave_menu.list_sessions")
-    @patch("code_puppy.command_line.autosave_menu.load_session")
+    @patch("newcode.command_line.autosave_menu.list_sessions")
+    @patch("newcode.command_line.autosave_menu.load_session")
     def test_full_rendering_pipeline(self, mock_load, mock_list):
         """Test the complete rendering pipeline with realistic data."""
         # Setup realistic test data
@@ -623,7 +623,7 @@ class TestIntegrationScenarios:
     async def test_console_buffer_management(self, mock_sleep, mock_stdout):
         """Test proper console buffer management."""
         with patch(
-            "code_puppy.command_line.autosave_menu._get_session_entries",
+            "newcode.command_line.autosave_menu._get_session_entries",
             return_value=[],
         ):
             result = await interactive_autosave_picker()
@@ -1148,14 +1148,14 @@ class TestDisplayResumedHistory:
 
     def test_empty_history_returns_early(self):
         """Empty history should return without output."""
-        from code_puppy.command_line.autosave_menu import display_resumed_history
+        from newcode.command_line.autosave_menu import display_resumed_history
 
         # Should not raise
         display_resumed_history([])
 
     def test_single_system_message_returns_early(self):
         """History with only system message should return without output."""
-        from code_puppy.command_line.autosave_menu import display_resumed_history
+        from newcode.command_line.autosave_menu import display_resumed_history
 
         mock_msg = MagicMock()
         mock_msg.kind = "request"
@@ -1166,7 +1166,7 @@ class TestDisplayResumedHistory:
 
     def test_displays_last_n_messages(self, capsys):
         """Should display the last N messages from history."""
-        from code_puppy.command_line.autosave_menu import display_resumed_history
+        from newcode.command_line.autosave_menu import display_resumed_history
 
         # Create mock messages
         messages = []
@@ -1193,7 +1193,7 @@ class TestDisplayResumedHistory:
 
     def test_shows_all_messages_when_under_limit(self, capsys):
         """Should show all messages when count is under limit."""
-        from code_puppy.command_line.autosave_menu import display_resumed_history
+        from newcode.command_line.autosave_menu import display_resumed_history
 
         # Create mock messages (system + 2 user)
         messages = []
@@ -1217,7 +1217,7 @@ class TestDisplayResumedHistory:
 
     def test_renders_long_content_as_markdown(self, capsys):
         """Should render long message content as markdown without truncation."""
-        from code_puppy.command_line.autosave_menu import display_resumed_history
+        from newcode.command_line.autosave_menu import display_resumed_history
 
         # Create message with very long content
         msg1 = MagicMock()
@@ -1240,7 +1240,7 @@ class TestDisplayResumedHistory:
 
     def test_renders_different_roles_correctly(self, capsys):
         """Should render user, assistant, and tool messages with correct styling."""
-        from code_puppy.command_line.autosave_menu import display_resumed_history
+        from newcode.command_line.autosave_menu import display_resumed_history
 
         # System message (skipped)
         sys_msg = MagicMock()

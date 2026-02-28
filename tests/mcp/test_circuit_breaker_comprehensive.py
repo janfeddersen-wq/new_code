@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from code_puppy.mcp_.circuit_breaker import (
+from newcode.mcp_.circuit_breaker import (
     CircuitBreaker,
     CircuitOpenError,
     CircuitState,

@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 from prompt_toolkit.document import Document
 
-from code_puppy.command_line.file_path_completion import FilePathCompleter
+from newcode.command_line.file_path_completion import FilePathCompleter
 
 
 class TestFilePathCompleter:

@@ -1,6 +1,6 @@
 """Tests for hook configuration validator."""
 
-from code_puppy.hook_engine.validator import (
+from newcode.hook_engine.validator import (
     format_validation_report,
     validate_hooks_config,
 )

@@ -1,8 +1,8 @@
-"""Comprehensive tests for code_puppy/plugins/__init__.py.
+"""Comprehensive tests for newcode/plugins/__init__.py.
 
 Tests cover plugin loading functions including:
 - Built-in plugin loading with various edge cases
-- User plugin loading from ~/.code_puppy/plugins/
+- User plugin loading from ~/.newcode/plugins/
 - Error handling paths
 - Idempotent loading behavior
 """
@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import code_puppy.plugins as plugins_module
-from code_puppy.plugins import (
+import newcode.plugins as plugins_module
+from newcode.plugins import (
     USER_PLUGINS_DIR,
     _load_builtin_plugins,
     _load_user_plugins,
@@ -29,7 +29,7 @@ class TestGetUserPluginsDir:
         """Test that function returns the USER_PLUGINS_DIR constant."""
         result = get_user_plugins_dir()
         assert result == USER_PLUGINS_DIR
-        assert result == Path.home() / ".code_puppy" / "plugins"
+        assert result == Path.home() / ".newcode" / "plugins"
 
 
 class TestEnsureUserPluginsDir:
@@ -37,7 +37,7 @@ class TestEnsureUserPluginsDir:
 
     def test_creates_directory_if_not_exists(self, tmp_path):
         """Test that directory is created if it doesn't exist."""
-        test_dir = tmp_path / ".code_puppy" / "plugins"
+        test_dir = tmp_path / ".newcode" / "plugins"
         assert not test_dir.exists()
 
         with patch.object(plugins_module, "USER_PLUGINS_DIR", test_dir):
@@ -48,7 +48,7 @@ class TestEnsureUserPluginsDir:
 
     def test_returns_existing_directory(self, tmp_path):
         """Test that existing directory is returned without error."""
-        test_dir = tmp_path / ".code_puppy" / "plugins"
+        test_dir = tmp_path / ".newcode" / "plugins"
         test_dir.mkdir(parents=True)
         assert test_dir.exists()
 
@@ -70,13 +70,13 @@ class TestLoadBuiltinPlugins:
         callbacks_file.write_text("# Plugin callbacks")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="high"),
-            patch("code_puppy.plugins.importlib.import_module") as mock_import,
+            patch("newcode.config.get_safety_permission_level", return_value="high"),
+            patch("newcode.plugins.importlib.import_module") as mock_import,
         ):
             result = _load_builtin_plugins(tmp_path)
             assert "my_plugin" in result
             mock_import.assert_called_once_with(
-                "code_puppy.plugins.my_plugin.register_callbacks"
+                "newcode.plugins.my_plugin.register_callbacks"
             )
 
     def test_skips_directories_starting_with_underscore(self, tmp_path):
@@ -87,8 +87,8 @@ class TestLoadBuiltinPlugins:
         (private_dir / "register_callbacks.py").write_text("# Private")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="high"),
-            patch("code_puppy.plugins.importlib.import_module") as mock_import,
+            patch("newcode.config.get_safety_permission_level", return_value="high"),
+            patch("newcode.plugins.importlib.import_module") as mock_import,
         ):
             result = _load_builtin_plugins(tmp_path)
             assert result == []
@@ -100,8 +100,8 @@ class TestLoadBuiltinPlugins:
         (tmp_path / "some_file.py").write_text("# Just a file")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="high"),
-            patch("code_puppy.plugins.importlib.import_module") as mock_import,
+            patch("newcode.config.get_safety_permission_level", return_value="high"),
+            patch("newcode.plugins.importlib.import_module") as mock_import,
         ):
             result = _load_builtin_plugins(tmp_path)
             assert result == []
@@ -115,8 +115,8 @@ class TestLoadBuiltinPlugins:
         (plugin_dir / "__init__.py").write_text("# Just init")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="high"),
-            patch("code_puppy.plugins.importlib.import_module") as mock_import,
+            patch("newcode.config.get_safety_permission_level", return_value="high"),
+            patch("newcode.plugins.importlib.import_module") as mock_import,
         ):
             result = _load_builtin_plugins(tmp_path)
             assert result == []
@@ -130,8 +130,8 @@ class TestLoadBuiltinPlugins:
         (plugin_dir / "register_callbacks.py").write_text("# Shell safety")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="high"),
-            patch("code_puppy.plugins.importlib.import_module") as mock_import,
+            patch("newcode.config.get_safety_permission_level", return_value="high"),
+            patch("newcode.plugins.importlib.import_module") as mock_import,
         ):
             result = _load_builtin_plugins(tmp_path)
             assert "shell_safety" not in result
@@ -144,10 +144,8 @@ class TestLoadBuiltinPlugins:
         (plugin_dir / "register_callbacks.py").write_text("# Shell safety")
 
         with (
-            patch(
-                "code_puppy.config.get_safety_permission_level", return_value="medium"
-            ),
-            patch("code_puppy.plugins.importlib.import_module") as mock_import,
+            patch("newcode.config.get_safety_permission_level", return_value="medium"),
+            patch("newcode.plugins.importlib.import_module") as mock_import,
         ):
             result = _load_builtin_plugins(tmp_path)
             assert "shell_safety" not in result
@@ -160,13 +158,13 @@ class TestLoadBuiltinPlugins:
         (plugin_dir / "register_callbacks.py").write_text("# Shell safety")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="low"),
-            patch("code_puppy.plugins.importlib.import_module") as mock_import,
+            patch("newcode.config.get_safety_permission_level", return_value="low"),
+            patch("newcode.plugins.importlib.import_module") as mock_import,
         ):
             result = _load_builtin_plugins(tmp_path)
             assert "shell_safety" in result
             mock_import.assert_called_once_with(
-                "code_puppy.plugins.shell_safety.register_callbacks"
+                "newcode.plugins.shell_safety.register_callbacks"
             )
 
     def test_loads_shell_safety_when_safety_level_none(self, tmp_path):
@@ -176,8 +174,8 @@ class TestLoadBuiltinPlugins:
         (plugin_dir / "register_callbacks.py").write_text("# Shell safety")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="none"),
-            patch("code_puppy.plugins.importlib.import_module"),
+            patch("newcode.config.get_safety_permission_level", return_value="none"),
+            patch("newcode.plugins.importlib.import_module"),
         ):
             result = _load_builtin_plugins(tmp_path)
             assert "shell_safety" in result
@@ -189,9 +187,9 @@ class TestLoadBuiltinPlugins:
         (plugin_dir / "register_callbacks.py").write_text("# Broken")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="high"),
+            patch("newcode.config.get_safety_permission_level", return_value="high"),
             patch(
-                "code_puppy.plugins.importlib.import_module",
+                "newcode.plugins.importlib.import_module",
                 side_effect=ImportError("Module not found"),
             ),
         ):
@@ -206,9 +204,9 @@ class TestLoadBuiltinPlugins:
         (plugin_dir / "register_callbacks.py").write_text("# Exploding")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="high"),
+            patch("newcode.config.get_safety_permission_level", return_value="high"),
             patch(
-                "code_puppy.plugins.importlib.import_module",
+                "newcode.plugins.importlib.import_module",
                 side_effect=RuntimeError("Something went wrong"),
             ),
         ):
@@ -225,8 +223,8 @@ class TestLoadBuiltinPlugins:
             (plugin_dir / "register_callbacks.py").write_text(f"# {name}")
 
         with (
-            patch("code_puppy.config.get_safety_permission_level", return_value="high"),
-            patch("code_puppy.plugins.importlib.import_module"),
+            patch("newcode.config.get_safety_permission_level", return_value="high"),
+            patch("newcode.plugins.importlib.import_module"),
         ):
             result = _load_builtin_plugins(tmp_path)
             assert len(result) == 3
@@ -350,11 +348,11 @@ class TestLoadUserPlugins:
 
         with (
             patch(
-                "code_puppy.plugins.importlib.util.spec_from_file_location",
+                "newcode.plugins.importlib.util.spec_from_file_location",
                 return_value=mock_spec,
             ),
             patch(
-                "code_puppy.plugins.importlib.util.module_from_spec",
+                "newcode.plugins.importlib.util.module_from_spec",
                 return_value=mock_module,
             ),
         ):
@@ -375,7 +373,7 @@ class TestLoadUserPlugins:
         (plugin_dir / "register_callbacks.py").write_text("# Bad spec")
 
         with patch(
-            "code_puppy.plugins.importlib.util.spec_from_file_location",
+            "newcode.plugins.importlib.util.spec_from_file_location",
             return_value=None,
         ):
             try:
@@ -399,7 +397,7 @@ class TestLoadUserPlugins:
         mock_spec.loader = None
 
         with patch(
-            "code_puppy.plugins.importlib.util.spec_from_file_location",
+            "newcode.plugins.importlib.util.spec_from_file_location",
             return_value=mock_spec,
         ):
             try:
@@ -425,11 +423,11 @@ class TestLoadUserPlugins:
 
         with (
             patch(
-                "code_puppy.plugins.importlib.util.spec_from_file_location",
+                "newcode.plugins.importlib.util.spec_from_file_location",
                 return_value=mock_spec,
             ),
             patch(
-                "code_puppy.plugins.importlib.util.module_from_spec",
+                "newcode.plugins.importlib.util.module_from_spec",
                 return_value=MagicMock(),
             ),
         ):
@@ -456,11 +454,11 @@ class TestLoadUserPlugins:
 
         with (
             patch(
-                "code_puppy.plugins.importlib.util.spec_from_file_location",
+                "newcode.plugins.importlib.util.spec_from_file_location",
                 return_value=mock_spec,
             ),
             patch(
-                "code_puppy.plugins.importlib.util.module_from_spec",
+                "newcode.plugins.importlib.util.module_from_spec",
                 return_value=MagicMock(),
             ),
         ):
@@ -489,11 +487,11 @@ class TestLoadUserPlugins:
 
         with (
             patch(
-                "code_puppy.plugins.importlib.util.spec_from_file_location",
+                "newcode.plugins.importlib.util.spec_from_file_location",
                 return_value=mock_spec,
             ),
             patch(
-                "code_puppy.plugins.importlib.util.module_from_spec",
+                "newcode.plugins.importlib.util.module_from_spec",
                 return_value=mock_module,
             ),
         ):
@@ -514,7 +512,7 @@ class TestLoadUserPlugins:
         (plugin_dir / "__init__.py").write_text("# Bad init")
 
         with patch(
-            "code_puppy.plugins.importlib.util.spec_from_file_location",
+            "newcode.plugins.importlib.util.spec_from_file_location",
             return_value=None,
         ):
             try:
@@ -537,7 +535,7 @@ class TestLoadUserPlugins:
         mock_spec.loader = None
 
         with patch(
-            "code_puppy.plugins.importlib.util.spec_from_file_location",
+            "newcode.plugins.importlib.util.spec_from_file_location",
             return_value=mock_spec,
         ):
             try:
@@ -562,11 +560,11 @@ class TestLoadUserPlugins:
 
         with (
             patch(
-                "code_puppy.plugins.importlib.util.spec_from_file_location",
+                "newcode.plugins.importlib.util.spec_from_file_location",
                 return_value=mock_spec,
             ),
             patch(
-                "code_puppy.plugins.importlib.util.module_from_spec",
+                "newcode.plugins.importlib.util.module_from_spec",
                 return_value=MagicMock(),
             ),
         ):
@@ -619,11 +617,11 @@ class TestLoadPluginCallbacks:
 
         with (
             patch(
-                "code_puppy.plugins._load_builtin_plugins",
+                "newcode.plugins._load_builtin_plugins",
                 return_value=["builtin_plugin"],
             ) as mock_builtin,
             patch(
-                "code_puppy.plugins._load_user_plugins", return_value=["user_plugin"]
+                "newcode.plugins._load_user_plugins", return_value=["user_plugin"]
             ) as mock_user,
         ):
             try:
@@ -644,8 +642,8 @@ class TestLoadPluginCallbacks:
         plugins_module._PLUGINS_LOADED = False
 
         with (
-            patch("code_puppy.plugins._load_builtin_plugins", return_value=[]),
-            patch("code_puppy.plugins._load_user_plugins", return_value=[]),
+            patch("newcode.plugins._load_builtin_plugins", return_value=[]),
+            patch("newcode.plugins._load_user_plugins", return_value=[]),
         ):
             try:
                 load_plugin_callbacks()
@@ -662,10 +660,10 @@ class TestLoadPluginCallbacks:
 
         with (
             patch(
-                "code_puppy.plugins._load_builtin_plugins",
+                "newcode.plugins._load_builtin_plugins",
                 return_value=["test_builtin"],
             ),
-            patch("code_puppy.plugins._load_user_plugins", return_value=["test_user"]),
+            patch("newcode.plugins._load_user_plugins", return_value=["test_user"]),
             caplog.at_level(logging.DEBUG),
         ):
             try:

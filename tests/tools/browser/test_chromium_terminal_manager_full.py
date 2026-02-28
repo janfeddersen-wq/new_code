@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.browser.chromium_terminal_manager import (
+from newcode.tools.browser.chromium_terminal_manager import (
     ChromiumTerminalManager,
 )
 

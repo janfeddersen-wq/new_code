@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 
-from code_puppy.agents.agent_creator_agent import AgentCreatorAgent
+from newcode.agents.agent_creator_agent import AgentCreatorAgent
 
 
 class TestAgentCreatorAgent:
@@ -29,18 +29,18 @@ class TestAgentCreatorAgent:
         # Mock the tools function
         mock_tools = ["tool1", "tool2", "tool3"]
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+            "newcode.agents.agent_creator_agent.get_available_tool_names",
             lambda: mock_tools,
         )
 
         # Mock other dependencies
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.get_user_agents_directory",
+            "newcode.agents.agent_creator_agent.get_user_agents_directory",
             lambda: "/mock/agents/dir",
         )
 
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.ModelFactory.load_config", lambda: {}
+            "newcode.agents.agent_creator_agent.ModelFactory.load_config", lambda: {}
         )
 
         agent = AgentCreatorAgent()
@@ -62,17 +62,17 @@ class TestAgentCreatorAgent:
 
         # Mock all dependencies
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+            "newcode.agents.agent_creator_agent.get_available_tool_names",
             lambda: ["tool1"],
         )
 
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.get_user_agents_directory",
+            "newcode.agents.agent_creator_agent.get_user_agents_directory",
             lambda: mock_dir,
         )
 
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.ModelFactory.load_config", lambda: {}
+            "newcode.agents.agent_creator_agent.ModelFactory.load_config", lambda: {}
         )
 
         agent = AgentCreatorAgent()
@@ -91,17 +91,17 @@ class TestAgentCreatorAgent:
 
         # Mock all dependencies
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+            "newcode.agents.agent_creator_agent.get_available_tool_names",
             lambda: ["tool1"],
         )
 
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.get_user_agents_directory",
+            "newcode.agents.agent_creator_agent.get_user_agents_directory",
             lambda: "/mock/agents/dir",
         )
 
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.ModelFactory.load_config",
+            "newcode.agents.agent_creator_agent.ModelFactory.load_config",
             lambda: mock_models_config,
         )
 
@@ -123,7 +123,7 @@ class TestAgentCreatorAgent:
     def test_get_system_prompt_comprehensive_injection(self, monkeypatch):
         """Test that get_system_prompt() correctly injects all dynamic content."""
         mock_tools = ["list_files", "read_file", "edit_file", "invoke_agent"]
-        mock_agents_dir = "/home/user/.code_puppy/agents"
+        mock_agents_dir = "/home/user/.newcode/agents"
         mock_models_config = {
             "gpt-5": {"type": "OpenAI", "context_length": "128k"},
             "claude-4-sonnet": {"type": "Anthropic", "context_length": "200k"},
@@ -131,17 +131,17 @@ class TestAgentCreatorAgent:
 
         # Mock all dependencies
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.get_available_tool_names",
+            "newcode.agents.agent_creator_agent.get_available_tool_names",
             lambda: mock_tools,
         )
 
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.get_user_agents_directory",
+            "newcode.agents.agent_creator_agent.get_user_agents_directory",
             lambda: mock_agents_dir,
         )
 
         monkeypatch.setattr(
-            "code_puppy.agents.agent_creator_agent.ModelFactory.load_config",
+            "newcode.agents.agent_creator_agent.ModelFactory.load_config",
             lambda: mock_models_config,
         )
 
@@ -172,7 +172,7 @@ class TestAgentCreatorAgent:
     def test_get_available_tools_with_uc_enabled(self):
         """Test that get_available_tools includes UC when enabled."""
         with patch(
-            "code_puppy.config.get_universal_constructor_enabled",
+            "newcode.config.get_universal_constructor_enabled",
             return_value=True,
         ):
             agent = AgentCreatorAgent()
@@ -190,7 +190,7 @@ class TestAgentCreatorAgent:
     def test_get_available_tools_with_uc_disabled(self):
         """Test that get_available_tools excludes UC when disabled."""
         with patch(
-            "code_puppy.config.get_universal_constructor_enabled",
+            "newcode.config.get_universal_constructor_enabled",
             return_value=False,
         ):
             agent = AgentCreatorAgent()

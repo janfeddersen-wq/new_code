@@ -1,9 +1,9 @@
 # Contributing to Code Puppy
 
 > **The golden rule:** nearly all new functionality should live in a **plugin**
-> under `code_puppy/plugins/` and hook into core via the lifecycle callbacks in
-> `code_puppy/callbacks.py`. If you find yourself editing files inside
-> `code_puppy/command_line/` or touching the core agent loop, stop and ask
+> under `newcode/plugins/` and hook into core via the lifecycle callbacks in
+> `newcode/callbacks.py`. If you find yourself editing files inside
+> `newcode/command_line/` or touching the core agent loop, stop and ask
 > yourself whether a plugin hook already exists for what you need.
 
 ---
@@ -52,7 +52,7 @@
 ## Architecture at a Glance
 
 ```
-code_puppy/
+newcode/
 ├── callbacks.py               ← lifecycle hook registry (THE contract)
 ├── plugins/
 │   ├── __init__.py            ← plugin loader (builtin + user)
@@ -71,7 +71,7 @@ code_puppy/
 └── ...
 ```
 
-The plugin loader (`code_puppy/plugins/__init__.py`) auto-discovers every
+The plugin loader (`newcode/plugins/__init__.py`) auto-discovers every
 subdirectory that contains a `register_callbacks.py` file and imports it.
 Callbacks are registered at import time — no configuration files, no entry
 points, no magic.
@@ -80,12 +80,12 @@ points, no magic.
 
 ## Plugin Anatomy
 
-Every plugin is a directory under `code_puppy/plugins/` (builtin) or
-`~/.code_puppy/plugins/` (user). The only required file is
+Every plugin is a directory under `newcode/plugins/` (builtin) or
+`~/.newcode/plugins/` (user). The only required file is
 **`register_callbacks.py`**.
 
 ```
-code_puppy/plugins/my_feature/
+newcode/plugins/my_feature/
 ├── __init__.py               # Can be empty
 ├── register_callbacks.py     # REQUIRED — hooks into lifecycle
 ├── some_module.py            # Your logic (keep files < 600 lines)
@@ -95,9 +95,9 @@ code_puppy/plugins/my_feature/
 Minimal skeleton:
 
 ```python
-# code_puppy/plugins/my_feature/register_callbacks.py
+# newcode/plugins/my_feature/register_callbacks.py
 
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _on_startup():
     print("my_feature loaded!")
@@ -114,7 +114,7 @@ That's it. Restart Code Puppy and your plugin is live.
 Every hook is registered the same way:
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 register_callback("<phase_name>", my_callback_function)
 ```
@@ -143,7 +143,7 @@ Async hooks accept both sync and async callback functions; the dispatcher
 **Use for:** One-time initialisation, creating directories, loading caches.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 async def _on_startup():
     """Create workspace directories on first launch."""
@@ -167,7 +167,7 @@ registry and scan the user tools directory.
 **Use for:** Flushing buffers, closing connections, cleanup.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 _db_conn = None
 
@@ -191,7 +191,7 @@ register_callback("shutdown", _on_shutdown)
 **Use for:** Logging, analytics, auditing agent invocations.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 import logging
 
 logger = logging.getLogger(__name__)
@@ -217,7 +217,7 @@ over WebSocket to a browser UI.
 **Use for:** Error reporting, crash telemetry, Sentry integration.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 async def _on_agent_exception(exception, *args, **kwargs):
     """Report agent crashes to an external error tracker."""
@@ -240,7 +240,7 @@ register_callback("agent_exception", _on_agent_exception)
 **Use for:** Starting background tasks, resource allocation, heartbeats.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 import time
 
 _run_timers = {}
@@ -277,7 +277,7 @@ long-running agent sessions don't expire mid-flight.
 **Use for:** Stopping heartbeats, logging duration, workflow orchestration.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 import time, logging
 
 logger = logging.getLogger(__name__)
@@ -309,8 +309,8 @@ register_callback("agent_run_end", _on_agent_run_end)
 **Use for:** Custom update channels, enterprise version pinning.
 
 ```python
-from code_puppy.callbacks import register_callback
-from code_puppy.messaging import emit_info
+from newcode.callbacks import register_callback
+from newcode.messaging import emit_info
 
 async def _on_version_check(*args, **kwargs):
     """Notify if an internal fork has updates."""
@@ -332,7 +332,7 @@ register_callback("version_check", _on_version_check)
 **Use for:** Patching individual model configs at load time.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _patch_model_config(*args, **kwargs):
     """Force all models to use a corporate proxy."""
@@ -356,7 +356,7 @@ register_callback("load_model_config", _patch_model_config)
 **Use for:** Injecting additional model definitions from an external source.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _load_extra_models():
     """Add models from an internal model registry."""
@@ -387,7 +387,7 @@ register_callback("load_models_config", _load_extra_models)
 **Use for:** Appending extra instructions, injecting context.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _inject_project_rules():
     """Append project-specific coding rules to every prompt."""
@@ -410,7 +410,7 @@ register_callback("load_prompt", _inject_project_rules)
 **Use for:** Clearing caches, re-initialising state that depends on the model.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 import logging
 
 logger = logging.getLogger(__name__)
@@ -433,7 +433,7 @@ register_callback("agent_reload", _on_agent_reload)
 **Use for:** Logging edits, enforcing policies, triggering side-effects.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 import logging
 
 logger = logging.getLogger(__name__)
@@ -456,8 +456,8 @@ register_callback("edit_file", _on_edit_file)
 **Use for:** Blocking deletions of protected files, audit logging.
 
 ```python
-from code_puppy.callbacks import register_callback
-from code_puppy.messaging import emit_error
+from newcode.callbacks import register_callback
+from newcode.messaging import emit_error
 
 def _on_delete_file(*args, **kwargs):
     """Prevent deletion of lock files."""
@@ -483,8 +483,8 @@ Return `None` to allow the command. Return a dict with `{"blocked": True, ...}`
 to prevent execution.
 
 ```python
-from code_puppy.callbacks import register_callback
-from code_puppy.messaging import emit_error
+from newcode.callbacks import register_callback
+from newcode.messaging import emit_error
 
 async def _check_shell_command(context, command, cwd=None, timeout=60):
     """Block any command that tries to push to main."""
@@ -521,7 +521,7 @@ block high-risk commands when yolo mode is enabled.
 Return `True` to grant permission, `False` to deny.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _auto_approve_test_files(context, file_path, operation, preview=None,
                               message_group=None, operation_data=None):
@@ -546,7 +546,7 @@ user for confirmation with keybindings.
 **Use for:** Logging, argument validation, metrics, modifying args.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 import time, logging
 
 logger = logging.getLogger(__name__)
@@ -583,7 +583,7 @@ browser over WebSocket.
 **Use for:** Metrics collection, result logging, post-processing.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 import logging
 
 logger = logging.getLogger(__name__)
@@ -609,7 +609,7 @@ sanitised args, duration, and success status.
 **Use for:** Real-time UIs, progress indicators, streaming to external systems.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 async def _on_stream_event(event_type, event_data, agent_session_id=None):
     """Forward token stream to a WebSocket for a live preview."""
@@ -641,8 +641,8 @@ Return values:
 - `str` — handled, string sent to model as user input
 
 ```python
-from code_puppy.callbacks import register_callback
-from code_puppy.messaging import emit_success
+from newcode.callbacks import register_callback
+from newcode.messaging import emit_success
 
 def _handle_custom_command(command, name):
     """Handle /ping command."""
@@ -670,7 +670,7 @@ commands the same way.
 Return a list of `(command_name, description)` tuples.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _custom_help():
     return [
@@ -694,7 +694,7 @@ Each dict must have `"name"` (str) and `"register_func"` (callable that takes
 an agent instance).
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _register_my_tool(agent):
     """Register a custom tool on the agent."""
@@ -723,7 +723,7 @@ register_callback("register_tools", _register_tools)
 **Use for:** Registering entirely new agents (Python classes or JSON defs).
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _register_agents():
     from my_plugin.code_review_agent import CodeReviewAgent
@@ -748,7 +748,7 @@ Each dict has `"type"` (str) and `"handler"` (callable receiving
 `model_name, model_config, config`).
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _create_ollama_model(model_name, model_config, config):
     """Create an Ollama model instance."""
@@ -778,7 +778,7 @@ register_callback("register_model_type", _register_model_types)
 **Use for:** Registering an entirely new model provider class.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _register_providers():
     """Register a custom Groq provider."""
@@ -801,7 +801,7 @@ Return a dict with `"instructions"`, `"user_prompt"`, and `"handled"` keys,
 or `None` to pass through.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _custom_system_prompt(model_name, default_system_prompt, user_prompt):
     """Inject safety guidelines for production models."""
@@ -829,11 +829,11 @@ section into every system prompt.
 **Use for:** Adding custom MCP servers to the install catalogue.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 def _register_mcp_servers():
     """Add our internal MCP servers to the catalogue."""
-    from code_puppy.command_line.mcp.base import MCPServerTemplate
+    from newcode.command_line.mcp.base import MCPServerTemplate
     return [
         MCPServerTemplate(
             name="internal-jira",
@@ -859,7 +859,7 @@ register_callback("register_mcp_catalog_servers", _register_mcp_servers)
 Each value is an async init function: `async (manager, **kwargs) -> None`.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 
 async def _init_camoufox(manager, **kwargs):
     """Launch a Camoufox stealth browser."""
@@ -888,7 +888,7 @@ register_callback("register_browser_types", _register_browser_types)
 Return `(message, version_string)` or `None`.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 import random
 
 _TIPS = [
@@ -921,7 +921,7 @@ register_callback("get_motd", _get_motd)
 **Use for:** Observing raw incoming messages, analytics, debugging.
 
 ```python
-from code_puppy.callbacks import register_callback
+from newcode.callbacks import register_callback
 import logging
 
 logger = logging.getLogger(__name__)
@@ -955,8 +955,8 @@ register_callback("message_history_processor_start", _on_history_start)
 **Use for:** Dedup analytics, context-window monitoring, alerting.
 
 ```python
-from code_puppy.callbacks import register_callback
-from code_puppy.messaging import emit_warning
+from newcode.callbacks import register_callback
+from newcode.messaging import emit_warning
 
 def _on_history_end(agent_name, session_id, message_history, messages_added, messages_filtered):
     """Warn when context is getting large."""
@@ -972,10 +972,10 @@ register_callback("message_history_processor_end", _on_history_end)
 ## User Plugins
 
 Users can install plugins without modifying the Code Puppy source.
-Drop a plugin directory into `~/.code_puppy/plugins/`:
+Drop a plugin directory into `~/.newcode/plugins/`:
 
 ```
-~/.code_puppy/plugins/
+~/.newcode/plugins/
 └── my_company_tools/
     ├── __init__.py
     └── register_callbacks.py
@@ -995,14 +995,14 @@ is fully importable and testable in isolation:
 # tests/plugins/test_my_feature.py
 
 def test_my_command_handler():
-    from code_puppy.plugins.my_feature.register_callbacks import _handle_custom_command
+    from newcode.plugins.my_feature.register_callbacks import _handle_custom_command
 
     assert _handle_custom_command("/ping", "ping") is True
     assert _handle_custom_command("/unknown", "unknown") is None
 
 
 def test_my_help():
-    from code_puppy.plugins.my_feature.register_callbacks import _custom_help
+    from newcode.plugins.my_feature.register_callbacks import _custom_help
 
     entries = _custom_help()
     names = [name for name, _ in entries]
@@ -1014,7 +1014,7 @@ For integration tests that need the full callback chain, use
 
 ```python
 import pytest
-from code_puppy.callbacks import clear_callbacks
+from newcode.callbacks import clear_callbacks
 
 @pytest.fixture(autouse=True)
 def _clean_callbacks():
@@ -1035,7 +1035,7 @@ def _clean_callbacks():
    submodules (`register_callbacks.py` + `my_logic.py` + `models.py`, etc.).
 
 3. **DRY / YAGNI / SOLID.** Don't build what you don't need. Don't repeat
-   what's already in `code_puppy.messaging`, `code_puppy.config`, etc.
+   what's already in `newcode.messaging`, `newcode.config`, etc.
 
 4. **Zen of Python.** Explicit is better than implicit. Simple is better
    than complex. If the implementation is hard to explain, it's a bad idea.

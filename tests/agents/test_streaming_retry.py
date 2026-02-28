@@ -4,7 +4,7 @@ Verifies that transient HTTP errors (RemoteProtocolError, ReadTimeout)
 are properly caught and retried with exponential backoff, while
 non-retryable errors propagate immediately.
 
-Covers: https://github.com/mpfaffenberger/code_puppy/issues/199
+Covers: https://github.com/mpfaffenberger/newcode/issues/199
 """
 
 import asyncio
@@ -13,7 +13,6 @@ from unittest.mock import AsyncMock, patch
 import httpcore
 import httpx
 import pytest
-
 
 # ---- Helpers to build the retry function in isolation ----
 # We extract the retry logic so tests don't need to instantiate the full agent.

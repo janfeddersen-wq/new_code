@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.command_line.uc_menu import (
+from newcode.command_line.uc_menu import (
     PAGE_SIZE,
     _get_tool_entries,
     _render_menu_panel,
@@ -25,7 +25,7 @@ from code_puppy.command_line.uc_menu import (
     handle_uc_command,
     interactive_uc_picker,
 )
-from code_puppy.plugins.universal_constructor.models import ToolMeta, UCToolInfo
+from newcode.plugins.universal_constructor.models import ToolMeta, UCToolInfo
 
 
 @pytest.fixture
@@ -99,7 +99,7 @@ class TestGetToolEntries:
         mock_registry.list_tools.return_value = []
 
         with patch(
-            "code_puppy.command_line.uc_menu.get_registry",
+            "newcode.command_line.uc_menu.get_registry",
             return_value=mock_registry,
         ):
             result = _get_tool_entries()
@@ -114,7 +114,7 @@ class TestGetToolEntries:
         mock_registry.list_tools.return_value = [mock_tool_enabled, mock_tool_disabled]
 
         with patch(
-            "code_puppy.command_line.uc_menu.get_registry",
+            "newcode.command_line.uc_menu.get_registry",
             return_value=mock_registry,
         ):
             result = _get_tool_entries()
@@ -147,7 +147,7 @@ class TestToggleToolEnabled:
                 function_name="run",
             )
 
-            with patch("code_puppy.command_line.uc_menu.emit_success"):
+            with patch("newcode.command_line.uc_menu.emit_success"):
                 result = _toggle_tool_enabled(tool)
 
             assert result is True
@@ -177,7 +177,7 @@ class TestToggleToolEnabled:
                 function_name="run",
             )
 
-            with patch("code_puppy.command_line.uc_menu.emit_success"):
+            with patch("newcode.command_line.uc_menu.emit_success"):
                 result = _toggle_tool_enabled(tool)
 
             assert result is True
@@ -207,7 +207,7 @@ class TestToggleToolEnabled:
                 function_name="run",
             )
 
-            with patch("code_puppy.command_line.uc_menu.emit_success"):
+            with patch("newcode.command_line.uc_menu.emit_success"):
                 result = _toggle_tool_enabled(tool)
 
             assert result is True
@@ -221,7 +221,7 @@ class TestToggleToolEnabled:
         """Test graceful handling of file errors."""
         mock_tool_enabled.source_path = "/nonexistent/path.py"
 
-        with patch("code_puppy.command_line.uc_menu.emit_error"):
+        with patch("newcode.command_line.uc_menu.emit_error"):
             result = _toggle_tool_enabled(mock_tool_enabled)
 
         assert result is False
@@ -333,7 +333,7 @@ class TestShowSourceCode:
                 function_name="test",
             )
 
-            with patch("code_puppy.command_line.uc_menu.emit_info") as mock_emit:
+            with patch("newcode.command_line.uc_menu.emit_info") as mock_emit:
                 _show_source_code(tool)
 
             mock_emit.assert_called_once()
@@ -344,7 +344,7 @@ class TestShowSourceCode:
         """Test graceful handling of read errors."""
         mock_tool_enabled.source_path = "/nonexistent/path.py"
 
-        with patch("code_puppy.command_line.uc_menu.emit_error") as mock_error:
+        with patch("newcode.command_line.uc_menu.emit_error") as mock_error:
             _show_source_code(mock_tool_enabled)
 
         mock_error.assert_called_once()
@@ -356,7 +356,7 @@ class TestHandleUcCommand:
     def test_launches_tui(self):
         """Test that /uc launches the TUI."""
         with patch(
-            "code_puppy.command_line.uc_menu.interactive_uc_picker",
+            "newcode.command_line.uc_menu.interactive_uc_picker",
             new_callable=AsyncMock,
             return_value=None,
         ):
@@ -375,7 +375,7 @@ class TestHandleUcCommand:
                 "asyncio.get_event_loop",
                 return_value=MagicMock(is_running=lambda: False),
             ):
-                with patch("code_puppy.command_line.uc_menu.emit_error"):
+                with patch("newcode.command_line.uc_menu.emit_error"):
                     result = handle_uc_command("/uc")
 
             assert result is True  # Should still return True
@@ -391,14 +391,14 @@ class TestInteractiveUcPicker:
         mock_app.run_async = AsyncMock(return_value=None)
 
         with patch(
-            "code_puppy.command_line.uc_menu._get_tool_entries",
+            "newcode.command_line.uc_menu._get_tool_entries",
             return_value=[],
         ):
             with patch(
-                "code_puppy.command_line.uc_menu.Application",
+                "newcode.command_line.uc_menu.Application",
                 return_value=mock_app,
             ):
-                with patch("code_puppy.command_line.uc_menu.set_awaiting_user_input"):
+                with patch("newcode.command_line.uc_menu.set_awaiting_user_input"):
                     with patch("sys.stdout"):
                         with patch("time.sleep"):
                             result = await interactive_uc_picker()
@@ -411,7 +411,7 @@ class TestCommandRegistration:
 
     def test_uc_command_is_registered(self):
         """Test that /uc command is registered in the registry."""
-        from code_puppy.command_line.command_registry import get_command
+        from newcode.command_line.command_registry import get_command
 
         cmd_info = get_command("uc")
 
@@ -427,7 +427,7 @@ class TestDeleteTool:
 
     def test_delete_tool_successfully(self):
         """Test deleting a tool removes the file."""
-        from code_puppy.command_line.uc_menu import _delete_tool
+        from newcode.command_line.uc_menu import _delete_tool
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write('TOOL_META = {"name": "test"}\n\ndef run():\n    pass')
@@ -448,7 +448,7 @@ class TestDeleteTool:
 
             assert Path(temp_path).exists()
 
-            with patch("code_puppy.command_line.uc_menu.emit_success"):
+            with patch("newcode.command_line.uc_menu.emit_success"):
                 result = _delete_tool(tool)
 
             assert result is True
@@ -458,11 +458,11 @@ class TestDeleteTool:
 
     def test_delete_handles_missing_file(self, mock_tool_enabled):
         """Test graceful handling of missing file."""
-        from code_puppy.command_line.uc_menu import _delete_tool
+        from newcode.command_line.uc_menu import _delete_tool
 
         mock_tool_enabled.source_path = "/nonexistent/path.py"
 
-        with patch("code_puppy.command_line.uc_menu.emit_error"):
+        with patch("newcode.command_line.uc_menu.emit_error"):
             result = _delete_tool(mock_tool_enabled)
 
         assert result is False
@@ -473,7 +473,7 @@ class TestLoadSourceCode:
 
     def test_loads_source_successfully(self):
         """Test loading source code from a file."""
-        from code_puppy.command_line.uc_menu import _load_source_code
+        from newcode.command_line.uc_menu import _load_source_code
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write('def test():\n    return "hello"\n')
@@ -502,7 +502,7 @@ class TestLoadSourceCode:
 
     def test_handles_missing_file(self, mock_tool_enabled):
         """Test graceful handling of missing file."""
-        from code_puppy.command_line.uc_menu import _load_source_code
+        from newcode.command_line.uc_menu import _load_source_code
 
         mock_tool_enabled.source_path = "/nonexistent/path.py"
 
@@ -518,7 +518,7 @@ class TestRenderSourcePanel:
 
     def test_renders_source_with_line_numbers(self, mock_tool_enabled):
         """Test that source code is rendered with line numbers."""
-        from code_puppy.command_line.uc_menu import _render_source_panel
+        from newcode.command_line.uc_menu import _render_source_panel
 
         source_lines = ["def test():", '    return "hello"']
 
@@ -530,7 +530,7 @@ class TestRenderSourcePanel:
 
     def test_renders_error_message(self, mock_tool_enabled):
         """Test that error message is displayed when source can't be loaded."""
-        from code_puppy.command_line.uc_menu import _render_source_panel
+        from newcode.command_line.uc_menu import _render_source_panel
 
         result = _render_source_panel(
             mock_tool_enabled, [], scroll_offset=0, error="File not found"
@@ -542,7 +542,7 @@ class TestRenderSourcePanel:
 
     def test_shows_navigation_hints(self, mock_tool_enabled):
         """Test that navigation hints are shown."""
-        from code_puppy.command_line.uc_menu import _render_source_panel
+        from newcode.command_line.uc_menu import _render_source_panel
 
         source_lines = ["line 1", "line 2"]
 
@@ -558,7 +558,7 @@ class TestHighlightPythonLine:
 
     def test_highlights_keywords(self):
         """Test that Python keywords are highlighted."""
-        from code_puppy.command_line.uc_menu import _highlight_python_line
+        from newcode.command_line.uc_menu import _highlight_python_line
 
         result = _highlight_python_line("def my_function():")
 
@@ -570,7 +570,7 @@ class TestHighlightPythonLine:
 
     def test_highlights_comments(self):
         """Test that comments are highlighted."""
-        from code_puppy.command_line.uc_menu import _highlight_python_line
+        from newcode.command_line.uc_menu import _highlight_python_line
 
         result = _highlight_python_line("# This is a comment")
 
@@ -580,7 +580,7 @@ class TestHighlightPythonLine:
 
     def test_handles_empty_line(self):
         """Test that empty lines are handled."""
-        from code_puppy.command_line.uc_menu import _highlight_python_line
+        from newcode.command_line.uc_menu import _highlight_python_line
 
         result = _highlight_python_line("")
 
@@ -597,7 +597,7 @@ class TestPageSize:
 
     def test_source_page_size_exists(self):
         """Test that SOURCE_PAGE_SIZE constant exists."""
-        from code_puppy.command_line.uc_menu import SOURCE_PAGE_SIZE
+        from newcode.command_line.uc_menu import SOURCE_PAGE_SIZE
 
         assert SOURCE_PAGE_SIZE > 0
         assert SOURCE_PAGE_SIZE <= 50  # Reasonable amount of source lines

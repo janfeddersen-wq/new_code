@@ -22,7 +22,7 @@ from pydantic_ai.messages import (
     ToolCallPartDelta,
 )
 
-from code_puppy.agents.subagent_stream_handler import (
+from newcode.agents.subagent_stream_handler import (
     _estimate_tokens,
     _fire_callback,
     _handle_event,
@@ -86,7 +86,7 @@ class TestFireCallback:
         # When no event loop is available, should not raise
         # This tests the RuntimeError handling path
         with patch(
-            "code_puppy.agents.subagent_stream_handler.asyncio.get_running_loop",
+            "newcode.agents.subagent_stream_handler.asyncio.get_running_loop",
             side_effect=RuntimeError("No running event loop"),
         ):
             # Should not raise, just log debug
@@ -96,10 +96,10 @@ class TestFireCallback:
         """Test callback handling when callbacks module is unavailable."""
         # Simulate ImportError when importing callbacks
         with patch(
-            "code_puppy.agents.subagent_stream_handler.asyncio.get_running_loop",
+            "newcode.agents.subagent_stream_handler.asyncio.get_running_loop",
             return_value=MagicMock(),
         ):
-            with patch.dict("sys.modules", {"code_puppy.callbacks": None}):
+            with patch.dict("sys.modules", {"newcode.callbacks": None}):
                 # Should not raise
                 _fire_callback("part_start", {"index": 0}, "session-123")
 
@@ -107,7 +107,7 @@ class TestFireCallback:
         """Test callback handling for general exceptions."""
         # Simulate exception during callback import
         with patch(
-            "code_puppy.agents.subagent_stream_handler.asyncio.get_running_loop",
+            "newcode.agents.subagent_stream_handler.asyncio.get_running_loop",
             side_effect=Exception("Some unexpected error"),
         ):
             # Should not raise, just log debug
@@ -135,7 +135,7 @@ class TestHandleEvent:
         event = MagicMock(spec=PartStartEvent)
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -161,7 +161,7 @@ class TestHandleEvent:
         event = PartStartEvent(index=0, part=thinking_part)
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -188,7 +188,7 @@ class TestHandleEvent:
         event = PartStartEvent(index=0, part=text_part)
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -216,7 +216,7 @@ class TestHandleEvent:
         event = PartStartEvent(index=0, part=tool_part)
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -249,7 +249,7 @@ class TestHandleEvent:
         event = PartDeltaEvent(index=0, delta=delta)
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -277,7 +277,7 @@ class TestHandleEvent:
         event = PartDeltaEvent(index=0, delta=delta)
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -300,7 +300,7 @@ class TestHandleEvent:
         event = PartDeltaEvent(index=0, delta=delta)
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -326,7 +326,7 @@ class TestHandleEvent:
         event = PartDeltaEvent(index=0, delta=delta)
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -355,7 +355,7 @@ class TestHandleEvent:
         active_parts = {0}  # Index 0 is a tool call
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -384,7 +384,7 @@ class TestHandleEvent:
         active_parts = {0, 1}  # Index 0 ends, index 1 still active
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -407,7 +407,7 @@ class TestHandleEvent:
         active_parts = set()  # No active tool parts
 
         with patch(
-            "code_puppy.agents.subagent_stream_handler._fire_callback"
+            "newcode.agents.subagent_stream_handler._fire_callback"
         ) as mock_fire:
             await _handle_event(
                 event=event,
@@ -455,11 +455,11 @@ class TestSubagentStreamHandler:
         events = [PartStartEvent(index=0, part=text_part)]
 
         with patch(
-            "code_puppy.messaging.subagent_console.SubAgentConsoleManager.get_instance",
+            "newcode.messaging.subagent_console.SubAgentConsoleManager.get_instance",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.messaging.get_session_context"):
-                with patch("code_puppy.agents.subagent_stream_handler._fire_callback"):
+            with patch("newcode.messaging.get_session_context"):
+                with patch("newcode.agents.subagent_stream_handler._fire_callback"):
                     await subagent_stream_handler(
                         mock_ctx,
                         self._create_async_events(events),
@@ -478,14 +478,14 @@ class TestSubagentStreamHandler:
         events = [PartStartEvent(index=0, part=text_part)]
 
         with patch(
-            "code_puppy.messaging.subagent_console.SubAgentConsoleManager.get_instance",
+            "newcode.messaging.subagent_console.SubAgentConsoleManager.get_instance",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.messaging.get_session_context",
+                "newcode.messaging.get_session_context",
                 return_value="context-session",
             ):
-                with patch("code_puppy.agents.subagent_stream_handler._fire_callback"):
+                with patch("newcode.agents.subagent_stream_handler._fire_callback"):
                     await subagent_stream_handler(
                         mock_ctx,
                         self._create_async_events(events),
@@ -507,14 +507,14 @@ class TestSubagentStreamHandler:
         ]
 
         with patch(
-            "code_puppy.messaging.subagent_console.SubAgentConsoleManager.get_instance",
+            "newcode.messaging.subagent_console.SubAgentConsoleManager.get_instance",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.messaging.get_session_context",
+                "newcode.messaging.get_session_context",
                 return_value="session-123",
             ):
-                with patch("code_puppy.agents.subagent_stream_handler._fire_callback"):
+                with patch("newcode.agents.subagent_stream_handler._fire_callback"):
                     await subagent_stream_handler(
                         mock_ctx,
                         self._create_async_events(events),
@@ -536,14 +536,14 @@ class TestSubagentStreamHandler:
         ]
 
         with patch(
-            "code_puppy.messaging.subagent_console.SubAgentConsoleManager.get_instance",
+            "newcode.messaging.subagent_console.SubAgentConsoleManager.get_instance",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.messaging.get_session_context",
+                "newcode.messaging.get_session_context",
                 return_value="session-123",
             ):
-                with patch("code_puppy.agents.subagent_stream_handler._fire_callback"):
+                with patch("newcode.agents.subagent_stream_handler._fire_callback"):
                     await subagent_stream_handler(
                         mock_ctx,
                         self._create_async_events(events),
@@ -568,14 +568,14 @@ class TestSubagentStreamHandler:
             yield PartStartEvent(index=1, part=TextPart(content=""))
 
         with patch(
-            "code_puppy.messaging.subagent_console.SubAgentConsoleManager.get_instance",
+            "newcode.messaging.subagent_console.SubAgentConsoleManager.get_instance",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.messaging.get_session_context",
+                "newcode.messaging.get_session_context",
                 return_value="session-123",
             ):
-                with patch("code_puppy.agents.subagent_stream_handler._fire_callback"):
+                with patch("newcode.agents.subagent_stream_handler._fire_callback"):
                     # Should not raise, should continue processing
                     await subagent_stream_handler(
                         mock_ctx,
@@ -595,14 +595,14 @@ class TestSubagentStreamHandler:
         ]
 
         with patch(
-            "code_puppy.messaging.subagent_console.SubAgentConsoleManager.get_instance",
+            "newcode.messaging.subagent_console.SubAgentConsoleManager.get_instance",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.messaging.get_session_context",
+                "newcode.messaging.get_session_context",
                 return_value="session-123",
             ):
-                with patch("code_puppy.agents.subagent_stream_handler._fire_callback"):
+                with patch("newcode.agents.subagent_stream_handler._fire_callback"):
                     await subagent_stream_handler(
                         mock_ctx,
                         self._create_async_events(events),
@@ -622,14 +622,14 @@ class TestSubagentStreamHandler:
             yield  # Make this a generator
 
         with patch(
-            "code_puppy.messaging.subagent_console.SubAgentConsoleManager.get_instance",
+            "newcode.messaging.subagent_console.SubAgentConsoleManager.get_instance",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.messaging.get_session_context",
+                "newcode.messaging.get_session_context",
                 return_value="session-123",
             ):
-                with patch("code_puppy.agents.subagent_stream_handler._fire_callback"):
+                with patch("newcode.agents.subagent_stream_handler._fire_callback"):
                     # Should not raise
                     await subagent_stream_handler(
                         mock_ctx,
@@ -666,15 +666,15 @@ class TestSubagentStreamHandler:
         ]
 
         with patch(
-            "code_puppy.messaging.subagent_console.SubAgentConsoleManager.get_instance",
+            "newcode.messaging.subagent_console.SubAgentConsoleManager.get_instance",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.messaging.get_session_context",
+                "newcode.messaging.get_session_context",
                 return_value="session-123",
             ):
                 with patch(
-                    "code_puppy.agents.subagent_stream_handler._fire_callback"
+                    "newcode.agents.subagent_stream_handler._fire_callback"
                 ) as mock_fire:
                     await subagent_stream_handler(
                         mock_ctx,

@@ -2,7 +2,7 @@
 
 import pytest
 
-from code_puppy.hook_engine import EventData, HookConfig, HookEngine
+from newcode.hook_engine import EventData, HookConfig, HookEngine
 
 
 class TestHookEngineInit:

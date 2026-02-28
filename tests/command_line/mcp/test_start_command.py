@@ -7,31 +7,31 @@ import pytest
 
 @pytest.fixture
 def start_cmd():
-    with patch("code_puppy.command_line.mcp.base.get_mcp_manager") as mock_mgr:
+    with patch("newcode.command_line.mcp.base.get_mcp_manager") as mock_mgr:
         mock_mgr.return_value = MagicMock()
-        from code_puppy.command_line.mcp.start_command import StartCommand
+        from newcode.command_line.mcp.start_command import StartCommand
 
         return StartCommand()
 
 
 class TestStartCommand:
     def test_no_args_shows_usage(self, start_cmd):
-        with patch("code_puppy.command_line.mcp.start_command.emit_info") as mock_emit:
+        with patch("newcode.command_line.mcp.start_command.emit_info") as mock_emit:
             start_cmd.execute([], group_id="g1")
             assert mock_emit.called
 
     def test_generates_group_id(self, start_cmd):
-        with patch("code_puppy.command_line.mcp.start_command.emit_info"):
+        with patch("newcode.command_line.mcp.start_command.emit_info"):
             start_cmd.execute([])
 
     def test_server_not_found(self, start_cmd):
         with (
             patch(
-                "code_puppy.command_line.mcp.start_command.find_server_id_by_name",
+                "newcode.command_line.mcp.start_command.find_server_id_by_name",
                 return_value=None,
             ),
-            patch("code_puppy.command_line.mcp.start_command.suggest_similar_servers"),
-            patch("code_puppy.command_line.mcp.start_command.emit_error") as mock_err,
+            patch("newcode.command_line.mcp.start_command.suggest_similar_servers"),
+            patch("newcode.command_line.mcp.start_command.emit_error") as mock_err,
         ):
             start_cmd.execute(["missing"], group_id="g1")
             assert "not found" in str(mock_err.call_args)
@@ -43,14 +43,12 @@ class TestStartCommand:
 
         with (
             patch(
-                "code_puppy.command_line.mcp.start_command.find_server_id_by_name",
+                "newcode.command_line.mcp.start_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.start_command.emit_info"),
-            patch(
-                "code_puppy.command_line.mcp.start_command.emit_success"
-            ) as mock_succ,
-            patch("code_puppy.command_line.mcp.start_command.get_current_agent"),
+            patch("newcode.command_line.mcp.start_command.emit_info"),
+            patch("newcode.command_line.mcp.start_command.emit_success") as mock_succ,
+            patch("newcode.command_line.mcp.start_command.get_current_agent"),
         ):
             start_cmd.manager.start_server_sync.return_value = True
             start_cmd.execute(["myserver"], group_id="g1")
@@ -63,14 +61,12 @@ class TestStartCommand:
 
         with (
             patch(
-                "code_puppy.command_line.mcp.start_command.find_server_id_by_name",
+                "newcode.command_line.mcp.start_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.start_command.emit_info"),
-            patch(
-                "code_puppy.command_line.mcp.start_command.emit_success"
-            ) as mock_succ,
-            patch("code_puppy.command_line.mcp.start_command.get_current_agent"),
+            patch("newcode.command_line.mcp.start_command.emit_info"),
+            patch("newcode.command_line.mcp.start_command.emit_success") as mock_succ,
+            patch("newcode.command_line.mcp.start_command.get_current_agent"),
         ):
             start_cmd.manager.start_server_sync.return_value = True
             start_cmd.execute(["myserver"], group_id="g1")
@@ -79,10 +75,10 @@ class TestStartCommand:
     def test_start_failure(self, start_cmd):
         with (
             patch(
-                "code_puppy.command_line.mcp.start_command.find_server_id_by_name",
+                "newcode.command_line.mcp.start_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.start_command.emit_error") as mock_err,
+            patch("newcode.command_line.mcp.start_command.emit_error") as mock_err,
         ):
             start_cmd.manager.start_server_sync.return_value = False
             start_cmd.execute(["myserver"], group_id="g1")
@@ -91,13 +87,13 @@ class TestStartCommand:
     def test_agent_reload_fails(self, start_cmd):
         with (
             patch(
-                "code_puppy.command_line.mcp.start_command.find_server_id_by_name",
+                "newcode.command_line.mcp.start_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.start_command.emit_info"),
-            patch("code_puppy.command_line.mcp.start_command.emit_success"),
+            patch("newcode.command_line.mcp.start_command.emit_info"),
+            patch("newcode.command_line.mcp.start_command.emit_success"),
             patch(
-                "code_puppy.command_line.mcp.start_command.get_current_agent",
+                "newcode.command_line.mcp.start_command.get_current_agent",
                 side_effect=Exception("no agent"),
             ),
         ):
@@ -107,10 +103,10 @@ class TestStartCommand:
     def test_outer_exception(self, start_cmd):
         with (
             patch(
-                "code_puppy.command_line.mcp.start_command.find_server_id_by_name",
+                "newcode.command_line.mcp.start_command.find_server_id_by_name",
                 side_effect=Exception("boom"),
             ),
-            patch("code_puppy.command_line.mcp.start_command.emit_error") as mock_err,
+            patch("newcode.command_line.mcp.start_command.emit_error") as mock_err,
         ):
             start_cmd.execute(["myserver"], group_id="g1")
             mock_err.assert_called_once()
@@ -121,12 +117,12 @@ class TestStartCommand:
 
         with (
             patch(
-                "code_puppy.command_line.mcp.start_command.find_server_id_by_name",
+                "newcode.command_line.mcp.start_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.start_command.emit_info"),
-            patch("code_puppy.command_line.mcp.start_command.emit_success"),
-            patch("code_puppy.command_line.mcp.start_command.get_current_agent"),
+            patch("newcode.command_line.mcp.start_command.emit_info"),
+            patch("newcode.command_line.mcp.start_command.emit_success"),
+            patch("newcode.command_line.mcp.start_command.get_current_agent"),
         ):
             start_cmd.manager.start_server_sync.return_value = True
             start_cmd.execute(["myserver"], group_id="g1")
@@ -136,12 +132,12 @@ class TestStartCommand:
 
         with (
             patch(
-                "code_puppy.command_line.mcp.start_command.find_server_id_by_name",
+                "newcode.command_line.mcp.start_command.find_server_id_by_name",
                 return_value="id1",
             ),
-            patch("code_puppy.command_line.mcp.start_command.emit_info"),
-            patch("code_puppy.command_line.mcp.start_command.emit_success"),
-            patch("code_puppy.command_line.mcp.start_command.get_current_agent"),
+            patch("newcode.command_line.mcp.start_command.emit_info"),
+            patch("newcode.command_line.mcp.start_command.emit_success"),
+            patch("newcode.command_line.mcp.start_command.get_current_agent"),
         ):
             start_cmd.manager.start_server_sync.return_value = True
             start_cmd.execute(["myserver"], group_id="g1")

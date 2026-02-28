@@ -13,7 +13,7 @@ import pytest
 
 class TestOAuthResult:
     def test_init(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _OAuthResult,
         )
 
@@ -25,7 +25,7 @@ class TestOAuthResult:
 
 class TestCallbackHandler:
     def test_do_get_success(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _CallbackHandler,
             _OAuthResult,
         )
@@ -50,7 +50,7 @@ class TestCallbackHandler:
         assert event.is_set()
 
     def test_do_get_missing_params(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _CallbackHandler,
             _OAuthResult,
         )
@@ -73,7 +73,7 @@ class TestCallbackHandler:
         assert result.error == "Missing code or state"
 
     def test_log_message_noop(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _CallbackHandler,
         )
 
@@ -83,26 +83,26 @@ class TestCallbackHandler:
 
 class TestStartCallbackServer:
     def test_all_ports_busy(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _start_callback_server,
         )
 
         ctx = MagicMock()
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
+                "newcode.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
                 {"callback_port_range": [19000, 19001]},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.HTTPServer",
+                "newcode.plugins.claude_code_oauth.register_callbacks.HTTPServer",
                 side_effect=OSError("port busy"),
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_error"),
         ):
             assert _start_callback_server(ctx) is None
 
     def test_success(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _start_callback_server,
         )
 
@@ -110,15 +110,15 @@ class TestStartCallbackServer:
         mock_server = MagicMock(spec=HTTPServer)
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
+                "newcode.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
                 {"callback_port_range": [19000, 19000]},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.HTTPServer",
+                "newcode.plugins.claude_code_oauth.register_callbacks.HTTPServer",
                 return_value=mock_server,
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.assign_redirect_uri"
+                "newcode.plugins.claude_code_oauth.register_callbacks.assign_redirect_uri"
             ),
             patch("threading.Thread"),
         ):
@@ -129,19 +129,19 @@ class TestStartCallbackServer:
 
 class TestAwaitCallback:
     def test_server_start_fails(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _await_callback,
         )
 
         ctx = MagicMock()
         with patch(
-            "code_puppy.plugins.claude_code_oauth.register_callbacks._start_callback_server",
+            "newcode.plugins.claude_code_oauth.register_callbacks._start_callback_server",
             return_value=None,
         ):
             assert _await_callback(ctx) is None
 
     def test_no_redirect_uri(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -151,16 +151,16 @@ class TestAwaitCallback:
         mock_server = MagicMock()
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.claude_code_oauth.register_callbacks._start_callback_server",
                 return_value=(mock_server, _OAuthResult(), threading.Event()),
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_error"),
         ):
             assert _await_callback(ctx) is None
             mock_server.shutdown.assert_called_once()
 
     def test_timeout(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -172,28 +172,28 @@ class TestAwaitCallback:
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.claude_code_oauth.register_callbacks._start_callback_server",
                 return_value=(mock_server, _OAuthResult(), event),
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
+                "newcode.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
                 {"callback_timeout": 0.01},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth.url",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 return_value=True,
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_error"),
         ):
             assert _await_callback(ctx) is None
 
     def test_result_error(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -208,28 +208,28 @@ class TestAwaitCallback:
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.claude_code_oauth.register_callbacks._start_callback_server",
                 return_value=(mock_server, result, event),
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
+                "newcode.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
                 {"callback_timeout": 5},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth.url",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 return_value=True,
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_error"),
         ):
             assert _await_callback(ctx) is None
 
     def test_state_mismatch(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -246,28 +246,28 @@ class TestAwaitCallback:
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.claude_code_oauth.register_callbacks._start_callback_server",
                 return_value=(mock_server, result, event),
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
+                "newcode.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
                 {"callback_timeout": 5},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth.url",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 return_value=True,
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_error"),
         ):
             assert _await_callback(ctx) is None
 
     def test_success_headless(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -284,27 +284,27 @@ class TestAwaitCallback:
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.claude_code_oauth.register_callbacks._start_callback_server",
                 return_value=(mock_server, result, event),
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
+                "newcode.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
                 {"callback_timeout": 5},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth.url",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 return_value=True,
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
         ):
             assert _await_callback(ctx) == "the_code"
 
     def test_success_browser(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _await_callback,
             _OAuthResult,
         )
@@ -321,30 +321,30 @@ class TestAwaitCallback:
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._start_callback_server",
+                "newcode.plugins.claude_code_oauth.register_callbacks._start_callback_server",
                 return_value=(mock_server, result, event),
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
+                "newcode.plugins.claude_code_oauth.register_callbacks.CLAUDE_CODE_OAUTH_CONFIG",
                 {"callback_timeout": 5},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
+                "newcode.plugins.claude_code_oauth.register_callbacks.build_authorization_url",
                 return_value="http://auth.url",
             ),
             patch(
-                "code_puppy.tools.common.should_suppress_browser",
+                "newcode.tools.common.should_suppress_browser",
                 return_value=False,
             ),
             patch("webbrowser.open"),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
         ):
             assert _await_callback(ctx) == "c"
 
 
 class TestCustomHelp:
     def test_returns_entries(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _custom_help,
         )
 
@@ -357,206 +357,194 @@ class TestCustomHelp:
 
 class TestPerformAuthentication:
     def test_no_code(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _perform_authentication,
         )
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._await_callback",
+                "newcode.plugins.claude_code_oauth.register_callbacks._await_callback",
                 return_value=None,
             ),
         ):
             _perform_authentication()  # should return early
 
     def test_token_exchange_fails(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _perform_authentication,
         )
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._await_callback",
+                "newcode.plugins.claude_code_oauth.register_callbacks._await_callback",
                 return_value="code123",
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
                 return_value=None,
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_error"),
         ):
             _perform_authentication()
 
     def test_save_fails(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _perform_authentication,
         )
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._await_callback",
+                "newcode.plugins.claude_code_oauth.register_callbacks._await_callback",
                 return_value="code123",
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
                 return_value={"access_token": "at"},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.save_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.save_tokens",
                 return_value=False,
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_error"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_error"),
         ):
             _perform_authentication()
 
     def test_no_access_token(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _perform_authentication,
         )
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._await_callback",
+                "newcode.plugins.claude_code_oauth.register_callbacks._await_callback",
                 return_value="code123",
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
                 return_value={"refresh_token": "rt"},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.save_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.save_tokens",
                 return_value=True,
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_success"
-            ),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_warning"
-            ),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_success"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_warning"),
         ):
             _perform_authentication()
 
     def test_no_models_returned(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _perform_authentication,
         )
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._await_callback",
+                "newcode.plugins.claude_code_oauth.register_callbacks._await_callback",
                 return_value="code123",
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
                 return_value={"access_token": "at"},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.save_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.save_tokens",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.fetch_claude_code_models",
+                "newcode.plugins.claude_code_oauth.register_callbacks.fetch_claude_code_models",
                 return_value=[],
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_success"
-            ),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_warning"
-            ),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_success"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_warning"),
         ):
             _perform_authentication()
 
     def test_full_success(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _perform_authentication,
         )
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
+                "newcode.plugins.claude_code_oauth.register_callbacks.prepare_oauth_context"
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._await_callback",
+                "newcode.plugins.claude_code_oauth.register_callbacks._await_callback",
                 return_value="code123",
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.exchange_code_for_tokens",
                 return_value={"access_token": "at"},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.save_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.save_tokens",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.fetch_claude_code_models",
+                "newcode.plugins.claude_code_oauth.register_callbacks.fetch_claude_code_models",
                 return_value=["model-a", "model-b"],
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.add_models_to_extra_config",
+                "newcode.plugins.claude_code_oauth.register_callbacks.add_models_to_extra_config",
                 return_value=True,
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_success"
-            ),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_success"),
         ):
             _perform_authentication()
 
 
 class TestHandleCustomCommand:
     def test_empty_name(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         assert _handle_custom_command("/x", "") is None
 
     def test_unknown(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         assert _handle_custom_command("/x", "unknown") is None
 
     def test_auth(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         with (
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_warning"),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_warning"
-            ),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
                 return_value={"access_token": "at"},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._perform_authentication"
+                "newcode.plugins.claude_code_oauth.register_callbacks._perform_authentication"
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.set_model_and_reload_agent"
+                "newcode.plugins.claude_code_oauth.register_callbacks.set_model_and_reload_agent"
             ),
         ):
             assert (
@@ -564,21 +552,21 @@ class TestHandleCustomCommand:
             )
 
     def test_auth_no_existing_tokens(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         with (
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
                 return_value=None,
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._perform_authentication"
+                "newcode.plugins.claude_code_oauth.register_callbacks._perform_authentication"
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.set_model_and_reload_agent"
+                "newcode.plugins.claude_code_oauth.register_callbacks.set_model_and_reload_agent"
             ),
         ):
             assert (
@@ -586,25 +574,23 @@ class TestHandleCustomCommand:
             )
 
     def test_status_authenticated(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
                 return_value={"access_token": "at", "expires_at": time.time() + 3600},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.load_claude_models_filtered",
+                "newcode.plugins.claude_code_oauth.register_callbacks.load_claude_models_filtered",
                 return_value={
                     "claude-code-opus": {"oauth_source": "claude-code-plugin"}
                 },
             ),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_success"
-            ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_success"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
         ):
             assert (
                 _handle_custom_command("/claude-code-status", "claude-code-status")
@@ -612,25 +598,21 @@ class TestHandleCustomCommand:
             )
 
     def test_status_no_models(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
                 return_value={"access_token": "at"},
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.load_claude_models_filtered",
+                "newcode.plugins.claude_code_oauth.register_callbacks.load_claude_models_filtered",
                 return_value={},
             ),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_success"
-            ),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_warning"
-            ),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_success"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_warning"),
         ):
             assert (
                 _handle_custom_command("/claude-code-status", "claude-code-status")
@@ -638,19 +620,17 @@ class TestHandleCustomCommand:
             )
 
     def test_status_not_authenticated(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
+                "newcode.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
                 return_value=None,
             ),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_warning"
-            ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_warning"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
         ):
             assert (
                 _handle_custom_command("/claude-code-status", "claude-code-status")
@@ -658,7 +638,7 @@ class TestHandleCustomCommand:
             )
 
     def test_logout(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
@@ -667,17 +647,15 @@ class TestHandleCustomCommand:
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.get_token_storage_path",
+                "newcode.plugins.claude_code_oauth.register_callbacks.get_token_storage_path",
                 return_value=mock_path,
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.remove_claude_code_models",
+                "newcode.plugins.claude_code_oauth.register_callbacks.remove_claude_code_models",
                 return_value=3,
             ),
-            patch("code_puppy.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_success"
-            ),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_success"),
         ):
             assert (
                 _handle_custom_command("/claude-code-logout", "claude-code-logout")
@@ -685,7 +663,7 @@ class TestHandleCustomCommand:
             )
 
     def test_logout_no_tokens(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _handle_custom_command,
         )
 
@@ -694,16 +672,14 @@ class TestHandleCustomCommand:
 
         with (
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.get_token_storage_path",
+                "newcode.plugins.claude_code_oauth.register_callbacks.get_token_storage_path",
                 return_value=mock_path,
             ),
             patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.remove_claude_code_models",
+                "newcode.plugins.claude_code_oauth.register_callbacks.remove_claude_code_models",
                 return_value=0,
             ),
-            patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_success"
-            ),
+            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_success"),
         ):
             assert (
                 _handle_custom_command("/claude-code-logout", "claude-code-logout")
@@ -712,11 +688,11 @@ class TestHandleCustomCommand:
 
 
 # Patch targets for lazy imports in _create_claude_code_model
-_MF = "code_puppy.model_factory"
-_CFG = "code_puppy.config"
-_HU = "code_puppy.http_utils"
-_CC = "code_puppy.claude_cache_client"
-_RC = "code_puppy.plugins.claude_code_oauth.register_callbacks"
+_MF = "newcode.model_factory"
+_CFG = "newcode.config"
+_HU = "newcode.http_utils"
+_CC = "newcode.claude_cache_client"
+_RC = "newcode.plugins.claude_code_oauth.register_callbacks"
 
 
 @contextmanager
@@ -755,7 +731,7 @@ def _model_patches(
 
 class TestCreateClaudeCodeModel:
     def test_no_api_key(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -768,7 +744,7 @@ class TestCreateClaudeCodeModel:
             assert _create_claude_code_model("m", {"name": "m"}, {}) is None
 
     def test_oauth_source_refresh(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -790,7 +766,7 @@ class TestCreateClaudeCodeModel:
             assert result is mock_model
 
     def test_interleaved_thinking_false_removes_beta(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -806,7 +782,7 @@ class TestCreateClaudeCodeModel:
             assert result is mock_model
 
     def test_interleaved_thinking_false_removes_all_beta(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -822,7 +798,7 @@ class TestCreateClaudeCodeModel:
             assert result is mock_model
 
     def test_1m_context_beta(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -839,7 +815,7 @@ class TestCreateClaudeCodeModel:
             assert result is mock_model
 
     def test_1m_context_no_existing_beta(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -853,7 +829,7 @@ class TestCreateClaudeCodeModel:
 
 class TestRegisterModelTypes:
     def test_returns_handler(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _register_model_types,
         )
 
@@ -865,7 +841,7 @@ class TestRegisterModelTypes:
 class TestAgentRunCallbacks:
     @pytest.mark.asyncio
     async def test_start_non_claude_model(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _on_agent_run_start,
         )
 
@@ -873,14 +849,14 @@ class TestAgentRunCallbacks:
 
     @pytest.mark.asyncio
     async def test_start_claude_model(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _active_heartbeats,
             _on_agent_run_start,
         )
 
         mock_heartbeat = AsyncMock()
         with patch(
-            "code_puppy.plugins.claude_code_oauth.token_refresh_heartbeat.TokenRefreshHeartbeat",
+            "newcode.plugins.claude_code_oauth.token_refresh_heartbeat.TokenRefreshHeartbeat",
             return_value=mock_heartbeat,
         ):
             await _on_agent_run_start("agent", "claude-code-opus", "sess1")
@@ -890,32 +866,32 @@ class TestAgentRunCallbacks:
 
     @pytest.mark.asyncio
     async def test_start_import_error(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _on_agent_run_start,
         )
 
         with patch.dict(
             "sys.modules",
-            {"code_puppy.plugins.claude_code_oauth.token_refresh_heartbeat": None},
+            {"newcode.plugins.claude_code_oauth.token_refresh_heartbeat": None},
         ):
             # ImportError should be handled gracefully
             await _on_agent_run_start("agent", "claude-code-x", "sess")
 
     @pytest.mark.asyncio
     async def test_start_exception(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _on_agent_run_start,
         )
 
         with patch(
-            "code_puppy.plugins.claude_code_oauth.token_refresh_heartbeat.TokenRefreshHeartbeat",
+            "newcode.plugins.claude_code_oauth.token_refresh_heartbeat.TokenRefreshHeartbeat",
             side_effect=RuntimeError("boom"),
         ):
             await _on_agent_run_start("agent", "claude-code-x", "sess")
 
     @pytest.mark.asyncio
     async def test_end_with_heartbeat(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _active_heartbeats,
             _on_agent_run_end,
         )
@@ -929,7 +905,7 @@ class TestAgentRunCallbacks:
 
     @pytest.mark.asyncio
     async def test_end_no_heartbeat(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _on_agent_run_end,
         )
 
@@ -937,7 +913,7 @@ class TestAgentRunCallbacks:
 
     @pytest.mark.asyncio
     async def test_end_default_session(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _active_heartbeats,
             _on_agent_run_end,
         )
@@ -950,7 +926,7 @@ class TestAgentRunCallbacks:
 
     @pytest.mark.asyncio
     async def test_end_stop_exception(self):
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _active_heartbeats,
             _on_agent_run_end,
         )

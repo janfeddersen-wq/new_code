@@ -11,7 +11,7 @@ def test_pil_not_available():
         sys.modules, {"PIL": None, "PIL.Image": None, "PIL.ImageGrab": None}
     ):
         # Remove cached module
-        mod_name = "code_puppy.command_line.clipboard"
+        mod_name = "newcode.command_line.clipboard"
         saved = sys.modules.pop(mod_name, None)
         try:
             # This will trigger the ImportError path for PIL
@@ -25,7 +25,7 @@ def test_pil_not_available():
 def test_binary_content_not_available():
     """Test the BinaryContent import fallback."""
     # Similar to above - test the fallback path
-    from code_puppy.command_line.clipboard import BINARY_CONTENT_AVAILABLE
+    from newcode.command_line.clipboard import BINARY_CONTENT_AVAILABLE
 
     # Just verify the module loaded - the actual import paths are covered
     # by the try/except at module level
@@ -34,7 +34,7 @@ def test_binary_content_not_available():
 
 def test_pil_import_paths_covered():
     """Cover lines 27-30 and 37-39 by reimporting with mocked failures."""
-    import code_puppy.command_line.clipboard as clip_mod
+    import newcode.command_line.clipboard as clip_mod
 
     # The lines 27-30 are: PIL_AVAILABLE = False; Image = None; ImageGrab = None
     # The lines 37-39 are: BINARY_CONTENT_AVAILABLE = False; BinaryContent = None

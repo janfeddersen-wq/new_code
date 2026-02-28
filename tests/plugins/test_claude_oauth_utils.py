@@ -11,10 +11,10 @@ from unittest.mock import Mock, mock_open, patch
 import pytest
 import requests
 
-from code_puppy.plugins.claude_code_oauth.config import (
+from newcode.plugins.claude_code_oauth.config import (
     CLAUDE_CODE_OAUTH_CONFIG,
 )
-from code_puppy.plugins.claude_code_oauth.utils import (
+from newcode.plugins.claude_code_oauth.utils import (
     OAuthContext,
     _compute_code_challenge,
     _generate_code_verifier,
@@ -207,7 +207,7 @@ class TestPrepareOAuthContext:
 
     def test_prepare_oauth_context_structure(self):
         """Test prepared OAuth context has correct structure."""
-        with patch("code_puppy.plugins.claude_code_oauth.utils._oauth_context", None):
+        with patch("newcode.plugins.claude_code_oauth.utils._oauth_context", None):
             context = prepare_oauth_context()
 
             assert isinstance(context, OAuthContext)
@@ -228,7 +228,7 @@ class TestPrepareOAuthContext:
 
     def test_prepare_oauth_context_caching(self):
         """Test that prepared context is cached globally."""
-        import code_puppy.plugins.claude_code_oauth.utils as utils
+        import newcode.plugins.claude_code_oauth.utils as utils
 
         # Clear existing context
         utils.clear_oauth_context()
@@ -391,7 +391,7 @@ class TestParseAuthorizationCode:
 class TestTokenStorage:
     """Test token storage and retrieval for Claude OAuth."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_load_stored_tokens_success(self, mock_get_path, temp_token_file):
         """Test successful loading of stored tokens."""
         mock_get_path.return_value = temp_token_file
@@ -409,7 +409,7 @@ class TestTokenStorage:
 
         assert result == test_tokens
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_load_stored_tokens_file_not_exists(self, mock_get_path):
         """Test loading tokens when file doesn't exist returns None."""
         mock_get_path.return_value = Path("/nonexistent/file.json")
@@ -418,7 +418,7 @@ class TestTokenStorage:
 
         assert result is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_save_stored_tokens_success(self, mock_get_path, temp_token_file):
         """Test successful saving of stored tokens."""
         mock_get_path.return_value = temp_token_file
@@ -444,7 +444,7 @@ class TestTokenStorage:
         file_stat = temp_token_file.stat()
         assert file_stat.st_mode & 0o777 == 0o600
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_token_storage_path")
     def test_save_stored_tokens_error(self, mock_get_path):
         """Test saving tokens with error returns False."""
         mock_get_path.return_value = Path("/root/protected.json")
@@ -473,11 +473,11 @@ class TestTokenValidity:
             "expires_at": time.time() - 1,
         }
         with patch(
-            "code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens",
+            "newcode.plugins.claude_code_oauth.utils.load_stored_tokens",
             return_value=tokens,
         ):
             with patch(
-                "code_puppy.plugins.claude_code_oauth.utils.refresh_access_token",
+                "newcode.plugins.claude_code_oauth.utils.refresh_access_token",
                 return_value="new_token",
             ) as mock_refresh:
                 assert get_valid_access_token() == "new_token"
@@ -487,7 +487,7 @@ class TestTokenValidity:
         # Use 7200 seconds (2 hours) to be safely outside the refresh buffer
         tokens = {"access_token": "current_token", "expires_at": time.time() + 7200}
         with patch(
-            "code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens",
+            "newcode.plugins.claude_code_oauth.utils.load_stored_tokens",
             return_value=tokens,
         ):
             assert get_valid_access_token() == "current_token"
@@ -505,15 +505,15 @@ class TestTokenValidity:
         mock_post.return_value = mock_response
 
         with patch(
-            "code_puppy.plugins.claude_code_oauth.utils.load_stored_tokens",
+            "newcode.plugins.claude_code_oauth.utils.load_stored_tokens",
             return_value=tokens,
         ):
             with patch(
-                "code_puppy.plugins.claude_code_oauth.utils.save_tokens",
+                "newcode.plugins.claude_code_oauth.utils.save_tokens",
                 return_value=True,
             ) as mock_save:
                 with patch(
-                    "code_puppy.plugins.claude_code_oauth.utils.update_claude_code_model_tokens",
+                    "newcode.plugins.claude_code_oauth.utils.update_claude_code_model_tokens",
                     return_value=True,
                 ):
                     refreshed = refresh_access_token(force=True)
@@ -525,7 +525,7 @@ class TestTokenValidity:
 class TestModelStorage:
     """Test model configuration storage for Claude OAuth."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_claude_models_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_claude_models_path")
     def test_load_claude_models_success(self, mock_get_path, temp_models_file):
         """Test successful loading of Claude models configuration."""
         mock_get_path.return_value = temp_models_file
@@ -545,7 +545,7 @@ class TestModelStorage:
 
         assert result == test_models
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_claude_models_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_claude_models_path")
     def test_load_claude_models_filtered_oauth_models(
         self, mock_get_path, temp_models_file
     ):
@@ -591,7 +591,7 @@ class TestModelStorage:
         assert "claude-code-old-haiku" not in result  # Filtered out as older version
         assert "non-oauth-model" not in result  # Not OAuth source
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_claude_models_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_claude_models_path")
     def test_save_claude_models_success(self, mock_get_path, temp_models_file):
         """Test successful saving of Claude models configuration."""
         mock_get_path.return_value = temp_models_file
@@ -904,8 +904,8 @@ class TestFetchClaudeCodeModels:
 class TestAddModelsToConfig:
     """Test adding Claude models to configuration."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_valid_access_token")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_valid_access_token")
     def test_add_models_to_extra_config_success(self, mock_get_token, mock_save):
         """Test successful addition of models to configuration."""
         mock_get_token.return_value = "test_access_token"
@@ -960,8 +960,8 @@ class TestAddModelsToConfig:
         )
         assert haiku_config["oauth_source"] == "claude-code-plugin"
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_valid_access_token")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_valid_access_token")
     def test_add_models_to_extra_config_no_tokens(self, mock_get_token, mock_save):
         """Test model addition when no tokens are available."""
         mock_get_token.return_value = None
@@ -978,8 +978,8 @@ class TestAddModelsToConfig:
         ]["api_key"]
         assert api_key == ""  # or None depending on implementation
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_valid_access_token")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_valid_access_token")
     def test_add_models_to_extra_config_save_failure(self, mock_get_token, mock_save):
         """Test model addition fails when save fails."""
         mock_get_token.return_value = "test_token"
@@ -989,8 +989,8 @@ class TestAddModelsToConfig:
 
         assert result is False
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_valid_access_token")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_valid_access_token")
     def test_add_models_to_extra_config_load_token_failure(
         self, mock_get_token, mock_save
     ):
@@ -1013,8 +1013,8 @@ class TestAddModelsToConfig:
 class TestRemoveClaudeCodeModels:
     """Test removing Claude Code models from configuration."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_claude_models")
     def test_remove_claude_code_models_success(self, mock_load, mock_save):
         """Test successful removal of Claude Code models."""
         mock_load.return_value = {
@@ -1046,8 +1046,8 @@ class TestRemoveClaudeCodeModels:
         assert "claude-code-claude-3-sonnet-20240229" not in saved_config
         assert "custom-claude-model" in saved_config
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_claude_models")
     def test_remove_claude_code_models_no_oauth_models(self, mock_load, mock_save):
         """Test removal when no OAuth models exist."""
         mock_load.return_value = {
@@ -1068,8 +1068,8 @@ class TestRemoveClaudeCodeModels:
 
         assert result == 0  # No models removed
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_claude_models")
     def test_remove_claude_code_models_save_failure(self, mock_load, mock_save):
         """Test model removal fails when save fails."""
         mock_load.return_value = {
@@ -1084,7 +1084,7 @@ class TestRemoveClaudeCodeModels:
 
         assert result == 0  # Returns 0 on failure
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_claude_models")
     def test_remove_claude_code_models_load_failure(self, mock_load):
         """Test model removal handles load failure gracefully."""
         mock_load.return_value = {}  # Returns empty dict on failure
@@ -1206,7 +1206,7 @@ class TestErrorHandling:
         """Test model storage with permission errors and edge cases."""
         # These tests are mainly to ensure error handling doesn't crash
         with patch(
-            "code_puppy.plugins.claude_code_oauth.utils.get_claude_models_path",
+            "newcode.plugins.claude_code_oauth.utils.get_claude_models_path",
             return_value=Path("/root/protected.json"),
         ):
             with patch(
@@ -1221,7 +1221,7 @@ class TestErrorHandling:
     def test_token_storage_with_corrupted_json(self):
         """Test token loading with corrupted JSON files."""
         with patch(
-            "code_puppy.plugins.claude_code_oauth.utils.get_token_storage_path",
+            "newcode.plugins.claude_code_oauth.utils.get_token_storage_path",
             return_value=Path("/tmp/corrupted.json"),
         ):
             with patch("builtins.open", mock_open(read_data="invalid json {")):

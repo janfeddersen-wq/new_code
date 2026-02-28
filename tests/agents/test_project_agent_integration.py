@@ -3,18 +3,18 @@
 import json
 from unittest.mock import patch
 
-from code_puppy.agents.json_agent import discover_json_agents
+from newcode.agents.json_agent import discover_json_agents
 
 
 class TestProjectAgentIntegration:
     """Integration tests that use real CWD changes instead of mocking."""
 
     def test_discover_project_agent_via_cwd(self, tmp_path, monkeypatch):
-        """Test that changing to a directory with .code_puppy discovers agents."""
-        # Create project structure: project/.code_puppy/agents/
+        """Test that changing to a directory with .newcode discovers agents."""
+        # Create project structure: project/.newcode/agents/
         project_dir = tmp_path / "myproject"
         project_dir.mkdir()
-        agents_dir = project_dir / ".code_puppy" / "agents"
+        agents_dir = project_dir / ".newcode" / "agents"
         agents_dir.mkdir(parents=True)
 
         # Create agent file
@@ -35,7 +35,7 @@ class TestProjectAgentIntegration:
         monkeypatch.chdir(project_dir)
 
         with patch(
-            "code_puppy.config.get_user_agents_directory",
+            "newcode.config.get_user_agents_directory",
             return_value=str(empty_user_dir),
         ):
             agents = discover_json_agents()
@@ -49,7 +49,7 @@ class TestProjectAgentIntegration:
         # Create project with agent
         project_dir = tmp_path / "myproject"
         project_dir.mkdir()
-        agents_dir = project_dir / ".code_puppy" / "agents"
+        agents_dir = project_dir / ".newcode" / "agents"
         agents_dir.mkdir(parents=True)
 
         agent_config = {
@@ -61,7 +61,7 @@ class TestProjectAgentIntegration:
         agent_file = agents_dir / "project-agent.json"
         agent_file.write_text(json.dumps(agent_config))
 
-        # Create different directory without .code_puppy
+        # Create different directory without .newcode
         other_dir = tmp_path / "otherdir"
         other_dir.mkdir()
 
@@ -72,7 +72,7 @@ class TestProjectAgentIntegration:
         monkeypatch.chdir(other_dir)
 
         with patch(
-            "code_puppy.config.get_user_agents_directory",
+            "newcode.config.get_user_agents_directory",
             return_value=str(empty_user_dir),
         ):
             agents = discover_json_agents()
@@ -85,7 +85,7 @@ class TestProjectAgentIntegration:
         # Create project with agent
         project_dir = tmp_path / "myproject"
         project_dir.mkdir()
-        project_agents_dir = project_dir / ".code_puppy" / "agents"
+        project_agents_dir = project_dir / ".newcode" / "agents"
         project_agents_dir.mkdir(parents=True)
 
         project_config = {
@@ -113,7 +113,7 @@ class TestProjectAgentIntegration:
         monkeypatch.chdir(project_dir)
 
         with patch(
-            "code_puppy.config.get_user_agents_directory",
+            "newcode.config.get_user_agents_directory",
             return_value=str(user_dir),
         ):
             agents = discover_json_agents()
@@ -123,11 +123,11 @@ class TestProjectAgentIntegration:
         assert agents["shared-name"] == str(project_file)
 
     def test_nested_project_discovery(self, tmp_path, monkeypatch):
-        """Test that .code_puppy is found from nested subdirectories."""
-        # Create project/.code_puppy/agents/
+        """Test that .newcode is found from nested subdirectories."""
+        # Create project/.newcode/agents/
         project_dir = tmp_path / "myproject"
         project_dir.mkdir()
-        agents_dir = project_dir / ".code_puppy" / "agents"
+        agents_dir = project_dir / ".newcode" / "agents"
         agents_dir.mkdir(parents=True)
 
         agent_config = {
@@ -150,13 +150,13 @@ class TestProjectAgentIntegration:
         monkeypatch.chdir(nested_dir)
 
         with patch(
-            "code_puppy.config.get_user_agents_directory",
+            "newcode.config.get_user_agents_directory",
             return_value=str(empty_user_dir),
         ):
             agents = discover_json_agents()
 
         # NOTE: Current implementation uses os.getcwd(), so it should NOT find
-        # the agent from nested directories (would need to walk up to find .code_puppy)
+        # the agent from nested directories (would need to walk up to find .newcode)
         # This test documents current behavior - may need updating if we add
         # parent directory searching later
         assert "nested-agent" not in agents

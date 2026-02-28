@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import httpx
 import pytest
 
-from code_puppy.plugins.antigravity_oauth.transport import (
+from newcode.plugins.antigravity_oauth.transport import (
     AntigravityClient,
     UnwrappedResponse,
     UnwrappedSSEResponse,
@@ -681,7 +681,7 @@ class TestAntigravityClientWrapRequest:
         new_content, _, _, _ = client._wrap_request(content, url)
 
         wrapped = json.loads(new_content)
-        from code_puppy.plugins.antigravity_oauth.constants import (
+        from newcode.plugins.antigravity_oauth.constants import (
             ANTIGRAVITY_DEFAULT_PROJECT_ID,
         )
 

@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.callbacks import (
+from newcode.callbacks import (
     clear_callbacks,
     count_callbacks,
     get_callbacks,
@@ -20,7 +20,7 @@ from code_puppy.callbacks import (
 
 
 class TestCallbacksExtended:
-    """Test code_puppy/callbacks.py callback system."""
+    """Test newcode/callbacks.py callback system."""
 
     def setup_method(self):
         """Clean up callbacks before each test."""
@@ -198,7 +198,7 @@ class TestCallbacksExtended:
         register_callback("startup", failing_callback)
 
         # Should not raise exception, should return None for failed callback
-        with patch("code_puppy.callbacks.logger") as mock_logger:
+        with patch("newcode.callbacks.logger") as mock_logger:
             results = await on_startup()
 
             assert len(results) == 1
@@ -214,7 +214,7 @@ class TestCallbacksExtended:
 
         register_callback("load_model_config", failing_callback)
 
-        with patch("code_puppy.callbacks.logger") as mock_logger:
+        with patch("newcode.callbacks.logger") as mock_logger:
             results = on_load_model_config()
 
             assert len(results) == 1
@@ -352,7 +352,7 @@ class TestPreToolCallCallback:
         register_callback("pre_tool_call", failing_callback)
         register_callback("pre_tool_call", working_callback)
 
-        with patch("code_puppy.callbacks.logger") as mock_logger:
+        with patch("newcode.callbacks.logger") as mock_logger:
             results = await on_pre_tool_call("run_shell", {"cmd": "ls"}, None)
 
             # First callback failed (None), second succeeded
@@ -405,7 +405,7 @@ class TestPostToolCallCallback:
 
         test_args = {"file_path": "/tmp/test.txt"}
         test_result = {"success": True, "content": "file content"}
-        test_context = {"agent": "code_puppy"}
+        test_context = {"agent": "newcode"}
 
         results = await on_post_tool_call(
             "read_file", test_args, test_result, 42.5, test_context
@@ -477,7 +477,7 @@ class TestPostToolCallCallback:
         register_callback("post_tool_call", bad_callback)
         register_callback("post_tool_call", good_callback)
 
-        with patch("code_puppy.callbacks.logger") as mock_logger:
+        with patch("newcode.callbacks.logger") as mock_logger:
             results = await on_post_tool_call(
                 "edit_file", {}, {"edited": True}, 200.0, None
             )
@@ -612,7 +612,7 @@ class TestStreamEventCallback:
         register_callback("stream_event", crashing_callback)
         register_callback("stream_event", resilient_callback)
 
-        with patch("code_puppy.callbacks.logger") as mock_logger:
+        with patch("newcode.callbacks.logger") as mock_logger:
             results = await on_stream_event("token", {"content": "x"}, "sess")
 
             assert len(results) == 2

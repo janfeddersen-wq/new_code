@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
-from code_puppy.plugins.claude_code_oauth.utils import (
+from newcode.plugins.claude_code_oauth.utils import (
     add_models_to_extra_config,
     fetch_claude_code_models,
     filter_latest_claude_models,
@@ -47,7 +47,7 @@ def sample_models_response():
 class TestModelDiscovery:
     """Test fetching and discovering Claude models."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.get")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.get")
     def test_fetch_claude_code_models_success(
         self, mock_get, sample_access_token, sample_models_response
     ):
@@ -73,7 +73,7 @@ class TestModelDiscovery:
             f"Bearer {sample_access_token}" in call_args[1]["headers"]["Authorization"]
         )
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.get")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.get")
     def test_fetch_claude_code_models_api_error(self, mock_get, sample_access_token):
         """Test API error during model fetch."""
         mock_response = Mock()
@@ -85,7 +85,7 @@ class TestModelDiscovery:
 
         assert models is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.get")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.get")
     def test_fetch_claude_code_models_network_error(
         self, mock_get, sample_access_token
     ):
@@ -96,7 +96,7 @@ class TestModelDiscovery:
 
         assert models is None
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.requests.get")
+    @patch("newcode.plugins.claude_code_oauth.utils.requests.get")
     def test_fetch_claude_code_models_invalid_response(
         self, mock_get, sample_access_token
     ):
@@ -195,7 +195,7 @@ class TestModelFiltering:
 class TestModelStorage:
     """Test loading and saving Claude models."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_claude_models_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_claude_models_path")
     def test_load_claude_models_existing(self, mock_path, tmp_path):
         """Test loading existing models."""
         models_file = tmp_path / "models.json"
@@ -209,7 +209,7 @@ class TestModelStorage:
 
         assert loaded == test_models
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_claude_models_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_claude_models_path")
     def test_load_claude_models_nonexistent(self, mock_path, tmp_path):
         """Test loading when models file doesn't exist."""
         models_file = tmp_path / "nonexistent.json"
@@ -219,7 +219,7 @@ class TestModelStorage:
 
         assert loaded == {}
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_claude_models_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_claude_models_path")
     def test_load_claude_models_corrupted(self, mock_path, tmp_path):
         """Test loading corrupted models file."""
         models_file = tmp_path / "corrupted.json"
@@ -230,7 +230,7 @@ class TestModelStorage:
 
         assert loaded == {}
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_claude_models_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_claude_models_path")
     def test_save_claude_models(self, mock_path, tmp_path):
         """Test saving models to file."""
         models_file = tmp_path / "models.json"
@@ -247,7 +247,7 @@ class TestModelStorage:
             saved = json.load(f)
         assert saved == test_models
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_claude_models_path")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_claude_models_path")
     def test_save_claude_models_failure(self, mock_path):
         """Test save failure handling."""
         mock_path.side_effect = Exception("Permission denied")
@@ -260,7 +260,7 @@ class TestModelStorage:
 class TestLoadModelFiltered:
     """Test filtered model loading."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_claude_models")
     def test_load_claude_models_filtered_with_oauth_source(self, mock_load):
         """Test filtering applies to OAuth models."""
         all_models = {
@@ -289,8 +289,8 @@ class TestLoadModelFiltered:
 class TestAddRemoveModels:
     """Test adding and removing models from configuration."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.get_valid_access_token")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.get_valid_access_token")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
     def test_add_models_to_extra_config(self, mock_save, mock_get_token):
         """Test adding models to configuration."""
         mock_get_token.return_value = "test_token_123"
@@ -314,8 +314,8 @@ class TestAddRemoveModels:
             assert model_config["type"] == "claude_code"
             assert "custom_endpoint" in model_config
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_claude_models")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
     def test_remove_claude_code_models(self, mock_save, mock_load):
         """Test removing Claude Code models."""
         all_models = {
@@ -335,7 +335,7 @@ class TestAddRemoveModels:
         assert "claude-code-sonnet" not in saved_models
         assert "other-model" in saved_models
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_claude_models")
     def test_remove_claude_code_models_none_to_remove(self, mock_load):
         """Test remove when no models to remove."""
         mock_load.return_value = {"other-model": {"oauth_source": "other"}}
@@ -353,8 +353,8 @@ class TestAddRemoveModels:
 class TestUpdateModelTokens:
     """Test updating access tokens in model configurations."""
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_claude_models")
-    @patch("code_puppy.plugins.claude_code_oauth.utils.save_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.save_claude_models")
     def test_update_claude_code_model_tokens(self, mock_save, mock_load):
         """Test updating tokens in model configs."""
         old_token = "old_token_123"
@@ -376,7 +376,7 @@ class TestUpdateModelTokens:
             saved_models["claude-code-opus"]["custom_endpoint"]["api_key"] == new_token
         )
 
-    @patch("code_puppy.plugins.claude_code_oauth.utils.load_claude_models")
+    @patch("newcode.plugins.claude_code_oauth.utils.load_claude_models")
     def test_update_claude_code_model_tokens_no_models(self, mock_load):
         """Test updating tokens when no models exist."""
         mock_load.return_value = {}
@@ -391,35 +391,35 @@ class TestBuildModelEntry:
 
     def test_opus_46_includes_effort_in_supported_settings(self):
         """Opus 4-6 model entries should include 'effort' in supported_settings."""
-        from code_puppy.plugins.claude_code_oauth.utils import _build_model_entry
+        from newcode.plugins.claude_code_oauth.utils import _build_model_entry
 
         entry = _build_model_entry("claude-opus-4-6", "tok", 200000)
         assert "effort" in entry["supported_settings"]
 
     def test_4_6_opus_variant_includes_effort(self):
         """The 4-6-opus naming variant should also get effort."""
-        from code_puppy.plugins.claude_code_oauth.utils import _build_model_entry
+        from newcode.plugins.claude_code_oauth.utils import _build_model_entry
 
         entry = _build_model_entry("claude-4-6-opus-20250701", "tok", 200000)
         assert "effort" in entry["supported_settings"]
 
     def test_non_opus_46_does_not_include_effort(self):
         """Non Opus 4-6 models should NOT have effort in supported_settings."""
-        from code_puppy.plugins.claude_code_oauth.utils import _build_model_entry
+        from newcode.plugins.claude_code_oauth.utils import _build_model_entry
 
         entry = _build_model_entry("claude-sonnet-4-20250514", "tok", 200000)
         assert "effort" not in entry["supported_settings"]
 
     def test_opus_45_does_not_include_effort(self):
         """Opus 4-5 should NOT have effort — it's 4-6 only."""
-        from code_puppy.plugins.claude_code_oauth.utils import _build_model_entry
+        from newcode.plugins.claude_code_oauth.utils import _build_model_entry
 
         entry = _build_model_entry("claude-opus-4-5-20250620", "tok", 200000)
         assert "effort" not in entry["supported_settings"]
 
     def test_base_settings_always_present(self):
         """All model entries should have the base settings regardless."""
-        from code_puppy.plugins.claude_code_oauth.utils import _build_model_entry
+        from newcode.plugins.claude_code_oauth.utils import _build_model_entry
 
         entry = _build_model_entry("claude-opus-4-6", "tok", 200000)
         for setting in [

@@ -12,8 +12,8 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.mcp_.managed_server import ServerConfig
-from code_puppy.mcp_.registry import ServerRegistry
+from newcode.mcp_.managed_server import ServerConfig
+from newcode.mcp_.registry import ServerRegistry
 
 
 class TestRegisterDuplicateId:
@@ -22,7 +22,7 @@ class TestRegisterDuplicateId:
     def test_register_duplicate_id_raises_error(self):
         """Test that registering a server with an existing ID raises ValueError."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
 
                 # Register first server with explicit ID
@@ -53,7 +53,7 @@ class TestUpdateValidationErrors:
     def test_update_with_invalid_config_raises_error(self):
         """Test that update with invalid config raises ValueError."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
 
                 # Register a valid server
@@ -84,7 +84,7 @@ class TestValidationEdgeCases:
     def test_validate_invalid_server_name_special_chars(self):
         """Test validation fails for names with special characters."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -99,7 +99,7 @@ class TestValidationEdgeCases:
     def test_validate_empty_server_type(self):
         """Test validation fails for empty server type."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -114,7 +114,7 @@ class TestValidationEdgeCases:
     def test_validate_config_not_dictionary(self):
         """Test validation fails when config is not a dictionary."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -129,7 +129,7 @@ class TestValidationEdgeCases:
     def test_validate_http_url_empty_string(self):
         """Test validation fails for empty URL string."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -144,7 +144,7 @@ class TestValidationEdgeCases:
     def test_validate_http_url_not_string(self):
         """Test validation fails for non-string URL."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -159,7 +159,7 @@ class TestValidationEdgeCases:
     def test_validate_negative_timeout(self):
         """Test validation fails for negative timeout."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -174,7 +174,7 @@ class TestValidationEdgeCases:
     def test_validate_invalid_timeout_type(self):
         """Test validation fails for non-numeric timeout."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -189,7 +189,7 @@ class TestValidationEdgeCases:
     def test_validate_negative_read_timeout(self):
         """Test validation fails for negative read_timeout."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -204,7 +204,7 @@ class TestValidationEdgeCases:
     def test_validate_invalid_read_timeout_type(self):
         """Test validation fails for non-numeric read_timeout."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -219,7 +219,7 @@ class TestValidationEdgeCases:
     def test_validate_headers_not_dictionary(self):
         """Test validation fails when headers is not a dictionary."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -234,7 +234,7 @@ class TestValidationEdgeCases:
     def test_validate_stdio_command_empty(self):
         """Test validation fails for empty stdio command."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -249,7 +249,7 @@ class TestValidationEdgeCases:
     def test_validate_stdio_command_not_string(self):
         """Test validation fails for non-string stdio command."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -264,7 +264,7 @@ class TestValidationEdgeCases:
     def test_validate_args_not_list_or_string(self):
         """Test validation fails when args is not a list or string."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -279,7 +279,7 @@ class TestValidationEdgeCases:
     def test_validate_args_list_with_non_strings(self):
         """Test validation fails when args list contains non-strings."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -294,7 +294,7 @@ class TestValidationEdgeCases:
     def test_validate_env_not_dictionary(self):
         """Test validation fails when env is not a dictionary."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -311,7 +311,7 @@ class TestValidationEdgeCases:
     def test_validate_env_values_not_strings(self):
         """Test validation fails when env values are not strings."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -328,7 +328,7 @@ class TestValidationEdgeCases:
     def test_validate_cwd_not_string(self):
         """Test validation fails when cwd is not a string."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -467,7 +467,7 @@ class TestLoadEdgeCases:
 
             # Mock ServerConfig to raise an exception
             with patch(
-                "code_puppy.mcp_.registry.ServerConfig",
+                "newcode.mcp_.registry.ServerConfig",
                 side_effect=Exception("Parse error"),
             ):
                 registry = ServerRegistry(storage_path=str(storage_path))
@@ -524,7 +524,7 @@ class TestSseValidation:
     def test_validate_sse_url_empty(self):
         """Test SSE validation with empty URL."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -539,7 +539,7 @@ class TestSseValidation:
     def test_validate_sse_negative_timeout(self):
         """Test SSE validation with negative timeout."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",
@@ -554,7 +554,7 @@ class TestSseValidation:
     def test_validate_sse_invalid_headers(self):
         """Test SSE validation with invalid headers."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.mcp_.registry.config.DATA_DIR", tmpdir):
+            with patch("newcode.mcp_.registry.config.DATA_DIR", tmpdir):
                 registry = ServerRegistry()
                 config = ServerConfig(
                     id="test",

@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.mcp_.managed_server import (
+from newcode.mcp_.managed_server import (
     ManagedMCPServer,
     ServerConfig,
     _expand_env_vars,
@@ -39,7 +39,7 @@ async def test_managed_server_header_env_expansion_mocked():
     with (
         patch.dict(os.environ, {"TEST_API_KEY": "secret-123"}),
         patch(
-            "code_puppy.mcp_.managed_server.MCPServerStreamableHTTP",
+            "newcode.mcp_.managed_server.MCPServerStreamableHTTP",
             return_value=mock_http_server,
         ) as mock_constructor,
     ):

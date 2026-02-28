@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.plugins.antigravity_oauth.utils import (
+from newcode.plugins.antigravity_oauth.utils import (
     add_models_to_config,
     get_model_families_summary,
     load_antigravity_models,
@@ -30,7 +30,7 @@ class TestLoadStoredTokens:
         token_file.write_text(json.dumps(token_data))
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=token_file,
         ):
             result = load_stored_tokens()
@@ -40,7 +40,7 @@ class TestLoadStoredTokens:
     def test_load_stored_tokens_file_not_found(self):
         """Test load_stored_tokens returns None when file doesn't exist."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=Path("/nonexistent/path/tokens.json"),
         ):
             result = load_stored_tokens()
@@ -53,7 +53,7 @@ class TestLoadStoredTokens:
         token_file.write_text("invalid json{")
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=token_file,
         ):
             result = load_stored_tokens()
@@ -67,7 +67,7 @@ class TestLoadStoredTokens:
         mock_path.open.side_effect = PermissionError("No permission")
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=mock_path,
         ):
             result = load_stored_tokens()
@@ -80,7 +80,7 @@ class TestLoadStoredTokens:
         token_file.write_text("{}")  # Empty JSON object
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=token_file,
         ):
             result = load_stored_tokens()
@@ -97,7 +97,7 @@ class TestSaveTokens:
         token_data = {"access_token": "test_token", "refresh_token": "refresh"}
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=token_file,
         ):
             result = save_tokens(token_data)
@@ -113,7 +113,7 @@ class TestSaveTokens:
         token_data = {"access_token": "test_token"}
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=token_file,
         ):
             # This should fail since parent directory doesn't exist
@@ -128,7 +128,7 @@ class TestSaveTokens:
         token_data = {"access_token": "test_token"}
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=token_file,
         ):
             result = save_tokens(token_data)
@@ -145,7 +145,7 @@ class TestSaveTokens:
         mock_path.open.side_effect = PermissionError("No write permission")
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=mock_path,
         ):
             result = save_tokens({"access_token": "test"})
@@ -159,7 +159,7 @@ class TestSaveTokens:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+                "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
                 return_value=token_file,
             ),
             patch.object(Path, "chmod", side_effect=PermissionError("Cannot chmod")),
@@ -175,7 +175,7 @@ class TestSaveTokens:
         token_data = {}
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=token_file,
         ):
             result = save_tokens(token_data)
@@ -196,7 +196,7 @@ class TestSaveTokens:
         }
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_token_storage_path",
+            "newcode.plugins.antigravity_oauth.utils.get_token_storage_path",
             return_value=token_file,
         ):
             result = save_tokens(token_data)
@@ -221,7 +221,7 @@ class TestLoadAntigravityModels:
         models_file.write_text(json.dumps(models_data))
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_antigravity_models_path",
+            "newcode.plugins.antigravity_oauth.utils.get_antigravity_models_path",
             return_value=models_file,
         ):
             result = load_antigravity_models()
@@ -231,7 +231,7 @@ class TestLoadAntigravityModels:
     def test_load_antigravity_models_file_not_found(self):
         """Test load_antigravity_models returns empty dict when file doesn't exist."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_antigravity_models_path",
+            "newcode.plugins.antigravity_oauth.utils.get_antigravity_models_path",
             return_value=Path("/nonexistent/path/models.json"),
         ):
             result = load_antigravity_models()
@@ -244,7 +244,7 @@ class TestLoadAntigravityModels:
         models_file.write_text("invalid json{")
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_antigravity_models_path",
+            "newcode.plugins.antigravity_oauth.utils.get_antigravity_models_path",
             return_value=models_file,
         ):
             result = load_antigravity_models()
@@ -258,7 +258,7 @@ class TestLoadAntigravityModels:
         mock_path.open.side_effect = PermissionError("No permission")
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_antigravity_models_path",
+            "newcode.plugins.antigravity_oauth.utils.get_antigravity_models_path",
             return_value=mock_path,
         ):
             result = load_antigravity_models()
@@ -271,7 +271,7 @@ class TestLoadAntigravityModels:
         models_file.write_text("{}")
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_antigravity_models_path",
+            "newcode.plugins.antigravity_oauth.utils.get_antigravity_models_path",
             return_value=models_file,
         ):
             result = load_antigravity_models()
@@ -293,7 +293,7 @@ class TestSaveAntigravityModels:
         }
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_antigravity_models_path",
+            "newcode.plugins.antigravity_oauth.utils.get_antigravity_models_path",
             return_value=models_file,
         ):
             result = save_antigravity_models(models_data)
@@ -308,7 +308,7 @@ class TestSaveAntigravityModels:
         mock_path.open.side_effect = PermissionError("No write permission")
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_antigravity_models_path",
+            "newcode.plugins.antigravity_oauth.utils.get_antigravity_models_path",
             return_value=mock_path,
         ):
             result = save_antigravity_models({"model": "data"})
@@ -320,7 +320,7 @@ class TestSaveAntigravityModels:
         models_file = tmp_path / "models.json"
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_antigravity_models_path",
+            "newcode.plugins.antigravity_oauth.utils.get_antigravity_models_path",
             return_value=models_file,
         ):
             result = save_antigravity_models({})
@@ -348,7 +348,7 @@ class TestSaveAntigravityModels:
         }
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.get_antigravity_models_path",
+            "newcode.plugins.antigravity_oauth.utils.get_antigravity_models_path",
             return_value=models_file,
         ):
             result = save_antigravity_models(models_data)
@@ -368,7 +368,7 @@ class TestAddModelsToConfig:
         project_id = "test-project-id"
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+            "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
             return_value=True,
         ) as mock_save:
             result = add_models_to_config(access_token, project_id)
@@ -390,7 +390,7 @@ class TestAddModelsToConfig:
     def test_add_models_to_config_with_thinking_budget(self, tmp_path):
         """Test add_models_to_config includes thinking budget when present."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+            "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
             return_value=True,
         ) as mock_save:
             result = add_models_to_config("token", "project")
@@ -407,7 +407,7 @@ class TestAddModelsToConfig:
     def test_add_models_to_config_save_failure(self):
         """Test add_models_to_config returns False when save fails."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+            "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
             return_value=False,
         ):
             result = add_models_to_config("token", "project")
@@ -418,7 +418,7 @@ class TestAddModelsToConfig:
         """Test add_models_to_config handles exceptions gracefully."""
         # Mock save_antigravity_models to raise an exception
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+            "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
             side_effect=Exception("Save error"),
         ):
             result = add_models_to_config("token", "project")
@@ -428,7 +428,7 @@ class TestAddModelsToConfig:
     def test_add_models_to_config_default_project_id(self):
         """Test add_models_to_config with default empty project_id."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+            "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
             return_value=True,
         ) as mock_save:
             result = add_models_to_config("token")
@@ -441,7 +441,7 @@ class TestAddModelsToConfig:
     def test_add_models_to_config_custom_headers(self):
         """Test add_models_to_config includes custom headers."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+            "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
             return_value=True,
         ) as mock_save:
             result = add_models_to_config("token")
@@ -469,11 +469,11 @@ class TestRemoveAntigravityModels:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.utils.load_antigravity_models",
+                "newcode.plugins.antigravity_oauth.utils.load_antigravity_models",
                 return_value=all_models,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+                "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
                 return_value=True,
             ) as mock_save,
         ):
@@ -490,7 +490,7 @@ class TestRemoveAntigravityModels:
         models = {"other-model-1": {"oauth_source": "other"}}
 
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.load_antigravity_models",
+            "newcode.plugins.antigravity_oauth.utils.load_antigravity_models",
             return_value=models,
         ):
             result = remove_antigravity_models()
@@ -506,11 +506,11 @@ class TestRemoveAntigravityModels:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.utils.load_antigravity_models",
+                "newcode.plugins.antigravity_oauth.utils.load_antigravity_models",
                 return_value=models,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+                "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
                 return_value=True,
             ) as mock_save,
         ):
@@ -527,11 +527,11 @@ class TestRemoveAntigravityModels:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.utils.load_antigravity_models",
+                "newcode.plugins.antigravity_oauth.utils.load_antigravity_models",
                 return_value=models,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+                "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
                 return_value=False,
             ),
         ):
@@ -542,7 +542,7 @@ class TestRemoveAntigravityModels:
     def test_remove_antigravity_models_exception(self):
         """Test remove_antigravity_models handles exceptions gracefully."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.load_antigravity_models",
+            "newcode.plugins.antigravity_oauth.utils.load_antigravity_models",
             side_effect=Exception("Load error"),
         ):
             result = remove_antigravity_models()
@@ -552,7 +552,7 @@ class TestRemoveAntigravityModels:
     def test_remove_antigravity_models_empty_dict(self):
         """Test remove_antigravity_models with empty models dict."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.load_antigravity_models",
+            "newcode.plugins.antigravity_oauth.utils.load_antigravity_models",
             return_value={},
         ):
             result = remove_antigravity_models()
@@ -568,11 +568,11 @@ class TestRemoveAntigravityModels:
 
         with (
             patch(
-                "code_puppy.plugins.antigravity_oauth.utils.load_antigravity_models",
+                "newcode.plugins.antigravity_oauth.utils.load_antigravity_models",
                 return_value=models,
             ),
             patch(
-                "code_puppy.plugins.antigravity_oauth.utils.save_antigravity_models",
+                "newcode.plugins.antigravity_oauth.utils.save_antigravity_models",
                 return_value=True,
             ) as mock_save,
         ):
@@ -626,7 +626,7 @@ class TestGetModelFamiliesSummary:
 
     def test_get_model_families_summary_all_models_categorized(self):
         """Test all available models are categorized in families."""
-        from code_puppy.plugins.antigravity_oauth.constants import ANTIGRAVITY_MODELS
+        from newcode.plugins.antigravity_oauth.constants import ANTIGRAVITY_MODELS
 
         result = get_model_families_summary()
         categorized_models = set(result["gemini"] + result["claude"] + result["other"])
@@ -637,7 +637,7 @@ class TestGetModelFamiliesSummary:
     def test_get_model_families_summary_unknown_family(self):
         """Test get_model_families_summary handles unknown family gracefully."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.ANTIGRAVITY_MODELS",
+            "newcode.plugins.antigravity_oauth.utils.ANTIGRAVITY_MODELS",
             {
                 "model-unknown": {"family": "unknown_family"},
                 "model-gemini": {"family": "gemini"},
@@ -653,7 +653,7 @@ class TestGetModelFamiliesSummary:
     def test_get_model_families_summary_default_to_other(self):
         """Test models without family key default to 'other'."""
         with patch(
-            "code_puppy.plugins.antigravity_oauth.utils.ANTIGRAVITY_MODELS",
+            "newcode.plugins.antigravity_oauth.utils.ANTIGRAVITY_MODELS",
             {"model-no-family": {"name": "test"}},  # No 'family' key
         ):
             result = get_model_families_summary()
@@ -669,7 +669,7 @@ class TestReloadCurrentAgent:
         # When no agent is loaded, it should not crash
         with patch.dict(
             "sys.modules",
-            {"code_puppy.agents": MagicMock(get_current_agent=lambda: None)},
+            {"newcode.agents": MagicMock(get_current_agent=lambda: None)},
         ):
             try:
                 reload_current_agent()
@@ -696,13 +696,13 @@ class TestReloadCurrentAgent:
         mock_agent.refresh_config = MagicMock()
         mock_agent.reload_code_generation_agent = MagicMock()
 
-        # Create a mock module for code_puppy.agents
+        # Create a mock module for newcode.agents
         mock_agents_module = MagicMock()
         mock_agents_module.get_current_agent = lambda: mock_agent
 
         import sys
 
-        with patch.dict(sys.modules, {"code_puppy.agents": mock_agents_module}):
+        with patch.dict(sys.modules, {"newcode.agents": mock_agents_module}):
             reload_current_agent()
 
         # Verify methods were called
@@ -720,7 +720,7 @@ class TestReloadCurrentAgent:
 
         import sys
 
-        with patch.dict(sys.modules, {"code_puppy.agents": mock_agents_module}):
+        with patch.dict(sys.modules, {"newcode.agents": mock_agents_module}):
             reload_current_agent()
 
         # Reload should still be called despite refresh error

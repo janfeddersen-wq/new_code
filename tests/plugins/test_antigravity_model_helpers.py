@@ -18,7 +18,7 @@ from pydantic_ai.messages import (
 )
 from pydantic_ai.usage import RequestUsage
 
-from code_puppy.plugins.antigravity_oauth.antigravity_model import (
+from newcode.plugins.antigravity_oauth.antigravity_model import (
     BYPASS_THOUGHT_SIGNATURE,
     _antigravity_content_model_response,
     _antigravity_process_response_from_parts,

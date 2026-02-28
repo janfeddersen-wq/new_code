@@ -8,9 +8,9 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.agents.base_agent import BaseAgent
-from code_puppy.agents.json_agent import JSONAgent, discover_json_agents
-from code_puppy.config import get_user_agents_directory
+from newcode.agents.base_agent import BaseAgent
+from newcode.agents.json_agent import JSONAgent, discover_json_agents
+from newcode.config import get_user_agents_directory
 
 
 class TestJSONAgent:
@@ -184,9 +184,9 @@ class TestJSONAgentDiscovery:
         with tempfile.TemporaryDirectory() as temp_dir:
             # Mock the agents directory to use our temp directory
             monkeypatch.setattr(
-                "code_puppy.config.get_user_agents_directory", lambda: temp_dir
+                "newcode.config.get_user_agents_directory", lambda: temp_dir
             )
-            # Change to temp directory to avoid finding project .code_puppy
+            # Change to temp directory to avoid finding project .newcode
             monkeypatch.chdir(temp_dir)
 
             # Create valid JSON agent
@@ -239,10 +239,10 @@ class TestJSONAgentDiscovery:
         """Test discovering agents when directory doesn't exist."""
         # Mock the agents directory to point to non-existent directory
         monkeypatch.setattr(
-            "code_puppy.config.get_user_agents_directory",
+            "newcode.config.get_user_agents_directory",
             lambda: "/nonexistent/directory",
         )
-        # Change to temp directory to avoid finding project .code_puppy
+        # Change to temp directory to avoid finding project .newcode
         monkeypatch.chdir(tmp_path)
         agents = discover_json_agents()
         assert agents == {}
@@ -252,8 +252,8 @@ class TestJSONAgentDiscovery:
         user_dir = get_user_agents_directory()
 
         assert isinstance(user_dir, str)
-        # Should contain code_puppy (either legacy .code_puppy or XDG code_puppy)
-        assert "code_puppy" in user_dir
+        # Should contain newcode (either legacy .newcode or XDG newcode)
+        assert "newcode" in user_dir
         assert "agents" in user_dir
 
         # Directory should be created
@@ -262,12 +262,12 @@ class TestJSONAgentDiscovery:
 
     def test_user_agents_directory_windows(self, monkeypatch):
         """Test user agents directory cross-platform consistency."""
-        mock_agents_dir = "/fake/home/.code_puppy/agents"
+        mock_agents_dir = "/fake/home/.newcode/agents"
 
         # Override the AGENTS_DIR constant directly
-        monkeypatch.setattr("code_puppy.config.AGENTS_DIR", mock_agents_dir)
+        monkeypatch.setattr("newcode.config.AGENTS_DIR", mock_agents_dir)
 
-        with patch("code_puppy.config.os.makedirs") as mock_makedirs:
+        with patch("newcode.config.os.makedirs") as mock_makedirs:
             user_dir = get_user_agents_directory()
 
             assert user_dir == mock_agents_dir
@@ -275,12 +275,12 @@ class TestJSONAgentDiscovery:
 
     def test_user_agents_directory_macos(self, monkeypatch):
         """Test user agents directory on macOS."""
-        mock_agents_dir = "/fake/home/.code_puppy/agents"
+        mock_agents_dir = "/fake/home/.newcode/agents"
 
         # Override the AGENTS_DIR constant directly
-        monkeypatch.setattr("code_puppy.config.AGENTS_DIR", mock_agents_dir)
+        monkeypatch.setattr("newcode.config.AGENTS_DIR", mock_agents_dir)
 
-        with patch("code_puppy.config.os.makedirs") as mock_makedirs:
+        with patch("newcode.config.os.makedirs") as mock_makedirs:
             user_dir = get_user_agents_directory()
 
             assert user_dir == mock_agents_dir

@@ -6,7 +6,7 @@ pagination, current agent marking, and preview panel display.
 
 from unittest.mock import patch
 
-from code_puppy.command_line.agent_menu import (
+from newcode.command_line.agent_menu import (
     PAGE_SIZE,
     _apply_pinned_model,
     _get_agent_entries,
@@ -42,8 +42,8 @@ class TestPageSizeConstant:
 class TestGetAgentEntries:
     """Test the _get_agent_entries function."""
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_descriptions")
-    @patch("code_puppy.command_line.agent_menu.get_available_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_descriptions")
+    @patch("newcode.command_line.agent_menu.get_available_agents")
     def test_returns_empty_list_when_no_agents(self, mock_available, mock_descriptions):
         """Test that empty list is returned when no agents are available."""
         mock_available.return_value = {}
@@ -53,8 +53,8 @@ class TestGetAgentEntries:
 
         assert result == []
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_descriptions")
-    @patch("code_puppy.command_line.agent_menu.get_available_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_descriptions")
+    @patch("newcode.command_line.agent_menu.get_available_agents")
     def test_returns_single_agent(self, mock_available, mock_descriptions):
         """Test that single agent is returned correctly."""
         mock_available.return_value = {"code_agent": "Code Agent"}
@@ -69,8 +69,8 @@ class TestGetAgentEntries:
             "A coding assistant.",
         )
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_descriptions")
-    @patch("code_puppy.command_line.agent_menu.get_available_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_descriptions")
+    @patch("newcode.command_line.agent_menu.get_available_agents")
     def test_returns_multiple_agents_sorted(self, mock_available, mock_descriptions):
         """Test that multiple agents are returned sorted alphabetically."""
         mock_available.return_value = {
@@ -92,8 +92,8 @@ class TestGetAgentEntries:
         assert result[1][0] == "beta_agent"
         assert result[2][0] == "zebra_agent"
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_descriptions")
-    @patch("code_puppy.command_line.agent_menu.get_available_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_descriptions")
+    @patch("newcode.command_line.agent_menu.get_available_agents")
     def test_handles_missing_description(self, mock_available, mock_descriptions):
         """Test that missing descriptions get default value."""
         mock_available.return_value = {"test_agent": "Test Agent"}
@@ -104,8 +104,8 @@ class TestGetAgentEntries:
         assert len(result) == 1
         assert result[0] == ("test_agent", "Test Agent", "No description available")
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_descriptions")
-    @patch("code_puppy.command_line.agent_menu.get_available_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_descriptions")
+    @patch("newcode.command_line.agent_menu.get_available_agents")
     def test_handles_extra_descriptions(self, mock_available, mock_descriptions):
         """Test that extra descriptions (without matching agents) are ignored."""
         mock_available.return_value = {"agent1": "Agent One"}
@@ -119,8 +119,8 @@ class TestGetAgentEntries:
         assert len(result) == 1
         assert result[0][0] == "agent1"
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_descriptions")
-    @patch("code_puppy.command_line.agent_menu.get_available_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_descriptions")
+    @patch("newcode.command_line.agent_menu.get_available_agents")
     def test_sorts_case_insensitive(self, mock_available, mock_descriptions):
         """Test that sorting is case-insensitive."""
         mock_available.return_value = {
@@ -141,8 +141,8 @@ class TestGetAgentEntries:
         assert result[1][0] == "Mixed_Agent"
         assert result[2][0] == "UPPER_AGENT"
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_descriptions")
-    @patch("code_puppy.command_line.agent_menu.get_available_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_descriptions")
+    @patch("newcode.command_line.agent_menu.get_available_agents")
     def test_returns_more_than_page_size(self, mock_available, mock_descriptions):
         """Test handling of more agents than PAGE_SIZE."""
         # Create 15 agents (more than PAGE_SIZE of 10)
@@ -217,7 +217,7 @@ class TestRenderMenuPanel:
         text = _get_text_from_formatted(result)
         assert "current" in text
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_pinned_model")
+    @patch("newcode.command_line.agent_menu.get_agent_pinned_model")
     def test_shows_pinned_model_marker(self, mock_pinned_model):
         """Test that pinned models are displayed in the menu."""
         mock_pinned_model.return_value = "gpt-4"
@@ -230,7 +230,7 @@ class TestRenderMenuPanel:
         text = _get_text_from_formatted(result)
         assert "gpt-4" in text
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_pinned_model")
+    @patch("newcode.command_line.agent_menu.get_agent_pinned_model")
     def test_unpinned_model_shows_no_marker(self, mock_pinned_model):
         """Test that unpinned agents show no pinned model marker."""
         mock_pinned_model.return_value = None
@@ -386,7 +386,7 @@ class TestRenderPreviewPanel:
         assert "Display Name:" in text
         assert "Code Agent" in text
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_pinned_model")
+    @patch("newcode.command_line.agent_menu.get_agent_pinned_model")
     def test_renders_pinned_model(self, mock_pinned_model):
         """Test that pinned model is shown in the preview panel."""
         mock_pinned_model.return_value = "gpt-4"
@@ -398,7 +398,7 @@ class TestRenderPreviewPanel:
         assert "Pinned Model:" in text
         assert "gpt-4" in text
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_pinned_model")
+    @patch("newcode.command_line.agent_menu.get_agent_pinned_model")
     def test_renders_unpinned_model_shows_default(self, mock_pinned_model):
         """Test that unpinned model shows 'default' in preview."""
         mock_pinned_model.return_value = None
@@ -509,8 +509,8 @@ class TestRenderPreviewPanel:
 class TestGetAgentEntriesIntegration:
     """Integration-style tests for _get_agent_entries behavior."""
 
-    @patch("code_puppy.command_line.agent_menu.get_agent_descriptions")
-    @patch("code_puppy.command_line.agent_menu.get_available_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_descriptions")
+    @patch("newcode.command_line.agent_menu.get_available_agents")
     def test_typical_usage_scenario(self, mock_available, mock_descriptions):
         """Test a typical usage scenario with realistic agent data."""
         mock_available.return_value = {
@@ -657,19 +657,19 @@ class TestPreviewPanelStyling:
 class TestGetPinnedModelWithJSONAgents:
     """Test _get_pinned_model function with JSON agents."""
 
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
-    @patch("code_puppy.command_line.agent_menu.get_agent_pinned_model")
+    @patch("newcode.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_pinned_model")
     def test_returns_builtin_agent_pinned_model(self, mock_builtin, mock_json_agents):
         """Test that built-in agent pinned model is returned."""
         mock_builtin.return_value = "gpt-4"
         mock_json_agents.return_value = {}
 
-        result = _get_pinned_model("code_puppy")
+        result = _get_pinned_model("newcode")
 
         assert result == "gpt-4"
 
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
-    @patch("code_puppy.command_line.agent_menu.get_agent_pinned_model")
+    @patch("newcode.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_pinned_model")
     def test_returns_json_agent_pinned_model(self, mock_builtin, mock_json_agents):
         """Test that JSON agent pinned model is returned."""
         import json
@@ -693,8 +693,8 @@ class TestGetPinnedModelWithJSONAgents:
 
         os.unlink(json_file)
 
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
-    @patch("code_puppy.command_line.agent_menu.get_agent_pinned_model")
+    @patch("newcode.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_pinned_model")
     def test_returns_none_for_unpinned_json_agent(self, mock_builtin, mock_json_agents):
         """Test that None is returned for JSON agent without pinned model."""
         import json
@@ -718,8 +718,8 @@ class TestGetPinnedModelWithJSONAgents:
 
         os.unlink(json_file)
 
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
-    @patch("code_puppy.command_line.agent_menu.get_agent_pinned_model")
+    @patch("newcode.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_pinned_model")
     def test_handles_json_agent_read_error(self, mock_builtin, mock_json_agents):
         """Test that read errors are handled gracefully."""
         mock_builtin.return_value = None
@@ -729,8 +729,8 @@ class TestGetPinnedModelWithJSONAgents:
 
         assert result is None
 
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
-    @patch("code_puppy.command_line.agent_menu.get_agent_pinned_model")
+    @patch("newcode.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.get_agent_pinned_model")
     def test_builtin_takes_precedence_over_json(self, mock_builtin, mock_json_agents):
         """Test that built-in pinned model takes precedence."""
         import json
@@ -740,12 +740,12 @@ class TestGetPinnedModelWithJSONAgents:
 
         # Create a temporary JSON agent file with different model
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
-            json.dump({"name": "code_puppy", "model": "claude-3-opus"}, f)
+            json.dump({"name": "newcode", "model": "claude-3-opus"}, f)
             json_file = f.name
 
-        mock_json_agents.return_value = {"code_puppy": json_file}
+        mock_json_agents.return_value = {"newcode": json_file}
 
-        result = _get_pinned_model("code_puppy")
+        result = _get_pinned_model("newcode")
 
         # Built-in should take precedence
         assert result == "gpt-4"
@@ -759,24 +759,24 @@ class TestGetPinnedModelWithJSONAgents:
 class TestApplyPinnedModelWithJSONAgents:
     """Test _apply_pinned_model function with JSON agents."""
 
-    @patch("code_puppy.command_line.agent_menu.set_agent_pinned_model")
-    @patch("code_puppy.command_line.agent_menu.emit_success")
-    @patch("code_puppy.command_line.agent_menu._reload_agent_if_current")
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.set_agent_pinned_model")
+    @patch("newcode.command_line.agent_menu.emit_success")
+    @patch("newcode.command_line.agent_menu._reload_agent_if_current")
+    @patch("newcode.agents.json_agent.discover_json_agents")
     def test_pins_builtin_agent(
         self, mock_json_agents, mock_reload, mock_emit, mock_set_pin
     ):
         """Test that built-in agents use config functions."""
         mock_json_agents.return_value = {}
 
-        _apply_pinned_model("code_puppy", "gpt-4")
+        _apply_pinned_model("newcode", "gpt-4")
 
-        mock_set_pin.assert_called_once_with("code_puppy", "gpt-4")
-        mock_reload.assert_called_once_with("code_puppy", "gpt-4")
+        mock_set_pin.assert_called_once_with("newcode", "gpt-4")
+        mock_reload.assert_called_once_with("newcode", "gpt-4")
 
-    @patch("code_puppy.command_line.agent_menu.emit_success")
-    @patch("code_puppy.command_line.agent_menu._reload_agent_if_current")
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.emit_success")
+    @patch("newcode.command_line.agent_menu._reload_agent_if_current")
+    @patch("newcode.agents.json_agent.discover_json_agents")
     def test_pins_json_agent(self, mock_json_agents, mock_reload, mock_emit):
         """Test that JSON agents have model written to file."""
         import json
@@ -803,24 +803,24 @@ class TestApplyPinnedModelWithJSONAgents:
 
         os.unlink(json_file)
 
-    @patch("code_puppy.command_line.agent_menu.clear_agent_pinned_model")
-    @patch("code_puppy.command_line.agent_menu.emit_success")
-    @patch("code_puppy.command_line.agent_menu._reload_agent_if_current")
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.clear_agent_pinned_model")
+    @patch("newcode.command_line.agent_menu.emit_success")
+    @patch("newcode.command_line.agent_menu._reload_agent_if_current")
+    @patch("newcode.agents.json_agent.discover_json_agents")
     def test_unpins_builtin_agent(
         self, mock_json_agents, mock_reload, mock_emit, mock_clear_pin
     ):
         """Test that built-in agents have pin cleared via config."""
         mock_json_agents.return_value = {}
 
-        _apply_pinned_model("code_puppy", "(unpin)")
+        _apply_pinned_model("newcode", "(unpin)")
 
-        mock_clear_pin.assert_called_once_with("code_puppy")
-        mock_reload.assert_called_once_with("code_puppy", None)
+        mock_clear_pin.assert_called_once_with("newcode")
+        mock_reload.assert_called_once_with("newcode", None)
 
-    @patch("code_puppy.command_line.agent_menu.emit_success")
-    @patch("code_puppy.command_line.agent_menu._reload_agent_if_current")
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.emit_success")
+    @patch("newcode.command_line.agent_menu._reload_agent_if_current")
+    @patch("newcode.agents.json_agent.discover_json_agents")
     def test_unpins_json_agent(self, mock_json_agents, mock_reload, mock_emit):
         """Test that JSON agents have model key removed."""
         import json
@@ -847,9 +847,9 @@ class TestApplyPinnedModelWithJSONAgents:
 
         os.unlink(json_file)
 
-    @patch("code_puppy.command_line.agent_menu.emit_success")
-    @patch("code_puppy.command_line.agent_menu.emit_warning")
-    @patch("code_puppy.agents.json_agent.discover_json_agents")
+    @patch("newcode.command_line.agent_menu.emit_success")
+    @patch("newcode.command_line.agent_menu.emit_warning")
+    @patch("newcode.agents.json_agent.discover_json_agents")
     def test_handles_json_agent_write_error(
         self, mock_json_agents, mock_emit_warning, mock_emit_success
     ):

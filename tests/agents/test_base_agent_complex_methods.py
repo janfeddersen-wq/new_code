@@ -13,7 +13,7 @@ import pytest
 from pydantic_ai import RunContext
 from pydantic_ai.messages import ModelRequest, ModelResponse, TextPart, ThinkingPart
 
-from code_puppy.agents.agent_code_agent import CodeAgent
+from newcode.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentComplexMethods:
@@ -47,7 +47,7 @@ class TestBaseAgentComplexMethods:
         ]
 
         # Mock the spinner to avoid dependencies
-        with patch("code_puppy.agents.base_agent.update_spinner_context"):
+        with patch("newcode.agents.base_agent.update_spinner_context"):
             result = agent.message_history_processor(mock_run_context, messages)
 
             # Should return some processed messages
@@ -111,7 +111,7 @@ class TestBaseAgentComplexMethods:
 
         # Mock the run_summarization_sync function to avoid actual LLM calls
         with patch(
-            "code_puppy.agents.base_agent.run_summarization_sync"
+            "newcode.agents.base_agent.run_summarization_sync"
         ) as mock_summarize:
             mock_summarize.return_value = [
                 ModelResponse(parts=[TextPart(content="Mock summary")])
@@ -141,7 +141,7 @@ class TestBaseAgentComplexMethods:
 
         # Mock the run_summarization_sync function
         with patch(
-            "code_puppy.agents.base_agent.run_summarization_sync"
+            "newcode.agents.base_agent.run_summarization_sync"
         ) as mock_summarize:
             mock_summarize.return_value = [
                 ModelResponse(parts=[TextPart(content="Mock summary")])
@@ -262,7 +262,7 @@ class TestBaseAgentComplexMethods:
             messages.append(ModelResponse(parts=[TextPart(content=f"Response {i}")]))
 
         # Mock dependencies
-        with patch("code_puppy.agents.base_agent.update_spinner_context"):
+        with patch("newcode.agents.base_agent.update_spinner_context"):
             result = agent.message_history_processor(mock_run_context, messages)
 
             # Should return processed messages

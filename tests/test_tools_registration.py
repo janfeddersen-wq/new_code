@@ -1,8 +1,8 @@
 """Tests for the tool registration system."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-from code_puppy.tools import (
+from newcode.tools import (
     TOOL_REGISTRY,
     get_available_tool_names,
     register_all_tools,
@@ -96,11 +96,7 @@ class TestToolRegistration:
         register_tools_for_agent(mock_agent, ["agent_run_shell_command"])
 
         # Test mixed categories
-        register_tools_for_agent(
-            mock_agent, ["read_file", "delete_file"]
-        )
+        register_tools_for_agent(mock_agent, ["read_file", "delete_file"])
 
         # Test passed if no exception was raised
         assert True
-
-

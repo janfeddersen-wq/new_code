@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.messaging.message_queue import (
+from newcode.messaging.message_queue import (
     MessageQueue,
     MessageType,
     UIMessage,
@@ -330,7 +330,7 @@ class TestGlobalQueueFunctions:
     def test_get_global_queue_creates_queue(self):
         """Test that get_global_queue creates and starts a queue."""
         # Reset global state for test
-        import code_puppy.messaging.message_queue as mq_module
+        import newcode.messaging.message_queue as mq_module
 
         original_queue = mq_module._global_queue
         mq_module._global_queue = None
@@ -354,7 +354,7 @@ class TestGlobalQueueFunctions:
 
     def test_get_buffered_startup_messages(self):
         """Test getting buffered startup messages."""
-        import code_puppy.messaging.message_queue as mq_module
+        import newcode.messaging.message_queue as mq_module
 
         original_queue = mq_module._global_queue
 
@@ -541,9 +541,9 @@ class TestEmitPrompt:
     def test_emit_prompt(self):
         """Test emit_prompt calls safe_input and returns response."""
         with patch(
-            "code_puppy.command_line.utils.safe_input", return_value="user input"
+            "newcode.command_line.utils.safe_input", return_value="user input"
         ) as mock_input:
-            from code_puppy.messaging.message_queue import emit_prompt
+            from newcode.messaging.message_queue import emit_prompt
 
             result = emit_prompt("Enter something:")
 

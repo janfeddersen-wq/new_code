@@ -8,10 +8,10 @@ from prompt_toolkit.document import Document
 
 class TestLoadModelNames:
     def test_returns_model_list(self):
-        from code_puppy.command_line.model_picker_completion import load_model_names
+        from newcode.command_line.model_picker_completion import load_model_names
 
         with patch(
-            "code_puppy.model_factory.ModelFactory.load_config",
+            "newcode.model_factory.ModelFactory.load_config",
             return_value={"gpt-4": {}, "claude-3": {}},
         ):
             result = load_model_names()
@@ -21,10 +21,10 @@ class TestLoadModelNames:
 
 class TestGetActiveModel:
     def test_returns_model_name(self):
-        from code_puppy.command_line.model_picker_completion import get_active_model
+        from newcode.command_line.model_picker_completion import get_active_model
 
         with patch(
-            "code_puppy.command_line.model_picker_completion.get_global_model_name",
+            "newcode.command_line.model_picker_completion.get_global_model_name",
             return_value="gpt-4",
         ):
             assert get_active_model() == "gpt-4"
@@ -32,10 +32,10 @@ class TestGetActiveModel:
 
 class TestSetActiveModel:
     def test_delegates_to_set_model(self):
-        from code_puppy.command_line.model_picker_completion import set_active_model
+        from newcode.command_line.model_picker_completion import set_active_model
 
         with patch(
-            "code_puppy.command_line.model_picker_completion.set_model_and_reload_agent"
+            "newcode.command_line.model_picker_completion.set_model_and_reload_agent"
         ) as mock_set:
             set_active_model("gpt-4")
             mock_set.assert_called_once_with("gpt-4")
@@ -48,10 +48,10 @@ class TestModelNameCompleter:
         return Document(text=text, cursor_position=cursor_pos)
 
     def test_no_trigger(self):
-        from code_puppy.command_line.model_picker_completion import ModelNameCompleter
+        from newcode.command_line.model_picker_completion import ModelNameCompleter
 
         with patch(
-            "code_puppy.model_factory.ModelFactory.load_config",
+            "newcode.model_factory.ModelFactory.load_config",
             return_value={"gpt-4": {}},
         ):
             c = ModelNameCompleter(trigger="/model")
@@ -59,15 +59,15 @@ class TestModelNameCompleter:
             assert completions == []
 
     def test_shows_all_models(self):
-        from code_puppy.command_line.model_picker_completion import ModelNameCompleter
+        from newcode.command_line.model_picker_completion import ModelNameCompleter
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}, "claude-3": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.get_active_model",
+                "newcode.command_line.model_picker_completion.get_active_model",
                 return_value="gpt-4",
             ),
         ):
@@ -80,15 +80,15 @@ class TestModelNameCompleter:
             assert "selected" not in metas["claude-3"]
 
     def test_filters_by_prefix(self):
-        from code_puppy.command_line.model_picker_completion import ModelNameCompleter
+        from newcode.command_line.model_picker_completion import ModelNameCompleter
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}, "claude-3": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.get_active_model",
+                "newcode.command_line.model_picker_completion.get_active_model",
                 return_value="gpt-4",
             ),
         ):
@@ -100,21 +100,21 @@ class TestModelNameCompleter:
 
 class TestFindMatchingModel:
     def test_exact_match(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             _find_matching_model,
         )
 
         assert _find_matching_model("gpt-4", ["gpt-4", "claude-3"]) == "gpt-4"
 
     def test_case_insensitive(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             _find_matching_model,
         )
 
         assert _find_matching_model("GPT-4", ["gpt-4"]) == "gpt-4"
 
     def test_input_starts_with_model(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             _find_matching_model,
         )
 
@@ -123,21 +123,21 @@ class TestFindMatchingModel:
         )
 
     def test_prefix_match(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             _find_matching_model,
         )
 
         assert _find_matching_model("gpt", ["gpt-4", "claude-3"]) == "gpt-4"
 
     def test_no_match(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             _find_matching_model,
         )
 
         assert _find_matching_model("xyz", ["gpt-4", "claude-3"]) is None
 
     def test_longest_model_wins(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             _find_matching_model,
         )
 
@@ -150,17 +150,17 @@ class TestFindMatchingModel:
 
 class TestUpdateModelInInput:
     def test_model_command(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.set_model_and_reload_agent"
+                "newcode.command_line.model_picker_completion.set_model_and_reload_agent"
             ) as mock_set,
         ):
             result = update_model_in_input("/model gpt-4")
@@ -169,63 +169,63 @@ class TestUpdateModelInInput:
             assert result is not None  # Empty string after strip
 
     def test_m_command(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.set_model_and_reload_agent"
+                "newcode.command_line.model_picker_completion.set_model_and_reload_agent"
             ) as mock_set,
         ):
             update_model_in_input("/m gpt-4")
             mock_set.assert_called_once_with("gpt-4")
 
     def test_no_model_command(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
         assert update_model_in_input("hello world") is None
 
     def test_model_command_no_match(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
         with patch(
-            "code_puppy.model_factory.ModelFactory.load_config",
+            "newcode.model_factory.ModelFactory.load_config",
             return_value={"gpt-4": {}},
         ):
             assert update_model_in_input("/model xyz") is None
 
     def test_m_command_no_match(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
         with patch(
-            "code_puppy.model_factory.ModelFactory.load_config",
+            "newcode.model_factory.ModelFactory.load_config",
             return_value={"gpt-4": {}},
         ):
             assert update_model_in_input("/m xyz") is None
 
     def test_model_with_trailing_text(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.set_model_and_reload_agent"
+                "newcode.command_line.model_picker_completion.set_model_and_reload_agent"
             ),
         ):
             result = update_model_in_input("/model gpt-4 tell me a joke")
@@ -236,17 +236,17 @@ class TestUpdateModelInInput:
 class TestGetInputWithModelCompletion:
     @pytest.mark.asyncio
     async def test_basic(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             get_input_with_model_completion,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.PromptSession"
+                "newcode.command_line.model_picker_completion.PromptSession"
             ) as mock_session_cls,
         ):
             mock_session = MagicMock()
@@ -259,20 +259,20 @@ class TestGetInputWithModelCompletion:
 
     @pytest.mark.asyncio
     async def test_with_model_command(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             get_input_with_model_completion,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.PromptSession"
+                "newcode.command_line.model_picker_completion.PromptSession"
             ) as mock_session_cls,
             patch(
-                "code_puppy.command_line.model_picker_completion.set_model_and_reload_agent"
+                "newcode.command_line.model_picker_completion.set_model_and_reload_agent"
             ),
         ):
             mock_session = MagicMock()
@@ -285,18 +285,18 @@ class TestGetInputWithModelCompletion:
 
     @pytest.mark.asyncio
     async def test_with_history_file(self, tmp_path):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             get_input_with_model_completion,
         )
 
         hfile = str(tmp_path / "history.txt")
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.PromptSession"
+                "newcode.command_line.model_picker_completion.PromptSession"
             ) as mock_session_cls,
         ):
             mock_session = MagicMock()
@@ -311,17 +311,17 @@ class TestGetInputWithModelCompletion:
 
     def test_model_idx_not_found(self):
         """Cover the return None when idx == -1 for /model."""
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.set_model_and_reload_agent"
+                "newcode.command_line.model_picker_completion.set_model_and_reload_agent"
             ),
         ):
             # Create a case where text.find won't match the pattern
@@ -338,34 +338,34 @@ class TestGetInputWithModelCompletion:
 
     def test_m_idx_not_found(self):
         """Cover the return None when idx == -1 for /m."""
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.set_model_and_reload_agent"
+                "newcode.command_line.model_picker_completion.set_model_and_reload_agent"
             ),
         ):
             result = update_model_in_input("  /m  gpt-4")
             assert result is None
 
     def test_m_with_trailing_text(self):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
         with (
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={"gpt-4": {}},
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.set_model_and_reload_agent"
+                "newcode.command_line.model_picker_completion.set_model_and_reload_agent"
             ),
         ):
             result = update_model_in_input("/m gpt-4 tell me a joke")

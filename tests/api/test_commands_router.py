@@ -1,4 +1,4 @@
-"""Tests for code_puppy/api/routers/commands.py."""
+"""Tests for newcode/api/routers/commands.py."""
 
 import asyncio
 from unittest.mock import MagicMock, patch
@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from code_puppy.api.app import create_app
+from newcode.api.app import create_app
 
 
 def _make_cmd(
@@ -35,12 +35,12 @@ def mock_commands():
     ]
     with (
         patch(
-            "code_puppy.command_line.command_registry.get_unique_commands",
+            "newcode.command_line.command_registry.get_unique_commands",
             return_value=cmds,
             create=True,
         ) as mock_unique,
         patch(
-            "code_puppy.command_line.command_registry.get_command", create=True
+            "newcode.command_line.command_registry.get_command", create=True
         ) as mock_get,
     ):
 
@@ -88,7 +88,7 @@ async def test_get_command_not_found(client: AsyncClient) -> None:
 @pytest.mark.asyncio
 async def test_execute_command(client: AsyncClient) -> None:
     with patch(
-        "code_puppy.command_line.command_handler.handle_command",
+        "newcode.command_line.command_handler.handle_command",
         return_value="done",
         create=True,
     ):
@@ -100,7 +100,7 @@ async def test_execute_command(client: AsyncClient) -> None:
 @pytest.mark.asyncio
 async def test_execute_command_without_slash(client: AsyncClient) -> None:
     with patch(
-        "code_puppy.command_line.command_handler.handle_command",
+        "newcode.command_line.command_handler.handle_command",
         return_value="done",
         create=True,
     ):
@@ -115,9 +115,9 @@ async def test_execute_command_timeout(client: AsyncClient) -> None:
         await asyncio.sleep(100)
 
     with (
-        patch("code_puppy.api.routers.commands.COMMAND_TIMEOUT", 0.01),
+        patch("newcode.api.routers.commands.COMMAND_TIMEOUT", 0.01),
         patch(
-            "code_puppy.command_line.command_handler.handle_command",
+            "newcode.command_line.command_handler.handle_command",
             side_effect=lambda *a: __import__("time").sleep(1),
             create=True,
         ),
@@ -131,7 +131,7 @@ async def test_execute_command_timeout(client: AsyncClient) -> None:
 @pytest.mark.asyncio
 async def test_execute_command_error(client: AsyncClient) -> None:
     with patch(
-        "code_puppy.command_line.command_handler.handle_command",
+        "newcode.command_line.command_handler.handle_command",
         side_effect=ValueError("bad"),
         create=True,
     ):

@@ -1,4 +1,4 @@
-"""Tests for code_puppy/api/app.py - FastAPI application factory."""
+"""Tests for newcode/api/app.py - FastAPI application factory."""
 
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -7,7 +7,7 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from code_puppy.api.app import REQUEST_TIMEOUT, TimeoutMiddleware, create_app, lifespan
+from newcode.api.app import REQUEST_TIMEOUT, TimeoutMiddleware, create_app, lifespan
 
 
 @pytest.fixture
@@ -80,9 +80,9 @@ async def test_lifespan_startup_shutdown() -> None:
     mock_manager.close_all = AsyncMock()
 
     with patch(
-        "code_puppy.api.app.get_pty_manager", return_value=mock_manager, create=True
+        "newcode.api.app.get_pty_manager", return_value=mock_manager, create=True
     ):
-        with patch("code_puppy.api.app.Path") as mock_path_cls:
+        with patch("newcode.api.app.Path") as mock_path_cls:
             mock_pid = MagicMock()
             mock_pid.exists.return_value = True
             mock_path_cls.return_value.__truediv__ = MagicMock(return_value=mock_pid)
@@ -91,10 +91,10 @@ async def test_lifespan_startup_shutdown() -> None:
             with patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.api.pty_manager": MagicMock(
+                    "newcode.api.pty_manager": MagicMock(
                         get_pty_manager=MagicMock(return_value=mock_manager)
                     ),
-                    "code_puppy.config": MagicMock(STATE_DIR="/tmp/test_state"),
+                    "newcode.config": MagicMock(STATE_DIR="/tmp/test_state"),
                 },
             ):
                 async with lifespan(app):
@@ -110,10 +110,10 @@ async def test_lifespan_shutdown_handles_errors() -> None:
     with patch.dict(
         "sys.modules",
         {
-            "code_puppy.api.pty_manager": MagicMock(
+            "newcode.api.pty_manager": MagicMock(
                 get_pty_manager=MagicMock(side_effect=Exception("boom"))
             ),
-            "code_puppy.config": MagicMock(STATE_DIR="/nonexistent"),
+            "newcode.config": MagicMock(STATE_DIR="/nonexistent"),
         },
     ):
         async with lifespan(app):
@@ -173,10 +173,10 @@ async def test_lifespan_pid_file_cleanup() -> None:
         with patch.dict(
             "sys.modules",
             {
-                "code_puppy.api.pty_manager": MagicMock(
+                "newcode.api.pty_manager": MagicMock(
                     get_pty_manager=MagicMock(return_value=mock_manager)
                 ),
-                "code_puppy.config": MagicMock(STATE_DIR=tmpdir),
+                "newcode.config": MagicMock(STATE_DIR=tmpdir),
             },
         ):
             app = FastAPI()

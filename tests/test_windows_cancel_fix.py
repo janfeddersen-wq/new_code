@@ -19,7 +19,7 @@ class TestConsoleSpinnerWindowsCleanup:
     @pytest.mark.skipif(platform.system() != "Windows", reason="Windows-specific test")
     def test_stop_resets_terminal_on_windows(self):
         """Test that stop() resets terminal state on Windows."""
-        from code_puppy.messaging.spinner import ConsoleSpinner
+        from newcode.messaging.spinner import ConsoleSpinner
 
         spinner = ConsoleSpinner()
         spinner.start()
@@ -54,7 +54,7 @@ class TestConsoleSpinnerWindowsCleanup:
     @patch("msvcrt.getch")
     def test_stop_flushes_keyboard_buffer_on_windows(self, mock_getch, mock_kbhit):
         """Test that stop() flushes keyboard buffer on Windows."""
-        from code_puppy.messaging.spinner import ConsoleSpinner
+        from newcode.messaging.spinner import ConsoleSpinner
 
         # Simulate keyboard buffer with 3 keys
         mock_kbhit.side_effect = [True, True, True, False]
@@ -73,7 +73,7 @@ class TestConsoleSpinnerWindowsCleanup:
     @pytest.mark.skipif(platform.system() == "Windows", reason="Non-Windows test")
     def test_stop_skips_windows_cleanup_on_other_platforms(self):
         """Test that Windows cleanup is skipped on non-Windows platforms."""
-        from code_puppy.messaging.spinner import ConsoleSpinner
+        from newcode.messaging.spinner import ConsoleSpinner
 
         spinner = ConsoleSpinner()
         spinner.start()
@@ -97,7 +97,7 @@ class TestConsoleSpinnerWindowsCleanup:
 
     def test_stop_handles_cleanup_errors_gracefully(self):
         """Test that stop() handles cleanup errors without crashing."""
-        from code_puppy.messaging.spinner import ConsoleSpinner
+        from newcode.messaging.spinner import ConsoleSpinner
 
         spinner = ConsoleSpinner()
         spinner.start()
@@ -179,7 +179,7 @@ class TestWindowsCleanupIntegration:
     @pytest.mark.skipif(platform.system() != "Windows", reason="Windows-specific test")
     def test_spinner_cleanup_comprehensive(self):
         """Comprehensive test of spinner cleanup sequence."""
-        from code_puppy.messaging.spinner import ConsoleSpinner
+        from newcode.messaging.spinner import ConsoleSpinner
 
         spinner = ConsoleSpinner()
 
@@ -212,7 +212,7 @@ class TestWindowsCleanupIntegration:
     @pytest.mark.skipif(platform.system() != "Windows", reason="Windows-specific test")
     def test_cleanup_does_not_interfere_with_normal_operation(self):
         """Test that cleanup doesn't break normal spinner operation."""
-        from code_puppy.messaging.spinner import ConsoleSpinner
+        from newcode.messaging.spinner import ConsoleSpinner
 
         spinner = ConsoleSpinner()
 

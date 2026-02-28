@@ -195,7 +195,7 @@ def dump_dbos_report(temp_home: pathlib.Path) -> None:
     Appends human-readable text to a global report buffer.
     """
     try:
-        db_path = temp_home / ".code_puppy" / "dbos_store.sqlite"
+        db_path = temp_home / ".newcode" / "dbos_store.sqlite"
         if not db_path.exists():
             return
         conn = sqlite3.connect(str(db_path))
@@ -260,26 +260,26 @@ class CliHarness:
         """Spawn the CLI, optionally reusing an existing HOME for autosave tests."""
         if existing_home is not None:
             temp_home = pathlib.Path(existing_home)
-            config_dir = temp_home / ".config" / "code_puppy"
-            code_puppy_dir = temp_home / ".code_puppy"
+            config_dir = temp_home / ".config" / "newcode"
+            newcode_dir = temp_home / ".newcode"
             config_dir.mkdir(parents=True, exist_ok=True)
-            code_puppy_dir.mkdir(parents=True, exist_ok=True)
+            newcode_dir.mkdir(parents=True, exist_ok=True)
             write_config = not (config_dir / "puppy.cfg").exists()
         else:
             temp_home = pathlib.Path(
-                tempfile.mkdtemp(prefix=f"code_puppy_home_{_random_name()}_")
+                tempfile.mkdtemp(prefix=f"newcode_home_{_random_name()}_")
             )
-            config_dir = temp_home / ".config" / "code_puppy"
-            code_puppy_dir = temp_home / ".code_puppy"
+            config_dir = temp_home / ".config" / "newcode"
+            newcode_dir = temp_home / ".newcode"
             config_dir.mkdir(parents=True, exist_ok=True)
-            code_puppy_dir.mkdir(parents=True, exist_ok=True)
+            newcode_dir.mkdir(parents=True, exist_ok=True)
             write_config = True
 
         if write_config:
-            # Write config to both XDG config dir and ~/.code_puppy for compatibility
+            # Write config to both XDG config dir and ~/.newcode for compatibility
             (config_dir / "puppy.cfg").write_text(CONFIG_TEMPLATE, encoding="utf-8")
             (config_dir / "motd.txt").write_text(MOTD_TEMPLATE, encoding="utf-8")
-            (code_puppy_dir / "puppy.cfg").write_text(CONFIG_TEMPLATE, encoding="utf-8")
+            (newcode_dir / "puppy.cfg").write_text(CONFIG_TEMPLATE, encoding="utf-8")
 
         log_path = temp_home / f"cli_output_{uuid.uuid4().hex}.log"
         cmd_args = ["newcode"] + (args or [])
@@ -288,13 +288,13 @@ class CliHarness:
         spawn_env.update(env or {})
         spawn_env["HOME"] = str(temp_home)
         spawn_env.pop("PYTHONPATH", None)  # avoid accidental venv confusion
-        # Clear XDG vars so the spawned CLI uses ~/.code_puppy (temp home)
+        # Clear XDG vars so the spawned CLI uses ~/.newcode (temp home)
         spawn_env.pop("XDG_CONFIG_HOME", None)
         spawn_env.pop("XDG_DATA_HOME", None)
         spawn_env.pop("XDG_CACHE_HOME", None)
         spawn_env.pop("XDG_STATE_HOME", None)
         # Ensure DBOS uses a temp sqlite under this HOME
-        dbos_sqlite = code_puppy_dir / "dbos_store.sqlite"
+        dbos_sqlite = newcode_dir / "dbos_store.sqlite"
         spawn_env["DBOS_SYSTEM_DATABASE_URL"] = f"sqlite:///{dbos_sqlite}"
         spawn_env.setdefault("DBOS_LOG_LEVEL", "ERROR")
         # Skip the interactive tutorial wizard in tests

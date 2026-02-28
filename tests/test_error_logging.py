@@ -4,7 +4,7 @@ import os
 import tempfile
 from unittest.mock import patch
 
-from code_puppy.error_logging import (
+from newcode.error_logging import (
     get_log_file_path,
     get_logs_dir,
     log_error,
@@ -33,8 +33,8 @@ class TestErrorLogging:
         """Test that _ensure_logs_dir creates the logs directory."""
         with tempfile.TemporaryDirectory() as tmpdir:
             test_logs_dir = os.path.join(tmpdir, "logs")
-            with patch("code_puppy.error_logging.LOGS_DIR", test_logs_dir):
-                from code_puppy import error_logging
+            with patch("newcode.error_logging.LOGS_DIR", test_logs_dir):
+                from newcode import error_logging
 
                 original_logs_dir = error_logging.LOGS_DIR
                 error_logging.LOGS_DIR = test_logs_dir
@@ -51,7 +51,7 @@ class TestErrorLogging:
             test_logs_dir = os.path.join(tmpdir, "logs")
             test_log_file = os.path.join(test_logs_dir, "errors.log")
 
-            from code_puppy import error_logging
+            from newcode import error_logging
 
             original_logs_dir = error_logging.LOGS_DIR
             original_log_file = error_logging.ERROR_LOG_FILE
@@ -83,7 +83,7 @@ class TestErrorLogging:
             test_logs_dir = os.path.join(tmpdir, "logs")
             test_log_file = os.path.join(test_logs_dir, "errors.log")
 
-            from code_puppy import error_logging
+            from newcode import error_logging
 
             original_logs_dir = error_logging.LOGS_DIR
             original_log_file = error_logging.ERROR_LOG_FILE
@@ -112,7 +112,7 @@ class TestErrorLogging:
             test_logs_dir = os.path.join(tmpdir, "logs")
             test_log_file = os.path.join(test_logs_dir, "errors.log")
 
-            from code_puppy import error_logging
+            from newcode import error_logging
 
             original_logs_dir = error_logging.LOGS_DIR
             original_log_file = error_logging.ERROR_LOG_FILE
@@ -133,7 +133,7 @@ class TestErrorLogging:
 
     def test_log_error_handles_write_failure_silently(self):
         """Test that log_error doesn't raise if it can't write."""
-        from code_puppy import error_logging
+        from newcode import error_logging
 
         original_log_file = error_logging.ERROR_LOG_FILE
         # Point to an invalid path that can't be written
@@ -150,7 +150,7 @@ class TestErrorLogging:
 
     def test_log_error_message_handles_write_failure_silently(self):
         """Test that log_error_message doesn't raise if it can't write."""
-        from code_puppy import error_logging
+        from newcode import error_logging
 
         original_log_file = error_logging.ERROR_LOG_FILE
         error_logging.ERROR_LOG_FILE = "/nonexistent/path/that/cant/exist/errors.log"

@@ -1,10 +1,10 @@
-"""Tests for code_puppy/command_line/mcp/install_menu.py"""
+"""Tests for newcode/command_line/mcp/install_menu.py"""
 
 import os
 from dataclasses import dataclass
 from unittest.mock import MagicMock, patch
 
-MODULE = "code_puppy.command_line.mcp.install_menu"
+MODULE = "newcode.command_line.mcp.install_menu"
 
 
 @dataclass
@@ -45,9 +45,9 @@ def make_menu(catalog_categories=None, catalog_servers=None):
 
     with patch.dict(
         "sys.modules",
-        {"code_puppy.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
+        {"newcode.mcp_.server_registry_catalog": MagicMock(catalog=mock_catalog)},
     ):
-        from code_puppy.command_line.mcp.install_menu import MCPInstallMenu
+        from newcode.command_line.mcp.install_menu import MCPInstallMenu
 
         menu = MCPInstallMenu(MagicMock())
         menu.catalog = mock_catalog
@@ -65,10 +65,8 @@ class TestMCPInstallMenuInit:
         assert menu.view_mode == "categories"
 
     def test_init_catalog_import_error(self):
-        with patch.dict(
-            "sys.modules", {"code_puppy.mcp_.server_registry_catalog": None}
-        ):
-            from code_puppy.command_line.mcp.install_menu import MCPInstallMenu
+        with patch.dict("sys.modules", {"newcode.mcp_.server_registry_catalog": None}):
+            from newcode.command_line.mcp.install_menu import MCPInstallMenu
 
             with patch(f"{MODULE}.emit_error"):
                 menu = MCPInstallMenu(MagicMock())
@@ -78,9 +76,9 @@ class TestMCPInstallMenuInit:
         mock_mod = MagicMock()
         mock_mod.catalog.list_categories.side_effect = RuntimeError("boom")
         with patch.dict(
-            "sys.modules", {"code_puppy.mcp_.server_registry_catalog": mock_mod}
+            "sys.modules", {"newcode.mcp_.server_registry_catalog": mock_mod}
         ):
-            from code_puppy.command_line.mcp.install_menu import MCPInstallMenu
+            from newcode.command_line.mcp.install_menu import MCPInstallMenu
 
             with patch(f"{MODULE}.emit_error"):
                 menu = MCPInstallMenu(MagicMock())
@@ -90,9 +88,9 @@ class TestMCPInstallMenuInit:
         mock_mod = MagicMock()
         mock_mod.catalog.list_categories.return_value = []
         with patch.dict(
-            "sys.modules", {"code_puppy.mcp_.server_registry_catalog": mock_mod}
+            "sys.modules", {"newcode.mcp_.server_registry_catalog": mock_mod}
         ):
-            from code_puppy.command_line.mcp.install_menu import MCPInstallMenu
+            from newcode.command_line.mcp.install_menu import MCPInstallMenu
 
             with patch(f"{MODULE}.emit_error"):
                 menu = MCPInstallMenu(MagicMock())
@@ -447,7 +445,7 @@ class TestRun:
         mock_app.run = fake_run
 
         with patch(f"{MODULE}.Application", return_value=mock_app):
-            with patch.dict("sys.modules", {"code_puppy.agent": MagicMock()}):
+            with patch.dict("sys.modules", {"newcode.agent": MagicMock()}):
                 result = menu.run()
         assert result is True
 
@@ -470,7 +468,7 @@ class TestRun:
         mock_app.run = fake_run
 
         with patch(f"{MODULE}.Application", return_value=mock_app):
-            with patch.dict("sys.modules", {"code_puppy.agent": MagicMock()}):
+            with patch.dict("sys.modules", {"newcode.agent": MagicMock()}):
                 result = menu.run()
         assert result is True
 
@@ -516,7 +514,7 @@ class TestRun:
 class TestRunMcpInstallMenu:
     @patch(f"{MODULE}.MCPInstallMenu")
     def test_delegates_to_menu(self, MockMenu):
-        from code_puppy.command_line.mcp.install_menu import run_mcp_install_menu
+        from newcode.command_line.mcp.install_menu import run_mcp_install_menu
 
         mock_instance = MagicMock()
         mock_instance.run.return_value = True
@@ -735,12 +733,12 @@ class TestKeyHandlers:
 
     def test_reload_mcp_servers_success(self):
         menu = make_menu()
-        with patch.dict("sys.modules", {"code_puppy.agent": MagicMock()}):
+        with patch.dict("sys.modules", {"newcode.agent": MagicMock()}):
             menu._reload_mcp_servers()  # should not raise
 
     def test_reload_mcp_servers_import_error(self):
         menu = make_menu()
-        # Don't mock code_puppy.agent - it should raise ImportError
+        # Don't mock newcode.agent - it should raise ImportError
         menu._reload_mcp_servers()  # should not raise
 
 

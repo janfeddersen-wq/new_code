@@ -4,10 +4,10 @@ from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
-from code_puppy import config as cp_config
+from newcode import config as cp_config
 
 # Define constants used in config.py to avoid direct import if they change
-CONFIG_DIR_NAME = ".code_puppy"
+CONFIG_DIR_NAME = ".newcode"
 CONFIG_FILE_NAME = "puppy.cfg"
 DEFAULT_SECTION_NAME = "agent"
 
@@ -19,9 +19,9 @@ def mock_config_paths(monkeypatch):
     mock_config_dir = os.path.join(mock_home, CONFIG_DIR_NAME)
     mock_config_file = os.path.join(mock_config_dir, CONFIG_FILE_NAME)
     # XDG directories for the new directory structure
-    mock_data_dir = os.path.join(mock_home, ".local", "share", "code_puppy")
-    mock_cache_dir = os.path.join(mock_home, ".cache", "code_puppy")
-    mock_state_dir = os.path.join(mock_home, ".local", "state", "code_puppy")
+    mock_data_dir = os.path.join(mock_home, ".local", "share", "newcode")
+    mock_cache_dir = os.path.join(mock_home, ".cache", "newcode")
+    mock_state_dir = os.path.join(mock_home, ".local", "state", "newcode")
     mock_skills_dir = os.path.join(mock_data_dir, "skills")
 
     monkeypatch.setattr(cp_config, "CONFIG_DIR", mock_config_dir)
@@ -176,9 +176,7 @@ class TestEnsureConfigExists:
         mock_config_instance.read = MagicMock(side_effect=mock_read)
         monkeypatch.setattr(configparser, "ConfigParser", mock_cp)
 
-        mock_input_values = {
-            "Enter your name: ": "PartialOwnerFilled"
-        }
+        mock_input_values = {"Enter your name: ": "PartialOwnerFilled"}
         # Only user_name should be prompted
         mock_input = MagicMock(side_effect=lambda prompt: mock_input_values[prompt])
         monkeypatch.setattr("builtins.input", mock_input)
@@ -243,26 +241,26 @@ class TestGetValue:
 
 
 class TestSimpleGetters:
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_puppy_name_exists(self, mock_get_value):
         mock_get_value.return_value = "MyPuppy"
         assert cp_config.get_puppy_name() == "MyPuppy"
         mock_get_value.assert_called_once_with("agent_name")
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_puppy_name_not_exists_uses_default(self, mock_get_value):
         mock_get_value.return_value = None
         assert cp_config.get_puppy_name() == "Agent"  # Default value
         # get_agent_name calls get_value("agent_name") then get_value("puppy_name")
         assert mock_get_value.call_count == 2
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_owner_name_exists(self, mock_get_value):
         mock_get_value.return_value = "MyOwner"
         assert cp_config.get_owner_name() == "MyOwner"
         mock_get_value.assert_called_once_with("user_name")
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_owner_name_not_exists_uses_default(self, mock_get_value):
         mock_get_value.return_value = None
         assert cp_config.get_owner_name() == "User"  # Default value
@@ -484,8 +482,8 @@ class TestModelName:
         cp_config.reset_session_model()
         cp_config.clear_model_cache()
 
-    @patch("code_puppy.config.get_value")
-    @patch("code_puppy.config._validate_model_exists")
+    @patch("newcode.config.get_value")
+    @patch("newcode.config._validate_model_exists")
     def test_get_model_name_exists(self, mock_validate_model_exists, mock_get_value):
         mock_get_value.return_value = "test_model_from_config"
         mock_validate_model_exists.return_value = True
@@ -551,7 +549,7 @@ class TestModelName:
 
 
 class TestGetYoloMode:
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_yolo_mode_from_config_true(self, mock_get_value):
         true_values = ["true", "1", "YES", "ON"]
         for val in true_values:
@@ -560,7 +558,7 @@ class TestGetYoloMode:
             assert cp_config.get_yolo_mode() is True, f"Failed for config value: {val}"
             mock_get_value.assert_called_once_with("yolo_mode")
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_yolo_mode_not_in_config_defaults_true(self, mock_get_value):
         mock_get_value.return_value = None
 
@@ -668,7 +666,7 @@ class TestCommandHistory:
         )
 
     @patch("builtins.open")
-    @patch("code_puppy.messaging.emit_error")
+    @patch("newcode.messaging.emit_error")
     def test_save_command_to_history_handles_error(
         self, mock_emit_error, mock_file, mock_config_paths
     ):
@@ -690,9 +688,9 @@ class TestDefaultModelSelection:
         # Also reset the session-local model cache so tests start fresh
         cp_config.reset_session_model()
 
-    @patch("code_puppy.config.get_value")
-    @patch("code_puppy.config._validate_model_exists")
-    @patch("code_puppy.config._default_model_from_models_json")
+    @patch("newcode.config.get_value")
+    @patch("newcode.config._validate_model_exists")
+    @patch("newcode.config._default_model_from_models_json")
     def test_get_model_name_no_stored_model(
         self, mock_default_model, mock_validate_model_exists, mock_get_value
     ):
@@ -707,9 +705,9 @@ class TestDefaultModelSelection:
         mock_validate_model_exists.assert_not_called()
         mock_default_model.assert_called_once()
 
-    @patch("code_puppy.config.get_value")
-    @patch("code_puppy.config._validate_model_exists")
-    @patch("code_puppy.config._default_model_from_models_json")
+    @patch("newcode.config.get_value")
+    @patch("newcode.config._validate_model_exists")
+    @patch("newcode.config._default_model_from_models_json")
     def test_get_model_name_invalid_model(
         self, mock_default_model, mock_validate_model_exists, mock_get_value
     ):
@@ -735,7 +733,7 @@ class TestDefaultModelSelection:
 class TestTemperatureConfig:
     """Tests for the temperature configuration functions."""
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_temperature_returns_none_when_not_set(self, mock_get_value):
         """Temperature should return None when not configured."""
         mock_get_value.return_value = None
@@ -743,14 +741,14 @@ class TestTemperatureConfig:
         assert result is None
         mock_get_value.assert_called_once_with("temperature")
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_temperature_returns_none_for_empty_string(self, mock_get_value):
         """Temperature should return None for empty string."""
         mock_get_value.return_value = ""
         result = cp_config.get_temperature()
         assert result is None
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_temperature_returns_float_value(self, mock_get_value):
         """Temperature should return a float when set."""
         mock_get_value.return_value = "0.7"
@@ -758,40 +756,40 @@ class TestTemperatureConfig:
         assert result == 0.7
         assert isinstance(result, float)
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_temperature_clamps_to_max(self, mock_get_value):
         """Temperature should be clamped to max 2.0."""
         mock_get_value.return_value = "5.0"
         result = cp_config.get_temperature()
         assert result == 2.0
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_temperature_clamps_to_min(self, mock_get_value):
         """Temperature should be clamped to min 0.0."""
         mock_get_value.return_value = "-1.0"
         result = cp_config.get_temperature()
         assert result == 0.0
 
-    @patch("code_puppy.config.get_value")
+    @patch("newcode.config.get_value")
     def test_get_temperature_handles_invalid_value(self, mock_get_value):
         """Temperature should return None for invalid values."""
         mock_get_value.return_value = "not_a_number"
         result = cp_config.get_temperature()
         assert result is None
 
-    @patch("code_puppy.config.set_config_value")
+    @patch("newcode.config.set_config_value")
     def test_set_temperature_with_value(self, mock_set_config_value):
         """Setting temperature should store it as a string."""
         cp_config.set_temperature(0.7)
         mock_set_config_value.assert_called_once_with("temperature", "0.7")
 
-    @patch("code_puppy.config.set_config_value")
+    @patch("newcode.config.set_config_value")
     def test_set_temperature_clamps_value(self, mock_set_config_value):
         """Setting temperature should clamp out-of-range values."""
         cp_config.set_temperature(5.0)
         mock_set_config_value.assert_called_once_with("temperature", "2.0")
 
-    @patch("code_puppy.config.set_config_value")
+    @patch("newcode.config.set_config_value")
     def test_set_temperature_to_none_clears_value(self, mock_set_config_value):
         """Setting temperature to None should clear it."""
         cp_config.set_temperature(None)
@@ -806,7 +804,7 @@ class TestTemperatureConfig:
 class TestModelSupportsSetting:
     """Tests for the model_supports_setting function."""
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_returns_true_when_setting_in_supported_list(self, mock_load_config):
         """Should return True when setting is in supported_settings."""
         mock_load_config.return_value = {
@@ -819,7 +817,7 @@ class TestModelSupportsSetting:
         assert cp_config.model_supports_setting("test-model", "temperature") is True
         assert cp_config.model_supports_setting("test-model", "seed") is True
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_returns_false_when_setting_not_in_supported_list(self, mock_load_config):
         """Should return False when setting is not in supported_settings."""
         mock_load_config.return_value = {
@@ -831,7 +829,7 @@ class TestModelSupportsSetting:
         }
         assert cp_config.model_supports_setting("test-model", "temperature") is False
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_defaults_to_true_when_no_supported_settings(self, mock_load_config):
         """Should default to True for backwards compatibility."""
         mock_load_config.return_value = {
@@ -844,19 +842,19 @@ class TestModelSupportsSetting:
         assert cp_config.model_supports_setting("test-model", "temperature") is True
         assert cp_config.model_supports_setting("test-model", "seed") is True
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_returns_true_on_exception(self, mock_load_config):
         """Should return True when there's an exception loading config."""
         mock_load_config.side_effect = Exception("Config load failed")
         assert cp_config.model_supports_setting("test-model", "temperature") is True
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_returns_true_for_unknown_model(self, mock_load_config):
         """Should default to True for unknown models."""
         mock_load_config.return_value = {}
         assert cp_config.model_supports_setting("unknown-model", "temperature") is True
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_opus_46_fallback_supports_effort(self, mock_load_config):
         """Opus 4-6 models should support effort in the fallback path."""
         mock_load_config.return_value = {
@@ -865,7 +863,7 @@ class TestModelSupportsSetting:
         assert cp_config.model_supports_setting("claude-opus-4-6", "effort") is True
         assert cp_config.model_supports_setting("claude-4-6-opus", "effort") is True
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_non_opus_46_fallback_does_not_support_effort(self, mock_load_config):
         """Non Opus 4-6 Claude models should NOT support effort in fallback."""
         mock_load_config.return_value = {

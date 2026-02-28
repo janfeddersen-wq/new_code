@@ -1,6 +1,6 @@
 """Tests for wiggum_state.py - 100% coverage."""
 
-from code_puppy.command_line.wiggum_state import (
+from newcode.command_line.wiggum_state import (
     WiggumState,
     get_wiggum_count,
     get_wiggum_prompt,

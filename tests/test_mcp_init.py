@@ -1,9 +1,9 @@
-"""Tests for code_puppy.mcp_ package __init__.py.
+"""Tests for newcode.mcp_ package __init__.py.
 
 This module tests that the MCP package properly exports all its public API.
 """
 
-import code_puppy.mcp_ as mcp_package
+import newcode.mcp_ as mcp_package
 
 
 class TestMCPPackageExports:

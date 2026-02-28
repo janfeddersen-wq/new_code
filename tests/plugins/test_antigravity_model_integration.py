@@ -19,7 +19,7 @@ from pydantic_ai.messages import (
 from pydantic_ai.models import ModelRequestParameters
 from pydantic_ai.settings import ModelSettings
 
-from code_puppy.plugins.antigravity_oauth.antigravity_model import (
+from newcode.plugins.antigravity_oauth.antigravity_model import (
     _antigravity_content_model_response,
 )
 

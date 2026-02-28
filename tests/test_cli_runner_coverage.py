@@ -15,13 +15,13 @@ class TestRunPromptWithAttachments:
 
     @pytest.mark.anyio
     async def test_empty_prompt_returns_none(self):
-        from code_puppy.cli_runner import run_prompt_with_attachments
+        from newcode.cli_runner import run_prompt_with_attachments
 
         # A prompt that becomes empty after attachment parsing
         mock_agent = MagicMock()
         with (
-            patch("code_puppy.cli_runner.parse_prompt_attachments") as mock_parse,
-            patch("code_puppy.cli_runner.get_clipboard_manager") as mock_clip,
+            patch("newcode.cli_runner.parse_prompt_attachments") as mock_parse,
+            patch("newcode.cli_runner.get_clipboard_manager") as mock_clip,
         ):
             mock_parse.return_value = MagicMock(
                 prompt="",
@@ -40,7 +40,7 @@ class TestRunPromptWithAttachments:
 
     @pytest.mark.anyio
     async def test_with_attachments_and_spinner(self):
-        from code_puppy.cli_runner import run_prompt_with_attachments
+        from newcode.cli_runner import run_prompt_with_attachments
 
         mock_agent = MagicMock()
         mock_result = MagicMock()
@@ -52,10 +52,10 @@ class TestRunPromptWithAttachments:
         mock_link.url_part = "https://example.com"
 
         with (
-            patch("code_puppy.cli_runner.parse_prompt_attachments") as mock_parse,
-            patch("code_puppy.cli_runner.get_clipboard_manager") as mock_clip,
-            patch("code_puppy.agents.event_stream_handler.set_streaming_console"),
-            patch("code_puppy.messaging.spinner.ConsoleSpinner") as mock_spinner,
+            patch("newcode.cli_runner.parse_prompt_attachments") as mock_parse,
+            patch("newcode.cli_runner.get_clipboard_manager") as mock_clip,
+            patch("newcode.agents.event_stream_handler.set_streaming_console"),
+            patch("newcode.messaging.spinner.ConsoleSpinner") as mock_spinner,
         ):
             mock_parse.return_value = MagicMock(
                 prompt="do stuff",
@@ -79,16 +79,16 @@ class TestRunPromptWithAttachments:
 
     @pytest.mark.anyio
     async def test_cancelled_with_spinner(self):
-        from code_puppy.cli_runner import run_prompt_with_attachments
+        from newcode.cli_runner import run_prompt_with_attachments
 
         mock_agent = MagicMock()
         mock_agent.run_with_mcp = AsyncMock(side_effect=asyncio.CancelledError)
 
         with (
-            patch("code_puppy.cli_runner.parse_prompt_attachments") as mock_parse,
-            patch("code_puppy.cli_runner.get_clipboard_manager") as mock_clip,
-            patch("code_puppy.agents.event_stream_handler.set_streaming_console"),
-            patch("code_puppy.messaging.spinner.ConsoleSpinner") as mock_spinner,
+            patch("newcode.cli_runner.parse_prompt_attachments") as mock_parse,
+            patch("newcode.cli_runner.get_clipboard_manager") as mock_clip,
+            patch("newcode.agents.event_stream_handler.set_streaming_console"),
+            patch("newcode.messaging.spinner.ConsoleSpinner") as mock_spinner,
         ):
             mock_parse.return_value = MagicMock(
                 prompt="do stuff",
@@ -112,15 +112,15 @@ class TestRunPromptWithAttachments:
 
     @pytest.mark.anyio
     async def test_cancelled_without_spinner(self):
-        from code_puppy.cli_runner import run_prompt_with_attachments
+        from newcode.cli_runner import run_prompt_with_attachments
 
         mock_agent = MagicMock()
         mock_agent.run_with_mcp = AsyncMock(side_effect=asyncio.CancelledError)
 
         with (
-            patch("code_puppy.cli_runner.parse_prompt_attachments") as mock_parse,
-            patch("code_puppy.cli_runner.get_clipboard_manager") as mock_clip,
-            patch("code_puppy.agents.event_stream_handler.set_streaming_console"),
+            patch("newcode.cli_runner.parse_prompt_attachments") as mock_parse,
+            patch("newcode.cli_runner.get_clipboard_manager") as mock_clip,
+            patch("newcode.agents.event_stream_handler.set_streaming_console"),
         ):
             mock_parse.return_value = MagicMock(
                 prompt="do stuff",
@@ -140,16 +140,16 @@ class TestRunPromptWithAttachments:
 
     @pytest.mark.anyio
     async def test_clipboard_placeholder_cleaned(self):
-        from code_puppy.cli_runner import run_prompt_with_attachments
+        from newcode.cli_runner import run_prompt_with_attachments
 
         mock_agent = MagicMock()
         mock_result = MagicMock()
         mock_agent.run_with_mcp = AsyncMock(return_value=mock_result)
 
         with (
-            patch("code_puppy.cli_runner.parse_prompt_attachments") as mock_parse,
-            patch("code_puppy.cli_runner.get_clipboard_manager") as mock_clip,
-            patch("code_puppy.agents.event_stream_handler.set_streaming_console"),
+            patch("newcode.cli_runner.parse_prompt_attachments") as mock_parse,
+            patch("newcode.cli_runner.get_clipboard_manager") as mock_clip,
+            patch("newcode.agents.event_stream_handler.set_streaming_console"),
         ):
             mock_parse.return_value = MagicMock(
                 prompt="[📋 clipboard image 1] describe this",
@@ -173,7 +173,7 @@ class TestRunPromptWithAttachments:
 class TestExecuteSinglePrompt:
     @pytest.mark.anyio
     async def test_success(self):
-        from code_puppy.cli_runner import execute_single_prompt
+        from newcode.cli_runner import execute_single_prompt
 
         mock_renderer = MagicMock()
         mock_renderer.console = MagicMock()
@@ -182,67 +182,67 @@ class TestExecuteSinglePrompt:
         mock_result.output = "done!"
 
         with (
-            patch("code_puppy.cli_runner.get_current_agent"),
+            patch("newcode.cli_runner.get_current_agent"),
             patch(
-                "code_puppy.cli_runner.run_prompt_with_attachments",
+                "newcode.cli_runner.run_prompt_with_attachments",
                 new_callable=AsyncMock,
             ) as mock_run,
-            patch("code_puppy.cli_runner.emit_info"),
+            patch("newcode.cli_runner.emit_info"),
         ):
             mock_run.return_value = (mock_result, MagicMock())
             await execute_single_prompt("hello", mock_renderer)
 
     @pytest.mark.anyio
     async def test_none_response(self):
-        from code_puppy.cli_runner import execute_single_prompt
+        from newcode.cli_runner import execute_single_prompt
 
         mock_renderer = MagicMock()
         mock_renderer.console = MagicMock()
 
         with (
-            patch("code_puppy.cli_runner.get_current_agent"),
+            patch("newcode.cli_runner.get_current_agent"),
             patch(
-                "code_puppy.cli_runner.run_prompt_with_attachments",
+                "newcode.cli_runner.run_prompt_with_attachments",
                 new_callable=AsyncMock,
             ) as mock_run,
-            patch("code_puppy.cli_runner.emit_info"),
+            patch("newcode.cli_runner.emit_info"),
         ):
             mock_run.return_value = None
             await execute_single_prompt("hello", mock_renderer)
 
     @pytest.mark.anyio
     async def test_cancelled(self):
-        from code_puppy.cli_runner import execute_single_prompt
+        from newcode.cli_runner import execute_single_prompt
 
         mock_renderer = MagicMock()
         mock_renderer.console = MagicMock()
 
         with (
-            patch("code_puppy.cli_runner.get_current_agent"),
+            patch("newcode.cli_runner.get_current_agent"),
             patch(
-                "code_puppy.cli_runner.run_prompt_with_attachments",
+                "newcode.cli_runner.run_prompt_with_attachments",
                 new_callable=AsyncMock,
                 side_effect=asyncio.CancelledError,
             ),
-            patch("code_puppy.cli_runner.emit_info"),
+            patch("newcode.cli_runner.emit_info"),
         ):
             await execute_single_prompt("hello", mock_renderer)
 
     @pytest.mark.anyio
     async def test_exception(self):
-        from code_puppy.cli_runner import execute_single_prompt
+        from newcode.cli_runner import execute_single_prompt
 
         mock_renderer = MagicMock()
         mock_renderer.console = MagicMock()
 
         with (
-            patch("code_puppy.cli_runner.get_current_agent"),
+            patch("newcode.cli_runner.get_current_agent"),
             patch(
-                "code_puppy.cli_runner.run_prompt_with_attachments",
+                "newcode.cli_runner.run_prompt_with_attachments",
                 new_callable=AsyncMock,
                 side_effect=RuntimeError("boom"),
             ),
-            patch("code_puppy.cli_runner.emit_info"),
+            patch("newcode.cli_runner.emit_info"),
         ):
             await execute_single_prompt("hello", mock_renderer)
 
@@ -250,32 +250,32 @@ class TestExecuteSinglePrompt:
 class TestMainEntry:
     @patch("asyncio.run")
     def test_normal_exit(self, mock_run):
-        from code_puppy.cli_runner import main_entry
+        from newcode.cli_runner import main_entry
 
         mock_run.return_value = None
-        with patch("code_puppy.cli_runner.reset_unix_terminal"):
+        with patch("newcode.cli_runner.reset_unix_terminal"):
             result = main_entry()
         assert result is None
 
     @patch("asyncio.run", side_effect=KeyboardInterrupt)
     def test_keyboard_interrupt(self, mock_run):
-        from code_puppy.cli_runner import main_entry
+        from newcode.cli_runner import main_entry
 
         with (
-            patch("code_puppy.cli_runner.reset_unix_terminal"),
-            patch("code_puppy.cli_runner.get_use_dbos", return_value=False),
+            patch("newcode.cli_runner.reset_unix_terminal"),
+            patch("newcode.cli_runner.get_use_dbos", return_value=False),
         ):
             result = main_entry()
         assert result == 0
 
     @patch("asyncio.run", side_effect=KeyboardInterrupt)
     def test_keyboard_interrupt_with_dbos(self, mock_run):
-        from code_puppy.cli_runner import main_entry
+        from newcode.cli_runner import main_entry
 
         with (
-            patch("code_puppy.cli_runner.reset_unix_terminal"),
-            patch("code_puppy.cli_runner.get_use_dbos", return_value=True),
-            patch("code_puppy.cli_runner.DBOS") as mock_dbos,
+            patch("newcode.cli_runner.reset_unix_terminal"),
+            patch("newcode.cli_runner.get_use_dbos", return_value=True),
+            patch("newcode.cli_runner.DBOS") as mock_dbos,
         ):
             result = main_entry()
         assert result == 0

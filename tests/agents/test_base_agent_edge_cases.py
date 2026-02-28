@@ -21,7 +21,7 @@ from pydantic_ai.messages import (
     TextPart,
 )
 
-from code_puppy.agents.agent_code_agent import CodeAgent
+from newcode.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentEdgeCases:
@@ -32,10 +32,10 @@ class TestBaseAgentEdgeCases:
         """Create a fresh agent instance for each test."""
         return CodeAgent()
 
-    @patch("code_puppy.model_factory.ModelFactory.get_model")
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
-    @patch("code_puppy.agents.base_agent.emit_warning")
-    @patch("code_puppy.agents.base_agent.emit_error")
+    @patch("newcode.model_factory.ModelFactory.get_model")
+    @patch("newcode.model_factory.ModelFactory.load_config")
+    @patch("newcode.agents.base_agent.emit_warning")
+    @patch("newcode.agents.base_agent.emit_error")
     def test_load_model_with_fallback_all_fail(
         self,
         mock_emit_error,
@@ -63,8 +63,8 @@ class TestBaseAgentEdgeCases:
         # Verify error was emitted when all fallbacks failed
         mock_emit_error.assert_called_once()
 
-    @patch("code_puppy.model_factory.ModelFactory.get_model")
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.get_model")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_load_model_with_fallback_empty_config(
         self, mock_load_config, mock_get_model, agent
     ):
@@ -235,7 +235,7 @@ class TestBaseAgentEdgeCases:
         with pytest.raises((TypeError, AttributeError)):
             agent.filter_huge_messages([corrupted_msg])
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_get_model_context_length_broken_config(self, mock_load_config, agent):
         """Test get_model_context_length when model config is completely broken."""
         # Config that would cause issues
@@ -245,7 +245,7 @@ class TestBaseAgentEdgeCases:
         # Should fall back to default
         assert result == 128000
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_get_model_context_length_invalid_context_length(
         self, mock_load_config, agent
     ):
@@ -261,7 +261,7 @@ class TestBaseAgentEdgeCases:
             # Should handle conversion gracefully or fall back to default
             assert result == 128000
 
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_get_model_context_length_negative_context_length(
         self, mock_load_config, agent
     ):
@@ -336,7 +336,7 @@ class TestBaseAgentEdgeCases:
         """Test get_model_context_length when get_model_name returns None."""
         with patch.object(agent, "get_model_name", return_value=None):
             with patch(
-                "code_puppy.model_factory.ModelFactory.load_config", return_value={}
+                "newcode.model_factory.ModelFactory.load_config", return_value={}
             ):
                 result = agent.get_model_context_length()
                 # Should fall back to default
@@ -385,8 +385,8 @@ class TestBaseAgentEdgeCases:
         result = agent.hash_message(msg)
         assert isinstance(result, int)
 
-    @patch("code_puppy.model_factory.ModelFactory.get_model")
-    @patch("code_puppy.model_factory.ModelFactory.load_config")
+    @patch("newcode.model_factory.ModelFactory.get_model")
+    @patch("newcode.model_factory.ModelFactory.load_config")
     def test_load_model_with_fallback_unexpected_exception(
         self, mock_load_config, mock_get_model, agent
     ):

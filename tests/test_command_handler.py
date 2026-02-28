@@ -1,8 +1,8 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from code_puppy.command_line.command_handler import handle_command
-from code_puppy.command_line.command_registry import get_command
+from newcode.command_line.command_handler import handle_command
+from newcode.command_line.command_registry import get_command
 
 
 # Function to create a test context with patched messaging functions
@@ -10,11 +10,11 @@ def setup_messaging_mocks():
     """Set up mocks for all the messaging functions and return them in a dictionary."""
     mocks = {}
     patch_targets = [
-        "code_puppy.messaging.emit_info",
-        "code_puppy.messaging.emit_error",
-        "code_puppy.messaging.emit_warning",
-        "code_puppy.messaging.emit_success",
-        "code_puppy.messaging.emit_system_message",
+        "newcode.messaging.emit_info",
+        "newcode.messaging.emit_error",
+        "newcode.messaging.emit_warning",
+        "newcode.messaging.emit_success",
+        "newcode.messaging.emit_system_message",
     ]
 
     for target in patch_targets:
@@ -45,7 +45,7 @@ def test_cd_show_lists_directories():
     mock_emit_info = mocks["emit_info"].start()
 
     try:
-        with patch("code_puppy.command_line.utils.make_directory_table") as mock_table:
+        with patch("newcode.command_line.utils.make_directory_table") as mock_table:
             from rich.table import Table
 
             fake_table = Table()
@@ -97,13 +97,13 @@ def test_cd_invalid_directory():
 def test_m_sets_model():
     # Simplified test - just check that the command handler returns True
     with (
-        patch("code_puppy.messaging.emit_success"),
+        patch("newcode.messaging.emit_success"),
         patch(
-            "code_puppy.command_line.model_picker_completion.update_model_in_input",
+            "newcode.command_line.model_picker_completion.update_model_in_input",
             return_value="some_model",
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.get_active_model",
+            "newcode.command_line.model_picker_completion.get_active_model",
             return_value="gpt-9001",
         ),
     ):
@@ -118,11 +118,11 @@ def test_m_unrecognized_model_lists_options():
     try:
         with (
             patch(
-                "code_puppy.command_line.model_picker_completion.update_model_in_input",
+                "newcode.command_line.model_picker_completion.update_model_in_input",
                 return_value=None,
             ),
             patch(
-                "code_puppy.command_line.model_picker_completion.load_model_names",
+                "newcode.command_line.model_picker_completion.load_model_names",
                 return_value=["a", "b", "c"],
             ),
         ):
@@ -148,10 +148,8 @@ def test_set_config_value_equals():
 
     try:
         with (
-            patch("code_puppy.config.set_config_value") as mock_set_cfg,
-            patch(
-                "code_puppy.config.get_config_keys", return_value=["pony", "rainbow"]
-            ),
+            patch("newcode.config.set_config_value") as mock_set_cfg,
+            patch("newcode.config.get_config_keys", return_value=["pony", "rainbow"]),
         ):
             result = handle_command("/set pony=rainbow")
             assert result is True
@@ -171,10 +169,8 @@ def test_set_config_value_space():
 
     try:
         with (
-            patch("code_puppy.config.set_config_value") as mock_set_cfg,
-            patch(
-                "code_puppy.config.get_config_keys", return_value=["pony", "rainbow"]
-            ),
+            patch("newcode.config.set_config_value") as mock_set_cfg,
+            patch("newcode.config.get_config_keys", return_value=["pony", "rainbow"]),
         ):
             result = handle_command("/set pony rainbow")
             assert result is True
@@ -194,8 +190,8 @@ def test_set_config_only_key():
 
     try:
         with (
-            patch("code_puppy.config.set_config_value") as mock_set_cfg,
-            patch("code_puppy.config.get_config_keys", return_value=["key"]),
+            patch("newcode.config.set_config_value") as mock_set_cfg,
+            patch("newcode.config.get_config_keys", return_value=["key"]),
         ):
             result = handle_command("/set pony")
             assert result is True
@@ -216,12 +212,12 @@ def test_show_status():
     try:
         with (
             patch(
-                "code_puppy.command_line.model_picker_completion.get_active_model",
+                "newcode.command_line.model_picker_completion.get_active_model",
                 return_value="MODEL-X",
             ),
-            patch("code_puppy.config.get_owner_name", return_value="Ivan"),
-            patch("code_puppy.config.get_agent_name", return_value="Biscuit"),
-            patch("code_puppy.config.get_yolo_mode", return_value=True),
+            patch("newcode.config.get_owner_name", return_value="Ivan"),
+            patch("newcode.config.get_agent_name", return_value="Biscuit"),
+            patch("newcode.config.get_yolo_mode", return_value=True),
         ):
             result = handle_command("/show")
             assert result is True
@@ -258,7 +254,7 @@ def test_bare_slash_shows_current_model():
 
     try:
         with patch(
-            "code_puppy.command_line.model_picker_completion.get_active_model",
+            "newcode.command_line.model_picker_completion.get_active_model",
             return_value="yarn",
         ):
             result = handle_command("/")
@@ -277,7 +273,7 @@ def test_set_no_args_prints_usage():
     mock_emit_warning = mocks["emit_warning"].start()
 
     try:
-        with patch("code_puppy.config.get_config_keys", return_value=["foo", "bar"]):
+        with patch("newcode.config.get_config_keys", return_value=["foo", "bar"]):
             result = handle_command("/set")
             assert result is True
             mock_emit_warning.assert_called()
@@ -295,7 +291,7 @@ def test_set_missing_key_errors():
 
     try:
         # This will enter the 'else' branch printing 'You must supply a key.'
-        with patch("code_puppy.config.get_config_keys", return_value=["foo", "bar"]):
+        with patch("newcode.config.get_config_keys", return_value=["foo", "bar"]):
             result = handle_command("/set =value")
             assert result is True
             mock_emit_error.assert_called_with("You must supply a key.")
@@ -315,7 +311,7 @@ def test_bare_slash_with_spaces():
 
     try:
         with patch(
-            "code_puppy.command_line.model_picker_completion.get_active_model",
+            "newcode.command_line.model_picker_completion.get_active_model",
             return_value="zoom",
         ):
             result = handle_command("/    ")
@@ -345,19 +341,19 @@ def test_agent_switch_triggers_autosave_rotation():
 
         with (
             patch(
-                "code_puppy.agents.get_current_agent",
+                "newcode.agents.get_current_agent",
                 side_effect=[current_agent, new_agent],
             ),
             patch(
-                "code_puppy.agents.get_available_agents",
+                "newcode.agents.get_available_agents",
                 return_value={"code-agent": "Code Agent", "reviewer": "Reviewer"},
             ),
             patch(
-                "code_puppy.command_line.core_commands.finalize_autosave_session",
+                "newcode.command_line.core_commands.finalize_autosave_session",
                 return_value="fresh_id",
             ) as mock_finalize,
             patch(
-                "code_puppy.agents.set_current_agent",
+                "newcode.agents.set_current_agent",
                 return_value=True,
             ) as mock_set,
         ):
@@ -387,18 +383,18 @@ def test_agent_switch_same_agent_skips_rotation():
         current_agent = SimpleNamespace(name="code-agent", display_name="Code Agent")
         with (
             patch(
-                "code_puppy.agents.get_current_agent",
+                "newcode.agents.get_current_agent",
                 return_value=current_agent,
             ),
             patch(
-                "code_puppy.agents.get_available_agents",
+                "newcode.agents.get_available_agents",
                 return_value={"code-agent": "Code Agent"},
             ),
             patch(
-                "code_puppy.command_line.core_commands.finalize_autosave_session",
+                "newcode.command_line.core_commands.finalize_autosave_session",
             ) as mock_finalize,
             patch(
-                "code_puppy.agents.set_current_agent",
+                "newcode.agents.set_current_agent",
             ) as mock_set,
         ):
             result = handle_command("/agent code-agent")
@@ -420,14 +416,14 @@ def test_agent_switch_unknown_agent_skips_rotation():
     try:
         with (
             patch(
-                "code_puppy.agents.get_available_agents",
+                "newcode.agents.get_available_agents",
                 return_value={"code-agent": "Code Agent"},
             ),
             patch(
-                "code_puppy.command_line.core_commands.finalize_autosave_session",
+                "newcode.command_line.core_commands.finalize_autosave_session",
             ) as mock_finalize,
             patch(
-                "code_puppy.agents.set_current_agent",
+                "newcode.agents.set_current_agent",
             ) as mock_set,
         ):
             result = handle_command("/agent reviewer")
@@ -474,7 +470,7 @@ def test_tools_file_not_found():
     try:
         # Since we now use tools_content.py, we just verify that tools are displayed
         # without needing to read from a file
-        with patch("code_puppy.tools.tools_content.tools_content", "# Mock content"):
+        with patch("newcode.tools.tools_content.tools_content", "# Mock content"):
             result = handle_command("/tools")
             assert result is True
             mock_emit_info.assert_called_once()
@@ -496,7 +492,7 @@ def test_tools_read_error():
         # Test handling when there's an issue with tools_content - it should still work
         # by falling back to an empty or default string if the imported content fails
         with patch(
-            "code_puppy.command_line.core_commands.tools_content",
+            "newcode.command_line.core_commands.tools_content",
             "# Fallback content",
         ):
             result = handle_command("/tools")
@@ -514,7 +510,7 @@ def test_tools_read_error():
 
 def test_exit_command():
     """Test that /exit command works and shows Goodbye message."""
-    with patch("code_puppy.messaging.emit_success") as mock_success:
+    with patch("newcode.messaging.emit_success") as mock_success:
         result = handle_command("/exit")
         assert result is True
         mock_success.assert_called_once_with("Goodbye!")
@@ -522,7 +518,7 @@ def test_exit_command():
 
 def test_quit_command():
     """Test that /quit command works via alias and shows Goodbye message."""
-    with patch("code_puppy.messaging.emit_success") as mock_success:
+    with patch("newcode.messaging.emit_success") as mock_success:
         result = handle_command("/quit")
         assert result is True
         mock_success.assert_called_once_with("Goodbye!")
@@ -539,21 +535,21 @@ class TestRegistryIntegration:
     def test_registry_command_is_executed(self):
         """Test that registered commands are executed via registry."""
         # /help is registered - verify it's handled
-        with patch("code_puppy.messaging.emit_info") as mock_emit:
+        with patch("newcode.messaging.emit_info") as mock_emit:
             result = handle_command("/help")
             assert result is True
             mock_emit.assert_called()
 
     def test_command_alias_works(self):
         """Test that command aliases work (e.g., /h for /help)."""
-        with patch("code_puppy.messaging.emit_info") as mock_emit:
+        with patch("newcode.messaging.emit_info") as mock_emit:
             result = handle_command("/h")
             assert result is True
             mock_emit.assert_called()
 
     def test_unregistered_command_shows_warning(self):
         """Test that unregistered commands show warning."""
-        with patch("code_puppy.messaging.emit_warning") as mock_warn:
+        with patch("newcode.messaging.emit_warning") as mock_warn:
             result = handle_command("/totallyfakecommand")
             assert result is True
             mock_warn.assert_called()
@@ -570,13 +566,13 @@ class TestSessionCommand:
     def test_session_show_current_id(self):
         """Test /session shows current session ID."""
         with (
-            patch("code_puppy.config.get_current_autosave_id", return_value="test-id"),
+            patch("newcode.config.get_current_autosave_id", return_value="test-id"),
             patch(
-                "code_puppy.config.get_current_autosave_session_name",
+                "newcode.config.get_current_autosave_session_name",
                 return_value="test-session",
             ),
-            patch("code_puppy.config.AUTOSAVE_DIR", "/tmp/autosave"),
-            patch("code_puppy.messaging.emit_info") as mock_emit,
+            patch("newcode.config.AUTOSAVE_DIR", "/tmp/autosave"),
+            patch("newcode.messaging.emit_info") as mock_emit,
         ):
             result = handle_command("/session")
             assert result is True
@@ -587,13 +583,13 @@ class TestSessionCommand:
     def test_session_id_subcommand(self):
         """Test /session id shows current session ID."""
         with (
-            patch("code_puppy.config.get_current_autosave_id", return_value="test-id"),
+            patch("newcode.config.get_current_autosave_id", return_value="test-id"),
             patch(
-                "code_puppy.config.get_current_autosave_session_name",
+                "newcode.config.get_current_autosave_session_name",
                 return_value="test-session",
             ),
-            patch("code_puppy.config.AUTOSAVE_DIR", "/tmp/autosave"),
-            patch("code_puppy.messaging.emit_info") as mock_emit,
+            patch("newcode.config.AUTOSAVE_DIR", "/tmp/autosave"),
+            patch("newcode.messaging.emit_info") as mock_emit,
         ):
             result = handle_command("/session id")
             assert result is True
@@ -603,9 +599,9 @@ class TestSessionCommand:
         """Test /session new creates new session."""
         with (
             patch(
-                "code_puppy.config.rotate_autosave_id", return_value="new-id"
+                "newcode.config.rotate_autosave_id", return_value="new-id"
             ) as mock_rotate,
-            patch("code_puppy.messaging.emit_success") as mock_success,
+            patch("newcode.messaging.emit_success") as mock_success,
         ):
             result = handle_command("/session new")
             assert result is True
@@ -616,7 +612,7 @@ class TestSessionCommand:
 
     def test_session_invalid_subcommand(self):
         """Test /session with invalid subcommand shows usage."""
-        with patch("code_puppy.messaging.emit_warning") as mock_warn:
+        with patch("newcode.messaging.emit_warning") as mock_warn:
             result = handle_command("/session invalid")
             assert result is True
             mock_warn.assert_called_once()
@@ -626,13 +622,13 @@ class TestSessionCommand:
     def test_session_alias_works(self):
         """Test /s alias works for /session."""
         with (
-            patch("code_puppy.config.get_current_autosave_id", return_value="test-id"),
+            patch("newcode.config.get_current_autosave_id", return_value="test-id"),
             patch(
-                "code_puppy.config.get_current_autosave_session_name",
+                "newcode.config.get_current_autosave_session_name",
                 return_value="test",
             ),
-            patch("code_puppy.config.AUTOSAVE_DIR", "/tmp"),
-            patch("code_puppy.messaging.emit_info") as mock_emit,
+            patch("newcode.config.AUTOSAVE_DIR", "/tmp"),
+            patch("newcode.messaging.emit_info") as mock_emit,
         ):
             result = handle_command("/s")
             assert result is True
@@ -657,16 +653,16 @@ class TestCompactCommand:
 
         with (
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
             ),
             patch(
-                "code_puppy.config.get_compaction_strategy",
+                "newcode.config.get_compaction_strategy",
                 return_value="summarization",
             ),
-            patch("code_puppy.config.get_protected_token_count", return_value=1000),
-            patch("code_puppy.messaging.emit_info"),
-            patch("code_puppy.messaging.emit_success") as mock_success,
+            patch("newcode.config.get_protected_token_count", return_value=1000),
+            patch("newcode.messaging.emit_info"),
+            patch("newcode.messaging.emit_success") as mock_success,
         ):
             result = handle_command("/compact")
             assert result is True
@@ -680,10 +676,10 @@ class TestCompactCommand:
 
         with (
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
             ),
-            patch("code_puppy.messaging.emit_warning") as mock_warn,
+            patch("newcode.messaging.emit_warning") as mock_warn,
         ):
             result = handle_command("/compact")
             assert result is True
@@ -702,15 +698,13 @@ class TestCompactCommand:
 
         with (
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
             ),
-            patch(
-                "code_puppy.config.get_compaction_strategy", return_value="truncation"
-            ),
-            patch("code_puppy.config.get_protected_token_count", return_value=1000),
-            patch("code_puppy.messaging.emit_info"),
-            patch("code_puppy.messaging.emit_success"),
+            patch("newcode.config.get_compaction_strategy", return_value="truncation"),
+            patch("newcode.config.get_protected_token_count", return_value=1000),
+            patch("newcode.messaging.emit_info"),
+            patch("newcode.messaging.emit_success"),
         ):
             result = handle_command("/compact")
             assert result is True
@@ -725,13 +719,13 @@ class TestReasoningCommand:
         mock_agent = MagicMock()
 
         with (
-            patch("code_puppy.config.set_openai_reasoning_effort") as mock_set,
-            patch("code_puppy.config.get_openai_reasoning_effort", return_value="low"),
+            patch("newcode.config.set_openai_reasoning_effort") as mock_set,
+            patch("newcode.config.get_openai_reasoning_effort", return_value="low"),
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
             ),
-            patch("code_puppy.messaging.emit_success") as mock_success,
+            patch("newcode.messaging.emit_success") as mock_success,
         ):
             result = handle_command("/reasoning low")
             assert result is True
@@ -743,10 +737,10 @@ class TestReasoningCommand:
         """Test /reasoning with invalid level shows error."""
         with (
             patch(
-                "code_puppy.config.set_openai_reasoning_effort",
+                "newcode.config.set_openai_reasoning_effort",
                 side_effect=ValueError("Invalid"),
             ),
-            patch("code_puppy.messaging.emit_error") as mock_error,
+            patch("newcode.messaging.emit_error") as mock_error,
         ):
             result = handle_command("/reasoning invalid")
             assert result is True
@@ -754,7 +748,7 @@ class TestReasoningCommand:
 
     def test_reasoning_no_argument(self):
         """Test /reasoning without argument shows usage."""
-        with patch("code_puppy.messaging.emit_warning") as mock_warn:
+        with patch("newcode.messaging.emit_warning") as mock_warn:
             result = handle_command("/reasoning")
             assert result is True
             mock_warn.assert_called_once()
@@ -776,10 +770,10 @@ class TestTruncateCommand:
 
         with (
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
             ),
-            patch("code_puppy.messaging.emit_success") as mock_success,
+            patch("newcode.messaging.emit_success") as mock_success,
         ):
             result = handle_command("/truncate 2")
             assert result is True
@@ -788,7 +782,7 @@ class TestTruncateCommand:
 
     def test_truncate_no_argument(self):
         """Test /truncate without argument shows error."""
-        with patch("code_puppy.messaging.emit_error") as mock_error:
+        with patch("newcode.messaging.emit_error") as mock_error:
             result = handle_command("/truncate")
             assert result is True
             mock_error.assert_called_once()
@@ -796,7 +790,7 @@ class TestTruncateCommand:
 
     def test_truncate_invalid_number(self):
         """Test /truncate with non-integer shows error."""
-        with patch("code_puppy.messaging.emit_error") as mock_error:
+        with patch("newcode.messaging.emit_error") as mock_error:
             result = handle_command("/truncate abc")
             assert result is True
             mock_error.assert_called_once()
@@ -804,7 +798,7 @@ class TestTruncateCommand:
 
     def test_truncate_negative_number(self):
         """Test /truncate with negative number shows error."""
-        with patch("code_puppy.messaging.emit_error") as mock_error:
+        with patch("newcode.messaging.emit_error") as mock_error:
             result = handle_command("/truncate -5")
             assert result is True
             mock_error.assert_called_once()
@@ -816,10 +810,10 @@ class TestTruncateCommand:
 
         with (
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
             ),
-            patch("code_puppy.messaging.emit_warning") as mock_warn,
+            patch("newcode.messaging.emit_warning") as mock_warn,
         ):
             result = handle_command("/truncate 10")
             assert result is True
@@ -835,10 +829,10 @@ class TestTruncateCommand:
 
         with (
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
             ),
-            patch("code_puppy.messaging.emit_info") as mock_info,
+            patch("newcode.messaging.emit_info") as mock_info,
         ):
             result = handle_command("/truncate 10")
             assert result is True
@@ -861,7 +855,7 @@ class TestMotdCommand:
     def test_motd_command_calls_print_motd(self):
         """Test that /motd calls print_motd with force=True."""
         # Patch where it's imported in core_commands
-        with patch("code_puppy.command_line.core_commands.print_motd") as mock_motd:
+        with patch("newcode.command_line.core_commands.print_motd") as mock_motd:
             result = handle_command("/motd")
             assert result is True
             mock_motd.assert_called_once_with(force=True)
@@ -872,7 +866,7 @@ class TestGetCommandsHelp:
 
     def test_help_includes_registered_commands(self):
         """Test that help text includes registered commands."""
-        from code_puppy.command_line.command_handler import get_commands_help
+        from newcode.command_line.command_handler import get_commands_help
 
         help_text = str(get_commands_help())
         assert "help" in help_text.lower() or "Help" in help_text
@@ -880,7 +874,7 @@ class TestGetCommandsHelp:
 
     def test_help_includes_categories(self):
         """Test that help organizes into Built-in and Custom sections."""
-        from code_puppy.command_line.command_handler import get_commands_help
+        from newcode.command_line.command_handler import get_commands_help
 
         help_text = str(get_commands_help())
         # Should have Built-in Commands section
@@ -892,10 +886,10 @@ class TestGetCommandsHelp:
         """Test that help system parses single tuple format."""
         from unittest.mock import patch
 
-        from code_puppy.command_line.command_handler import get_commands_help
+        from newcode.command_line.command_handler import get_commands_help
 
         # Mock a plugin that returns a single tuple
-        with patch("code_puppy.callbacks.on_custom_command_help") as mock_callback:
+        with patch("newcode.callbacks.on_custom_command_help") as mock_callback:
             mock_callback.return_value = [("testcmd", "Test command description")]
             help_text = str(get_commands_help())
             assert "/testcmd" in help_text
@@ -905,10 +899,10 @@ class TestGetCommandsHelp:
         """Test that help system parses list of tuples format."""
         from unittest.mock import patch
 
-        from code_puppy.command_line.command_handler import get_commands_help
+        from newcode.command_line.command_handler import get_commands_help
 
         # Mock a plugin that returns a list of tuples
-        with patch("code_puppy.callbacks.on_custom_command_help") as mock_callback:
+        with patch("newcode.callbacks.on_custom_command_help") as mock_callback:
             mock_callback.return_value = [
                 [("cmd1", "First command"), ("cmd2", "Second command")]
             ]
@@ -922,10 +916,10 @@ class TestGetCommandsHelp:
         """Test that help system parses legacy list of strings format."""
         from unittest.mock import patch
 
-        from code_puppy.command_line.command_handler import get_commands_help
+        from newcode.command_line.command_handler import get_commands_help
 
         # Mock a plugin that returns a list of strings (legacy format)
-        with patch("code_puppy.callbacks.on_custom_command_help") as mock_callback:
+        with patch("newcode.callbacks.on_custom_command_help") as mock_callback:
             mock_callback.return_value = [
                 [
                     "/legacy_cmd - Legacy command description",
@@ -942,10 +936,10 @@ class TestGetCommandsHelp:
         """Test that help system handles multiple plugins with different formats."""
         from unittest.mock import patch
 
-        from code_puppy.command_line.command_handler import get_commands_help
+        from newcode.command_line.command_handler import get_commands_help
 
         # Mock multiple plugins returning different formats
-        with patch("code_puppy.callbacks.on_custom_command_help") as mock_callback:
+        with patch("newcode.callbacks.on_custom_command_help") as mock_callback:
             mock_callback.return_value = [
                 ("tuple_cmd", "Tuple format command"),  # Single tuple
                 [("list_cmd", "List format command")],  # List of tuples
@@ -963,10 +957,10 @@ class TestGetCommandsHelp:
         """Test that help system gracefully ignores invalid formats."""
         from unittest.mock import patch
 
-        from code_puppy.command_line.command_handler import get_commands_help
+        from newcode.command_line.command_handler import get_commands_help
 
         # Mock a plugin that returns invalid formats
-        with patch("code_puppy.callbacks.on_custom_command_help") as mock_callback:
+        with patch("newcode.callbacks.on_custom_command_help") as mock_callback:
             mock_callback.return_value = [
                 None,  # Should be ignored
                 [],  # Empty list, should be ignored
@@ -1118,14 +1112,14 @@ def test_m_command_case_sensitive_baseline():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.set_active_model"
+            "newcode.command_line.model_picker_completion.set_active_model"
         ) as mock_set_model,
     ):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
@@ -1145,14 +1139,14 @@ def test_m_command_case_insensitive_command():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.set_active_model"
+            "newcode.command_line.model_picker_completion.set_active_model"
         ) as mock_set_model,
     ):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
@@ -1172,14 +1166,14 @@ def test_m_command_case_insensitive_model_name():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.set_active_model"
+            "newcode.command_line.model_picker_completion.set_active_model"
         ) as mock_set_model,
     ):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
@@ -1199,14 +1193,14 @@ def test_model_command_case_insensitive_both():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.set_active_model"
+            "newcode.command_line.model_picker_completion.set_active_model"
         ) as mock_set_model,
     ):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
@@ -1226,14 +1220,14 @@ def test_model_command_mixed_case():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.set_active_model"
+            "newcode.command_line.model_picker_completion.set_active_model"
         ) as mock_set_model,
     ):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
@@ -1253,14 +1247,14 @@ def test_model_command_with_hyphenated_case_insensitive():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.set_active_model"
+            "newcode.command_line.model_picker_completion.set_active_model"
         ) as mock_set_model,
     ):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
@@ -1280,14 +1274,14 @@ def test_model_command_with_preserved_text():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.set_active_model"
+            "newcode.command_line.model_picker_completion.set_active_model"
         ) as mock_set_model,
     ):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
@@ -1307,14 +1301,14 @@ def test_nonexistent_model_returns_none():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.set_active_model"
+            "newcode.command_line.model_picker_completion.set_active_model"
         ) as mock_set_model,
     ):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
@@ -1334,14 +1328,14 @@ def test_edge_case_empty_after_command():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
         patch(
-            "code_puppy.command_line.model_picker_completion.set_active_model"
+            "newcode.command_line.model_picker_completion.set_active_model"
         ) as mock_set_model,
     ):
-        from code_puppy.command_line.model_picker_completion import (
+        from newcode.command_line.model_picker_completion import (
             update_model_in_input,
         )
 
@@ -1370,18 +1364,18 @@ def test_pin_model_command_case_insensitive_agent():
 
     with (
         patch(
-            "code_puppy.command_line.model_picker_completion.load_model_names",
+            "newcode.command_line.model_picker_completion.load_model_names",
             return_value=test_models,
         ),
-        patch("code_puppy.agents.json_agent.discover_json_agents", return_value={}),
+        patch("newcode.agents.json_agent.discover_json_agents", return_value={}),
         patch(
-            "code_puppy.agents.agent_manager.get_agent_descriptions",
+            "newcode.agents.agent_manager.get_agent_descriptions",
             return_value=test_agents,
         ),
-        patch("code_puppy.messaging.emit_success") as mock_emit_success,
-        patch("code_puppy.messaging.emit_error") as mock_emit_error,
+        patch("newcode.messaging.emit_success") as mock_emit_success,
+        patch("newcode.messaging.emit_error") as mock_emit_error,
     ):
-        from code_puppy.command_line.config_commands import handle_pin_model_command
+        from newcode.command_line.config_commands import handle_pin_model_command
 
         result = handle_pin_model_command("/pin_model PYTHON_EXPERT gpt-5")
         assert result is True
@@ -1395,19 +1389,19 @@ def test_pin_model_unpin_case_insensitive():
     test_agents = {"python_expert": "Python Expert", "code_reviewer": "Code Reviewer"}
 
     with (
-        patch("code_puppy.agents.json_agent.discover_json_agents", return_value={}),
+        patch("newcode.agents.json_agent.discover_json_agents", return_value={}),
         patch(
-            "code_puppy.agents.agent_manager.get_agent_descriptions",
+            "newcode.agents.agent_manager.get_agent_descriptions",
             return_value=test_agents,
         ),
-        patch("code_puppy.messaging.emit_success") as mock_emit_success,
-        patch("code_puppy.messaging.emit_error") as mock_emit_error,
+        patch("newcode.messaging.emit_success") as mock_emit_success,
+        patch("newcode.messaging.emit_error") as mock_emit_error,
         patch(
-            "code_puppy.command_line.config_commands.handle_unpin_command",
+            "newcode.command_line.config_commands.handle_unpin_command",
             return_value=True,
         ) as mock_unpin,
     ):
-        from code_puppy.command_line.config_commands import handle_pin_model_command
+        from newcode.command_line.config_commands import handle_pin_model_command
 
         result = handle_pin_model_command("/pin_model python_expert (UNPIN)")
         assert result is True
@@ -1422,15 +1416,15 @@ def test_unpin_command_case_insensitive_agent():
     test_agents = {"python_expert": "Python Expert", "code_reviewer": "Code Reviewer"}
 
     with (
-        patch("code_puppy.agents.json_agent.discover_json_agents", return_value={}),
+        patch("newcode.agents.json_agent.discover_json_agents", return_value={}),
         patch(
-            "code_puppy.agents.agent_manager.get_agent_descriptions",
+            "newcode.agents.agent_manager.get_agent_descriptions",
             return_value=test_agents,
         ),
-        patch("code_puppy.messaging.emit_success") as mock_emit_success,
-        patch("code_puppy.messaging.emit_error") as mock_emit_error,
+        patch("newcode.messaging.emit_success") as mock_emit_success,
+        patch("newcode.messaging.emit_error") as mock_emit_error,
     ):
-        from code_puppy.command_line.config_commands import handle_unpin_command
+        from newcode.command_line.config_commands import handle_unpin_command
 
         result = handle_unpin_command("/unpin PYTHON_EXPERT")
         assert result is True
@@ -1444,15 +1438,15 @@ def test_unpin_command_nonexistent_agent_case_insensitive():
     test_agents = {"python_expert": "Python Expert"}
 
     with (
-        patch("code_puppy.agents.json_agent.discover_json_agents", return_value={}),
+        patch("newcode.agents.json_agent.discover_json_agents", return_value={}),
         patch(
-            "code_puppy.agents.agent_manager.get_agent_descriptions",
+            "newcode.agents.agent_manager.get_agent_descriptions",
             return_value=test_agents,
         ),
-        patch("code_puppy.messaging.emit_success") as mock_emit_success,
-        patch("code_puppy.messaging.emit_error") as mock_emit_error,
+        patch("newcode.messaging.emit_success") as mock_emit_success,
+        patch("newcode.messaging.emit_error") as mock_emit_error,
     ):
-        from code_puppy.command_line.config_commands import handle_unpin_command
+        from newcode.command_line.config_commands import handle_unpin_command
 
         result = handle_unpin_command("/unpin PYTHON_EXPERT")
         assert result is True
@@ -1465,18 +1459,18 @@ def test_pin_model_completion_case_insensitive_agent():
     """Test that pin model completion works case-insensitively for agents."""
     from prompt_toolkit.document import Document
 
-    from code_puppy.command_line.pin_command_completion import PinModelCompleter
+    from newcode.command_line.pin_command_completion import PinModelCompleter
 
     test_agents = ["python_expert", "Code_Reviewer", "JavaScript_Expert"]
     test_models = ["gpt-5", "claude-4-5-sonnet"]
 
     with (
         patch(
-            "code_puppy.command_line.pin_command_completion.load_agent_names",
+            "newcode.command_line.pin_command_completion.load_agent_names",
             return_value=test_agents,
         ),
         patch(
-            "code_puppy.command_line.pin_command_completion.load_model_names",
+            "newcode.command_line.pin_command_completion.load_model_names",
             return_value=test_models,
         ),
     ):
@@ -1493,18 +1487,18 @@ def test_pin_model_completion_case_insensitive_model():
     """Test that pin model completion works case-insensitively for models."""
     from prompt_toolkit.document import Document
 
-    from code_puppy.command_line.pin_command_completion import PinModelCompleter
+    from newcode.command_line.pin_command_completion import PinModelCompleter
 
     test_agents = ["python_expert", "code_reviewer"]
     test_models = ["gpt-5", "claude-4-5-sonnet"]
 
     with (
         patch(
-            "code_puppy.command_line.pin_command_completion.load_agent_names",
+            "newcode.command_line.pin_command_completion.load_agent_names",
             return_value=test_agents,
         ),
         patch(
-            "code_puppy.command_line.pin_command_completion.load_model_names",
+            "newcode.command_line.pin_command_completion.load_model_names",
             return_value=test_models,
         ),
     ):
@@ -1521,12 +1515,12 @@ def test_unpin_completion_case_insensitive_agent():
     """Test that unpin completion works case-insensitively for agents."""
     from prompt_toolkit.document import Document
 
-    from code_puppy.command_line.pin_command_completion import UnpinCompleter
+    from newcode.command_line.pin_command_completion import UnpinCompleter
 
     test_agents = ["python_expert", "Code_Reviewer", "JavaScript_Expert"]
 
     with patch(
-        "code_puppy.command_line.pin_command_completion.load_agent_names",
+        "newcode.command_line.pin_command_completion.load_agent_names",
         return_value=test_agents,
     ):
         completer = UnpinCompleter(trigger="/unpin")

@@ -8,7 +8,7 @@ import pytest
 
 def _make_concrete_agent():
     """Create a concrete subclass of BaseAgent for testing."""
-    from code_puppy.agents.base_agent import BaseAgent
+    from newcode.agents.base_agent import BaseAgent
 
     class TestAgent(BaseAgent):
         @property
@@ -194,11 +194,9 @@ def test_posix_key_listener_cancel_agent():
             "select.select",
             side_effect=[([mock_stdin], [], []), ([mock_stdin], [], [])],
         ),
+        patch("newcode.agents.base_agent.cancel_agent_uses_signal", return_value=False),
         patch(
-            "code_puppy.agents.base_agent.cancel_agent_uses_signal", return_value=False
-        ),
-        patch(
-            "code_puppy.agents.base_agent.get_cancel_agent_char_code",
+            "newcode.agents.base_agent.get_cancel_agent_char_code",
             return_value="\x04",
         ),
     ):

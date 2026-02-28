@@ -8,8 +8,8 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic_ai import BinaryContent
 
-from code_puppy.cli_runner import run_prompt_with_attachments
-from code_puppy.command_line.attachments import (
+from newcode.cli_runner import run_prompt_with_attachments
+from newcode.command_line.attachments import (
     DEFAULT_ACCEPTED_IMAGE_EXTENSIONS,
     parse_prompt_attachments,
 )
@@ -105,8 +105,8 @@ async def test_run_prompt_with_attachments_passes_binary(tmp_path: Path) -> None
     fake_agent.run_with_mcp.return_value = fake_result
 
     with (
-        patch("code_puppy.messaging.emit_warning") as mock_warn,
-        patch("code_puppy.messaging.emit_system_message") as mock_system,
+        patch("newcode.messaging.emit_warning") as mock_warn,
+        patch("newcode.messaging.emit_system_message") as mock_system,
     ):
         result, _ = await run_prompt_with_attachments(
             fake_agent,
@@ -135,9 +135,9 @@ async def test_run_prompt_with_attachments_uses_spinner(tmp_path: Path) -> None:
     dummy_console = object()
 
     with (
-        patch("code_puppy.messaging.spinner.ConsoleSpinner") as mock_spinner,
-        patch("code_puppy.messaging.emit_system_message"),
-        patch("code_puppy.messaging.emit_warning"),
+        patch("newcode.messaging.spinner.ConsoleSpinner") as mock_spinner,
+        patch("newcode.messaging.emit_system_message"),
+        patch("newcode.messaging.emit_warning"),
     ):
         await run_prompt_with_attachments(
             fake_agent,
@@ -156,8 +156,8 @@ async def test_run_prompt_with_attachments_warns_on_blank_prompt() -> None:
     fake_agent = AsyncMock()
 
     with (
-        patch("code_puppy.messaging.emit_warning") as mock_warn,
-        patch("code_puppy.messaging.emit_system_message"),
+        patch("newcode.messaging.emit_warning") as mock_warn,
+        patch("newcode.messaging.emit_system_message"),
     ):
         result, _ = await run_prompt_with_attachments(
             fake_agent,

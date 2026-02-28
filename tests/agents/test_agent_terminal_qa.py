@@ -6,7 +6,7 @@ using the API server with visual analysis capabilities.
 
 import pytest
 
-from code_puppy.agents.base_agent import BaseAgent
+from newcode.agents.base_agent import BaseAgent
 
 # =============================================================================
 # Import Tests
@@ -18,7 +18,7 @@ class TestTerminalQAImports:
 
     def test_import_terminal_qa_agent(self):
         """Test Terminal QA Agent can be imported."""
-        from code_puppy.agents.agent_terminal_qa import TerminalQAAgent
+        from newcode.agents.agent_terminal_qa import TerminalQAAgent
 
         assert TerminalQAAgent is not None
 
@@ -34,7 +34,7 @@ class TestTerminalQAAgentProperties:
     @pytest.fixture
     def agent(self):
         """Create a Terminal QA Agent instance."""
-        from code_puppy.agents.agent_terminal_qa import TerminalQAAgent
+        from newcode.agents.agent_terminal_qa import TerminalQAAgent
 
         return TerminalQAAgent()
 
@@ -71,7 +71,7 @@ class TestTerminalQAToolsTerminal:
     @pytest.fixture
     def agent(self):
         """Create a Terminal QA Agent instance."""
-        from code_puppy.agents.agent_terminal_qa import TerminalQAAgent
+        from newcode.agents.agent_terminal_qa import TerminalQAAgent
 
         return TerminalQAAgent()
 
@@ -142,7 +142,7 @@ class TestTerminalQAToolsBrowserExcluded:
     @pytest.fixture
     def agent(self):
         """Create a Terminal QA Agent instance."""
-        from code_puppy.agents.agent_terminal_qa import TerminalQAAgent
+        from newcode.agents.agent_terminal_qa import TerminalQAAgent
 
         return TerminalQAAgent()
 
@@ -228,7 +228,7 @@ class TestTerminalQAToolsExcluded:
     @pytest.fixture
     def agent(self):
         """Create a Terminal QA Agent instance."""
-        from code_puppy.agents.agent_terminal_qa import TerminalQAAgent
+        from newcode.agents.agent_terminal_qa import TerminalQAAgent
 
         return TerminalQAAgent()
 
@@ -264,7 +264,7 @@ class TestTerminalQAToolsCore:
     @pytest.fixture
     def agent(self):
         """Create a Terminal QA Agent instance."""
-        from code_puppy.agents.agent_terminal_qa import TerminalQAAgent
+        from newcode.agents.agent_terminal_qa import TerminalQAAgent
 
         return TerminalQAAgent()
 
@@ -285,7 +285,7 @@ class TestTerminalQASystemPrompt:
     @pytest.fixture
     def agent(self):
         """Create a Terminal QA Agent instance."""
-        from code_puppy.agents.agent_terminal_qa import TerminalQAAgent
+        from newcode.agents.agent_terminal_qa import TerminalQAAgent
 
         return TerminalQAAgent()
 
@@ -352,14 +352,14 @@ class TestTerminalQADiscovery:
 
     def test_terminal_qa_discoverable(self):
         """Test Terminal QA Agent is discoverable."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         assert "terminal-qa" in agents
 
     def test_terminal_qa_loadable(self):
         """Test Terminal QA Agent can be loaded via load_agent."""
-        from code_puppy.agents import load_agent
+        from newcode.agents import load_agent
 
         agent = load_agent("terminal-qa")
         assert agent is not None
@@ -368,7 +368,7 @@ class TestTerminalQADiscovery:
 
     def test_terminal_qa_display_name_in_registry(self):
         """Test Terminal QA Agent display name is in registry."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         display_name = agents.get("terminal-qa")
@@ -388,7 +388,7 @@ class TestTerminalQAIntegration:
     @pytest.fixture
     def agent(self):
         """Create a Terminal QA Agent instance."""
-        from code_puppy.agents.agent_terminal_qa import TerminalQAAgent
+        from newcode.agents.agent_terminal_qa import TerminalQAAgent
 
         return TerminalQAAgent()
 

@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.browser.terminal_tools import (
+from newcode.tools.browser.terminal_tools import (
     _get_session_from_context,
     check_terminal_server,
     close_terminal,
@@ -20,7 +20,7 @@ from code_puppy.tools.browser.terminal_tools import (
     start_api_server,
 )
 
-MOD = "code_puppy.tools.browser.terminal_tools"
+MOD = "newcode.tools.browser.terminal_tools"
 
 
 @pytest.fixture(autouse=True)
@@ -264,7 +264,7 @@ class TestStartApiServer:
         pid_file = tmp_path / "api_server.pid"
         pid_file.write_text(str(os.getpid()))
 
-        with patch("code_puppy.config.STATE_DIR", str(tmp_path)):
+        with patch("newcode.config.STATE_DIR", str(tmp_path)):
             r = await start_api_server()
             assert r["success"] is True
             assert r["already_running"] is True
@@ -278,7 +278,7 @@ class TestStartApiServer:
         mock_proc.pid = 12345
 
         with (
-            patch("code_puppy.config.STATE_DIR", str(tmp_path)),
+            patch("newcode.config.STATE_DIR", str(tmp_path)),
             patch("subprocess.Popen", return_value=mock_proc),
         ):
             r = await start_api_server()
@@ -288,7 +288,7 @@ class TestStartApiServer:
     @pytest.mark.asyncio
     async def test_start_exception(self, tmp_path):
         with (
-            patch("code_puppy.config.STATE_DIR", str(tmp_path)),
+            patch("newcode.config.STATE_DIR", str(tmp_path)),
             patch("subprocess.Popen", side_effect=RuntimeError("fail")),
         ):
             r = await start_api_server()
@@ -303,7 +303,7 @@ class TestStartApiServer:
         mock_proc.pid = 12345
 
         with (
-            patch("code_puppy.config.STATE_DIR", str(tmp_path)),
+            patch("newcode.config.STATE_DIR", str(tmp_path)),
             patch("subprocess.Popen", return_value=mock_proc),
         ):
             r = await start_api_server()

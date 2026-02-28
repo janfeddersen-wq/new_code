@@ -7,7 +7,7 @@ import time
 
 import pytest
 
-from code_puppy.tools.command_runner import _win32_pipe_has_data
+from newcode.tools.command_runner import _win32_pipe_has_data
 
 
 @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows only")

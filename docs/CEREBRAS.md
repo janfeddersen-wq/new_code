@@ -41,6 +41,6 @@ Copy and paste the prompt below to ensure the agent implements features, reviews
 ```markdown
 Your task is to implement "REQUIREMENTS.MD".
 
-For that use code-puppy to implement. Use python-reviewer to verify the implementation. If there are errors give the feedback to code_puppy to fix. Repeat until the reviewer has no more "urgent" fixes, maximum 3 times.
+For that use code-puppy to implement. Use python-reviewer to verify the implementation. If there are errors give the feedback to newcode to fix. Repeat until the reviewer has no more "urgent" fixes, maximum 3 times.
 
 During development never execute the backend. Only verify with compiling!

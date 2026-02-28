@@ -1,4 +1,4 @@
-"""Full coverage tests for code_puppy/agents/base_agent.py.
+"""Full coverage tests for newcode/agents/base_agent.py.
 
 Targets all uncovered lines to achieve 100% coverage.
 """
@@ -20,8 +20,8 @@ from pydantic_ai.messages import (
     ToolReturnPart,
 )
 
-import code_puppy.agents.base_agent as base_agent_module
-from code_puppy.agents.base_agent import _log_error_to_file
+import newcode.agents.base_agent as base_agent_module
+from newcode.agents.base_agent import _log_error_to_file
 
 
 # Concrete subclass for testing
@@ -54,7 +54,7 @@ class TestLogErrorToFile:
     """Tests for _log_error_to_file function (lines 107-140)."""
 
     def test_logs_simple_exception(self, tmp_path):
-        with patch("code_puppy.error_logging.get_logs_dir", return_value=str(tmp_path)):
+        with patch("newcode.error_logging.get_logs_dir", return_value=str(tmp_path)):
             try:
                 raise ValueError("test error")
             except ValueError as exc:
@@ -67,7 +67,7 @@ class TestLogErrorToFile:
         assert "test error" in content
 
     def test_logs_chained_exception(self, tmp_path):
-        with patch("code_puppy.error_logging.get_logs_dir", return_value=str(tmp_path)):
+        with patch("newcode.error_logging.get_logs_dir", return_value=str(tmp_path)):
             try:
                 try:
                     raise RuntimeError("root cause")
@@ -83,9 +83,7 @@ class TestLogErrorToFile:
         assert "Cause 1" in content
 
     def test_returns_none_on_error(self):
-        with patch(
-            "code_puppy.error_logging.get_logs_dir", side_effect=Exception("fail")
-        ):
+        with patch("newcode.error_logging.get_logs_dir", side_effect=Exception("fail")):
             try:
                 raise ValueError("test")
             except ValueError as exc:
@@ -137,23 +135,23 @@ class TestGetModelName:
     """Tests for get_model_name (lines 302, 310-318)."""
 
     @patch(
-        "code_puppy.agents.base_agent.get_agent_pinned_model",
+        "newcode.agents.base_agent.get_agent_pinned_model",
         return_value="pinned-model",
     )
     def test_returns_pinned_model(self, mock_pinned, agent):
         assert agent.get_model_name() == "pinned-model"
 
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="")
     @patch(
-        "code_puppy.agents.base_agent.get_global_model_name",
+        "newcode.agents.base_agent.get_global_model_name",
         return_value="global-model",
     )
     def test_returns_global_when_pinned_empty(self, mock_global, mock_pinned, agent):
         assert agent.get_model_name() == "global-model"
 
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value=None)
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value=None)
     @patch(
-        "code_puppy.agents.base_agent.get_global_model_name",
+        "newcode.agents.base_agent.get_global_model_name",
         return_value="global-model",
     )
     def test_returns_global_when_pinned_none(self, mock_global, mock_pinned, agent):
@@ -304,7 +302,7 @@ class TestEstimateContextOverhead:
         mock_agent._tools = {"my_tool": mock_tool}
         agent.pydantic_agent = mock_agent
 
-        with patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep:
+        with patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep:
             mock_prep.return_value = MagicMock(instructions="test instructions")
             tokens = agent.estimate_context_overhead_tokens()
         assert tokens > 0
@@ -319,7 +317,7 @@ class TestEstimateContextOverhead:
         mock_agent._tools = {"annotated_tool": mock_tool}
         agent.pydantic_agent = mock_agent
 
-        with patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep:
+        with patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep:
             mock_prep.return_value = MagicMock(instructions="")
             tokens = agent.estimate_context_overhead_tokens()
         assert tokens > 0
@@ -333,7 +331,7 @@ class TestEstimateContextOverhead:
         mock_agent._tools = {"bad_tool": mock_tool}
         agent.pydantic_agent = mock_agent
 
-        with patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep:
+        with patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep:
             mock_prep.return_value = MagicMock(instructions="")
             # Should not raise
             agent.estimate_context_overhead_tokens()
@@ -347,7 +345,7 @@ class TestEstimateContextOverhead:
             },
             {"name": "", "description": "", "inputSchema": None},
         ]
-        with patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep:
+        with patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep:
             mock_prep.return_value = MagicMock(instructions="")
             tokens = agent.estimate_context_overhead_tokens()
         assert tokens > 0
@@ -356,7 +354,7 @@ class TestEstimateContextOverhead:
         agent._mcp_tool_definitions_cache = [
             {"name": "t", "description": "d", "inputSchema": "not-a-dict"},
         ]
-        with patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep:
+        with patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep:
             mock_prep.return_value = MagicMock(instructions="")
             tokens = agent.estimate_context_overhead_tokens()
         assert tokens > 0
@@ -366,13 +364,13 @@ class TestEstimateContextOverhead:
         bad_def = MagicMock()
         bad_def.get = MagicMock(side_effect=Exception("fail"))
         agent._mcp_tool_definitions_cache = [bad_def]
-        with patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep:
+        with patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep:
             mock_prep.return_value = MagicMock(instructions="")
             agent.estimate_context_overhead_tokens()  # should not raise
 
     def test_prepare_prompt_exception(self, agent):
         with patch(
-            "code_puppy.model_utils.prepare_prompt_for_model",
+            "newcode.model_utils.prepare_prompt_for_model",
             side_effect=Exception("fail"),
         ):
             # Should not raise, just skip system prompt tokens
@@ -388,7 +386,7 @@ class TestEstimateContextOverhead:
         mock_agent._tools = {"tool": mock_tool}
         agent.pydantic_agent = mock_agent
 
-        with patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep:
+        with patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep:
             mock_prep.return_value = MagicMock(instructions="")
             tokens = agent.estimate_context_overhead_tokens()
         assert tokens > 0
@@ -573,8 +571,8 @@ class TestSplitMessagesForProtectedSummarization:
         assert to_summarize == []
         assert protected == msgs
 
-    @patch("code_puppy.agents.base_agent.get_protected_token_count", return_value=100)
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.get_protected_token_count", return_value=100)
+    @patch("newcode.agents.base_agent.emit_info")
     def test_splits_messages(self, mock_info, mock_tokens, agent):
         msgs = [
             ModelRequest(parts=[TextPart(content="system" * 50)]),
@@ -588,11 +586,9 @@ class TestSplitMessagesForProtectedSummarization:
 class TestSummarizeMessages:
     """Tests for summarize_messages (lines 953-985)."""
 
-    @patch("code_puppy.agents.base_agent.run_summarization_sync")
-    @patch(
-        "code_puppy.agents.base_agent.get_protected_token_count", return_value=100000
-    )
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.run_summarization_sync")
+    @patch("newcode.agents.base_agent.get_protected_token_count", return_value=100000)
+    @patch("newcode.agents.base_agent.emit_info")
     def test_nothing_to_summarize(self, mock_info, mock_tokens, mock_summarize, agent):
         msgs = [ModelRequest(parts=[TextPart(content="sys")])]
         result, summarized = agent.summarize_messages(msgs)
@@ -604,12 +600,12 @@ class TestSummarizeMessages:
         assert summarized == []
 
     @patch(
-        "code_puppy.agents.base_agent.run_summarization_sync",
+        "newcode.agents.base_agent.run_summarization_sync",
         return_value="summary text",
     )
-    @patch("code_puppy.agents.base_agent.get_protected_token_count", return_value=50)
-    @patch("code_puppy.agents.base_agent.emit_info")
-    @patch("code_puppy.agents.base_agent.emit_warning")
+    @patch("newcode.agents.base_agent.get_protected_token_count", return_value=50)
+    @patch("newcode.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.emit_warning")
     def test_non_list_summarization_result(
         self, mock_warn, mock_info, mock_tokens, mock_summarize, agent
     ):
@@ -622,14 +618,14 @@ class TestSummarizeMessages:
         # Should wrap non-list into ModelRequest
         assert len(result) >= 1
 
-    @patch("code_puppy.agents.base_agent.run_summarization_sync")
-    @patch("code_puppy.agents.base_agent.get_protected_token_count", return_value=50)
-    @patch("code_puppy.agents.base_agent.emit_info")
-    @patch("code_puppy.agents.base_agent.emit_error")
+    @patch("newcode.agents.base_agent.run_summarization_sync")
+    @patch("newcode.agents.base_agent.get_protected_token_count", return_value=50)
+    @patch("newcode.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.emit_error")
     def test_summarization_error(
         self, mock_error, mock_info, mock_tokens, mock_summarize, agent
     ):
-        from code_puppy.summarization_agent import SummarizationError
+        from newcode.summarization_agent import SummarizationError
 
         mock_summarize.side_effect = SummarizationError(
             "failed", original_error=RuntimeError("inner")
@@ -642,10 +638,10 @@ class TestSummarizeMessages:
         result, summarized = agent.summarize_messages(msgs)
         assert result == msgs  # Returns original on failure
 
-    @patch("code_puppy.agents.base_agent.run_summarization_sync")
-    @patch("code_puppy.agents.base_agent.get_protected_token_count", return_value=50)
-    @patch("code_puppy.agents.base_agent.emit_info")
-    @patch("code_puppy.agents.base_agent.emit_error")
+    @patch("newcode.agents.base_agent.run_summarization_sync")
+    @patch("newcode.agents.base_agent.get_protected_token_count", return_value=50)
+    @patch("newcode.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.emit_error")
     def test_unexpected_error(
         self, mock_error, mock_info, mock_tokens, mock_summarize, agent
     ):
@@ -658,9 +654,9 @@ class TestSummarizeMessages:
         result, summarized = agent.summarize_messages(msgs)
         assert result == msgs
 
-    @patch("code_puppy.agents.base_agent.run_summarization_sync")
-    @patch("code_puppy.agents.base_agent.get_protected_token_count", return_value=50)
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.run_summarization_sync")
+    @patch("newcode.agents.base_agent.get_protected_token_count", return_value=50)
+    @patch("newcode.agents.base_agent.emit_info")
     def test_without_protection(self, mock_info, mock_tokens, mock_summarize, agent):
         mock_summarize.return_value = [
             ModelRequest(parts=[TextPart(content="summary")])
@@ -677,14 +673,14 @@ class TestMessageHistoryProcessor:
     """Tests for message_history_processor compaction branches (lines 1059-1098)."""
 
     @patch(
-        "code_puppy.agents.base_agent.get_compaction_strategy",
+        "newcode.agents.base_agent.get_compaction_strategy",
         return_value="summarization",
     )
-    @patch("code_puppy.agents.base_agent.get_compaction_threshold", return_value=0.01)
-    @patch("code_puppy.agents.base_agent.get_protected_token_count", return_value=100)
-    @patch("code_puppy.agents.base_agent.update_spinner_context")
-    @patch("code_puppy.agents.base_agent.emit_warning")
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.get_compaction_threshold", return_value=0.01)
+    @patch("newcode.agents.base_agent.get_protected_token_count", return_value=100)
+    @patch("newcode.agents.base_agent.update_spinner_context")
+    @patch("newcode.agents.base_agent.emit_warning")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_defers_when_pending_tool_calls(
         self,
         mock_info,
@@ -706,13 +702,13 @@ class TestMessageHistoryProcessor:
         assert isinstance(result, (list, tuple))
 
     @patch(
-        "code_puppy.agents.base_agent.get_compaction_strategy",
+        "newcode.agents.base_agent.get_compaction_strategy",
         return_value="truncation",
     )
-    @patch("code_puppy.agents.base_agent.get_compaction_threshold", return_value=0.01)
-    @patch("code_puppy.agents.base_agent.get_protected_token_count", return_value=100)
-    @patch("code_puppy.agents.base_agent.update_spinner_context")
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.get_compaction_threshold", return_value=0.01)
+    @patch("newcode.agents.base_agent.get_protected_token_count", return_value=100)
+    @patch("newcode.agents.base_agent.update_spinner_context")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_truncation_strategy(
         self, mock_info, mock_spinner, mock_tokens, mock_threshold, mock_strategy, agent
     ):
@@ -728,7 +724,7 @@ class TestMessageHistoryProcessor:
 class TestTruncation:
     """Tests for truncation method (lines 1175, 1227)."""
 
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_basic_truncation(self, mock_info, agent):
         msgs = [
             ModelRequest(parts=[TextPart(content="system")]),
@@ -739,7 +735,7 @@ class TestTruncation:
         result = agent.truncation(msgs, 100)
         assert result[0].parts[0].content == "system"
 
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_truncation_with_thinking_part(self, mock_info, agent):
         msgs = [
             ModelRequest(parts=[TextPart(content="system")]),
@@ -755,7 +751,7 @@ class TestTruncation:
 class TestDelayedCompaction:
     """Tests for request_delayed_compaction and should_attempt_delayed_compaction."""
 
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_request_and_check(self, mock_info, agent):
         base_agent_module._delayed_compaction_requested = False
         agent.request_delayed_compaction()
@@ -769,7 +765,7 @@ class TestDelayedCompaction:
         base_agent_module._delayed_compaction_requested = False
         assert agent.should_attempt_delayed_compaction() is False
 
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_should_attempt_with_pending_calls(self, mock_info, agent):
         base_agent_module._delayed_compaction_requested = True
         tc = ToolCallPart(tool_name="t", args="{}", tool_call_id="tc1")
@@ -784,17 +780,17 @@ class TestGetModelContextLength:
     """Test for get_model_context_length (line 1282)."""
 
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"test-model": {"context_length": 200000}},
     )
     @patch(
-        "code_puppy.agents.base_agent.get_agent_pinned_model", return_value="test-model"
+        "newcode.agents.base_agent.get_agent_pinned_model", return_value="test-model"
     )
     def test_returns_configured_length(self, mock_pinned, mock_config, agent):
         assert agent.get_model_context_length() == 200000
 
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         side_effect=Exception("fail"),
     )
     def test_returns_default_on_error(self, mock_config, agent):
@@ -804,7 +800,7 @@ class TestGetModelContextLength:
 class TestLoadModelWithFallback:
     """Tests for _load_model_with_fallback (lines 1338-1407)."""
 
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
     def test_success(self, mock_get, agent):
         mock_model = MagicMock()
         mock_get.return_value = mock_model
@@ -814,12 +810,10 @@ class TestLoadModelWithFallback:
         assert model == mock_model
         assert name == "good-model"
 
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch(
-        "code_puppy.agents.base_agent.get_global_model_name", return_value="fallback"
-    )
-    @patch("code_puppy.agents.base_agent.emit_warning")
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_global_model_name", return_value="fallback")
+    @patch("newcode.agents.base_agent.emit_warning")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_fallback_to_global(
         self, mock_info, mock_warn, mock_global, mock_get, agent
     ):
@@ -828,10 +822,10 @@ class TestLoadModelWithFallback:
         model, name = agent._load_model_with_fallback("bad", {"fallback": {}}, "grp")
         assert name == "fallback"
 
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_global_model_name", return_value="")
-    @patch("code_puppy.agents.base_agent.emit_warning")
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_global_model_name", return_value="")
+    @patch("newcode.agents.base_agent.emit_warning")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_fallback_to_available(
         self, mock_info, mock_warn, mock_global, mock_get, agent
     ):
@@ -841,20 +835,20 @@ class TestLoadModelWithFallback:
         assert name == "avail"
 
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.get_model",
+        "newcode.agents.base_agent.ModelFactory.get_model",
         side_effect=ValueError("fail"),
     )
-    @patch("code_puppy.agents.base_agent.get_global_model_name", return_value="")
-    @patch("code_puppy.agents.base_agent.emit_warning")
-    @patch("code_puppy.agents.base_agent.emit_error")
+    @patch("newcode.agents.base_agent.get_global_model_name", return_value="")
+    @patch("newcode.agents.base_agent.emit_warning")
+    @patch("newcode.agents.base_agent.emit_error")
     def test_all_fail(self, mock_error, mock_warn, mock_global, mock_get, agent):
         with pytest.raises(ValueError, match="No valid model"):
             agent._load_model_with_fallback("bad", {}, "grp")
 
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_global_model_name", return_value="bad")
-    @patch("code_puppy.agents.base_agent.emit_warning")
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_global_model_name", return_value="bad")
+    @patch("newcode.agents.base_agent.emit_warning")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_skips_same_model_candidate(
         self, mock_info, mock_warn, mock_global, mock_get, agent
     ):
@@ -867,18 +861,18 @@ class TestLoadModelWithFallback:
 class TestReloadCodeGenerationAgent:
     """Tests for reload_code_generation_agent (lines 1487-1556)."""
 
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
+    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"model": {}},
     )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
+    @patch("newcode.agents.base_agent.get_mcp_manager")
+    @patch("newcode.model_utils.prepare_prompt_for_model")
+    @patch("newcode.agents.base_agent.PydanticAgent")
+    @patch("newcode.tools.register_tools_for_agent")
     def test_basic_reload(
         self,
         mock_register,
@@ -900,19 +894,19 @@ class TestReloadCodeGenerationAgent:
         agent.reload_code_generation_agent()
         assert agent._code_generation_agent is not None
 
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=True)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=True)
+    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"model": {}},
     )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.agents.base_agent.DBOSAgent")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
+    @patch("newcode.agents.base_agent.get_mcp_manager")
+    @patch("newcode.model_utils.prepare_prompt_for_model")
+    @patch("newcode.agents.base_agent.PydanticAgent")
+    @patch("newcode.tools.register_tools_for_agent")
+    @patch("newcode.agents.base_agent.DBOSAgent")
     def test_dbos_reload(
         self,
         mock_dbos_agent,
@@ -940,17 +934,17 @@ class TestReloadCodeGenerationAgent:
 class TestCreateAgentWithOutputType:
     """Tests for _create_agent_with_output_type (lines 1603-1657)."""
 
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
+    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"model": {}},
     )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
+    @patch("newcode.model_utils.prepare_prompt_for_model")
+    @patch("newcode.agents.base_agent.PydanticAgent")
+    @patch("newcode.tools.register_tools_for_agent")
     def test_creates_agent(
         self,
         mock_register,
@@ -970,18 +964,18 @@ class TestCreateAgentWithOutputType:
         result = agent._create_agent_with_output_type(dict)
         assert result is not None
 
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=True)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=True)
+    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"model": {}},
     )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
-    @patch("code_puppy.agents.base_agent.DBOSAgent")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
+    @patch("newcode.model_utils.prepare_prompt_for_model")
+    @patch("newcode.agents.base_agent.PydanticAgent")
+    @patch("newcode.tools.register_tools_for_agent")
+    @patch("newcode.agents.base_agent.DBOSAgent")
     def test_creates_dbos_agent(
         self,
         mock_dbos_agent,
@@ -1007,12 +1001,12 @@ class TestCreateAgentWithOutputType:
 class TestMessageHistoryAccumulator:
     """Tests for message_history_accumulator (lines 1666-1712)."""
 
-    @patch("code_puppy.agents.base_agent.on_message_history_processor_start")
-    @patch("code_puppy.agents.base_agent.on_message_history_processor_end")
-    @patch("code_puppy.agents.base_agent.update_spinner_context")
-    @patch("code_puppy.agents.base_agent.get_compaction_threshold", return_value=0.99)
+    @patch("newcode.agents.base_agent.on_message_history_processor_start")
+    @patch("newcode.agents.base_agent.on_message_history_processor_end")
+    @patch("newcode.agents.base_agent.update_spinner_context")
+    @patch("newcode.agents.base_agent.get_compaction_threshold", return_value=0.99)
     @patch(
-        "code_puppy.agents.base_agent.get_compaction_strategy",
+        "newcode.agents.base_agent.get_compaction_strategy",
         return_value="truncation",
     )
     def test_filters_empty_thinking_parts(
@@ -1031,12 +1025,12 @@ class TestMessageHistoryAccumulator:
                 if isinstance(part, ThinkingPart):
                     assert part.content  # Should not be empty
 
-    @patch("code_puppy.agents.base_agent.on_message_history_processor_start")
-    @patch("code_puppy.agents.base_agent.on_message_history_processor_end")
-    @patch("code_puppy.agents.base_agent.update_spinner_context")
-    @patch("code_puppy.agents.base_agent.get_compaction_threshold", return_value=0.99)
+    @patch("newcode.agents.base_agent.on_message_history_processor_start")
+    @patch("newcode.agents.base_agent.on_message_history_processor_end")
+    @patch("newcode.agents.base_agent.update_spinner_context")
+    @patch("newcode.agents.base_agent.get_compaction_threshold", return_value=0.99)
     @patch(
-        "code_puppy.agents.base_agent.get_compaction_strategy",
+        "newcode.agents.base_agent.get_compaction_strategy",
         return_value="truncation",
     )
     def test_multi_part_with_empty_thinking(
@@ -1054,12 +1048,12 @@ class TestMessageHistoryAccumulator:
                 if isinstance(p, ThinkingPart):
                     assert p.content
 
-    @patch("code_puppy.agents.base_agent.on_message_history_processor_start")
-    @patch("code_puppy.agents.base_agent.on_message_history_processor_end")
-    @patch("code_puppy.agents.base_agent.update_spinner_context")
-    @patch("code_puppy.agents.base_agent.get_compaction_threshold", return_value=0.99)
+    @patch("newcode.agents.base_agent.on_message_history_processor_start")
+    @patch("newcode.agents.base_agent.on_message_history_processor_end")
+    @patch("newcode.agents.base_agent.update_spinner_context")
+    @patch("newcode.agents.base_agent.get_compaction_threshold", return_value=0.99)
     @patch(
-        "code_puppy.agents.base_agent.get_compaction_strategy",
+        "newcode.agents.base_agent.get_compaction_strategy",
         return_value="truncation",
     )
     def test_dedup_with_compacted_hash(
@@ -1117,21 +1111,19 @@ class TestRunWithMcp:
         agent._message_history = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="clean prompt")
 
@@ -1158,21 +1150,19 @@ class TestRunWithMcp:
                 return super().encode(*args, **kwargs)
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="clean")
             # Just test normal path works
@@ -1190,21 +1180,19 @@ class TestRunWithMcp:
         binary = BinaryContent(data=b"img", media_type="image/png")
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("describe", attachments=[binary])
@@ -1224,21 +1212,19 @@ class TestRunWithMcp:
             patch.object(
                 agent, "_create_agent_with_output_type", return_value=mock_agent
             ),
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("structured", output_type=dict)
@@ -1253,22 +1239,20 @@ class TestRunWithMcp:
         agent._message_history = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
-            patch("code_puppy.agents.base_agent.emit_info"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.emit_info"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             # CancelledError is caught internally
@@ -1286,22 +1270,20 @@ class TestRunWithMcp:
         agent._message_history = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=True),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=True),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
-            patch("code_puppy.agents.base_agent.SetWorkflowID"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.SetWorkflowID"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("test")
@@ -1317,22 +1299,20 @@ class TestRunWithMcp:
         base_agent_module._delayed_compaction_requested = True
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
-            patch("code_puppy.agents.base_agent.emit_info"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.emit_info"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("test")
@@ -1347,21 +1327,19 @@ class TestRunWithMcp:
         agent._message_history = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("test")
@@ -1374,21 +1352,19 @@ class TestRunWithMcp:
         agent._message_history = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("test")
@@ -1404,21 +1380,19 @@ class TestRunWithMcp:
         agent._message_history = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
             patch.object(
                 agent, "_update_mcp_tool_cache", new_callable=AsyncMock
             ) as mock_cache,
@@ -1437,21 +1411,19 @@ class TestRunWithMcp:
         agent._message_history = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=False,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
             patch.object(agent, "_spawn_ctrl_x_key_listener", return_value=None),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
@@ -1522,15 +1494,15 @@ class TestMessageHistoryProcessorCompaction:
     """Tests for message_history_processor compaction paths (lines 1059-1098)."""
 
     @patch(
-        "code_puppy.agents.base_agent.get_compaction_strategy",
+        "newcode.agents.base_agent.get_compaction_strategy",
         return_value="summarization",
     )
     @patch(
-        "code_puppy.agents.base_agent.get_compaction_threshold", return_value=0.01
+        "newcode.agents.base_agent.get_compaction_threshold", return_value=0.01
     )  # very low threshold
-    @patch("code_puppy.agents.base_agent.update_spinner_context")
-    @patch("code_puppy.agents.base_agent.emit_info")
-    @patch("code_puppy.agents.base_agent.emit_warning")
+    @patch("newcode.agents.base_agent.update_spinner_context")
+    @patch("newcode.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.emit_warning")
     def test_summarization_no_pending(
         self, mock_warn, mock_info, mock_spinner, mock_thresh, mock_strat, agent
     ):
@@ -1550,12 +1522,12 @@ class TestMessageHistoryProcessorCompaction:
             agent.message_history_processor(ctx, msgs)
 
     @patch(
-        "code_puppy.agents.base_agent.get_compaction_strategy",
+        "newcode.agents.base_agent.get_compaction_strategy",
         return_value="truncation",
     )
-    @patch("code_puppy.agents.base_agent.get_compaction_threshold", return_value=0.01)
-    @patch("code_puppy.agents.base_agent.update_spinner_context")
-    @patch("code_puppy.agents.base_agent.emit_info")
+    @patch("newcode.agents.base_agent.get_compaction_threshold", return_value=0.01)
+    @patch("newcode.agents.base_agent.update_spinner_context")
+    @patch("newcode.agents.base_agent.emit_info")
     def test_truncation_path(
         self, mock_info, mock_spinner, mock_thresh, mock_strat, agent
     ):
@@ -1574,18 +1546,18 @@ class TestMessageHistoryProcessorCompaction:
 class TestReloadWithMcpFiltering:
     """Tests for reload_code_generation_agent MCP filtering (lines 1366-1407)."""
 
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
+    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"model": {}},
     )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
+    @patch("newcode.agents.base_agent.get_mcp_manager")
+    @patch("newcode.model_utils.prepare_prompt_for_model")
+    @patch("newcode.agents.base_agent.PydanticAgent")
+    @patch("newcode.tools.register_tools_for_agent")
     def test_mcp_tool_filtering(
         self,
         mock_register,
@@ -1612,21 +1584,21 @@ class TestReloadWithMcpFiltering:
         mock_agent._tools = {"conflict_tool": MagicMock()}
         mock_pagent.return_value = mock_agent
 
-        with patch("code_puppy.agents.base_agent.emit_info"):
+        with patch("newcode.agents.base_agent.emit_info"):
             agent.reload_code_generation_agent()
 
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
+    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"model": {}},
     )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
+    @patch("newcode.agents.base_agent.get_mcp_manager")
+    @patch("newcode.model_utils.prepare_prompt_for_model")
+    @patch("newcode.agents.base_agent.PydanticAgent")
+    @patch("newcode.tools.register_tools_for_agent")
     def test_mcp_server_no_tools(
         self,
         mock_register,
@@ -1653,18 +1625,18 @@ class TestReloadWithMcpFiltering:
 
         agent.reload_code_generation_agent()
 
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
+    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"model": {}},
     )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
+    @patch("newcode.agents.base_agent.get_mcp_manager")
+    @patch("newcode.model_utils.prepare_prompt_for_model")
+    @patch("newcode.agents.base_agent.PydanticAgent")
+    @patch("newcode.tools.register_tools_for_agent")
     def test_mcp_server_exception_during_filter(
         self,
         mock_register,
@@ -1692,18 +1664,18 @@ class TestReloadWithMcpFiltering:
 
         agent.reload_code_generation_agent()
 
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
+    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"model": {}},
     )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
+    @patch("newcode.agents.base_agent.get_mcp_manager")
+    @patch("newcode.model_utils.prepare_prompt_for_model")
+    @patch("newcode.agents.base_agent.PydanticAgent")
+    @patch("newcode.tools.register_tools_for_agent")
     def test_mcp_all_tools_filtered(
         self,
         mock_register,
@@ -1729,21 +1701,21 @@ class TestReloadWithMcpFiltering:
         mock_agent._tools = {"conflict": MagicMock()}
         mock_pagent.return_value = mock_agent
 
-        with patch("code_puppy.agents.base_agent.emit_info"):
+        with patch("newcode.agents.base_agent.emit_info"):
             agent.reload_code_generation_agent()
 
-    @patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False)
-    @patch("code_puppy.agents.base_agent.make_model_settings", return_value={})
+    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
+    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
-        "code_puppy.agents.base_agent.ModelFactory.load_config",
+        "newcode.agents.base_agent.ModelFactory.load_config",
         return_value={"model": {}},
     )
-    @patch("code_puppy.agents.base_agent.ModelFactory.get_model")
-    @patch("code_puppy.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
-    @patch("code_puppy.model_utils.prepare_prompt_for_model")
-    @patch("code_puppy.agents.base_agent.PydanticAgent")
-    @patch("code_puppy.tools.register_tools_for_agent")
+    @patch("newcode.agents.base_agent.ModelFactory.get_model")
+    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
+    @patch("newcode.agents.base_agent.get_mcp_manager")
+    @patch("newcode.model_utils.prepare_prompt_for_model")
+    @patch("newcode.agents.base_agent.PydanticAgent")
+    @patch("newcode.tools.register_tools_for_agent")
     def test_agent_rules_appended(
         self,
         mock_register,
@@ -1800,22 +1772,20 @@ class TestRunWithMcpAdditional:
         agent._mcp_servers = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=True),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=True),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
-            patch("code_puppy.agents.base_agent.SetWorkflowID"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.SetWorkflowID"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("test")
@@ -1830,21 +1800,19 @@ class TestRunWithMcpAdditional:
         agent._message_history = []  # Empty = first message
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="modified prompt")
             await agent.run_with_mcp("hello")
@@ -1859,23 +1827,21 @@ class TestRunWithMcpAdditional:
         agent._message_history = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
-            patch("code_puppy.agents.base_agent.emit_info"),
-            patch("code_puppy.agents.base_agent.log_error"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.emit_info"),
+            patch("newcode.agents.base_agent.log_error"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             # The exception is caught inside run_agent_task via except*
@@ -1889,21 +1855,19 @@ class TestRunWithMcpAdditional:
         agent._message_history = []
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("test")
@@ -1918,21 +1882,19 @@ class TestRunWithMcpAdditional:
         agent._message_history = [ModelRequest(parts=[TextPart(content="existing")])]
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="")
             await agent.run_with_mcp("")
@@ -1951,21 +1913,19 @@ class TestRunWithMcpAdditional:
         img = ImageUrl(url="https://example.com/img.png")
 
         with (
-            patch("code_puppy.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("code_puppy.agents.base_agent.get_message_limit", return_value=100),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
+            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_start",
+                "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
             ),
+            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
             patch(
-                "code_puppy.agents.base_agent.on_agent_run_end", new_callable=AsyncMock
-            ),
-            patch(
-                "code_puppy.agents.base_agent.cancel_agent_uses_signal",
+                "newcode.agents.base_agent.cancel_agent_uses_signal",
                 return_value=True,
             ),
-            patch("code_puppy.agents.base_agent.event_stream_handler"),
+            patch("newcode.agents.base_agent.event_stream_handler"),
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("describe", link_attachments=[img])
@@ -1996,7 +1956,7 @@ class TestCompactMessages:
 class TestRunSummarizationSync:
     """Test run_summarization_sync method."""
 
-    @patch("code_puppy.agents.base_agent.run_summarization_sync")
+    @patch("newcode.agents.base_agent.run_summarization_sync")
     def test_delegates_to_module_function(self, mock_run, agent):
         mock_run.return_value = []
         agent.run_summarization_sync("instructions", [])
@@ -2011,7 +1971,7 @@ class TestLoadPuppyRulesFromFiles:
         rules_file = tmp_path / "AGENTS.md"
         rules_file.write_text("# Project Rules")
         with (
-            patch("code_puppy.config.CONFIG_DIR", str(tmp_path / "nonexistent")),
+            patch("newcode.config.CONFIG_DIR", str(tmp_path / "nonexistent")),
             patch(
                 "pathlib.Path.exists",
                 side_effect=lambda self: str(self) == str(rules_file)
@@ -2069,19 +2029,19 @@ class TestGetToolsConfigAndUserPromptNone:
 class TestLoadMcpServers:
     """Tests for load_mcp_servers and reload_mcp_servers."""
 
-    @patch("code_puppy.agents.base_agent.get_value", return_value="true")
+    @patch("newcode.agents.base_agent.get_value", return_value="true")
     def test_disabled(self, mock_val, agent):
         result = agent.load_mcp_servers()
         assert result == []
 
-    @patch("code_puppy.agents.base_agent.get_value", return_value=None)
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
+    @patch("newcode.agents.base_agent.get_value", return_value=None)
+    @patch("newcode.agents.base_agent.get_mcp_manager")
     def test_enabled(self, mock_mgr, mock_val, agent):
         mock_mgr.return_value.get_servers_for_agent.return_value = ["server1"]
         result = agent.load_mcp_servers()
         assert result == ["server1"]
 
-    @patch("code_puppy.agents.base_agent.get_mcp_manager")
+    @patch("newcode.agents.base_agent.get_mcp_manager")
     def test_reload(self, mock_mgr, agent):
         agent._mcp_tool_definitions_cache = [{"old": True}]
         mock_mgr.return_value.get_servers_for_agent.return_value = []

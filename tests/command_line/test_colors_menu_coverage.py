@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.command_line.colors_menu import (
+from newcode.command_line.colors_menu import (
     ColorConfiguration,
     _get_preview_text_for_prompt_toolkit,
     _get_single_banner_preview,
@@ -114,7 +114,7 @@ class TestSplitPanelSelector:
     @pytest.mark.asyncio
     async def test_enter_selects(self):
         """Test that entering selects the current choice."""
-        with patch("code_puppy.command_line.colors_menu.Application") as mock_app_cls:
+        with patch("newcode.command_line.colors_menu.Application") as mock_app_cls:
             mock_app = MagicMock()
             mock_app_cls.return_value = mock_app
 
@@ -141,7 +141,7 @@ class TestSplitPanelSelector:
     @pytest.mark.asyncio
     async def test_empty_choices(self):
         """Test with empty choices."""
-        with patch("code_puppy.command_line.colors_menu.Application") as mock_app_cls:
+        with patch("newcode.command_line.colors_menu.Application") as mock_app_cls:
             mock_app = MagicMock()
             mock_app_cls.return_value = mock_app
 
@@ -169,7 +169,7 @@ class TestHandleColorMenu:
         original_color = config.get_current_banner_color()
 
         with patch(
-            "code_puppy.command_line.colors_menu._split_panel_selector",
+            "newcode.command_line.colors_menu._split_panel_selector",
             side_effect=KeyboardInterrupt,
         ):
             await _handle_color_menu(config)
@@ -180,7 +180,7 @@ class TestHandleColorMenu:
     async def test_exception_handled(self):
         config = ColorConfiguration()
         with patch(
-            "code_puppy.command_line.colors_menu._split_panel_selector",
+            "newcode.command_line.colors_menu._split_panel_selector",
             side_effect=RuntimeError("boom"),
         ):
             await _handle_color_menu(config)  # should not raise
@@ -189,7 +189,7 @@ class TestHandleColorMenu:
     async def test_successful_selection(self):
         config = ColorConfiguration()
         with patch(
-            "code_puppy.command_line.colors_menu._split_panel_selector",
+            "newcode.command_line.colors_menu._split_panel_selector",
             return_value="blue",
         ):
             await _handle_color_menu(config)
@@ -203,10 +203,10 @@ class TestInteractiveColorsPicker:
     async def test_returns_none_on_cancel(self):
         with (
             patch(
-                "code_puppy.command_line.colors_menu._split_panel_selector",
+                "newcode.command_line.colors_menu._split_panel_selector",
                 side_effect=KeyboardInterrupt,
             ),
-            patch("code_puppy.tools.command_runner.set_awaiting_user_input"),
+            patch("newcode.tools.command_runner.set_awaiting_user_input"),
             patch("sys.stdout"),
             patch("asyncio.sleep", new_callable=AsyncMock),
         ):
@@ -235,14 +235,14 @@ class TestInteractiveColorsPicker:
 
         with (
             patch(
-                "code_puppy.command_line.colors_menu._split_panel_selector",
+                "newcode.command_line.colors_menu._split_panel_selector",
                 side_effect=fake_selector,
             ),
             patch(
-                "code_puppy.command_line.colors_menu._handle_color_menu",
+                "newcode.command_line.colors_menu._handle_color_menu",
                 new_callable=AsyncMock,
             ),
-            patch("code_puppy.tools.command_runner.set_awaiting_user_input"),
+            patch("newcode.tools.command_runner.set_awaiting_user_input"),
             patch("sys.stdout"),
             patch("asyncio.sleep", new_callable=AsyncMock),
         ):
@@ -261,10 +261,10 @@ class TestInteractiveColorsPicker:
 
         with (
             patch(
-                "code_puppy.command_line.colors_menu._split_panel_selector",
+                "newcode.command_line.colors_menu._split_panel_selector",
                 side_effect=fake_selector,
             ),
-            patch("code_puppy.tools.command_runner.set_awaiting_user_input"),
+            patch("newcode.tools.command_runner.set_awaiting_user_input"),
             patch("sys.stdout"),
             patch("asyncio.sleep", new_callable=AsyncMock),
         ):
@@ -286,10 +286,10 @@ class TestInteractiveColorsPicker:
 
         with (
             patch(
-                "code_puppy.command_line.colors_menu._split_panel_selector",
+                "newcode.command_line.colors_menu._split_panel_selector",
                 side_effect=fake_selector,
             ),
-            patch("code_puppy.tools.command_runner.set_awaiting_user_input"),
+            patch("newcode.tools.command_runner.set_awaiting_user_input"),
             patch("sys.stdout"),
             patch("asyncio.sleep", new_callable=AsyncMock),
         ):
@@ -311,10 +311,10 @@ class TestInteractiveColorsPicker:
 
         with (
             patch(
-                "code_puppy.command_line.colors_menu._split_panel_selector",
+                "newcode.command_line.colors_menu._split_panel_selector",
                 side_effect=fake_selector,
             ),
-            patch("code_puppy.tools.command_runner.set_awaiting_user_input"),
+            patch("newcode.tools.command_runner.set_awaiting_user_input"),
             patch("sys.stdout"),
             patch("asyncio.sleep", new_callable=AsyncMock),
         ):
@@ -334,14 +334,14 @@ class TestInteractiveColorsPicker:
 
         with (
             patch(
-                "code_puppy.command_line.colors_menu._split_panel_selector",
+                "newcode.command_line.colors_menu._split_panel_selector",
                 side_effect=fake_selector,
             ),
             patch(
-                "code_puppy.command_line.colors_menu._handle_color_menu",
+                "newcode.command_line.colors_menu._handle_color_menu",
                 new_callable=AsyncMock,
             ),
-            patch("code_puppy.tools.command_runner.set_awaiting_user_input"),
+            patch("newcode.tools.command_runner.set_awaiting_user_input"),
             patch("sys.stdout"),
             patch("asyncio.sleep", new_callable=AsyncMock),
         ):
@@ -358,10 +358,10 @@ class TestInteractiveColorsPicker:
 
         with (
             patch(
-                "code_puppy.command_line.colors_menu._split_panel_selector",
+                "newcode.command_line.colors_menu._split_panel_selector",
                 side_effect=fake_selector,
             ),
-            patch("code_puppy.tools.command_runner.set_awaiting_user_input"),
+            patch("newcode.tools.command_runner.set_awaiting_user_input"),
             patch("sys.stdout"),
             patch("asyncio.sleep", new_callable=AsyncMock),
         ):
@@ -372,10 +372,10 @@ class TestInteractiveColorsPicker:
     async def test_exception_returns_none(self):
         with (
             patch(
-                "code_puppy.command_line.colors_menu._split_panel_selector",
+                "newcode.command_line.colors_menu._split_panel_selector",
                 side_effect=RuntimeError("boom"),
             ),
-            patch("code_puppy.tools.command_runner.set_awaiting_user_input"),
+            patch("newcode.tools.command_runner.set_awaiting_user_input"),
             patch("sys.stdout"),
             patch("asyncio.sleep", new_callable=AsyncMock),
         ):

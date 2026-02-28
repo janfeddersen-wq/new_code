@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.tools.file_operations import (
+from newcode.tools.file_operations import (
     ListFileOutput,
     ReadFileOutput,
     _list_files,

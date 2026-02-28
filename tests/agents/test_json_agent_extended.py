@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.agents.json_agent import JSONAgent, discover_json_agents
+from newcode.agents.json_agent import JSONAgent, discover_json_agents
 
 
 class TestJsonAgentExtended:
@@ -374,13 +374,13 @@ class TestDiscoverJsonAgents:
         agent1_file.write_text(json.dumps(config1))
         agent2_file.write_text(json.dumps(config2))
 
-        # Use a temp directory without .code_puppy to isolate from project directory
+        # Use a temp directory without .newcode to isolate from project directory
         isolated_dir = tmp_path / "isolated"
         isolated_dir.mkdir()
         monkeypatch.chdir(isolated_dir)
 
         # Mock only the user agents directory to point to our tmp_path
-        with patch("code_puppy.config.get_user_agents_directory") as mock_get_user_dir:
+        with patch("newcode.config.get_user_agents_directory") as mock_get_user_dir:
             mock_get_user_dir.return_value = str(tmp_path)
             agents = discover_json_agents()
 
@@ -414,12 +414,12 @@ class TestDiscoverJsonAgents:
         not_json = tmp_path / "not_json.txt"
         not_json.write_text("Not a JSON file")
 
-        # Change to isolated directory to avoid project .code_puppy
+        # Change to isolated directory to avoid project .newcode
         isolated_dir = tmp_path / "isolated"
         isolated_dir.mkdir()
         monkeypatch.chdir(isolated_dir)
 
-        with patch("code_puppy.config.get_user_agents_directory") as mock_get_user_dir:
+        with patch("newcode.config.get_user_agents_directory") as mock_get_user_dir:
             mock_get_user_dir.return_value = str(tmp_path)
             agents = discover_json_agents()
 
@@ -430,20 +430,20 @@ class TestDiscoverJsonAgents:
 
     def test_discover_no_agents_directory(self, tmp_path, monkeypatch):
         """Test discovery when agents directory doesn't exist."""
-        # Change to isolated directory to avoid project .code_puppy
+        # Change to isolated directory to avoid project .newcode
         monkeypatch.chdir(tmp_path)
 
-        with patch("code_puppy.config.get_user_agents_directory") as mock_get_user_dir:
+        with patch("newcode.config.get_user_agents_directory") as mock_get_user_dir:
             mock_get_user_dir.return_value = "/nonexistent/directory"
             agents = discover_json_agents()
             assert agents == {}
 
     def test_discover_empty_directory(self, tmp_path, monkeypatch):
         """Test discovery when agents directory is empty."""
-        # Change to isolated directory to avoid project .code_puppy
+        # Change to isolated directory to avoid project .newcode
         monkeypatch.chdir(tmp_path)
 
-        with patch("code_puppy.config.get_user_agents_directory") as mock_get_user_dir:
+        with patch("newcode.config.get_user_agents_directory") as mock_get_user_dir:
             mock_get_user_dir.return_value = str(tmp_path)
             agents = discover_json_agents()
             assert agents == {}
@@ -471,12 +471,12 @@ class TestDiscoverJsonAgents:
         agent1_file.write_text(json.dumps(config1))
         agent2_file.write_text(json.dumps(config2))
 
-        # Change to isolated directory to avoid project .code_puppy
+        # Change to isolated directory to avoid project .newcode
         isolated_dir = tmp_path / "isolated"
         isolated_dir.mkdir()
         monkeypatch.chdir(isolated_dir)
 
-        with patch("code_puppy.config.get_user_agents_directory") as mock_get_user_dir:
+        with patch("newcode.config.get_user_agents_directory") as mock_get_user_dir:
             mock_get_user_dir.return_value = str(tmp_path)
             agents = discover_json_agents()
 
@@ -504,7 +504,7 @@ class TestDiscoverProjectJsonAgents:
 
     def test_discover_project_agents(self, tmp_path):
         """Test that project-only agents are discovered."""
-        project_dir = tmp_path / "project" / ".code_puppy" / "agents"
+        project_dir = tmp_path / "project" / ".newcode" / "agents"
         project_dir.mkdir(parents=True)
         user_dir = tmp_path / "user_agents"
         user_dir.mkdir()
@@ -513,11 +513,11 @@ class TestDiscoverProjectJsonAgents:
 
         with (
             patch(
-                "code_puppy.config.get_user_agents_directory",
+                "newcode.config.get_user_agents_directory",
                 return_value=str(user_dir),
             ),
             patch(
-                "code_puppy.config.get_project_agents_directory",
+                "newcode.config.get_project_agents_directory",
                 return_value=str(project_dir),
             ),
         ):
@@ -541,11 +541,11 @@ class TestDiscoverProjectJsonAgents:
 
         with (
             patch(
-                "code_puppy.config.get_user_agents_directory",
+                "newcode.config.get_user_agents_directory",
                 return_value=str(user_dir),
             ),
             patch(
-                "code_puppy.config.get_project_agents_directory",
+                "newcode.config.get_project_agents_directory",
                 return_value=str(project_dir),
             ),
         ):
@@ -562,11 +562,11 @@ class TestDiscoverProjectJsonAgents:
 
         with (
             patch(
-                "code_puppy.config.get_user_agents_directory",
+                "newcode.config.get_user_agents_directory",
                 return_value=str(user_dir),
             ),
             patch(
-                "code_puppy.config.get_project_agents_directory",
+                "newcode.config.get_project_agents_directory",
                 return_value=None,
             ),
         ):
@@ -587,11 +587,11 @@ class TestDiscoverProjectJsonAgents:
 
         with (
             patch(
-                "code_puppy.config.get_user_agents_directory",
+                "newcode.config.get_user_agents_directory",
                 return_value=str(user_dir),
             ),
             patch(
-                "code_puppy.config.get_project_agents_directory",
+                "newcode.config.get_project_agents_directory",
                 return_value=str(project_dir),
             ),
         ):
@@ -617,11 +617,11 @@ class TestDiscoverProjectJsonAgents:
 
         with (
             patch(
-                "code_puppy.config.get_user_agents_directory",
+                "newcode.config.get_user_agents_directory",
                 return_value=str(user_dir),
             ),
             patch(
-                "code_puppy.config.get_project_agents_directory",
+                "newcode.config.get_project_agents_directory",
                 return_value=str(project_dir),
             ),
         ):

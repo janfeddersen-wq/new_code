@@ -10,7 +10,7 @@ Tests server registry catalog functionality including:
 - Backward compatibility with old requirements format
 """
 
-from code_puppy.mcp_.server_registry_catalog import (
+from newcode.mcp_.server_registry_catalog import (
     MCP_SERVER_REGISTRY,
     MCPServerRequirements,
     MCPServerTemplate,

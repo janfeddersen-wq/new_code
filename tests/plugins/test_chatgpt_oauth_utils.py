@@ -10,10 +10,10 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
-from code_puppy.plugins.chatgpt_oauth.config import (
+from newcode.plugins.chatgpt_oauth.config import (
     CHATGPT_OAUTH_CONFIG,
 )
-from code_puppy.plugins.chatgpt_oauth.utils import (
+from newcode.plugins.chatgpt_oauth.utils import (
     OAuthContext,
     _compute_code_challenge,
     _generate_code_verifier,
@@ -534,7 +534,7 @@ class TestParseJwtClaims:
 class TestTokenStorage:
     """Test token storage and retrieval."""
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_token_storage_path")
     def test_load_stored_tokens_success(self, mock_get_path, temp_token_file):
         """Test successful loading of stored tokens."""
         mock_get_path.return_value = temp_token_file
@@ -556,7 +556,7 @@ class TestTokenStorage:
 
         assert result == test_tokens
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_token_storage_path")
     def test_load_stored_tokens_file_not_exists(self, mock_get_path):
         """Test loading tokens when file doesn't exist returns None."""
         mock_get_path.return_value = Path("/nonexistent/file.json")
@@ -565,7 +565,7 @@ class TestTokenStorage:
 
         assert result is None
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_token_storage_path")
     def test_load_stored_tokens_invalid_json(self, mock_get_path, temp_token_file):
         """Test loading tokens with invalid JSON returns None."""
         mock_get_path.return_value = temp_token_file
@@ -578,7 +578,7 @@ class TestTokenStorage:
 
         assert result is None
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_token_storage_path")
     def test_load_stored_tokens_permission_error(self, mock_get_path):
         """Test loading tokens with permission error returns None."""
         mock_get_path.return_value = Path("/root/protected.json")
@@ -587,7 +587,7 @@ class TestTokenStorage:
             result = load_stored_tokens()
             assert result is None
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_token_storage_path")
     def test_save_stored_tokens_success(self, mock_get_path, temp_token_file):
         """Test successful saving of stored tokens."""
         mock_get_path.return_value = temp_token_file
@@ -614,7 +614,7 @@ class TestTokenStorage:
         file_stat = temp_token_file.stat()
         assert file_stat.st_mode & 0o777 == 0o600
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_token_storage_path")
     def test_save_stored_tokens_permission_error(self, mock_get_path):
         """Test saving tokens with permission error returns False."""
         mock_get_path.return_value = Path("/root/protected.json")
@@ -623,7 +623,7 @@ class TestTokenStorage:
             result = save_tokens({"test": "data"})
             assert result is False
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_token_storage_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_token_storage_path")
     def test_save_stored_tokens_serialization_error(
         self, mock_get_path, temp_token_file
     ):
@@ -641,7 +641,7 @@ class TestTokenStorage:
 class TestModelStorage:
     """Test model configuration storage."""
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_load_chatgpt_models_success(self, mock_get_path, temp_models_file):
         """Test successful loading of ChatGPT models configuration."""
         mock_get_path.return_value = temp_models_file
@@ -666,7 +666,7 @@ class TestModelStorage:
 
         assert result == test_models
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_load_chatgpt_models_not_exists(self, mock_get_path):
         """Test loading models when file doesn't exist returns empty dict."""
         mock_get_path.return_value = Path("/nonexistent/models.json")
@@ -675,7 +675,7 @@ class TestModelStorage:
 
         assert result == {}
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_save_chatgpt_models_success(self, mock_get_path, temp_models_file):
         """Test successful saving of ChatGPT models configuration."""
         mock_get_path.return_value = temp_models_file
@@ -698,7 +698,7 @@ class TestModelStorage:
 
         assert saved_data == test_models
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_save_chatgpt_models_error(self, mock_get_path):
         """Test saving models with error returns False."""
         mock_get_path.return_value = Path("/root/protected.json")
@@ -920,7 +920,7 @@ class TestFetchChatGPTModels:
         result = fetch_chatgpt_models("invalid_token", "test_account_id")
 
         # Returns default models on error, not None
-        from code_puppy.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
+        from newcode.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
 
         assert result == DEFAULT_CODEX_MODELS
 
@@ -932,7 +932,7 @@ class TestFetchChatGPTModels:
         result = fetch_chatgpt_models("test_access_token", "test_account_id")
 
         # Returns default models on error, not None
-        from code_puppy.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
+        from newcode.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
 
         assert result == DEFAULT_CODEX_MODELS
 
@@ -944,7 +944,7 @@ class TestFetchChatGPTModels:
         result = fetch_chatgpt_models("test_access_token", "test_account_id")
 
         # Returns default models on error, not None
-        from code_puppy.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
+        from newcode.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
 
         assert result == DEFAULT_CODEX_MODELS
 
@@ -959,7 +959,7 @@ class TestFetchChatGPTModels:
         result = fetch_chatgpt_models("test_access_token", "test_account_id")
 
         # Returns default models on error, not None
-        from code_puppy.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
+        from newcode.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
 
         assert result == DEFAULT_CODEX_MODELS
 
@@ -974,7 +974,7 @@ class TestFetchChatGPTModels:
         result = fetch_chatgpt_models("test_access_token", "test_account_id")
 
         # Returns default models when models field is missing
-        from code_puppy.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
+        from newcode.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
 
         assert result == DEFAULT_CODEX_MODELS
 
@@ -989,7 +989,7 @@ class TestFetchChatGPTModels:
         result = fetch_chatgpt_models("test_access_token", "test_account_id")
 
         # Returns default models when models field is invalid
-        from code_puppy.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
+        from newcode.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
 
         assert result == DEFAULT_CODEX_MODELS
 
@@ -1004,7 +1004,7 @@ class TestFetchChatGPTModels:
         result = fetch_chatgpt_models("test_access_token", "test_account_id")
 
         # Returns default models when list is empty
-        from code_puppy.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
+        from newcode.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
 
         assert result == DEFAULT_CODEX_MODELS
 
@@ -1012,8 +1012,8 @@ class TestFetchChatGPTModels:
 class TestAddModelsToConfig:
     """Test adding models to configuration."""
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.save_chatgpt_models")
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.load_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.save_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.load_chatgpt_models")
     def test_add_models_to_extra_config_success(self, mock_load, mock_save):
         """Test successful addition of models to configuration."""
         mock_load.return_value = {
@@ -1056,8 +1056,8 @@ class TestAddModelsToConfig:
         )
         assert gpt4_config["oauth_source"] == "chatgpt-oauth-plugin"
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.save_chatgpt_models")
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.load_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.save_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.load_chatgpt_models")
     def test_add_models_to_extra_config_save_failure(self, mock_load, mock_save):
         """Test model addition fails when save fails."""
         mock_load.return_value = {}
@@ -1067,8 +1067,8 @@ class TestAddModelsToConfig:
 
         assert result is False
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.save_chatgpt_models")
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.load_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.save_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.load_chatgpt_models")
     def test_add_models_to_extra_config_load_failure(self, mock_load, mock_save):
         """Test model addition handles load failure gracefully."""
         mock_load.return_value = {}  # Returns empty dict on failure
@@ -1087,8 +1087,8 @@ class TestAddModelsToConfig:
 class TestRemoveChatGPTModels:
     """Test removing ChatGPT models from configuration."""
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.save_chatgpt_models")
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.load_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.save_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.load_chatgpt_models")
     def test_remove_chatgpt_models_success(self, mock_load, mock_save):
         """Test successful removal of ChatGPT models."""
         mock_load.return_value = {
@@ -1120,8 +1120,8 @@ class TestRemoveChatGPTModels:
         assert "chatgpt-gpt-3.5-turbo" not in saved_config
         assert "custom-model" in saved_config
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.save_chatgpt_models")
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.load_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.save_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.load_chatgpt_models")
     def test_remove_chatgpt_models_no_oauth_models(self, mock_load, mock_save):
         """Test removal when no OAuth models exist."""
         mock_load.return_value = {
@@ -1145,8 +1145,8 @@ class TestRemoveChatGPTModels:
         saved_config = mock_save.call_args[0][0]
         assert len(saved_config) == 2
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.save_chatgpt_models")
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.load_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.save_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.load_chatgpt_models")
     def test_remove_chatgpt_models_save_failure(self, mock_load, mock_save):
         """Test model removal fails when save fails."""
         mock_load.return_value = {
@@ -1161,7 +1161,7 @@ class TestRemoveChatGPTModels:
 
         assert result == 0  # Returns 0 on.failure
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.load_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.utils.load_chatgpt_models")
     def test_remove_chatgpt_models_load_failure(self, mock_load):
         """Test model removal handles load failure gracefully."""
         mock_load.return_value = {}  # Returns empty dict on failure
@@ -1203,7 +1203,7 @@ class TestErrorHandling:
     @patch("requests.get")
     def test_fetch_chatgpt_models_various_http_errors(self, mock_get):
         """Test model fetching handles various HTTP error codes by returning default models."""
-        from code_puppy.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
+        from newcode.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
 
         test_cases = [
             (400, "Bad Request"),
@@ -1242,7 +1242,7 @@ class TestErrorHandling:
 
     def test_model_filtering_edge_cases(self):
         """Test model filtering with edge cases."""
-        from code_puppy.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
+        from newcode.plugins.chatgpt_oauth.utils import DEFAULT_CODEX_MODELS
 
         test_cases = [
             # Empty models list - returns default models

@@ -12,7 +12,7 @@ The Pack consists of:
 
 import pytest
 
-from code_puppy.agents.base_agent import BaseAgent
+from newcode.agents.base_agent import BaseAgent
 
 # =============================================================================
 # Import Tests
@@ -24,49 +24,49 @@ class TestPackImports:
 
     def test_import_pack_leader(self):
         """Test Pack Leader agent can be imported."""
-        from code_puppy.agents.agent_pack_leader import PackLeaderAgent
+        from newcode.agents.agent_pack_leader import PackLeaderAgent
 
         assert PackLeaderAgent is not None
 
     def test_import_bloodhound(self):
         """Test Bloodhound agent can be imported."""
-        from code_puppy.agents.pack.bloodhound import BloodhoundAgent
+        from newcode.agents.pack.bloodhound import BloodhoundAgent
 
         assert BloodhoundAgent is not None
 
     def test_import_terrier(self):
         """Test Terrier agent can be imported."""
-        from code_puppy.agents.pack.terrier import TerrierAgent
+        from newcode.agents.pack.terrier import TerrierAgent
 
         assert TerrierAgent is not None
 
     def test_import_retriever(self):
         """Test Retriever agent can be imported."""
-        from code_puppy.agents.pack.retriever import RetrieverAgent
+        from newcode.agents.pack.retriever import RetrieverAgent
 
         assert RetrieverAgent is not None
 
     def test_import_husky(self):
         """Test Husky agent can be imported."""
-        from code_puppy.agents.pack.husky import HuskyAgent
+        from newcode.agents.pack.husky import HuskyAgent
 
         assert HuskyAgent is not None
 
     def test_import_shepherd(self):
         """Test Shepherd agent can be imported."""
-        from code_puppy.agents.pack.shepherd import ShepherdAgent
+        from newcode.agents.pack.shepherd import ShepherdAgent
 
         assert ShepherdAgent is not None
 
     def test_import_watchdog(self):
         """Test Watchdog agent can be imported."""
-        from code_puppy.agents.pack.watchdog import WatchdogAgent
+        from newcode.agents.pack.watchdog import WatchdogAgent
 
         assert WatchdogAgent is not None
 
     def test_import_from_pack_init(self):
         """Test all pack agents can be imported from pack __init__."""
-        from code_puppy.agents.pack import (
+        from newcode.agents.pack import (
             BloodhoundAgent,
             HuskyAgent,
             RetrieverAgent,
@@ -94,7 +94,7 @@ class TestPackLeaderAgent:
     @pytest.fixture
     def agent(self):
         """Create a Pack Leader agent instance."""
-        from code_puppy.agents.agent_pack_leader import PackLeaderAgent
+        from newcode.agents.agent_pack_leader import PackLeaderAgent
 
         return PackLeaderAgent()
 
@@ -181,7 +181,7 @@ class TestBloodhoundAgent:
     @pytest.fixture
     def agent(self):
         """Create a Bloodhound agent instance."""
-        from code_puppy.agents.pack.bloodhound import BloodhoundAgent
+        from newcode.agents.pack.bloodhound import BloodhoundAgent
 
         return BloodhoundAgent()
 
@@ -230,7 +230,7 @@ class TestTerrierAgent:
     @pytest.fixture
     def agent(self):
         """Create a Terrier agent instance."""
-        from code_puppy.agents.pack.terrier import TerrierAgent
+        from newcode.agents.pack.terrier import TerrierAgent
 
         return TerrierAgent()
 
@@ -279,7 +279,7 @@ class TestRetrieverAgent:
     @pytest.fixture
     def agent(self):
         """Create a Retriever agent instance."""
-        from code_puppy.agents.pack.retriever import RetrieverAgent
+        from newcode.agents.pack.retriever import RetrieverAgent
 
         return RetrieverAgent()
 
@@ -328,7 +328,7 @@ class TestHuskyAgent:
     @pytest.fixture
     def agent(self):
         """Create a Husky agent instance."""
-        from code_puppy.agents.pack.husky import HuskyAgent
+        from newcode.agents.pack.husky import HuskyAgent
 
         return HuskyAgent()
 
@@ -378,7 +378,7 @@ class TestShepherdAgent:
     @pytest.fixture
     def agent(self):
         """Create a Shepherd agent instance."""
-        from code_puppy.agents.pack.shepherd import ShepherdAgent
+        from newcode.agents.pack.shepherd import ShepherdAgent
 
         return ShepherdAgent()
 
@@ -439,7 +439,7 @@ class TestWatchdogAgent:
     @pytest.fixture
     def agent(self):
         """Create a Watchdog agent instance."""
-        from code_puppy.agents.pack.watchdog import WatchdogAgent
+        from newcode.agents.pack.watchdog import WatchdogAgent
 
         return WatchdogAgent()
 
@@ -500,62 +500,62 @@ class TestPackDiscovery:
     @pytest.fixture(autouse=True)
     def enable_pack_agents(self, monkeypatch):
         """Enable pack agents for discovery tests."""
-        from code_puppy import config
+        from newcode import config
 
         monkeypatch.setattr(config, "get_pack_agents_enabled", lambda: True)
 
     def test_pack_leader_discoverable(self):
         """Test Pack Leader is discoverable."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         assert "pack-leader" in agents
 
     def test_bloodhound_discoverable(self):
         """Test Bloodhound is discoverable."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         assert "bloodhound" in agents
 
     def test_terrier_discoverable(self):
         """Test Terrier is discoverable."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         assert "terrier" in agents
 
     def test_retriever_discoverable(self):
         """Test Retriever is discoverable."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         assert "retriever" in agents
 
     def test_husky_discoverable(self):
         """Test Husky is discoverable."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         assert "husky" in agents
 
     def test_shepherd_discoverable(self):
         """Test Shepherd is discoverable."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         assert "shepherd" in agents
 
     def test_watchdog_discoverable(self):
         """Test Watchdog is discoverable."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         assert "watchdog" in agents
 
     def test_all_pack_agents_discoverable(self):
         """Test all pack agents are discoverable in one check."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         pack_agents = [
@@ -573,7 +573,7 @@ class TestPackDiscovery:
 
     def test_pack_agents_loadable(self):
         """Test all pack agents can be loaded via load_agent."""
-        from code_puppy.agents import load_agent
+        from newcode.agents import load_agent
 
         pack_agents = [
             "pack-leader",
@@ -593,7 +593,7 @@ class TestPackDiscovery:
 
     def test_pack_agents_have_display_names(self):
         """Test all pack agents have display names with emojis."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         pack_agents = [
@@ -625,13 +625,13 @@ class TestPackIntegration:
     @pytest.fixture(autouse=True)
     def enable_pack_agents(self, monkeypatch):
         """Enable pack agents for integration tests."""
-        from code_puppy import config
+        from newcode import config
 
         monkeypatch.setattr(config, "get_pack_agents_enabled", lambda: True)
 
     def test_pack_leader_can_reference_pack_members(self):
         """Test Pack Leader's prompt references all pack members."""
-        from code_puppy.agents.agent_pack_leader import PackLeaderAgent
+        from newcode.agents.agent_pack_leader import PackLeaderAgent
 
         agent = PackLeaderAgent()
         prompt = agent.get_system_prompt().lower()
@@ -646,7 +646,7 @@ class TestPackIntegration:
 
     def test_all_pack_agents_have_unique_names(self):
         """Test all pack agents have unique names."""
-        from code_puppy.agents import get_available_agents
+        from newcode.agents import get_available_agents
 
         agents = get_available_agents()
         pack_agents = [
@@ -668,7 +668,7 @@ class TestPackIntegration:
 
     def test_pack_agents_tool_consistency(self):
         """Test pack agents have consistent tool availability."""
-        from code_puppy.agents import load_agent
+        from newcode.agents import load_agent
 
         pack_agents = [
             "pack-leader",
@@ -701,8 +701,8 @@ class TestPackAgentsConfig:
 
     def test_pack_agents_hidden_when_disabled(self, monkeypatch):
         """Test pack agents are hidden from get_available_agents when disabled."""
-        from code_puppy import config
-        from code_puppy.agents import get_available_agents
+        from newcode import config
+        from newcode.agents import get_available_agents
 
         # Disable pack agents
         monkeypatch.setattr(config, "get_pack_agents_enabled", lambda: False)
@@ -715,8 +715,8 @@ class TestPackAgentsConfig:
 
     def test_pack_agents_visible_when_enabled(self, monkeypatch):
         """Test pack agents are visible from get_available_agents when enabled."""
-        from code_puppy import config
-        from code_puppy.agents import get_available_agents
+        from newcode import config
+        from newcode.agents import get_available_agents
 
         # Enable pack agents
         monkeypatch.setattr(config, "get_pack_agents_enabled", lambda: True)
@@ -729,8 +729,8 @@ class TestPackAgentsConfig:
 
     def test_pack_agents_hidden_from_descriptions_when_disabled(self, monkeypatch):
         """Test pack agents are hidden from get_agent_descriptions when disabled."""
-        from code_puppy import config
-        from code_puppy.agents import get_agent_descriptions
+        from newcode import config
+        from newcode.agents import get_agent_descriptions
 
         # Disable pack agents
         monkeypatch.setattr(config, "get_pack_agents_enabled", lambda: False)
@@ -743,8 +743,8 @@ class TestPackAgentsConfig:
 
     def test_pack_agents_visible_in_descriptions_when_enabled(self, monkeypatch):
         """Test pack agents are visible from get_agent_descriptions when enabled."""
-        from code_puppy import config
-        from code_puppy.agents import get_agent_descriptions
+        from newcode import config
+        from newcode.agents import get_agent_descriptions
 
         # Enable pack agents
         monkeypatch.setattr(config, "get_pack_agents_enabled", lambda: True)
@@ -757,7 +757,7 @@ class TestPackAgentsConfig:
 
     def test_get_pack_agents_enabled_defaults_to_false(self):
         """Test get_pack_agents_enabled returns False by default."""
-        from code_puppy.config import get_pack_agents_enabled
+        from newcode.config import get_pack_agents_enabled
 
         # When no config value is set, should default to False
         # We test by checking the function returns False when get_value returns None
@@ -768,7 +768,7 @@ class TestPackAgentsConfig:
 
     def test_pack_agent_names_constant_is_complete(self):
         """Test PACK_AGENT_NAMES contains all expected pack agents."""
-        from code_puppy.config import PACK_AGENT_NAMES
+        from newcode.config import PACK_AGENT_NAMES
 
         expected_agents = {
             "pack-leader",
@@ -788,8 +788,8 @@ class TestPackAgentsConfig:
         This ensures load_agent still works for internal use even when
         agents are hidden from the public list.
         """
-        from code_puppy import config
-        from code_puppy.agents import load_agent
+        from newcode import config
+        from newcode.agents import load_agent
 
         # Disable pack agents
         monkeypatch.setattr(config, "get_pack_agents_enabled", lambda: False)

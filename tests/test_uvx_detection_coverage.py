@@ -10,7 +10,7 @@ This module focuses on covering the uncovered detection logic:
 import sys
 from unittest.mock import MagicMock, patch
 
-from code_puppy.uvx_detection import (
+from newcode.uvx_detection import (
     _get_parent_process_chain,
     _get_parent_process_chain_psutil,
     _get_parent_process_chain_windows_ctypes,
@@ -114,7 +114,7 @@ class TestGetParentProcessChainPsutilCoverage:
         mock_psutil.Process.return_value = mock_current
 
         with patch.dict(sys.modules, {"psutil": mock_psutil}):
-            with patch("code_puppy.uvx_detection.os.getpid", return_value=300):
+            with patch("newcode.uvx_detection.os.getpid", return_value=300):
                 result = _get_parent_process_chain_psutil()
 
         # Chain should include all processes from current up
@@ -137,7 +137,7 @@ class TestGetParentProcessChainPsutilCoverage:
         mock_psutil.Process.return_value = mock_current
 
         with patch.dict(sys.modules, {"psutil": mock_psutil}):
-            with patch("code_puppy.uvx_detection.os.getpid", return_value=100):
+            with patch("newcode.uvx_detection.os.getpid", return_value=100):
                 result = _get_parent_process_chain_psutil()
 
         # Should have current process in chain but stopped at parent with pid 0
@@ -160,7 +160,7 @@ class TestGetParentProcessChainPsutilCoverage:
         mock_psutil.Process.return_value = mock_current
 
         with patch.dict(sys.modules, {"psutil": mock_psutil}):
-            with patch("code_puppy.uvx_detection.os.getpid", return_value=100):
+            with patch("newcode.uvx_detection.os.getpid", return_value=100):
                 result = _get_parent_process_chain_psutil()
 
         # Should have at least the current process
@@ -173,7 +173,7 @@ class TestGetParentProcessChainPsutilCoverage:
         mock_psutil.Process.side_effect = Exception("Process not found")
 
         with patch.dict(sys.modules, {"psutil": mock_psutil}):
-            with patch("code_puppy.uvx_detection.os.getpid", return_value=100):
+            with patch("newcode.uvx_detection.os.getpid", return_value=100):
                 result = _get_parent_process_chain_psutil()
 
         assert result == []
@@ -189,7 +189,7 @@ class TestGetParentProcessChainPsutilCoverage:
         mock_psutil.Process.return_value = mock_current
 
         with patch.dict(sys.modules, {"psutil": mock_psutil}):
-            with patch("code_puppy.uvx_detection.os.getpid", return_value=100):
+            with patch("newcode.uvx_detection.os.getpid", return_value=100):
                 result = _get_parent_process_chain_psutil()
 
         assert "python" in result
@@ -257,7 +257,7 @@ class TestGetParentProcessChainFallbackCoverage:
     def test_uses_psutil_when_available(self):
         """Test that psutil is used when available."""
         with patch(
-            "code_puppy.uvx_detection._get_parent_process_chain_psutil"
+            "newcode.uvx_detection._get_parent_process_chain_psutil"
         ) as mock_psutil:
             mock_psutil.return_value = ["python", "uvx", "cmd"]
             result = _get_parent_process_chain()
@@ -270,7 +270,7 @@ class TestGetParentProcessChainFallbackCoverage:
         """Test returns empty list on Linux when psutil fails."""
         # On Linux without psutil, should return empty list (no ctypes fallback)
         with patch(
-            "code_puppy.uvx_detection._get_parent_process_chain_psutil"
+            "newcode.uvx_detection._get_parent_process_chain_psutil"
         ) as mock_psutil:
             mock_psutil.side_effect = Exception("psutil error")
             result = _get_parent_process_chain()
@@ -324,7 +324,7 @@ class TestEdgeCasesCoverage:
         mock_psutil.Process.return_value = mock_current
 
         with patch.dict(sys.modules, {"psutil": mock_psutil}):
-            with patch("code_puppy.uvx_detection.os.getpid", return_value=100):
+            with patch("newcode.uvx_detection.os.getpid", return_value=100):
                 result = _get_parent_process_chain_psutil()
 
         # Should gracefully handle and return empty list
@@ -341,7 +341,7 @@ class TestEdgeCasesCoverage:
         mock_psutil.Process.return_value = mock_current
 
         with patch.dict(sys.modules, {"psutil": mock_psutil}):
-            with patch("code_puppy.uvx_detection.os.getpid", return_value=100):
+            with patch("newcode.uvx_detection.os.getpid", return_value=100):
                 result = _get_parent_process_chain_psutil()
 
         # The name is appended before parent() is called, so chain has "python"
@@ -413,7 +413,7 @@ class TestWindowsFallbackPath:
     """Test the Windows fallback path when psutil is unavailable."""
 
     @patch("platform.system", return_value="Windows")
-    @patch("code_puppy.uvx_detection._get_parent_process_chain_windows_ctypes")
+    @patch("newcode.uvx_detection._get_parent_process_chain_windows_ctypes")
     def test_fallback_to_ctypes_on_windows(self, mock_ctypes_chain, mock_platform):
         """Test that _get_parent_process_chain falls back to ctypes on Windows."""
         mock_ctypes_chain.return_value = ["python.exe", "uvx.exe", "cmd.exe"]

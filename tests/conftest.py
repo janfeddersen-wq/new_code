@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from code_puppy import config as cp_config
+from newcode import config as cp_config
 
 # Integration test fixtures - only import if pexpect.spawn is available (Unix)
 # On Windows, pexpect doesn't have spawn attribute, so skip these imports
@@ -51,8 +51,8 @@ def isolate_config_between_tests(tmp_path_factory):
 
     # Create a completely separate temp directory for config isolation
     # (not using tmp_path which tests may use for their own purposes)
-    config_temp_dir = tempfile.mkdtemp(prefix="code_puppy_test_config_")
-    temp_config_dir = os.path.join(config_temp_dir, ".code_puppy")
+    config_temp_dir = tempfile.mkdtemp(prefix="newcode_test_config_")
+    temp_config_dir = os.path.join(config_temp_dir, ".newcode")
     os.makedirs(temp_config_dir, exist_ok=True)
     temp_config_file = os.path.join(temp_config_dir, "puppy.cfg")
 

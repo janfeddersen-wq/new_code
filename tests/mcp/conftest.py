@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from code_puppy.mcp_.managed_server import ManagedMCPServer, ServerConfig, ServerState
+from newcode.mcp_.managed_server import ManagedMCPServer, ServerConfig, ServerState
 
 
 @dataclass
@@ -165,24 +165,14 @@ def mock_emit_info():
 
     # Create patches for each module
     patches = [
+        patch("newcode.command_line.mcp.start_command.emit_info", side_effect=capture),
+        patch("newcode.command_line.mcp.stop_command.emit_info", side_effect=capture),
         patch(
-            "code_puppy.command_line.mcp.start_command.emit_info", side_effect=capture
+            "newcode.command_line.mcp.restart_command.emit_info", side_effect=capture
         ),
-        patch(
-            "code_puppy.command_line.mcp.stop_command.emit_info", side_effect=capture
-        ),
-        patch(
-            "code_puppy.command_line.mcp.restart_command.emit_info", side_effect=capture
-        ),
-        patch(
-            "code_puppy.command_line.mcp.list_command.emit_info", side_effect=capture
-        ),
-        patch(
-            "code_puppy.command_line.mcp.search_command.emit_info", side_effect=capture
-        ),
-        patch(
-            "code_puppy.command_line.mcp.status_command.emit_info", side_effect=capture
-        ),
+        patch("newcode.command_line.mcp.list_command.emit_info", side_effect=capture),
+        patch("newcode.command_line.mcp.search_command.emit_info", side_effect=capture),
+        patch("newcode.command_line.mcp.status_command.emit_info", side_effect=capture),
     ]
 
     # Start all patches
@@ -224,9 +214,7 @@ def mock_emit_prompt():
             return responses.pop(0)
         return "test-response"
 
-    with patch(
-        "code_puppy.messaging.emit_prompt", side_effect=capture_response
-    ) as mock:
+    with patch("newcode.messaging.emit_prompt", side_effect=capture_response) as mock:
         mock.set_responses = lambda resp_list: responses.extend(resp_list)
         yield mock
 
@@ -237,7 +225,7 @@ def mock_get_current_agent():
     mock_agent = Mock()
     mock_agent.reload_code_generation_agent = Mock()
 
-    with patch("code_puppy.agents.get_current_agent", return_value=mock_agent) as mock:
+    with patch("newcode.agents.get_current_agent", return_value=mock_agent) as mock:
         mock.agent = mock_agent
         yield mock
 
@@ -245,7 +233,7 @@ def mock_get_current_agent():
 @pytest.fixture
 def mock_reload_mcp_servers():
     """Mock reload_mcp_servers function."""
-    with patch("code_puppy.agent.reload_mcp_servers") as mock:
+    with patch("newcode.agent.reload_mcp_servers") as mock:
         yield mock
 
 
@@ -269,7 +257,7 @@ def mock_server_catalog():
     mock_catalog.search.return_value = [mock_server]
     mock_catalog.get_popular.return_value = [mock_server]
 
-    with patch("code_puppy.mcp_.server_registry_catalog.catalog", mock_catalog):
+    with patch("newcode.mcp_.server_registry_catalog.catalog", mock_catalog):
         yield mock_catalog
 
 
@@ -290,7 +278,7 @@ def temp_mcp_servers_file():
 @pytest.fixture
 def mock_mcp_servers_file(temp_mcp_servers_file):
     """Mock MCP_SERVERS_FILE to use temporary file."""
-    with patch("code_puppy.config.MCP_SERVERS_FILE", temp_mcp_servers_file):
+    with patch("newcode.config.MCP_SERVERS_FILE", temp_mcp_servers_file):
         yield temp_mcp_servers_file
 
 
@@ -299,7 +287,7 @@ def mock_get_mcp_manager(mock_mcp_manager):
     """Automatically mock get_mcp_manager for all MCP tests."""
     # Patch where get_mcp_manager is USED (in base.py), not where it's defined
     with patch(
-        "code_puppy.command_line.mcp.base.get_mcp_manager",
+        "newcode.command_line.mcp.base.get_mcp_manager",
         return_value=mock_mcp_manager,
     ):
         yield mock_mcp_manager
@@ -324,7 +312,7 @@ def mock_async_lifecycle():
     mock_lifecycle.is_running.return_value = True
 
     with patch(
-        "code_puppy.mcp_.async_lifecycle.get_lifecycle_manager",
+        "newcode.mcp_.async_lifecycle.get_lifecycle_manager",
         return_value=mock_lifecycle,
     ):
         yield mock_lifecycle

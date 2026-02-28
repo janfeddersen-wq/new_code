@@ -109,7 +109,7 @@ class TestStreamingMethod:
             with patch.object(mock_google_model, "_map_user_prompt") as mock_map:
                 mock_map.return_value = [{"text": "Test"}]
                 with patch(
-                    "code_puppy.plugins.antigravity_oauth.antigravity_model._backfill_thought_signatures"
+                    "newcode.plugins.antigravity_oauth.antigravity_model._backfill_thought_signatures"
                 ):
                     async with mock_google_model.request_stream(
                         messages, settings, model_request_params

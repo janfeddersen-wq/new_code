@@ -2,7 +2,7 @@ import threading
 import time
 from datetime import datetime, timezone
 
-from code_puppy.messaging.message_queue import (
+from newcode.messaging.message_queue import (
     MessageQueue,
     MessageType,
     UIMessage,

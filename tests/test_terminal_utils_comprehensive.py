@@ -28,8 +28,8 @@ WINDOWS_ONLY = pytest.mark.skipif(
 
 
 # Import all functions to test
-import code_puppy.terminal_utils  # noqa: E402
-from code_puppy.terminal_utils import (  # noqa: E402
+import newcode.terminal_utils  # noqa: E402
+from newcode.terminal_utils import (  # noqa: E402
     _original_ctrl_handler,
     detect_truecolor_support,
     disable_windows_ctrl_c,
@@ -386,7 +386,7 @@ class TestCrossPlatformReset:
     """Test cross-platform terminal reset routing."""
 
     @patch("platform.system")
-    @patch("code_puppy.terminal_utils.reset_windows_terminal_full")
+    @patch("newcode.terminal_utils.reset_windows_terminal_full")
     def test_reset_terminal_routes_to_windows(self, mock_win_reset, mock_platform):
         """Test reset routes to Windows function on Windows."""
         mock_platform.return_value = "Windows"
@@ -396,7 +396,7 @@ class TestCrossPlatformReset:
         mock_win_reset.assert_called_once()
 
     @patch("platform.system")
-    @patch("code_puppy.terminal_utils.reset_unix_terminal")
+    @patch("newcode.terminal_utils.reset_unix_terminal")
     def test_reset_terminal_routes_to_unix(self, mock_unix_reset, mock_platform):
         """Test reset routes to Unix function on Unix-like systems."""
         mock_platform.return_value = "Linux"
@@ -406,7 +406,7 @@ class TestCrossPlatformReset:
         mock_unix_reset.assert_called_once()
 
     @patch("platform.system")
-    @patch("code_puppy.terminal_utils.reset_unix_terminal")
+    @patch("newcode.terminal_utils.reset_unix_terminal")
     def test_reset_terminal_routes_to_unix_macos(self, mock_unix_reset, mock_platform):
         """Test reset routes to Unix function on macOS."""
         mock_platform.return_value = "Darwin"
@@ -429,7 +429,7 @@ class TestWindowsCtrlCDisable:
 
     @patch("platform.system")
     @patch("ctypes.windll.kernel32")
-    @patch("code_puppy.terminal_utils._original_ctrl_handler", None)
+    @patch("newcode.terminal_utils._original_ctrl_handler", None)
     def test_disable_ctrl_c_success(self, mock_kernel32, mock_platform):
         """Test successful Ctrl+C disabling."""
         mock_platform.return_value = "Windows"
@@ -509,7 +509,7 @@ class TestWindowsCtrlCEnable:
         assert result is False
 
     @patch("platform.system")
-    @patch("code_puppy.terminal_utils._original_ctrl_handler", 0x0007)
+    @patch("newcode.terminal_utils._original_ctrl_handler", 0x0007)
     @patch("ctypes.windll.kernel32")
     def test_enable_ctrl_c_success(self, mock_kernel32, mock_platform):
         """Test successful Ctrl+C enabling."""
@@ -530,12 +530,12 @@ class TestWindowsCtrlCEnable:
         mock_platform.return_value = "Windows"
 
         # Temporarily set _original_ctrl_handler to None
-        with patch("code_puppy.terminal_utils._original_ctrl_handler", None):
+        with patch("newcode.terminal_utils._original_ctrl_handler", None):
             result = enable_windows_ctrl_c()
             assert result is True  # Should succeed as nothing to restore
 
     @patch("platform.system")
-    @patch("code_puppy.terminal_utils._original_ctrl_handler", 0x0007)
+    @patch("newcode.terminal_utils._original_ctrl_handler", 0x0007)
     @patch("ctypes.windll.kernel32")
     def test_enable_ctrl_c_handles_set_mode_failure(self, mock_kernel32, mock_platform):
         """Test Ctrl+C enable handles SetConsoleMode failure."""
@@ -550,7 +550,7 @@ class TestWindowsCtrlCEnable:
         assert result is False
 
     @patch("platform.system")
-    @patch("code_puppy.terminal_utils._original_ctrl_handler", 0x0007)
+    @patch("newcode.terminal_utils._original_ctrl_handler", 0x0007)
     def test_enable_ctrl_c_handles_exception(self, mock_platform):
         """Test Ctrl+C enable handles exceptions gracefully."""
         mock_platform.return_value = "Windows"
@@ -568,26 +568,26 @@ class TestSetKeepCtrlCDisabled:
         """Test setting keep Ctrl+C disabled to True."""
         set_keep_ctrl_c_disabled(True)
 
-        assert code_puppy.terminal_utils._keep_ctrl_c_disabled is True
+        assert newcode.terminal_utils._keep_ctrl_c_disabled is True
 
     def test_set_keep_ctrl_c_disabled_false(self):
         """Test setting keep Ctrl+C disabled to False."""
         set_keep_ctrl_c_disabled(False)
 
-        assert code_puppy.terminal_utils._keep_ctrl_c_disabled is False
+        assert newcode.terminal_utils._keep_ctrl_c_disabled is False
 
 
 class TestEnsureCtrlCDisabled:
     """Test ensure_ctrl_c_disabled function."""
 
-    @patch("code_puppy.terminal_utils._keep_ctrl_c_disabled", False)
+    @patch("newcode.terminal_utils._keep_ctrl_c_disabled", False)
     def test_ensure_ctrl_c_disabled_flag_false(self):
         """Test ensure returns True when flag is False (don't need to disable)."""
         result = ensure_ctrl_c_disabled()
         assert result is True
 
     @patch("platform.system")
-    @patch("code_puppy.terminal_utils._keep_ctrl_c_disabled", True)
+    @patch("newcode.terminal_utils._keep_ctrl_c_disabled", True)
     def test_ensure_ctrl_c_disabled_non_windows(self, mock_platform):
         """Test ensure returns True on non-Windows platforms."""
         mock_platform.return_value = "Linux"
@@ -597,7 +597,7 @@ class TestEnsureCtrlCDisabled:
     @WINDOWS_ONLY
     @patch("platform.system")
     @patch("ctypes.windll.kernel32")
-    @patch("code_puppy.terminal_utils._keep_ctrl_c_disabled", True)
+    @patch("newcode.terminal_utils._keep_ctrl_c_disabled", True)
     def test_ensure_ctrl_c_disabled_already_disabled(
         self, mock_kernel32, mock_platform
     ):
@@ -619,7 +619,7 @@ class TestEnsureCtrlCDisabled:
     @WINDOWS_ONLY
     @patch("platform.system")
     @patch("ctypes.windll.kernel32")
-    @patch("code_puppy.terminal_utils._keep_ctrl_c_disabled", True)
+    @patch("newcode.terminal_utils._keep_ctrl_c_disabled", True)
     def test_ensure_ctrl_c_disabled_needs_disabling(self, mock_kernel32, mock_platform):
         """Test ensure when Ctrl+C needs to be disabled."""
         mock_platform.return_value = "Windows"
@@ -645,7 +645,7 @@ class TestEnsureCtrlCDisabled:
     @WINDOWS_ONLY
     @patch("platform.system")
     @patch("ctypes.windll.kernel32")
-    @patch("code_puppy.terminal_utils._keep_ctrl_c_disabled", True)
+    @patch("newcode.terminal_utils._keep_ctrl_c_disabled", True)
     def test_ensure_ctrl_c_disabled_handles_failure(self, mock_kernel32, mock_platform):
         """Test ensure handles console mode operations failure."""
         mock_platform.return_value = "Windows"
@@ -772,7 +772,7 @@ class TestPrintTruecolorWarning:
 
     def test_no_warning_when_truecolor_supported(self):
         """Test no warning printed when truecolor is supported."""
-        with patch("code_puppy.terminal_utils.detect_truecolor_support") as mock_detect:
+        with patch("newcode.terminal_utils.detect_truecolor_support") as mock_detect:
             mock_detect.return_value = True
             with patch("rich.console.Console.print") as mock_print:
                 print_truecolor_warning()
@@ -780,7 +780,7 @@ class TestPrintTruecolorWarning:
 
     def test_warning_with_rich(self):
         """Test warning printed with Rich when available."""
-        with patch("code_puppy.terminal_utils.detect_truecolor_support") as mock_detect:
+        with patch("newcode.terminal_utils.detect_truecolor_support") as mock_detect:
             mock_detect.return_value = False
 
             mock_console = MagicMock()
@@ -802,7 +802,7 @@ class TestPrintTruecolorWarning:
 
     def test_warning_without_rich(self):
         """Test warning printed without Rich (fallback to plain print)."""
-        with patch("code_puppy.terminal_utils.detect_truecolor_support") as mock_detect:
+        with patch("newcode.terminal_utils.detect_truecolor_support") as mock_detect:
             mock_detect.return_value = False
 
             # Mock rich import failure
@@ -823,7 +823,7 @@ class TestPrintTruecolorWarning:
 
     def test_warning_with_custom_console(self):
         """Test warning with provided console instance."""
-        with patch("code_puppy.terminal_utils.detect_truecolor_support") as mock_detect:
+        with patch("newcode.terminal_utils.detect_truecolor_support") as mock_detect:
             mock_detect.return_value = False
 
             mock_console = MagicMock()
@@ -836,7 +836,7 @@ class TestPrintTruecolorWarning:
 
     def test_warning_no_duplicate_calls(self):
         """Test warning only prints when truecolor is not supported."""
-        with patch("code_puppy.terminal_utils.detect_truecolor_support") as mock_detect:
+        with patch("newcode.terminal_utils.detect_truecolor_support") as mock_detect:
             # First call - no truecolor, should print
             mock_detect.return_value = False
             with patch("rich.console.Console.print") as mock_print:
@@ -867,7 +867,7 @@ class TestEdgeCasesAndIntegration:
 
     @WINDOWS_ONLY
     @patch("platform.system")
-    @patch("code_puppy.terminal_utils._keep_ctrl_c_disabled", True)
+    @patch("newcode.terminal_utils._keep_ctrl_c_disabled", True)
     def test_ensure_ctrl_c_after_operations(self, mock_platform):
         """Test ensure_ctrl_c_disabled after potential console mode changes."""
         mock_platform.return_value = "Windows"
@@ -890,20 +890,20 @@ class TestEdgeCasesAndIntegration:
         # Test Windows routing
         with patch("platform.system", return_value="Windows"):
             with patch(
-                "code_puppy.terminal_utils.reset_windows_terminal_full"
+                "newcode.terminal_utils.reset_windows_terminal_full"
             ) as mock_win:
                 reset_terminal()
                 mock_win.assert_called_once()
 
         # Test Linux routing
         with patch("platform.system", return_value="Linux"):
-            with patch("code_puppy.terminal_utils.reset_unix_terminal") as mock_unix:
+            with patch("newcode.terminal_utils.reset_unix_terminal") as mock_unix:
                 reset_terminal()
                 mock_unix.assert_called_once()
 
         # Test macOS routing
         with patch("platform.system", return_value="Darwin"):
-            with patch("code_puppy.terminal_utils.reset_unix_terminal") as mock_unix:
+            with patch("newcode.terminal_utils.reset_unix_terminal") as mock_unix:
                 reset_terminal()
                 mock_unix.assert_called_once()
 
@@ -953,11 +953,11 @@ class TestEdgeCasesAndIntegration:
         # Test set_keep_ctrl_c_disabled
         set_keep_ctrl_c_disabled(True)
 
-        assert code_puppy.terminal_utils._keep_ctrl_c_disabled is True
+        assert newcode.terminal_utils._keep_ctrl_c_disabled is True
 
         set_keep_ctrl_c_disabled(False)
 
-        assert code_puppy.terminal_utils._keep_ctrl_c_disabled is False
+        assert newcode.terminal_utils._keep_ctrl_c_disabled is False
 
         # Test that _original_ctrl_handler is initially None
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from code_puppy.plugins.antigravity_oauth.antigravity_model import AntigravityModel
+from newcode.plugins.antigravity_oauth.antigravity_model import AntigravityModel
 
 
 class TestAntigravityModelInitialization:

@@ -1,6 +1,6 @@
-"""Tests for code_puppy.messaging.spinner.spinner_base."""
+"""Tests for newcode.messaging.spinner.spinner_base."""
 
-from code_puppy.messaging.spinner.spinner_base import SpinnerBase
+from newcode.messaging.spinner.spinner_base import SpinnerBase
 
 
 class ConcreteSpinner(SpinnerBase):

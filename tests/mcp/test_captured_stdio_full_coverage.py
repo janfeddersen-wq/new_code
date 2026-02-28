@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.mcp_.captured_stdio_server import (
+from newcode.mcp_.captured_stdio_server import (
     CapturedMCPServerStdio,
     StderrCapture,
     StderrCollector,
@@ -101,7 +101,7 @@ class TestStderrCollector:
     def test_create_handler_emit_to_user(self):
         col = StderrCollector()
         handler = col.create_handler("srv1", emit_to_user=True)
-        with patch("code_puppy.messaging.emit_info"):
+        with patch("newcode.messaging.emit_info"):
             handler("test")
 
     def test_get_server_output(self):

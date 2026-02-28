@@ -22,7 +22,7 @@ from pydantic_ai.messages import (
     ToolCallPart,
 )
 
-from code_puppy.agents.agent_code_agent import CodeAgent
+from newcode.agents.agent_code_agent import CodeAgent
 
 
 class TestBaseAgentAccumulator:

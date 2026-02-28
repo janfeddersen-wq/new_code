@@ -2,14 +2,14 @@
 
 import re
 
-from code_puppy.tools.ask_user_question.models import Question, QuestionOption
-from code_puppy.tools.ask_user_question.renderers import (
+from newcode.tools.ask_user_question.models import Question, QuestionOption
+from newcode.tools.ask_user_question.renderers import (
     _render_help_overlay,
     _render_option,
     render_question_panel,
 )
-from code_puppy.tools.ask_user_question.terminal_ui import QuestionUIState
-from code_puppy.tools.ask_user_question.theme import RichColors
+from newcode.tools.ask_user_question.terminal_ui import QuestionUIState
+from newcode.tools.ask_user_question.theme import RichColors
 
 _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 

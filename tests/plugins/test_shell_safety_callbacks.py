@@ -8,12 +8,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.plugins.shell_safety.command_cache import CachedAssessment
-from code_puppy.plugins.shell_safety.register_callbacks import (
+from newcode.plugins.shell_safety.command_cache import CachedAssessment
+from newcode.plugins.shell_safety.register_callbacks import (
     register,
     shell_safety_callback,
 )
-from code_puppy.tools.command_runner import ShellSafetyAssessment
+from newcode.tools.command_runner import ShellSafetyAssessment
 
 
 class TestShellSafetyCallbackOAuthBypass:
@@ -23,7 +23,7 @@ class TestShellSafetyCallbackOAuthBypass:
     async def test_callback_skips_for_oauth_model_anthropic(self):
         """Test callback returns None for Anthropic OAuth models."""
         with patch(
-            "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+            "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
             return_value="claude-code-123",
         ):
             result = await shell_safety_callback(
@@ -35,7 +35,7 @@ class TestShellSafetyCallbackOAuthBypass:
     async def test_callback_skips_for_oauth_model_openai(self):
         """Test callback returns None for OpenAI OAuth models."""
         with patch(
-            "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+            "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
             return_value="chatgpt-4",
         ):
             result = await shell_safety_callback(
@@ -47,7 +47,7 @@ class TestShellSafetyCallbackOAuthBypass:
     async def test_callback_skips_for_oauth_model_google(self):
         """Test callback returns None for Google OAuth models."""
         with patch(
-            "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+            "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
             return_value="gemini-oauth-pro",
         ):
             result = await shell_safety_callback(
@@ -64,11 +64,11 @@ class TestShellSafetyCallbackYoloModeBypass:
         """Test callback returns None when yolo_mode is False."""
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=False,
             ),
         ):
@@ -88,23 +88,23 @@ class TestShellSafetyCallbackCacheHit:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="medium",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=cached,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.emit_info"
+                "newcode.plugins.shell_safety.register_callbacks.emit_info"
             ) as mock_emit,
         ):
             result = await shell_safety_callback(
@@ -125,19 +125,19 @@ class TestShellSafetyCallbackCacheHit:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="medium",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=cached,
             ),
         ):
@@ -154,19 +154,19 @@ class TestShellSafetyCallbackCacheHit:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="medium",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=cached,
             ),
         ):
@@ -183,22 +183,22 @@ class TestShellSafetyCallbackCacheHit:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="low",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=cached,
             ),
-            patch("code_puppy.plugins.shell_safety.register_callbacks.emit_info"),
+            patch("newcode.plugins.shell_safety.register_callbacks.emit_info"),
         ):
             result = await shell_safety_callback(
                 context=None, command="unknown", cwd=None, timeout=60
@@ -229,34 +229,34 @@ class TestShellSafetyCallbackCacheMiss:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="medium",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=None,  # Cache miss
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.cache_assessment"
+                "newcode.plugins.shell_safety.register_callbacks.cache_assessment"
             ) as mock_cache,
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.plugins.shell_safety.agent_shell_safety": MagicMock(
+                    "newcode.plugins.shell_safety.agent_shell_safety": MagicMock(
                         ShellSafetyAgent=mock_agent_class
                     )
                 },
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.emit_info"
+                "newcode.plugins.shell_safety.register_callbacks.emit_info"
             ) as mock_emit,
         ):
             result = await shell_safety_callback(
@@ -288,28 +288,28 @@ class TestShellSafetyCallbackCacheMiss:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="medium",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=None,  # Cache miss
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.cache_assessment"
+                "newcode.plugins.shell_safety.register_callbacks.cache_assessment"
             ) as mock_cache,
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.plugins.shell_safety.agent_shell_safety": MagicMock(
+                    "newcode.plugins.shell_safety.agent_shell_safety": MagicMock(
                         ShellSafetyAgent=mock_agent_class
                     )
                 },
@@ -340,28 +340,28 @@ class TestShellSafetyCallbackCacheMiss:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="medium",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=None,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.cache_assessment"
+                "newcode.plugins.shell_safety.register_callbacks.cache_assessment"
             ) as mock_cache,
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.plugins.shell_safety.agent_shell_safety": MagicMock(
+                    "newcode.plugins.shell_safety.agent_shell_safety": MagicMock(
                         ShellSafetyAgent=mock_agent_class
                     )
                 },
@@ -399,33 +399,33 @@ class TestShellSafetyCallbackCacheMiss:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="medium",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=None,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.cache_assessment"
+                "newcode.plugins.shell_safety.register_callbacks.cache_assessment"
             ) as mock_cache,
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.plugins.shell_safety.agent_shell_safety": MagicMock(
+                    "newcode.plugins.shell_safety.agent_shell_safety": MagicMock(
                         ShellSafetyAgent=mock_agent_class
                     )
                 },
             ),
-            patch("code_puppy.plugins.shell_safety.register_callbacks.emit_info"),
+            patch("newcode.plugins.shell_safety.register_callbacks.emit_info"),
         ):
             result = await shell_safety_callback(
                 context=None, command="dangerous", cwd=None, timeout=60
@@ -452,25 +452,25 @@ class TestShellSafetyCallbackExceptionHandling:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="medium",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=None,
             ),
             patch.dict(
                 "sys.modules",
                 {
-                    "code_puppy.plugins.shell_safety.agent_shell_safety": MagicMock(
+                    "newcode.plugins.shell_safety.agent_shell_safety": MagicMock(
                         ShellSafetyAgent=mock_agent_class
                     )
                 },
@@ -491,19 +491,19 @@ class TestShellSafetyCallbackExceptionHandling:
         """Test cache exception blocks command safely."""
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="low",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 side_effect=Exception("Cache corrupted"),
             ),
         ):
@@ -527,22 +527,22 @@ class TestShellSafetyCallbackErrorMessages:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="low",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=cached,
             ),
-            patch("code_puppy.plugins.shell_safety.register_callbacks.emit_info"),
+            patch("newcode.plugins.shell_safety.register_callbacks.emit_info"),
         ):
             result = await shell_safety_callback(
                 context=None, command="rm -rf /", cwd=None, timeout=60
@@ -563,22 +563,22 @@ class TestShellSafetyCallbackErrorMessages:
 
         with (
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_global_model_name",
+                "newcode.plugins.shell_safety.register_callbacks.get_global_model_name",
                 return_value="claude-opus-4",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_yolo_mode",
+                "newcode.plugins.shell_safety.register_callbacks.get_yolo_mode",
                 return_value=True,
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_safety_permission_level",
+                "newcode.plugins.shell_safety.register_callbacks.get_safety_permission_level",
                 return_value="low",
             ),
             patch(
-                "code_puppy.plugins.shell_safety.register_callbacks.get_cached_assessment",
+                "newcode.plugins.shell_safety.register_callbacks.get_cached_assessment",
                 return_value=cached,
             ),
-            patch("code_puppy.plugins.shell_safety.register_callbacks.emit_info"),
+            patch("newcode.plugins.shell_safety.register_callbacks.emit_info"),
         ):
             result = await shell_safety_callback(
                 context=None, command="dangerous", cwd=None, timeout=60
@@ -597,7 +597,7 @@ class TestRegisterCallback:
     def test_register_calls_register_callback(self):
         """Test that register() calls register_callback."""
         with patch(
-            "code_puppy.plugins.shell_safety.register_callbacks.register_callback"
+            "newcode.plugins.shell_safety.register_callbacks.register_callback"
         ) as mock_register:
             register()
             mock_register.assert_called_once_with(
@@ -608,11 +608,11 @@ class TestRegisterCallback:
         """Test that importing the module auto-registers the callback."""
         # Re-import to trigger auto-registration
         with patch(
-            "code_puppy.plugins.shell_safety.register_callbacks.register_callback"
+            "newcode.plugins.shell_safety.register_callbacks.register_callback"
         ) as mock_register:
             # Force re-import
 
-            import code_puppy.plugins.shell_safety.register_callbacks as module
+            import newcode.plugins.shell_safety.register_callbacks as module
 
             # Call register explicitly since re-import won't re-run module-level code
             module.register()

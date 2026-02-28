@@ -13,8 +13,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy import session_storage
-from code_puppy.session_storage import (
+from newcode import session_storage
+from newcode.session_storage import (
     _LEGACY_SIGNATURE_SIZE,
     _LEGACY_SIGNED_HEADER,
     restore_autosave_interactively,
@@ -54,27 +54,27 @@ def mock_interactive_imports(
 
         patches = [
             patch(
-                "code_puppy.command_line.prompt_toolkit_completion.get_input_with_combined_completion",
+                "newcode.command_line.prompt_toolkit_completion.get_input_with_combined_completion",
                 mock_input,
             ),
             patch(
-                "code_puppy.messaging.emit_system_message",
+                "newcode.messaging.emit_system_message",
                 side_effect=lambda msg: system_msgs.append(msg),
             ),
             patch(
-                "code_puppy.messaging.emit_warning",
+                "newcode.messaging.emit_warning",
                 side_effect=lambda msg: warning_msgs.append(msg),
             ),
             patch(
-                "code_puppy.messaging.emit_success",
+                "newcode.messaging.emit_success",
                 side_effect=lambda msg: success_msgs.append(msg),
             ),
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=agent,
             ),
             patch(
-                "code_puppy.config.set_current_autosave_from_session_name",
+                "newcode.config.set_current_autosave_from_session_name",
                 MagicMock(),
             ),
         ]
@@ -82,7 +82,7 @@ def mock_interactive_imports(
         if mock_load_session is not None:
             patches.append(
                 patch(
-                    "code_puppy.session_storage.load_session",
+                    "newcode.session_storage.load_session",
                     mock_load_session,
                 )
             )
@@ -545,7 +545,7 @@ class TestRestoreAutosaveErrorHandling:
 
         # Patch set_current_autosave_from_session_name to raise an exception
         with patch(
-            "code_puppy.config.set_current_autosave_from_session_name",
+            "newcode.config.set_current_autosave_from_session_name",
             side_effect=Exception("Config error"),
         ):
             async with mock_interactive_imports(

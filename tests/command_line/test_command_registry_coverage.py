@@ -2,7 +2,7 @@
 
 import pytest
 
-from code_puppy.command_line.command_registry import (
+from newcode.command_line.command_registry import (
     _COMMAND_REGISTRY,
     CommandInfo,
     clear_registry,

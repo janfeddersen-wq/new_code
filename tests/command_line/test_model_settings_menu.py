@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.command_line.model_settings_menu import (
+from newcode.command_line.model_settings_menu import (
     MODELS_PER_PAGE,
     SETTING_DEFINITIONS,
     ModelSettingsMenu,
@@ -23,8 +23,8 @@ from code_puppy.command_line.model_settings_menu import (
 class TestModelSettingsMenuInitialization:
     """Test ModelSettingsMenu initialization."""
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_menu_initialization_success(
         self,
         mock_load_models,
@@ -39,8 +39,8 @@ class TestModelSettingsMenuInitialization:
         assert menu.setting_index == 0
         assert menu.page == 0
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_menu_initialization_no_models(
         self,
         mock_load_models,
@@ -100,8 +100,8 @@ class TestSettingDefinitions:
 class TestModelNavigation:
     """Test model list navigation."""
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_select_first_model(
         self,
         mock_load_models,
@@ -116,8 +116,8 @@ class TestModelNavigation:
         # Would get models[0]
         assert menu.model_index == 0
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_navigate_models_down(
         self,
         mock_load_models,
@@ -133,8 +133,8 @@ class TestModelNavigation:
         menu.model_index = min(len(models) - 1, menu.model_index + 1)
         assert menu.model_index >= initial_idx
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_navigate_models_up(
         self,
         mock_load_models,
@@ -154,8 +154,8 @@ class TestModelNavigation:
 class TestSettingNavigation:
     """Test settings list navigation."""
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_select_temperature_setting(
         self,
         mock_load_models,
@@ -170,8 +170,8 @@ class TestSettingNavigation:
         # First setting is typically temperature
         assert menu.setting_index == 0
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_navigate_settings_down(
         self,
         mock_load_models,
@@ -190,8 +190,8 @@ class TestSettingNavigation:
 class TestPagination:
     """Test pagination in settings display."""
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_first_page_models(
         self,
         mock_load_models,
@@ -208,8 +208,8 @@ class TestPagination:
         assert start_idx == 0
         assert end_idx >= 0
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_second_page_models(
         self,
         mock_load_models,
@@ -310,9 +310,9 @@ class TestExtendedThinkingChoiceValidation:
 class TestSettingsPersistence:
     """Test settings persistence and loading."""
 
-    @patch("code_puppy.command_line.model_settings_menu.set_model_setting")
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.set_model_setting")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_save_temperature_setting(
         self,
         mock_load_models,
@@ -327,9 +327,9 @@ class TestSettingsPersistence:
         mock_set_setting("gpt-5", "temperature", 0.8)
         mock_set_setting.assert_called_once_with("gpt-5", "temperature", 0.8)
 
-    @patch("code_puppy.command_line.model_settings_menu.set_openai_verbosity")
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.set_openai_verbosity")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_save_verbosity_setting(
         self,
         mock_load_models,
@@ -348,9 +348,9 @@ class TestSettingsPersistence:
 class TestModelSupportCheck:
     """Test checking if model supports a setting."""
 
-    @patch("code_puppy.command_line.model_settings_menu.model_supports_setting")
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.model_supports_setting")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_model_supports_temperature(
         self,
         mock_load_models,
@@ -365,9 +365,9 @@ class TestModelSupportCheck:
         ModelSettingsMenu()
         assert mock_supports("gpt-5", "temperature") is True
 
-    @patch("code_puppy.command_line.model_settings_menu.model_supports_setting")
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.model_supports_setting")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_model_unsupported_setting(
         self,
         mock_load_models,
@@ -392,8 +392,8 @@ class TestErrorHandling:
         with pytest.raises(ValueError):
             float("not_a_number")
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_menu_error_resilience(
         self,
         mock_load_models,
@@ -406,8 +406,8 @@ class TestErrorHandling:
         menu = ModelSettingsMenu()
         assert menu is not None
 
-    @patch("code_puppy.command_line.model_settings_menu.get_global_model_name")
-    @patch("code_puppy.command_line.model_settings_menu._load_all_model_names")
+    @patch("newcode.command_line.model_settings_menu.get_global_model_name")
+    @patch("newcode.command_line.model_settings_menu._load_all_model_names")
     def test_format_value_unknown_setting_does_not_crash(
         self,
         mock_load_models,

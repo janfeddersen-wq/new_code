@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.tools.agent_tools import (
+from newcode.tools.agent_tools import (
     AgentInfo,
     AgentInvokeOutput,
     ListAgentsOutput,
@@ -59,7 +59,7 @@ class TestGenerateSessionHashSuffix:
 class TestSessionHistory:
     def test_save_and_load(self, tmp_path):
         with patch(
-            "code_puppy.tools.agent_tools._get_subagent_sessions_dir",
+            "newcode.tools.agent_tools._get_subagent_sessions_dir",
             return_value=tmp_path,
         ):
             msgs = ["msg1", "msg2"]
@@ -69,7 +69,7 @@ class TestSessionHistory:
 
     def test_save_update_metadata(self, tmp_path):
         with patch(
-            "code_puppy.tools.agent_tools._get_subagent_sessions_dir",
+            "newcode.tools.agent_tools._get_subagent_sessions_dir",
             return_value=tmp_path,
         ):
             _save_session_history("test-session", ["msg1"], "agent1", "initial")
@@ -80,7 +80,7 @@ class TestSessionHistory:
 
     def test_load_nonexistent(self, tmp_path):
         with patch(
-            "code_puppy.tools.agent_tools._get_subagent_sessions_dir",
+            "newcode.tools.agent_tools._get_subagent_sessions_dir",
             return_value=tmp_path,
         ):
             assert _load_session_history("nope") == []
@@ -89,14 +89,14 @@ class TestSessionHistory:
         pkl = tmp_path / "bad.pkl"
         pkl.write_bytes(b"not a pickle")
         with patch(
-            "code_puppy.tools.agent_tools._get_subagent_sessions_dir",
+            "newcode.tools.agent_tools._get_subagent_sessions_dir",
             return_value=tmp_path,
         ):
             assert _load_session_history("bad") == []
 
     def test_save_invalid_session_id(self, tmp_path):
         with patch(
-            "code_puppy.tools.agent_tools._get_subagent_sessions_dir",
+            "newcode.tools.agent_tools._get_subagent_sessions_dir",
             return_value=tmp_path,
         ):
             with pytest.raises(ValueError):
@@ -104,7 +104,7 @@ class TestSessionHistory:
 
     def test_load_invalid_session_id(self, tmp_path):
         with patch(
-            "code_puppy.tools.agent_tools._get_subagent_sessions_dir",
+            "newcode.tools.agent_tools._get_subagent_sessions_dir",
             return_value=tmp_path,
         ):
             with pytest.raises(ValueError):
@@ -113,7 +113,7 @@ class TestSessionHistory:
     def test_save_metadata_update_error(self, tmp_path):
         """Metadata update failure is silently handled."""
         with patch(
-            "code_puppy.tools.agent_tools._get_subagent_sessions_dir",
+            "newcode.tools.agent_tools._get_subagent_sessions_dir",
             return_value=tmp_path,
         ):
             _save_session_history("test-session", ["msg1"], "agent1", "initial")
@@ -126,7 +126,7 @@ class TestSessionHistory:
 
 class TestGetSubagentSessionsDir:
     def test_creates_dir(self, tmp_path):
-        with patch("code_puppy.tools.agent_tools.DATA_DIR", str(tmp_path)):
+        with patch("newcode.tools.agent_tools.DATA_DIR", str(tmp_path)):
             d = _get_subagent_sessions_dir()
             assert d.exists()
 

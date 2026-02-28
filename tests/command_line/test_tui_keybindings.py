@@ -59,7 +59,7 @@ def test_colors_menu_keybindings():
     from prompt_toolkit.formatted_text import ANSI
     from prompt_toolkit.layout.controls import FormattedTextControl as RealFTC
 
-    from code_puppy.command_line.colors_menu import _split_panel_selector
+    from newcode.command_line.colors_menu import _split_panel_selector
 
     choices = ["Red", "Blue", "───", "Green"]
     on_change = MagicMock()
@@ -75,9 +75,9 @@ def test_colors_menu_keybindings():
         return real_ftc(*args, **kwargs)
 
     with (
-        patch("code_puppy.command_line.colors_menu.Application") as mock_app_cls,
+        patch("newcode.command_line.colors_menu.Application") as mock_app_cls,
         patch(
-            "code_puppy.command_line.colors_menu.FormattedTextControl",
+            "newcode.command_line.colors_menu.FormattedTextControl",
             side_effect=capture_ftc,
         ),
     ):
@@ -109,7 +109,7 @@ def test_colors_menu_keybindings():
 def test_diff_menu_keybindings():
     from prompt_toolkit.formatted_text import ANSI
 
-    from code_puppy.command_line.diff_menu import (
+    from newcode.command_line.diff_menu import (
         DiffConfiguration,
         _split_panel_selector,
     )
@@ -119,7 +119,7 @@ def test_diff_menu_keybindings():
     get_preview = MagicMock(return_value=ANSI("preview"))
     config = DiffConfiguration()
 
-    with patch("code_puppy.command_line.diff_menu.Application") as mock_app_cls:
+    with patch("newcode.command_line.diff_menu.Application") as mock_app_cls:
         mock_app = AsyncMock()
         mock_app_cls.return_value = mock_app
 
@@ -139,7 +139,7 @@ def test_diff_menu_keybindings():
 def test_diff_menu_cancel():
     from prompt_toolkit.formatted_text import ANSI
 
-    from code_puppy.command_line.diff_menu import (
+    from newcode.command_line.diff_menu import (
         DiffConfiguration,
         _split_panel_selector,
     )
@@ -149,7 +149,7 @@ def test_diff_menu_cancel():
     get_preview = MagicMock(return_value=ANSI("preview"))
     config = DiffConfiguration()
 
-    with patch("code_puppy.command_line.diff_menu.Application") as mock_app_cls:
+    with patch("newcode.command_line.diff_menu.Application") as mock_app_cls:
         mock_app = AsyncMock()
         mock_app_cls.return_value = mock_app
 
@@ -175,7 +175,7 @@ def test_diff_menu_cancel():
 
 
 def test_add_model_menu_keybindings():
-    from code_puppy.command_line.add_model_menu import AddModelMenu
+    from newcode.command_line.add_model_menu import AddModelMenu
 
     providers = [MagicMock() for _ in range(3)]
     for i, p in enumerate(providers):
@@ -199,8 +199,8 @@ def test_add_model_menu_keybindings():
     menu.pending_provider = None
 
     with (
-        patch("code_puppy.command_line.add_model_menu.Application") as mock_app_cls,
-        patch("code_puppy.command_line.add_model_menu.set_awaiting_user_input"),
+        patch("newcode.command_line.add_model_menu.Application") as mock_app_cls,
+        patch("newcode.command_line.add_model_menu.set_awaiting_user_input"),
         patch("sys.stdout"),
         patch("time.sleep"),
     ):
@@ -248,19 +248,17 @@ def test_add_model_menu_keybindings():
 
 
 def test_model_settings_keybindings():
-    from code_puppy.command_line.model_settings_menu import ModelSettingsMenu
+    from newcode.command_line.model_settings_menu import ModelSettingsMenu
 
     with patch(
-        "code_puppy.command_line.model_settings_menu._load_all_model_names",
+        "newcode.command_line.model_settings_menu._load_all_model_names",
         return_value=["gpt-4", "claude-3"],
     ):
         menu = ModelSettingsMenu()
 
     with (
-        patch(
-            "code_puppy.command_line.model_settings_menu.Application"
-        ) as mock_app_cls,
-        patch("code_puppy.command_line.model_settings_menu.set_awaiting_user_input"),
+        patch("newcode.command_line.model_settings_menu.Application") as mock_app_cls,
+        patch("newcode.command_line.model_settings_menu.set_awaiting_user_input"),
         patch("sys.stdout"),
         patch("time.sleep"),
     ):
@@ -326,30 +324,26 @@ def test_model_settings_keybindings():
 
 
 def test_agent_menu_keybindings():
-    from code_puppy.command_line.agent_menu import interactive_agent_picker
+    from newcode.command_line.agent_menu import interactive_agent_picker
 
     # Create enough entries for multiple pages (PAGE_SIZE=10)
     entries = [(f"agent{i}", f"Agent {i}", "builtin") for i in range(25)]
     with (
         patch(
-            "code_puppy.command_line.agent_menu._get_agent_entries",
+            "newcode.command_line.agent_menu._get_agent_entries",
             return_value=entries,
         ),
-        patch("code_puppy.command_line.agent_menu.Application") as mock_app_cls,
-        patch("code_puppy.command_line.agent_menu.set_awaiting_user_input"),
+        patch("newcode.command_line.agent_menu.Application") as mock_app_cls,
+        patch("newcode.command_line.agent_menu.set_awaiting_user_input"),
         patch(
-            "code_puppy.command_line.agent_menu._select_pinned_model",
+            "newcode.command_line.agent_menu._select_pinned_model",
             new_callable=AsyncMock,
             return_value=None,
         ),
-        patch("code_puppy.command_line.agent_menu.clone_agent", return_value=None),
-        patch(
-            "code_puppy.command_line.agent_menu.is_clone_agent_name", return_value=True
-        ),
-        patch(
-            "code_puppy.command_line.agent_menu.delete_clone_agent", return_value=True
-        ),
-        patch("code_puppy.command_line.agent_menu.emit_warning"),
+        patch("newcode.command_line.agent_menu.clone_agent", return_value=None),
+        patch("newcode.command_line.agent_menu.is_clone_agent_name", return_value=True),
+        patch("newcode.command_line.agent_menu.delete_clone_agent", return_value=True),
+        patch("newcode.command_line.agent_menu.emit_warning"),
         patch("sys.stdout"),
         patch("asyncio.sleep", new_callable=AsyncMock),
     ):
@@ -389,7 +383,7 @@ def test_agent_menu_keybindings():
 
 
 def test_autosave_menu_keybindings():
-    from code_puppy.command_line.autosave_menu import interactive_autosave_picker
+    from newcode.command_line.autosave_menu import interactive_autosave_picker
 
     # Create enough entries for multiple pages
     entries = [
@@ -405,13 +399,13 @@ def test_autosave_menu_keybindings():
     ]
     with (
         patch(
-            "code_puppy.command_line.autosave_menu._get_session_entries",
+            "newcode.command_line.autosave_menu._get_session_entries",
             return_value=entries,
         ),
-        patch("code_puppy.command_line.autosave_menu.Application") as mock_app_cls,
-        patch("code_puppy.command_line.autosave_menu.set_awaiting_user_input"),
+        patch("newcode.command_line.autosave_menu.Application") as mock_app_cls,
+        patch("newcode.command_line.autosave_menu.set_awaiting_user_input"),
         patch(
-            "code_puppy.command_line.autosave_menu.load_session",
+            "newcode.command_line.autosave_menu.load_session",
             return_value=fake_history,
         ),
         patch("sys.stdout"),
@@ -452,8 +446,8 @@ def test_autosave_menu_keybindings():
 
 
 def test_uc_menu_keybindings():
-    from code_puppy.command_line.uc_menu import interactive_uc_picker
-    from code_puppy.plugins.universal_constructor.models import ToolMeta, UCToolInfo
+    from newcode.command_line.uc_menu import interactive_uc_picker
+    from newcode.plugins.universal_constructor.models import ToolMeta, UCToolInfo
 
     # Create enough tools for multiple pages
     tools = [
@@ -474,15 +468,13 @@ def test_uc_menu_keybindings():
     ]
 
     with (
-        patch("code_puppy.command_line.uc_menu._get_tool_entries", return_value=tools),
-        patch("code_puppy.command_line.uc_menu.Application") as mock_app_cls,
-        patch("code_puppy.command_line.uc_menu.set_awaiting_user_input"),
+        patch("newcode.command_line.uc_menu._get_tool_entries", return_value=tools),
+        patch("newcode.command_line.uc_menu.Application") as mock_app_cls,
+        patch("newcode.command_line.uc_menu.set_awaiting_user_input"),
+        patch("newcode.command_line.uc_menu._toggle_tool_enabled", return_value=True),
+        patch("newcode.command_line.uc_menu._delete_tool", return_value=False),
         patch(
-            "code_puppy.command_line.uc_menu._toggle_tool_enabled", return_value=True
-        ),
-        patch("code_puppy.command_line.uc_menu._delete_tool", return_value=False),
-        patch(
-            "code_puppy.command_line.uc_menu._load_source_code",
+            "newcode.command_line.uc_menu._load_source_code",
             return_value=(["line1", "line2"] * 30, None),
         ),
         patch("sys.stdout"),

@@ -13,20 +13,20 @@ from unittest.mock import Mock, patch
 
 import requests
 
-from code_puppy.plugins.chatgpt_oauth import config
-from code_puppy.plugins.chatgpt_oauth.config import (
+from newcode.plugins.chatgpt_oauth import config
+from newcode.plugins.chatgpt_oauth.config import (
     CHATGPT_OAUTH_CONFIG,
     get_chatgpt_models_path,
     get_config_dir,
     get_token_storage_path,
 )
-from code_puppy.plugins.chatgpt_oauth.register_callbacks import (
+from newcode.plugins.chatgpt_oauth.register_callbacks import (
     _custom_help,
     _handle_chatgpt_logout,
     _handle_chatgpt_status,
     _handle_custom_command,
 )
-from code_puppy.plugins.chatgpt_oauth.utils import (
+from newcode.plugins.chatgpt_oauth.utils import (
     add_models_to_extra_config,
     fetch_chatgpt_models,
     load_chatgpt_models,
@@ -42,7 +42,7 @@ from code_puppy.plugins.chatgpt_oauth.utils import (
 class TestModelManagement:
     """Test ChatGPT model configuration and management."""
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_load_chatgpt_models_success(self, mock_path, tmp_path):
         """Test loading ChatGPT models from storage."""
         models_file = tmp_path / "models.json"
@@ -57,7 +57,7 @@ class TestModelManagement:
 
         assert loaded == models_data
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_load_chatgpt_models_empty(self, mock_path, tmp_path):
         """Test loading models when file doesn't exist returns empty dict."""
         models_file = tmp_path / "nonexistent.json"
@@ -67,7 +67,7 @@ class TestModelManagement:
 
         assert loaded == {}
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_save_chatgpt_models_success(self, mock_path, tmp_path):
         """Test saving ChatGPT models to storage."""
         models_file = tmp_path / "models.json"
@@ -80,7 +80,7 @@ class TestModelManagement:
         assert models_file.exists()
         assert json.loads(models_file.read_text()) == models_data
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_add_models_to_extra_config(self, mock_path, tmp_path):
         """Test adding models to configuration."""
         models_file = tmp_path / "models.json"
@@ -93,7 +93,7 @@ class TestModelManagement:
         assert "chatgpt-gpt-5.2" in models
         assert "chatgpt-gpt-5.2-codex" in models
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_add_models_with_context_settings(self, mock_path, tmp_path):
         """Test models are added with proper context settings."""
         models_file = tmp_path / "models.json"
@@ -120,7 +120,7 @@ class TestModelManagement:
             return_value=tmp_path / "chatgpt_models.json",
         ):
             with patch(
-                "code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path",
+                "newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path",
                 return_value=tmp_path / "chatgpt_models.json",
             ):
                 result = add_models_to_extra_config(["gpt-5.3-codex-spark"])
@@ -130,7 +130,7 @@ class TestModelManagement:
                 assert spark_config["context_length"] == 131000
                 assert spark_config["supports_xhigh_reasoning"] is True
 
-    @patch("code_puppy.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
+    @patch("newcode.plugins.chatgpt_oauth.utils.get_chatgpt_models_path")
     def test_remove_chatgpt_models(self, mock_path, tmp_path):
         """Test removing ChatGPT models from configuration."""
         models_file = tmp_path / "models.json"
@@ -222,9 +222,9 @@ class TestCustomCommands:
         assert "chatgpt-status" in commands
         assert "chatgpt-logout" in commands
 
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.load_stored_tokens")
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.emit_success")
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.emit_info")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.load_stored_tokens")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.emit_success")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.emit_info")
     def test_handle_chatgpt_status_authenticated(
         self, mock_info, mock_success, mock_load
     ):
@@ -235,7 +235,7 @@ class TestCustomCommands:
         }
 
         with patch(
-            "code_puppy.plugins.chatgpt_oauth.register_callbacks.load_chatgpt_models"
+            "newcode.plugins.chatgpt_oauth.register_callbacks.load_chatgpt_models"
         ) as mock_models:
             mock_models.return_value = {}
             _handle_chatgpt_status()
@@ -244,8 +244,8 @@ class TestCustomCommands:
         success_call = mock_success.call_args[0][0]
         assert "Authenticated" in success_call
 
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.load_stored_tokens")
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.emit_warning")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.load_stored_tokens")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.emit_warning")
     def test_handle_chatgpt_status_not_authenticated(self, mock_warning, mock_load):
         """Test status shows not authenticated when no tokens."""
         mock_load.return_value = None
@@ -256,10 +256,10 @@ class TestCustomCommands:
         warning_call = mock_warning.call_args[0][0]
         assert "Not authenticated" in warning_call
 
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.remove_chatgpt_models")
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.get_token_storage_path")
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.emit_success")
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.emit_info")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.remove_chatgpt_models")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.get_token_storage_path")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.emit_success")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.emit_info")
     def test_handle_chatgpt_logout(
         self, mock_info, mock_success, mock_path, mock_remove
     ):
@@ -276,9 +276,9 @@ class TestCustomCommands:
         mock_info.assert_called()
         mock_success.assert_called()
 
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.run_oauth_flow")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.run_oauth_flow")
     @patch(
-        "code_puppy.plugins.chatgpt_oauth.register_callbacks.set_model_and_reload_agent"
+        "newcode.plugins.chatgpt_oauth.register_callbacks.set_model_and_reload_agent"
     )
     def test_handle_custom_command_auth(self, mock_set_model, mock_oauth):
         """Test chatgpt-auth command triggers OAuth flow."""
@@ -288,17 +288,15 @@ class TestCustomCommands:
         mock_oauth.assert_called_once()
         mock_set_model.assert_called_once_with("chatgpt-gpt-5.3-codex")
 
-    @patch("code_puppy.plugins.chatgpt_oauth.register_callbacks.load_stored_tokens")
+    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.load_stored_tokens")
     def test_handle_custom_command_status(self, mock_load):
         """Test chatgpt-status command returns True."""
         mock_load.return_value = {"access_token": "token"}
 
         with patch(
-            "code_puppy.plugins.chatgpt_oauth.register_callbacks.load_chatgpt_models"
+            "newcode.plugins.chatgpt_oauth.register_callbacks.load_chatgpt_models"
         ):
-            with patch(
-                "code_puppy.plugins.chatgpt_oauth.register_callbacks.emit_success"
-            ):
+            with patch("newcode.plugins.chatgpt_oauth.register_callbacks.emit_success"):
                 result = _handle_custom_command("custom_command", "chatgpt-status")
 
         assert result is True
@@ -306,14 +304,14 @@ class TestCustomCommands:
     def test_handle_custom_command_logout(self):
         """Test chatgpt-logout command returns True."""
         with patch(
-            "code_puppy.plugins.chatgpt_oauth.register_callbacks.get_token_storage_path"
+            "newcode.plugins.chatgpt_oauth.register_callbacks.get_token_storage_path"
         ) as mock_path:
             mock_path.return_value = Mock(exists=Mock(return_value=False))
             with patch(
-                "code_puppy.plugins.chatgpt_oauth.register_callbacks.remove_chatgpt_models"
+                "newcode.plugins.chatgpt_oauth.register_callbacks.remove_chatgpt_models"
             ):
                 with patch(
-                    "code_puppy.plugins.chatgpt_oauth.register_callbacks.emit_success"
+                    "newcode.plugins.chatgpt_oauth.register_callbacks.emit_success"
                 ):
                     result = _handle_custom_command("custom_command", "chatgpt-logout")
 
@@ -359,8 +357,8 @@ class TestConfiguration:
         """Test required port matches config."""
         assert CHATGPT_OAUTH_CONFIG["required_port"] == 1455
 
-    @patch("code_puppy.plugins.chatgpt_oauth.config.Path.mkdir")
-    @patch("code_puppy.plugins.chatgpt_oauth.config.Path.exists", return_value=False)
+    @patch("newcode.plugins.chatgpt_oauth.config.Path.mkdir")
+    @patch("newcode.plugins.chatgpt_oauth.config.Path.exists", return_value=False)
     def test_get_token_storage_path(self, mock_exists, mock_mkdir):
         """Test token storage path is created correctly."""
         path = get_token_storage_path()
@@ -368,7 +366,7 @@ class TestConfiguration:
         assert path is not None
         assert "chatgpt_oauth.json" in str(path)
 
-    @patch("code_puppy.plugins.chatgpt_oauth.config.Path.mkdir")
+    @patch("newcode.plugins.chatgpt_oauth.config.Path.mkdir")
     def test_get_config_dir(self, mock_mkdir):
         """Test config directory is handled correctly."""
         from pathlib import Path
@@ -378,7 +376,7 @@ class TestConfiguration:
         assert config_dir is not None
         assert isinstance(config_dir, Path)
 
-    @patch("code_puppy.plugins.chatgpt_oauth.config.Path.mkdir")
+    @patch("newcode.plugins.chatgpt_oauth.config.Path.mkdir")
     def test_get_chatgpt_models_path(self, mock_mkdir):
         """Test models file path is created correctly."""
         path = get_chatgpt_models_path()

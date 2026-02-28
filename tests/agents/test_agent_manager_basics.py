@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.agents.agent_manager import (
+from newcode.agents.agent_manager import (
     _AGENT_REGISTRY,
     _discover_agents,
     _load_session_data,
@@ -19,8 +19,8 @@ from code_puppy.agents.agent_manager import (
     refresh_agents,
     set_current_agent,
 )
-from code_puppy.agents.base_agent import BaseAgent
-from code_puppy.agents.json_agent import JSONAgent
+from newcode.agents.base_agent import BaseAgent
+from newcode.agents.json_agent import JSONAgent
 
 
 # Define list_agents and get_agent functions for the test interface
@@ -126,7 +126,7 @@ class TestAgentManagerBasics:
             assert isinstance(session_id, str)
             assert session_id.startswith("fallback_")
 
-    @patch("code_puppy.agents.agent_manager.discover_json_agents")
+    @patch("newcode.agents.agent_manager.discover_json_agents")
     @patch("pkgutil.iter_modules")
     @patch("importlib.import_module")
     def test_discover_agents_python_classes(
@@ -134,7 +134,7 @@ class TestAgentManagerBasics:
     ):
         """Test discovering Python agent classes."""
         # Mock module discovery
-        mock_iter_modules.return_value = [("code_puppy.agents", "mock_agent", True)]
+        mock_iter_modules.return_value = [("newcode.agents", "mock_agent", True)]
 
         # Mock module with agent class
         mock_module = MagicMock()
@@ -150,7 +150,7 @@ class TestAgentManagerBasics:
         assert "mock-agent" in _AGENT_REGISTRY
         assert _AGENT_REGISTRY["mock-agent"] == MockAgent
 
-    @patch("code_puppy.agents.agent_manager.discover_json_agents")
+    @patch("newcode.agents.agent_manager.discover_json_agents")
     @patch("pkgutil.iter_modules")
     def test_discover_agents_json_agents(self, mock_iter_modules, mock_json_agents):
         """Test discovering JSON agents."""
@@ -166,7 +166,7 @@ class TestAgentManagerBasics:
         assert "json-agent" in _AGENT_REGISTRY
         assert _AGENT_REGISTRY["json-agent"] == "/path/to/agent.json"
 
-    @patch("code_puppy.agents.agent_manager.discover_json_agents")
+    @patch("newcode.agents.agent_manager.discover_json_agents")
     @patch("pkgutil.iter_modules")
     def test_discover_agents_skips_internal_modules(
         self, mock_iter_modules, mock_json_agents
@@ -174,11 +174,11 @@ class TestAgentManagerBasics:
         """Test that internal modules are skipped during discovery."""
         # Mock internal modules
         mock_iter_modules.return_value = [
-            ("code_puppy.agents", "_internal", True),
-            ("code_puppy.agents", "base_agent", True),
-            ("code_puppy.agents", "json_agent", True),
-            ("code_puppy.agents", "agent_manager", True),
-            ("code_puppy.agents", "valid_agent", True),
+            ("newcode.agents", "_internal", True),
+            ("newcode.agents", "base_agent", True),
+            ("newcode.agents", "json_agent", True),
+            ("newcode.agents", "agent_manager", True),
+            ("newcode.agents", "valid_agent", True),
         ]
 
         # Mock valid module with a custom agent class
@@ -207,23 +207,23 @@ class TestAgentManagerBasics:
         assert "json_agent" not in _AGENT_REGISTRY
         assert "agent_manager" not in _AGENT_REGISTRY
 
-    @patch("code_puppy.agents.agent_manager.discover_json_agents")
+    @patch("newcode.agents.agent_manager.discover_json_agents")
     @patch("pkgutil.iter_modules")
     def test_discover_agents_handles_import_errors(
         self, mock_iter_modules, mock_json_agents
     ):
         """Test that import errors are handled gracefully."""
-        mock_iter_modules.return_value = [("code_puppy.agents", "broken_agent", False)]
+        mock_iter_modules.return_value = [("newcode.agents", "broken_agent", False)]
 
         # Create a side effect that only fails for the broken agent module
         def mock_import_side_effect(module_name):
-            if module_name == "code_puppy.agents.broken_agent":
+            if module_name == "newcode.agents.broken_agent":
                 raise ImportError("Module not found")
             # Import everything else normally
             return importlib.import_module(module_name)
 
         # Patch emit_warning where it's imported in agent_manager
-        with patch("code_puppy.agents.agent_manager.emit_warning") as mock_warn:
+        with patch("newcode.agents.agent_manager.emit_warning") as mock_warn:
             with patch("importlib.import_module", side_effect=mock_import_side_effect):
                 mock_json_agents.return_value = {}
                 _discover_agents()
@@ -232,7 +232,7 @@ class TestAgentManagerBasics:
                 mock_warn.assert_called_once()
                 assert "broken_agent" in mock_warn.call_args[0][0]
 
-    @patch("code_puppy.agents.agent_manager.discover_json_agents")
+    @patch("newcode.agents.agent_manager.discover_json_agents")
     @patch("pkgutil.iter_modules")
     @patch("importlib.import_module")
     def test_get_available_agents(
@@ -240,7 +240,7 @@ class TestAgentManagerBasics:
     ):
         """Test getting available agents with display names."""
         # Setup mock agents
-        mock_iter_modules.return_value = [("code_puppy.agents", "mock_agent", True)]
+        mock_iter_modules.return_value = [("newcode.agents", "mock_agent", True)]
 
         mock_module = MagicMock()
         mock_module.MockAgent = MockAgent
@@ -257,7 +257,7 @@ class TestAgentManagerBasics:
         # Check that we have some agents (the actual discovery may include real agents)
         assert len(agents) > 0
 
-    @patch("code_puppy.agents.agent_manager.discover_json_agents")
+    @patch("newcode.agents.agent_manager.discover_json_agents")
     @patch("pkgutil.iter_modules")
     @patch("importlib.import_module")
     def test_load_agent_python_class(
@@ -265,7 +265,7 @@ class TestAgentManagerBasics:
     ):
         """Test loading a Python agent class."""
         # Setup registry
-        mock_iter_modules.return_value = [("code_puppy.agents", "mock_agent", True)]
+        mock_iter_modules.return_value = [("newcode.agents", "mock_agent", True)]
 
         mock_module = MagicMock()
         mock_module.MockAgent = MockAgent
@@ -280,7 +280,7 @@ class TestAgentManagerBasics:
         assert isinstance(agent, MockAgent)
         assert agent.name == "mock-agent"
 
-    @patch("code_puppy.agents.agent_manager.discover_json_agents")
+    @patch("newcode.agents.agent_manager.discover_json_agents")
     @patch("pkgutil.iter_modules")
     def test_load_agent_json_class(self, mock_iter_modules, mock_json_agents):
         """Test loading a JSON agent."""
@@ -295,7 +295,7 @@ class TestAgentManagerBasics:
     def test_load_agent_not_found(self):
         """Test loading an agent that doesn't exist."""
         # Clear registry and mock discovery to return no agents
-        with patch("code_puppy.agents.agent_manager._discover_agents"):
+        with patch("newcode.agents.agent_manager._discover_agents"):
             _AGENT_REGISTRY.clear()
 
             # The actual behavior is that it tries to fallback to code-agent
@@ -303,7 +303,7 @@ class TestAgentManagerBasics:
             with pytest.raises(ValueError, match="not found and no fallback"):
                 load_agent("nonexistent-agent")
 
-    @patch("code_puppy.agents.agent_manager.discover_json_agents")
+    @patch("newcode.agents.agent_manager.discover_json_agents")
     @patch("pkgutil.iter_modules")
     @patch("importlib.import_module")
     def test_load_agent_fallback_to_code_agent(
@@ -317,13 +317,13 @@ class TestAgentManagerBasics:
                 super().__init__()
                 self._name = "code-agent"
 
-        mock_iter_modules.return_value = [("code_puppy.agents", "code_puppy", True)]
+        mock_iter_modules.return_value = [("newcode.agents", "newcode", True)]
 
         mock_module = MagicMock()
         mock_module.CodeAgent = CodeAgent
 
         def mock_import_side_effect(module_name):
-            if "code_puppy" in module_name:
+            if "newcode" in module_name:
                 return mock_module
             return MagicMock()
 
@@ -339,7 +339,7 @@ class TestAgentManagerBasics:
 
     def test_refresh_agents(self):
         """Test refreshing agent discovery."""
-        with patch("code_puppy.agents.agent_manager._discover_agents") as mock_discover:
+        with patch("newcode.agents.agent_manager._discover_agents") as mock_discover:
             refresh_agents()
             mock_discover.assert_called_once()
 
@@ -353,11 +353,11 @@ class TestAgentManagerBasics:
 
             with (
                 patch(
-                    "code_puppy.agents.agent_manager._get_session_file_path",
+                    "newcode.agents.agent_manager._get_session_file_path",
                     return_value=session_file,
                 ),
                 patch(
-                    "code_puppy.agents.agent_manager._is_process_alive",
+                    "newcode.agents.agent_manager._is_process_alive",
                     return_value=True,  # Mock that test session PIDs are alive
                 ),
             ):
@@ -382,16 +382,16 @@ class TestAgentManagerBasics:
             session_file.write_text("{ invalid json }")
 
             with patch(
-                "code_puppy.agents.agent_manager._get_session_file_path",
+                "newcode.agents.agent_manager._get_session_file_path",
                 return_value=session_file,
             ):
                 loaded = _load_session_data()
                 assert loaded == {}  # Should return empty dict
 
-    @patch("code_puppy.agents.agent_manager._save_session_data")
-    @patch("code_puppy.agents.agent_manager._load_session_data")
-    @patch("code_puppy.agents.agent_manager.load_agent")
-    @patch("code_puppy.agents.agent_manager.get_current_agent_name")
+    @patch("newcode.agents.agent_manager._save_session_data")
+    @patch("newcode.agents.agent_manager._load_session_data")
+    @patch("newcode.agents.agent_manager.load_agent")
+    @patch("newcode.agents.agent_manager.get_current_agent_name")
     def test_set_current_agent(
         self, mock_get_name, mock_load_agent, mock_load_data, mock_save_data
     ):
@@ -409,8 +409,8 @@ class TestAgentManagerBasics:
         mock_load_agent.assert_called_with("new-agent")
         mock_save_data.assert_called_once()
 
-    @patch("code_puppy.agents.agent_manager.load_agent")
-    @patch("code_puppy.agents.agent_manager.get_current_agent_name")
+    @patch("newcode.agents.agent_manager.load_agent")
+    @patch("newcode.agents.agent_manager.get_current_agent_name")
     def test_get_current_agent(self, mock_get_name, mock_load_agent):
         """Test getting current agent."""
         mock_get_name.return_value = "test-agent"
@@ -418,7 +418,7 @@ class TestAgentManagerBasics:
         mock_load_agent.return_value = mock_agent
 
         # Clear global current agent to force loading
-        import code_puppy.agents.agent_manager as am
+        import newcode.agents.agent_manager as am
 
         am._CURRENT_AGENT = None
 
@@ -446,7 +446,7 @@ class TestAgentManagerBasics:
     def test_load_agent_with_empty_registry(self):
         """Test load_agent behavior with completely empty registry."""
         # Mock discovery to ensure empty registry
-        with patch("code_puppy.agents.agent_manager._discover_agents"):
+        with patch("newcode.agents.agent_manager._discover_agents"):
             _AGENT_REGISTRY.clear()
 
             with pytest.raises(ValueError, match="not found and no fallback"):

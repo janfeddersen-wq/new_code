@@ -1,11 +1,11 @@
-"""Tests for code_puppy/scheduler/executor.py - full coverage."""
+"""Tests for newcode/scheduler/executor.py - full coverage."""
 
 from unittest.mock import MagicMock, mock_open, patch
 
-from code_puppy.scheduler.config import ScheduledTask
-from code_puppy.scheduler.executor import (
+from newcode.scheduler.config import ScheduledTask
+from newcode.scheduler.executor import (
     execute_task,
-    get_code_puppy_command,
+    get_newcode_command,
     run_task_by_id,
 )
 
@@ -25,16 +25,16 @@ def _make_task(**overrides):
 
 class TestGetCodePuppyCommand:
     def test_returns_newcode(self):
-        assert get_code_puppy_command() == "newcode"
+        assert get_newcode_command() == "newcode"
 
     @patch("sys.platform", "win32")
     def test_returns_newcode_windows(self):
         # Re-import to test the branch - but the function just returns "newcode" either way
-        assert get_code_puppy_command() == "newcode"
+        assert get_newcode_command() == "newcode"
 
 
 class TestExecuteTask:
-    @patch("code_puppy.scheduler.executor.update_task")
+    @patch("newcode.scheduler.executor.update_task")
     @patch("subprocess.Popen")
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs")
@@ -52,7 +52,7 @@ class TestExecuteTask:
         assert err == ""
         assert task.last_status == "success"
 
-    @patch("code_puppy.scheduler.executor.update_task")
+    @patch("newcode.scheduler.executor.update_task")
     @patch("subprocess.Popen")
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs")
@@ -69,7 +69,7 @@ class TestExecuteTask:
         assert code == 1
         assert task.last_status == "failed"
 
-    @patch("code_puppy.scheduler.executor.update_task")
+    @patch("newcode.scheduler.executor.update_task")
     def test_working_dir_not_found(self, mock_update):
         task = _make_task(working_directory="/nonexistent/path")
         with patch("os.path.isdir", return_value=False), patch("os.makedirs"):
@@ -79,7 +79,7 @@ class TestExecuteTask:
         assert code == -1
         assert "not found" in err
 
-    @patch("code_puppy.scheduler.executor.update_task")
+    @patch("newcode.scheduler.executor.update_task")
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs")
     def test_file_not_found_error(self, mock_mkdirs, mock_isdir, mock_update):
@@ -93,7 +93,7 @@ class TestExecuteTask:
         assert success is False
         assert "not found" in err
 
-    @patch("code_puppy.scheduler.executor.update_task")
+    @patch("newcode.scheduler.executor.update_task")
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs")
     def test_generic_exception(self, mock_mkdirs, mock_isdir, mock_update):
@@ -107,7 +107,7 @@ class TestExecuteTask:
         assert success is False
         assert "boom" in err
 
-    @patch("code_puppy.scheduler.executor.update_task")
+    @patch("newcode.scheduler.executor.update_task")
     @patch("subprocess.Popen")
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs")
@@ -125,7 +125,7 @@ class TestExecuteTask:
         assert "--model" not in cmd
         assert "--agent" not in cmd
 
-    @patch("code_puppy.scheduler.executor.update_task")
+    @patch("newcode.scheduler.executor.update_task")
     @patch("subprocess.Popen")
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs")
@@ -139,7 +139,7 @@ class TestExecuteTask:
             success, _, _ = execute_task(task)
         assert success is True
 
-    @patch("code_puppy.scheduler.executor.update_task")
+    @patch("newcode.scheduler.executor.update_task")
     @patch("subprocess.Popen")
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs")
@@ -153,7 +153,7 @@ class TestExecuteTask:
             success, _, _ = execute_task(task)
         assert success is True
 
-    @patch("code_puppy.scheduler.executor.update_task")
+    @patch("newcode.scheduler.executor.update_task")
     @patch("subprocess.Popen")
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs")
@@ -173,8 +173,8 @@ class TestExecuteTask:
 
 
 class TestRunTaskById:
-    @patch("code_puppy.scheduler.executor.execute_task")
-    @patch("code_puppy.scheduler.config.get_task")
+    @patch("newcode.scheduler.executor.execute_task")
+    @patch("newcode.scheduler.config.get_task")
     def test_success(self, mock_get, mock_exec):
         task = _make_task()
         mock_get.return_value = task
@@ -184,15 +184,15 @@ class TestRunTaskById:
         assert ok is True
         assert "successfully" in msg
 
-    @patch("code_puppy.scheduler.config.get_task")
+    @patch("newcode.scheduler.config.get_task")
     def test_not_found(self, mock_get):
         mock_get.return_value = None
         ok, msg = run_task_by_id("missing")
         assert ok is False
         assert "not found" in msg
 
-    @patch("code_puppy.scheduler.executor.execute_task")
-    @patch("code_puppy.scheduler.config.get_task")
+    @patch("newcode.scheduler.executor.execute_task")
+    @patch("newcode.scheduler.config.get_task")
     def test_failure(self, mock_get, mock_exec):
         task = _make_task()
         mock_get.return_value = task

@@ -23,27 +23,27 @@ class TestGetApiKey:
 
     def test_get_api_key_from_config_first(self):
         """Test that get_api_key checks config before environment."""
-        from code_puppy.model_factory import get_api_key
+        from newcode.model_factory import get_api_key
 
-        with patch("code_puppy.model_factory.get_value", return_value="config-key"):
+        with patch("newcode.model_factory.get_value", return_value="config-key"):
             with patch.dict(os.environ, {"TEST_API_KEY": "env-key"}):
                 result = get_api_key("TEST_API_KEY")
                 assert result == "config-key"
 
     def test_get_api_key_falls_back_to_env(self):
         """Test that get_api_key falls back to env when config is empty."""
-        from code_puppy.model_factory import get_api_key
+        from newcode.model_factory import get_api_key
 
-        with patch("code_puppy.model_factory.get_value", return_value=None):
+        with patch("newcode.model_factory.get_value", return_value=None):
             with patch.dict(os.environ, {"TEST_API_KEY": "env-key"}):
                 result = get_api_key("TEST_API_KEY")
                 assert result == "env-key"
 
     def test_get_api_key_returns_none_when_missing(self):
         """Test that get_api_key returns None when key not found."""
-        from code_puppy.model_factory import get_api_key
+        from newcode.model_factory import get_api_key
 
-        with patch("code_puppy.model_factory.get_value", return_value=None):
+        with patch("newcode.model_factory.get_value", return_value=None):
             with patch.dict(os.environ, {}, clear=True):
                 # Remove the key if it exists
                 os.environ.pop("MISSING_KEY", None)
@@ -52,10 +52,10 @@ class TestGetApiKey:
 
     def test_get_api_key_case_insensitive_config_lookup(self):
         """Test that config lookup is case-insensitive."""
-        from code_puppy.model_factory import get_api_key
+        from newcode.model_factory import get_api_key
 
         # get_value is called with lowercase key
-        with patch("code_puppy.model_factory.get_value") as mock_get_value:
+        with patch("newcode.model_factory.get_value") as mock_get_value:
             mock_get_value.return_value = "config-value"
             result = get_api_key("MY_API_KEY")
             mock_get_value.assert_called_once_with("my_api_key")
@@ -70,7 +70,7 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_returns_dict(self):
         """Test that make_model_settings returns a dict (TypedDict)."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         # Call with explicit max_tokens to avoid config loading
         settings = make_model_settings("some-model", max_tokens=5000)
@@ -80,7 +80,7 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_gpt5_has_reasoning_effort(self):
         """Test GPT-5 model returns settings with reasoning_effort."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("gpt-5-test", max_tokens=4096)
         # Should be a dict with openai_reasoning_effort key
@@ -89,7 +89,7 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_gpt5_codex_no_verbosity(self):
         """Test GPT-5 codex model doesn't get verbosity (only supports medium)."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("gpt-5-codex-test", max_tokens=4096)
         assert isinstance(settings, dict)
@@ -98,7 +98,7 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_claude_has_temperature(self):
         """Test Claude model returns settings with temperature."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("claude-3-sonnet", max_tokens=4096)
         assert isinstance(settings, dict)
@@ -107,7 +107,7 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_anthropic_prefix(self):
         """Test anthropic- prefixed models get appropriate settings."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("anthropic-claude-opus", max_tokens=4096)
         assert isinstance(settings, dict)
@@ -116,7 +116,7 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_removes_top_p_for_anthropic(self):
         """Test that top_p is removed for Anthropic models."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("claude-3-sonnet", max_tokens=4096)
         # top_p should not be in the dict (removed for Anthropic)
@@ -124,10 +124,10 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_fallback_context_length(self):
         """Test fallback when config loading fails."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         with patch(
-            "code_puppy.model_factory.ModelFactory.load_config",
+            "newcode.model_factory.ModelFactory.load_config",
             side_effect=Exception("Config error"),
         ):
             settings = make_model_settings("unknown-model")
@@ -137,18 +137,18 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_with_explicit_max_tokens(self):
         """Test explicit max_tokens is used."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("any-model", max_tokens=1234)
         assert settings["max_tokens"] == 1234
 
     def test_make_model_settings_auto_calculation_boundaries(self):
         """Test auto max_tokens calculation with boundary conditions."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         # Test with a known model in config or fallback
         with patch(
-            "code_puppy.model_factory.ModelFactory.load_config",
+            "newcode.model_factory.ModelFactory.load_config",
             return_value={"test-model": {"context_length": 1000}},
         ):
             settings = make_model_settings("test-model")
@@ -157,10 +157,10 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_large_context_capped(self):
         """Test max_tokens is capped at 65536 for large context."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         with patch(
-            "code_puppy.model_factory.ModelFactory.load_config",
+            "newcode.model_factory.ModelFactory.load_config",
             return_value={"huge-model": {"context_length": 1000000}},
         ):
             settings = make_model_settings("huge-model")
@@ -169,18 +169,18 @@ class TestMakeModelSettings:
 
     def test_make_model_settings_parallel_tool_calls_disabled_when_yolo_off(self):
         """Test parallel_tool_calls=False when yolo_mode is off (user reviews sequentially)."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
-        with patch("code_puppy.model_factory.get_yolo_mode", return_value=False):
+        with patch("newcode.model_factory.get_yolo_mode", return_value=False):
             settings = make_model_settings("gpt-4o", max_tokens=5000)
             assert "parallel_tool_calls" in settings
             assert settings["parallel_tool_calls"] is False
 
     def test_make_model_settings_parallel_tool_calls_not_set_when_yolo_on(self):
         """Test parallel_tool_calls is not explicitly set when yolo_mode is on."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
-        with patch("code_puppy.model_factory.get_yolo_mode", return_value=True):
+        with patch("newcode.model_factory.get_yolo_mode", return_value=True):
             settings = make_model_settings("gpt-4o", max_tokens=5000)
             # When yolo_mode=True, parallel calls are fine — let the model go fast
             assert "parallel_tool_calls" not in settings
@@ -197,7 +197,7 @@ class TestOpus46EffortSetting:
 
     def test_opus_46_gets_effort_in_extra_body(self):
         """Opus 4-6 should inject effort via extra_body.output_config."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("claude-opus-4-6", max_tokens=4096)
         extra_body = settings.get("extra_body", {})
@@ -206,17 +206,17 @@ class TestOpus46EffortSetting:
 
     def test_opus_46_effort_default_is_high(self):
         """Default effort for Opus 4-6 should be 'high'."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("claude-opus-4-6", max_tokens=4096)
         assert settings["extra_body"]["output_config"]["effort"] == "high"
 
     def test_opus_46_effort_user_override(self):
         """User-configured effort value should be respected."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         with patch(
-            "code_puppy.config.get_effective_model_settings",
+            "newcode.config.get_effective_model_settings",
             return_value={"effort": "low", "extended_thinking": "adaptive"},
         ):
             settings = make_model_settings("claude-opus-4-6", max_tokens=4096)
@@ -224,7 +224,7 @@ class TestOpus46EffortSetting:
 
     def test_opus_46_reverse_name_also_works(self):
         """claude-4-6-opus variant should also get effort."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("claude-4-6-opus", max_tokens=4096)
         extra_body = settings.get("extra_body", {})
@@ -233,7 +233,7 @@ class TestOpus46EffortSetting:
 
     def test_non_opus_46_does_not_get_effort(self):
         """Non Opus 4-6 Claude models should NOT have extra_body.output_config."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("claude-sonnet-4-20250514", max_tokens=4096)
         extra_body = settings.get("extra_body", {})
@@ -241,7 +241,7 @@ class TestOpus46EffortSetting:
 
     def test_opus_45_does_not_get_effort(self):
         """Opus 4-5 should NOT have effort — it's 4-6 only."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("claude-opus-4-5", max_tokens=4096)
         extra_body = settings.get("extra_body", {})
@@ -249,14 +249,14 @@ class TestOpus46EffortSetting:
 
     def test_opus_46_thinking_type_is_adaptive_by_default(self):
         """Opus 4-6 should default to adaptive thinking (from previous change)."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("claude-opus-4-6", max_tokens=4096)
         assert settings["anthropic_thinking"]["type"] == "adaptive"
 
     def test_opus_46_effort_not_in_anthropic_thinking(self):
         """Effort should NOT be inside anthropic_thinking — it's a separate param."""
-        from code_puppy.model_factory import make_model_settings
+        from newcode.model_factory import make_model_settings
 
         settings = make_model_settings("claude-opus-4-6", max_tokens=4096)
         thinking = settings.get("anthropic_thinking", {})
@@ -268,7 +268,7 @@ class TestZaiChatModel:
 
     def test_zai_chat_model_process_response(self):
         """Test that ZaiChatModel._process_response sets object field."""
-        from code_puppy.model_factory import ZaiChatModel
+        from newcode.model_factory import ZaiChatModel
 
         # Create a mock response
         mock_response = MagicMock()
@@ -294,7 +294,7 @@ class TestGetCustomConfig:
 
     def test_get_custom_config_env_var_in_header(self):
         """Test environment variable resolution in headers."""
-        from code_puppy.model_factory import get_custom_config
+        from newcode.model_factory import get_custom_config
 
         config = {
             "custom_endpoint": {
@@ -303,15 +303,13 @@ class TestGetCustomConfig:
             }
         }
 
-        with patch(
-            "code_puppy.model_factory.get_api_key", return_value="resolved-token"
-        ):
+        with patch("newcode.model_factory.get_api_key", return_value="resolved-token"):
             url, headers, verify, api_key = get_custom_config(config)
             assert headers["Authorization"] == "resolved-token"
 
     def test_get_custom_config_inline_env_vars_with_spaces(self):
         """Test inline env vars with space-separated tokens."""
-        from code_puppy.model_factory import get_custom_config
+        from newcode.model_factory import get_custom_config
 
         config = {
             "custom_endpoint": {
@@ -327,16 +325,14 @@ class TestGetCustomConfig:
                 return "extra-value"
             return None
 
-        with patch(
-            "code_puppy.model_factory.get_api_key", side_effect=mock_get_api_key
-        ):
-            with patch("code_puppy.model_factory.emit_warning"):
+        with patch("newcode.model_factory.get_api_key", side_effect=mock_get_api_key):
+            with patch("newcode.model_factory.emit_warning"):
                 url, headers, verify, api_key = get_custom_config(config)
                 assert headers["Authorization"] == "Bearer my-token part2 extra-value"
 
     def test_get_custom_config_inline_env_var_missing(self):
         """Test inline env var resolution when variable is missing."""
-        from code_puppy.model_factory import get_custom_config
+        from newcode.model_factory import get_custom_config
 
         config = {
             "custom_endpoint": {
@@ -345,15 +341,15 @@ class TestGetCustomConfig:
             }
         }
 
-        with patch("code_puppy.model_factory.get_api_key", return_value=None):
-            with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+        with patch("newcode.model_factory.get_api_key", return_value=None):
+            with patch("newcode.model_factory.emit_warning") as mock_warn:
                 url, headers, verify, api_key = get_custom_config(config)
                 assert headers["Auth"] == "prefix  suffix"
                 mock_warn.assert_called()
 
     def test_get_custom_config_api_key_from_env(self):
         """Test api_key resolution from environment variable."""
-        from code_puppy.model_factory import get_custom_config
+        from newcode.model_factory import get_custom_config
 
         config = {
             "custom_endpoint": {
@@ -363,14 +359,14 @@ class TestGetCustomConfig:
         }
 
         with patch(
-            "code_puppy.model_factory.get_api_key", return_value="resolved-api-key"
+            "newcode.model_factory.get_api_key", return_value="resolved-api-key"
         ):
             url, headers, verify, api_key = get_custom_config(config)
             assert api_key == "resolved-api-key"
 
     def test_get_custom_config_api_key_missing_env(self):
         """Test api_key when environment variable is missing."""
-        from code_puppy.model_factory import get_custom_config
+        from newcode.model_factory import get_custom_config
 
         config = {
             "custom_endpoint": {
@@ -379,15 +375,15 @@ class TestGetCustomConfig:
             }
         }
 
-        with patch("code_puppy.model_factory.get_api_key", return_value=None):
-            with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+        with patch("newcode.model_factory.get_api_key", return_value=None):
+            with patch("newcode.model_factory.emit_warning") as mock_warn:
                 url, headers, verify, api_key = get_custom_config(config)
                 assert api_key is None
                 mock_warn.assert_called()
 
     def test_get_custom_config_raw_api_key(self):
         """Test api_key as raw value (not env var reference)."""
-        from code_puppy.model_factory import get_custom_config
+        from newcode.model_factory import get_custom_config
 
         config = {
             "custom_endpoint": {
@@ -401,7 +397,7 @@ class TestGetCustomConfig:
 
     def test_get_custom_config_ca_certs_path(self):
         """Test ca_certs_path configuration."""
-        from code_puppy.model_factory import get_custom_config
+        from newcode.model_factory import get_custom_config
 
         config = {
             "custom_endpoint": {
@@ -419,14 +415,14 @@ class TestLoadConfigExtended:
 
     def test_load_config_multiple_callbacks_warning(self):
         """Test warning is logged when multiple callbacks are registered."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         with patch(
-            "code_puppy.model_factory.callbacks.get_callbacks",
+            "newcode.model_factory.callbacks.get_callbacks",
             return_value=["callback1", "callback2"],
         ):
             with patch(
-                "code_puppy.model_factory.callbacks.on_load_model_config",
+                "newcode.model_factory.callbacks.on_load_model_config",
                 return_value=[{"test": "config"}],
             ):
                 with patch("logging.getLogger") as mock_logger:
@@ -438,14 +434,14 @@ class TestLoadConfigExtended:
 
     def test_load_config_filtered_claude_models(self):
         """Test that Claude Code OAuth models use filtered loading."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         base_config = {"base-model": {"type": "openai", "name": "gpt-4"}}
         filtered_claude_config = {
             "claude-oauth": {"type": "claude_code", "name": "claude-3-opus"}
         }
 
-        with patch("code_puppy.model_factory.callbacks.get_callbacks", return_value=[]):
+        with patch("newcode.model_factory.callbacks.get_callbacks", return_value=[]):
             with patch(
                 "builtins.open",
                 MagicMock(
@@ -461,7 +457,7 @@ class TestLoadConfigExtended:
                     )
                 ),
             ):
-                with patch("code_puppy.model_factory.pathlib.Path") as mock_path_class:
+                with patch("newcode.model_factory.pathlib.Path") as mock_path_class:
                     # Set up path mocking
                     mock_main = MagicMock()
                     mock_main.__truediv__ = MagicMock(return_value=mock_main)
@@ -479,7 +475,7 @@ class TestLoadConfigExtended:
                     mock_path_class.side_effect = path_side_effect
 
                     with patch(
-                        "code_puppy.plugins.claude_code_oauth.utils.load_claude_models_filtered",
+                        "newcode.plugins.claude_code_oauth.utils.load_claude_models_filtered",
                         return_value=filtered_claude_config,
                     ) as mock_filtered:
                         with patch("json.load", return_value=base_config):
@@ -489,18 +485,18 @@ class TestLoadConfigExtended:
 
     def test_load_config_filtered_loading_import_error(self):
         """Test fallback when filtered loading import fails."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         base_config = {"base-model": {"type": "openai", "name": "gpt-4"}}
         plain_claude_config = {"claude-model": {"type": "anthropic", "name": "claude"}}
 
-        with patch("code_puppy.model_factory.callbacks.get_callbacks", return_value=[]):
+        with patch("newcode.model_factory.callbacks.get_callbacks", return_value=[]):
             with patch("builtins.open", MagicMock()) as mock_open:
                 mock_open.return_value.__enter__.return_value.read.return_value = (
                     '{"base-model": {"type": "openai"}}'
                 )
 
-                with patch("code_puppy.model_factory.pathlib.Path") as mock_path_class:
+                with patch("newcode.model_factory.pathlib.Path") as mock_path_class:
                     mock_main = MagicMock()
                     mock_main.__truediv__ = MagicMock(return_value=mock_main)
                     mock_main.exists.return_value = False
@@ -519,10 +515,10 @@ class TestLoadConfigExtended:
                     # Make filtered import fail
                     with patch.dict(
                         "sys.modules",
-                        {"code_puppy.plugins.claude_code_oauth.utils": None},
+                        {"newcode.plugins.claude_code_oauth.utils": None},
                     ):
                         with patch(
-                            "code_puppy.plugins.claude_code_oauth.utils.load_claude_models_filtered",
+                            "newcode.plugins.claude_code_oauth.utils.load_claude_models_filtered",
                             side_effect=ImportError("Module not found"),
                         ):
                             with patch(
@@ -544,8 +540,8 @@ class TestClaudeCodeModel:
 
     def test_claude_code_model_basic(self):
         """Test basic claude_code model creation."""
-        from code_puppy.model_factory import ModelFactory
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.model_factory import ModelFactory
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -565,16 +561,16 @@ class TestClaudeCodeModel:
             {"type": "claude_code", "handler": _create_claude_code_model}
         ]
         with patch(
-            "code_puppy.model_factory.callbacks.on_register_model_types",
+            "newcode.model_factory.callbacks.on_register_model_types",
             return_value=mock_handler_return,
         ):
             # Patch at source modules where the plugin handler imports from
-            with patch("code_puppy.http_utils.get_cert_bundle_path", return_value=None):
-                with patch("code_puppy.http_utils.get_http2", return_value=True):
-                    with patch("code_puppy.claude_cache_client.ClaudeCacheAsyncClient"):
+            with patch("newcode.http_utils.get_cert_bundle_path", return_value=None):
+                with patch("newcode.http_utils.get_http2", return_value=True):
+                    with patch("newcode.claude_cache_client.ClaudeCacheAsyncClient"):
                         with patch("anthropic.AsyncAnthropic"):
                             with patch(
-                                "code_puppy.claude_cache_client.patch_anthropic_client_messages"
+                                "newcode.claude_cache_client.patch_anthropic_client_messages"
                             ):
                                 with patch(
                                     "pydantic_ai.providers.anthropic.AnthropicProvider"
@@ -583,7 +579,7 @@ class TestClaudeCodeModel:
                                         "pydantic_ai.models.anthropic.AnthropicModel"
                                     ) as mock_model:
                                         with patch(
-                                            "code_puppy.config.get_effective_model_settings",
+                                            "newcode.config.get_effective_model_settings",
                                             return_value={"interleaved_thinking": True},
                                         ):
                                             ModelFactory.get_model(
@@ -593,8 +589,8 @@ class TestClaudeCodeModel:
 
     def test_claude_code_model_interleaved_thinking_header(self):
         """Test interleaved thinking header handling."""
-        from code_puppy.model_factory import ModelFactory
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.model_factory import ModelFactory
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -615,17 +611,17 @@ class TestClaudeCodeModel:
             {"type": "claude_code", "handler": _create_claude_code_model}
         ]
         with patch(
-            "code_puppy.model_factory.callbacks.on_register_model_types",
+            "newcode.model_factory.callbacks.on_register_model_types",
             return_value=mock_handler_return,
         ):
-            with patch("code_puppy.http_utils.get_cert_bundle_path", return_value=None):
-                with patch("code_puppy.http_utils.get_http2", return_value=True):
+            with patch("newcode.http_utils.get_cert_bundle_path", return_value=None):
+                with patch("newcode.http_utils.get_http2", return_value=True):
                     with patch(
-                        "code_puppy.claude_cache_client.ClaudeCacheAsyncClient"
+                        "newcode.claude_cache_client.ClaudeCacheAsyncClient"
                     ) as mock_client:
                         with patch("anthropic.AsyncAnthropic"):
                             with patch(
-                                "code_puppy.claude_cache_client.patch_anthropic_client_messages"
+                                "newcode.claude_cache_client.patch_anthropic_client_messages"
                             ):
                                 with patch(
                                     "pydantic_ai.providers.anthropic.AnthropicProvider"
@@ -634,7 +630,7 @@ class TestClaudeCodeModel:
                                         "pydantic_ai.models.anthropic.AnthropicModel"
                                     ):
                                         with patch(
-                                            "code_puppy.config.get_effective_model_settings",
+                                            "newcode.config.get_effective_model_settings",
                                             return_value={"interleaved_thinking": True},
                                         ):
                                             ModelFactory.get_model(
@@ -650,8 +646,8 @@ class TestClaudeCodeModel:
 
     def test_claude_code_model_disable_interleaved_thinking(self):
         """Test disabling interleaved thinking removes header."""
-        from code_puppy.model_factory import ModelFactory
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.model_factory import ModelFactory
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -674,17 +670,17 @@ class TestClaudeCodeModel:
             {"type": "claude_code", "handler": _create_claude_code_model}
         ]
         with patch(
-            "code_puppy.model_factory.callbacks.on_register_model_types",
+            "newcode.model_factory.callbacks.on_register_model_types",
             return_value=mock_handler_return,
         ):
-            with patch("code_puppy.http_utils.get_cert_bundle_path", return_value=None):
-                with patch("code_puppy.http_utils.get_http2", return_value=True):
+            with patch("newcode.http_utils.get_cert_bundle_path", return_value=None):
+                with patch("newcode.http_utils.get_http2", return_value=True):
                     with patch(
-                        "code_puppy.claude_cache_client.ClaudeCacheAsyncClient"
+                        "newcode.claude_cache_client.ClaudeCacheAsyncClient"
                     ) as mock_client:
                         with patch("anthropic.AsyncAnthropic"):
                             with patch(
-                                "code_puppy.claude_cache_client.patch_anthropic_client_messages"
+                                "newcode.claude_cache_client.patch_anthropic_client_messages"
                             ):
                                 with patch(
                                     "pydantic_ai.providers.anthropic.AnthropicProvider"
@@ -693,7 +689,7 @@ class TestClaudeCodeModel:
                                         "pydantic_ai.models.anthropic.AnthropicModel"
                                     ):
                                         with patch(
-                                            "code_puppy.config.get_effective_model_settings",
+                                            "newcode.config.get_effective_model_settings",
                                             return_value={
                                                 "interleaved_thinking": False
                                             },
@@ -709,8 +705,8 @@ class TestClaudeCodeModel:
 
     def test_claude_code_oauth_refresh(self):
         """Test OAuth token refresh for claude_code models."""
-        from code_puppy.model_factory import ModelFactory
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.model_factory import ModelFactory
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -731,23 +727,23 @@ class TestClaudeCodeModel:
             {"type": "claude_code", "handler": _create_claude_code_model}
         ]
         with patch(
-            "code_puppy.model_factory.callbacks.on_register_model_types",
+            "newcode.model_factory.callbacks.on_register_model_types",
             return_value=mock_handler_return,
         ):
             with patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.get_valid_access_token",
+                "newcode.plugins.claude_code_oauth.register_callbacks.get_valid_access_token",
                 return_value="new-refreshed-token",
             ):
                 with patch(
-                    "code_puppy.http_utils.get_cert_bundle_path", return_value=None
+                    "newcode.http_utils.get_cert_bundle_path", return_value=None
                 ):
-                    with patch("code_puppy.http_utils.get_http2", return_value=True):
+                    with patch("newcode.http_utils.get_http2", return_value=True):
                         with patch(
-                            "code_puppy.claude_cache_client.ClaudeCacheAsyncClient"
+                            "newcode.claude_cache_client.ClaudeCacheAsyncClient"
                         ):
                             with patch("anthropic.AsyncAnthropic") as mock_anthropic:
                                 with patch(
-                                    "code_puppy.claude_cache_client.patch_anthropic_client_messages"
+                                    "newcode.claude_cache_client.patch_anthropic_client_messages"
                                 ):
                                     with patch(
                                         "pydantic_ai.providers.anthropic.AnthropicProvider"
@@ -756,7 +752,7 @@ class TestClaudeCodeModel:
                                             "pydantic_ai.models.anthropic.AnthropicModel"
                                         ):
                                             with patch(
-                                                "code_puppy.config.get_effective_model_settings",
+                                                "newcode.config.get_effective_model_settings",
                                                 return_value={},
                                             ):
                                                 ModelFactory.get_model(
@@ -771,8 +767,8 @@ class TestClaudeCodeModel:
 
     def test_claude_code_missing_api_key(self):
         """Test claude_code model with missing API key."""
-        from code_puppy.model_factory import ModelFactory
-        from code_puppy.plugins.claude_code_oauth.register_callbacks import (
+        from newcode.model_factory import ModelFactory
+        from newcode.plugins.claude_code_oauth.register_callbacks import (
             _create_claude_code_model,
         )
 
@@ -791,15 +787,15 @@ class TestClaudeCodeModel:
             {"type": "claude_code", "handler": _create_claude_code_model}
         ]
         with patch(
-            "code_puppy.model_factory.callbacks.on_register_model_types",
+            "newcode.model_factory.callbacks.on_register_model_types",
             return_value=mock_handler_return,
         ):
             # Patch emit_warning where it's imported in the plugin module
             with patch(
-                "code_puppy.plugins.claude_code_oauth.register_callbacks.emit_warning"
+                "newcode.plugins.claude_code_oauth.register_callbacks.emit_warning"
             ) as mock_warn:
                 with patch(
-                    "code_puppy.config.get_effective_model_settings", return_value={}
+                    "newcode.config.get_effective_model_settings", return_value={}
                 ):
                     model = ModelFactory.get_model("claude-code-test", config)
                     assert model is None
@@ -811,7 +807,7 @@ class TestCustomAnthropicModel:
 
     def test_custom_anthropic_with_api_key(self):
         """Test custom_anthropic model creation."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "custom-claude": {
@@ -824,19 +820,19 @@ class TestCustomAnthropicModel:
             }
         }
 
-        with patch("code_puppy.model_factory.get_cert_bundle_path", return_value=None):
-            with patch("code_puppy.model_factory.get_http2", return_value=True):
-                with patch("code_puppy.model_factory.ClaudeCacheAsyncClient"):
-                    with patch("code_puppy.model_factory.AsyncAnthropic"):
+        with patch("newcode.model_factory.get_cert_bundle_path", return_value=None):
+            with patch("newcode.model_factory.get_http2", return_value=True):
+                with patch("newcode.model_factory.ClaudeCacheAsyncClient"):
+                    with patch("newcode.model_factory.AsyncAnthropic"):
                         with patch(
-                            "code_puppy.model_factory.patch_anthropic_client_messages"
+                            "newcode.model_factory.patch_anthropic_client_messages"
                         ):
-                            with patch("code_puppy.model_factory.AnthropicProvider"):
+                            with patch("newcode.model_factory.AnthropicProvider"):
                                 with patch(
-                                    "code_puppy.model_factory.AnthropicModel"
+                                    "newcode.model_factory.AnthropicModel"
                                 ) as mock_model:
                                     with patch(
-                                        "code_puppy.config.get_effective_model_settings",
+                                        "newcode.config.get_effective_model_settings",
                                         return_value={},
                                     ):
                                         ModelFactory.get_model("custom-claude", config)
@@ -844,7 +840,7 @@ class TestCustomAnthropicModel:
 
     def test_custom_anthropic_interleaved_thinking(self):
         """Test custom_anthropic with interleaved thinking."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "custom-claude": {
@@ -857,19 +853,19 @@ class TestCustomAnthropicModel:
             }
         }
 
-        with patch("code_puppy.model_factory.get_cert_bundle_path", return_value=None):
-            with patch("code_puppy.model_factory.get_http2", return_value=True):
-                with patch("code_puppy.model_factory.ClaudeCacheAsyncClient"):
+        with patch("newcode.model_factory.get_cert_bundle_path", return_value=None):
+            with patch("newcode.model_factory.get_http2", return_value=True):
+                with patch("newcode.model_factory.ClaudeCacheAsyncClient"):
                     with patch(
-                        "code_puppy.model_factory.AsyncAnthropic"
+                        "newcode.model_factory.AsyncAnthropic"
                     ) as mock_anthropic:
                         with patch(
-                            "code_puppy.model_factory.patch_anthropic_client_messages"
+                            "newcode.model_factory.patch_anthropic_client_messages"
                         ):
-                            with patch("code_puppy.model_factory.AnthropicProvider"):
-                                with patch("code_puppy.model_factory.AnthropicModel"):
+                            with patch("newcode.model_factory.AnthropicProvider"):
+                                with patch("newcode.model_factory.AnthropicModel"):
                                     with patch(
-                                        "code_puppy.config.get_effective_model_settings",
+                                        "newcode.config.get_effective_model_settings",
                                         return_value={"interleaved_thinking": True},
                                     ):
                                         ModelFactory.get_model("custom-claude", config)
@@ -885,7 +881,7 @@ class TestCustomAnthropicModel:
 
     def test_custom_anthropic_missing_api_key(self):
         """Test custom_anthropic with missing API key."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "custom-claude": {
@@ -897,10 +893,8 @@ class TestCustomAnthropicModel:
             }
         }
 
-        with patch("code_puppy.model_factory.emit_warning") as mock_warn:
-            with patch(
-                "code_puppy.config.get_effective_model_settings", return_value={}
-            ):
+        with patch("newcode.model_factory.emit_warning") as mock_warn:
+            with patch("newcode.config.get_effective_model_settings", return_value={}):
                 model = ModelFactory.get_model("custom-claude", config)
                 assert model is None
                 mock_warn.assert_called()
@@ -911,7 +905,7 @@ class TestCustomGeminiModel:
 
     def test_custom_gemini_basic(self):
         """Test basic custom_gemini model creation."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "custom-gemini": {
@@ -924,14 +918,14 @@ class TestCustomGeminiModel:
             }
         }
 
-        with patch("code_puppy.model_factory.create_async_client"):
-            with patch("code_puppy.model_factory.GeminiModel") as mock_model:
+        with patch("newcode.model_factory.create_async_client"):
+            with patch("newcode.model_factory.GeminiModel") as mock_model:
                 ModelFactory.get_model("custom-gemini", config)
                 mock_model.assert_called_once()
 
     def test_custom_gemini_missing_api_key(self):
         """Test custom_gemini with missing API key."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "custom-gemini": {
@@ -943,7 +937,7 @@ class TestCustomGeminiModel:
             }
         }
 
-        with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+        with patch("newcode.model_factory.emit_warning") as mock_warn:
             model = ModelFactory.get_model("custom-gemini", config)
             assert model is None
             mock_warn.assert_called()
@@ -954,7 +948,7 @@ class TestCerebrasModel:
 
     def test_cerebras_model_basic(self):
         """Test basic cerebras model creation."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "cerebras-test": {
@@ -967,23 +961,19 @@ class TestCerebrasModel:
             }
         }
 
-        with patch(
-            "code_puppy.model_factory.create_async_client"
-        ) as mock_create_client:
-            with patch("code_puppy.model_factory.CerebrasProvider"):
-                with patch("code_puppy.model_factory.OpenAIChatModel") as mock_model:
+        with patch("newcode.model_factory.create_async_client") as mock_create_client:
+            with patch("newcode.model_factory.CerebrasProvider"):
+                with patch("newcode.model_factory.OpenAIChatModel") as mock_model:
                     ModelFactory.get_model("cerebras-test", config)
                     mock_model.assert_called_once()
                     # Check that the 3rd party header was added
                     call_args = mock_create_client.call_args
                     headers = call_args[1]["headers"]
-                    assert (
-                        headers.get("X-Cerebras-3rd-Party-Integration") == "newcode"
-                    )
+                    assert headers.get("X-Cerebras-3rd-Party-Integration") == "newcode"
 
     def test_cerebras_model_missing_api_key(self):
         """Test cerebras model with missing API key."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "cerebras-test": {
@@ -995,14 +985,14 @@ class TestCerebrasModel:
             }
         }
 
-        with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+        with patch("newcode.model_factory.emit_warning") as mock_warn:
             model = ModelFactory.get_model("cerebras-test", config)
             assert model is None
             mock_warn.assert_called()
 
     def test_cerebras_zai_model_profile(self):
         """Test ZaiCerebrasProvider model_profile for zai models."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "zai-cerebras": {
@@ -1016,11 +1006,11 @@ class TestCerebrasModel:
         }
 
         # Need to mock at a lower level since CerebrasProvider validates http_client type
-        with patch("code_puppy.model_factory.create_async_client") as mock_create:
+        with patch("newcode.model_factory.create_async_client") as mock_create:
             # Return None to skip actual client creation
             mock_create.return_value = None
-            with patch("code_puppy.model_factory.CerebrasProvider"):
-                with patch("code_puppy.model_factory.OpenAIChatModel") as mock_model:
+            with patch("newcode.model_factory.CerebrasProvider"):
+                with patch("newcode.model_factory.OpenAIChatModel") as mock_model:
                     ModelFactory.get_model("zai-cerebras", config)
                     # Model should be created with provider
                     mock_model.assert_called_once()
@@ -1031,7 +1021,7 @@ class TestOpenAICodexModels:
 
     def test_openai_codex_uses_responses_model(self):
         """Test that codex models use OpenAIResponsesModel."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "codex-test": {
@@ -1041,18 +1031,18 @@ class TestOpenAICodexModels:
         }
 
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}):
-            with patch("code_puppy.model_factory.OpenAIProvider"):
+            with patch("newcode.model_factory.OpenAIProvider"):
                 with patch(
-                    "code_puppy.model_factory.OpenAIResponsesModel"
+                    "newcode.model_factory.OpenAIResponsesModel"
                 ) as mock_responses:
-                    with patch("code_puppy.model_factory.OpenAIChatModel"):
+                    with patch("newcode.model_factory.OpenAIChatModel"):
                         ModelFactory.get_model("codex-test", config)
                         # Should use OpenAIResponsesModel, not OpenAIChatModel
                         mock_responses.assert_called_once()
 
     def test_custom_openai_chatgpt_codex(self):
         """Test chatgpt-gpt-5-codex uses OpenAIResponsesModel."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "chatgpt-gpt-5-codex": {
@@ -1064,10 +1054,10 @@ class TestOpenAICodexModels:
             }
         }
 
-        with patch("code_puppy.model_factory.create_async_client"):
-            with patch("code_puppy.model_factory.OpenAIProvider"):
+        with patch("newcode.model_factory.create_async_client"):
+            with patch("newcode.model_factory.OpenAIProvider"):
                 with patch(
-                    "code_puppy.model_factory.OpenAIResponsesModel"
+                    "newcode.model_factory.OpenAIResponsesModel"
                 ) as mock_responses:
                     ModelFactory.get_model("chatgpt-gpt-5-codex", config)
                     mock_responses.assert_called_once()
@@ -1078,7 +1068,7 @@ class TestZaiApiModel:
 
     def test_zai_api_model_basic(self):
         """Test basic zai_api model creation."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "zai-api-test": {
@@ -1088,7 +1078,7 @@ class TestZaiApiModel:
         }
 
         with patch.dict(os.environ, {"ZAI_API_KEY": "test-zai-key"}):
-            with patch("code_puppy.model_factory.OpenAIProvider") as mock_provider:
+            with patch("newcode.model_factory.OpenAIProvider") as mock_provider:
                 model = ModelFactory.get_model("zai-api-test", config)
                 assert model is not None
                 # Check base_url for ZAI API
@@ -1098,7 +1088,7 @@ class TestZaiApiModel:
 
     def test_zai_api_model_missing_api_key(self):
         """Test zai_api model with missing API key."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "zai-api-test": {
@@ -1107,8 +1097,8 @@ class TestZaiApiModel:
             }
         }
 
-        with patch("code_puppy.model_factory.get_api_key", return_value=None):
-            with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+        with patch("newcode.model_factory.get_api_key", return_value=None):
+            with patch("newcode.model_factory.emit_warning") as mock_warn:
                 model = ModelFactory.get_model("zai-api-test", config)
                 assert model is None
                 assert "ZAI_API_KEY" in mock_warn.call_args[0][0]
@@ -1119,7 +1109,7 @@ class TestAzureOpenAIExtended:
 
     def test_azure_openai_with_max_retries(self):
         """Test Azure OpenAI with custom max_retries."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "azure-test": {
@@ -1132,16 +1122,16 @@ class TestAzureOpenAIExtended:
             }
         }
 
-        with patch("code_puppy.model_factory.AsyncAzureOpenAI") as mock_azure:
-            with patch("code_puppy.model_factory.OpenAIProvider"):
-                with patch("code_puppy.model_factory.OpenAIChatModel"):
+        with patch("newcode.model_factory.AsyncAzureOpenAI") as mock_azure:
+            with patch("newcode.model_factory.OpenAIProvider"):
+                with patch("newcode.model_factory.OpenAIChatModel"):
                     ModelFactory.get_model("azure-test", config)
                     call_args = mock_azure.call_args
                     assert call_args[1]["max_retries"] == 5
 
     def test_azure_openai_env_var_api_version(self):
         """Test Azure OpenAI with env var for api_version."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "azure-test": {
@@ -1154,16 +1144,16 @@ class TestAzureOpenAIExtended:
         }
 
         with patch.dict(os.environ, {"AZURE_API_VERSION": "2024-02-15-preview"}):
-            with patch("code_puppy.model_factory.AsyncAzureOpenAI") as mock_azure:
-                with patch("code_puppy.model_factory.OpenAIProvider"):
-                    with patch("code_puppy.model_factory.OpenAIChatModel"):
+            with patch("newcode.model_factory.AsyncAzureOpenAI") as mock_azure:
+                with patch("newcode.model_factory.OpenAIProvider"):
+                    with patch("newcode.model_factory.OpenAIChatModel"):
                         ModelFactory.get_model("azure-test", config)
                         call_args = mock_azure.call_args
                         assert call_args[1]["api_version"] == "2024-02-15-preview"
 
     def test_azure_openai_missing_env_var_api_version(self):
         """Test Azure OpenAI with missing env var for api_version."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "azure-test": {
@@ -1175,8 +1165,8 @@ class TestAzureOpenAIExtended:
             }
         }
 
-        with patch("code_puppy.model_factory.get_api_key", return_value=None):
-            with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+        with patch("newcode.model_factory.get_api_key", return_value=None):
+            with patch("newcode.model_factory.emit_warning") as mock_warn:
                 model = ModelFactory.get_model("azure-test", config)
                 assert model is None
                 mock_warn.assert_called()
@@ -1187,7 +1177,7 @@ class TestRoundRobinExtended:
 
     def test_round_robin_with_rotate_every(self):
         """Test round_robin model with rotate_every parameter."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "model-1": {"type": "openai", "name": "gpt-4"},
@@ -1200,7 +1190,7 @@ class TestRoundRobinExtended:
         }
 
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}):
-            with patch("code_puppy.model_factory.RoundRobinModel") as mock_rr:
+            with patch("newcode.model_factory.RoundRobinModel") as mock_rr:
                 ModelFactory.get_model("rr-test", config)
                 call_args = mock_rr.call_args
                 # rotate_every should be passed
@@ -1212,7 +1202,7 @@ class TestGeminiOAuthErrorPaths:
 
     def test_gemini_oauth_plugin_not_available(self):
         """Test gemini_oauth when plugin is not available."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "gemini-oauth": {
@@ -1230,7 +1220,7 @@ class TestGeminiOAuthErrorPaths:
                 original_modules[mod_name] = sys.modules.pop(mod_name)
 
         try:
-            with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+            with patch("newcode.model_factory.emit_warning") as mock_warn:
                 # This should fail gracefully
                 model = ModelFactory.get_model("gemini-oauth", config)
                 # Should return None and emit warning
@@ -1247,7 +1237,7 @@ class TestGeminiOAuthErrorPaths:
         """Test gemini_oauth when token is missing."""
         import sys
 
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "gemini-oauth": {
@@ -1270,12 +1260,12 @@ class TestGeminiOAuthErrorPaths:
         with patch.dict(
             sys.modules,
             {
-                "code_puppy.plugins.gemini_oauth": MagicMock(),
-                "code_puppy.plugins.gemini_oauth.utils": mock_utils,
-                "code_puppy.plugins.gemini_oauth.config": mock_config,
+                "newcode.plugins.gemini_oauth": MagicMock(),
+                "newcode.plugins.gemini_oauth.utils": mock_utils,
+                "newcode.plugins.gemini_oauth.config": mock_config,
             },
         ):
-            with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+            with patch("newcode.model_factory.emit_warning") as mock_warn:
                 model = ModelFactory.get_model("gemini-oauth", config)
                 assert model is None
                 mock_warn.assert_called()
@@ -1284,7 +1274,7 @@ class TestGeminiOAuthErrorPaths:
         """Test gemini_oauth when project_id is missing."""
         import sys
 
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "gemini-oauth": {
@@ -1307,12 +1297,12 @@ class TestGeminiOAuthErrorPaths:
         with patch.dict(
             sys.modules,
             {
-                "code_puppy.plugins.gemini_oauth": MagicMock(),
-                "code_puppy.plugins.gemini_oauth.utils": mock_utils,
-                "code_puppy.plugins.gemini_oauth.config": mock_config,
+                "newcode.plugins.gemini_oauth": MagicMock(),
+                "newcode.plugins.gemini_oauth.utils": mock_utils,
+                "newcode.plugins.gemini_oauth.config": mock_config,
             },
         ):
-            with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+            with patch("newcode.model_factory.emit_warning") as mock_warn:
                 model = ModelFactory.get_model("gemini-oauth", config)
                 assert model is None
                 mock_warn.assert_called()
@@ -1323,7 +1313,7 @@ class TestChatGPTOAuthErrorPaths:
 
     def test_chatgpt_oauth_plugin_not_available(self):
         """Test chatgpt_oauth when plugin is not available (no handler registered)."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "chatgpt-oauth": {
@@ -1335,7 +1325,7 @@ class TestChatGPTOAuthErrorPaths:
         # Mock callbacks to return empty list (no handlers registered)
         # This simulates the plugin not being loaded
         with patch(
-            "code_puppy.model_factory.callbacks.on_register_model_types",
+            "newcode.model_factory.callbacks.on_register_model_types",
             return_value=[],
         ):
             with pytest.raises(
@@ -1345,8 +1335,8 @@ class TestChatGPTOAuthErrorPaths:
 
     def test_chatgpt_oauth_missing_token(self):
         """Test chatgpt_oauth when token is missing."""
-        from code_puppy.model_factory import ModelFactory
-        from code_puppy.plugins.chatgpt_oauth.register_callbacks import (
+        from newcode.model_factory import ModelFactory
+        from newcode.plugins.chatgpt_oauth.register_callbacks import (
             _create_chatgpt_oauth_model,
         )
 
@@ -1363,15 +1353,15 @@ class TestChatGPTOAuthErrorPaths:
         ]
 
         with patch(
-            "code_puppy.model_factory.callbacks.on_register_model_types",
+            "newcode.model_factory.callbacks.on_register_model_types",
             return_value=[mock_handlers],
         ):
             with patch(
-                "code_puppy.plugins.chatgpt_oauth.register_callbacks.get_valid_access_token",
+                "newcode.plugins.chatgpt_oauth.register_callbacks.get_valid_access_token",
                 return_value=None,
             ):
                 with patch(
-                    "code_puppy.plugins.chatgpt_oauth.register_callbacks.emit_warning"
+                    "newcode.plugins.chatgpt_oauth.register_callbacks.emit_warning"
                 ) as mock_warn:
                     model = ModelFactory.get_model("chatgpt-oauth", config)
                     assert model is None
@@ -1379,8 +1369,8 @@ class TestChatGPTOAuthErrorPaths:
 
     def test_chatgpt_oauth_missing_account_id(self):
         """Test chatgpt_oauth when account_id is missing."""
-        from code_puppy.model_factory import ModelFactory
-        from code_puppy.plugins.chatgpt_oauth.register_callbacks import (
+        from newcode.model_factory import ModelFactory
+        from newcode.plugins.chatgpt_oauth.register_callbacks import (
             _create_chatgpt_oauth_model,
         )
 
@@ -1397,19 +1387,19 @@ class TestChatGPTOAuthErrorPaths:
         ]
 
         with patch(
-            "code_puppy.model_factory.callbacks.on_register_model_types",
+            "newcode.model_factory.callbacks.on_register_model_types",
             return_value=[mock_handlers],
         ):
             with patch(
-                "code_puppy.plugins.chatgpt_oauth.register_callbacks.get_valid_access_token",
+                "newcode.plugins.chatgpt_oauth.register_callbacks.get_valid_access_token",
                 return_value="valid-token",
             ):
                 with patch(
-                    "code_puppy.plugins.chatgpt_oauth.register_callbacks.load_stored_tokens",
+                    "newcode.plugins.chatgpt_oauth.register_callbacks.load_stored_tokens",
                     return_value={},  # No account_id
                 ):
                     with patch(
-                        "code_puppy.plugins.chatgpt_oauth.register_callbacks.emit_warning"
+                        "newcode.plugins.chatgpt_oauth.register_callbacks.emit_warning"
                     ) as mock_warn:
                         model = ModelFactory.get_model("chatgpt-oauth", config)
                         assert model is None
@@ -1421,7 +1411,7 @@ class TestAnthropicInterleaved:
 
     def test_anthropic_interleaved_thinking_header(self):
         """Test that interleaved thinking adds the correct header."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "claude-test": {
@@ -1431,25 +1421,19 @@ class TestAnthropicInterleaved:
         }
 
         with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
-            with patch(
-                "code_puppy.model_factory.get_cert_bundle_path", return_value=None
-            ):
-                with patch("code_puppy.model_factory.get_http2", return_value=True):
-                    with patch("code_puppy.model_factory.ClaudeCacheAsyncClient"):
+            with patch("newcode.model_factory.get_cert_bundle_path", return_value=None):
+                with patch("newcode.model_factory.get_http2", return_value=True):
+                    with patch("newcode.model_factory.ClaudeCacheAsyncClient"):
                         with patch(
-                            "code_puppy.model_factory.AsyncAnthropic"
+                            "newcode.model_factory.AsyncAnthropic"
                         ) as mock_anthropic:
                             with patch(
-                                "code_puppy.model_factory.patch_anthropic_client_messages"
+                                "newcode.model_factory.patch_anthropic_client_messages"
                             ):
-                                with patch(
-                                    "code_puppy.model_factory.AnthropicProvider"
-                                ):
-                                    with patch(
-                                        "code_puppy.model_factory.AnthropicModel"
-                                    ):
+                                with patch("newcode.model_factory.AnthropicProvider"):
+                                    with patch("newcode.model_factory.AnthropicModel"):
                                         with patch(
-                                            "code_puppy.config.get_effective_model_settings",
+                                            "newcode.config.get_effective_model_settings",
                                             return_value={"interleaved_thinking": True},
                                         ):
                                             ModelFactory.get_model(
@@ -1468,7 +1452,7 @@ class TestAnthropicInterleaved:
 
     def test_anthropic_no_interleaved_thinking(self):
         """Test that no header is added when interleaved thinking is disabled."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "claude-test": {
@@ -1478,25 +1462,19 @@ class TestAnthropicInterleaved:
         }
 
         with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
-            with patch(
-                "code_puppy.model_factory.get_cert_bundle_path", return_value=None
-            ):
-                with patch("code_puppy.model_factory.get_http2", return_value=True):
-                    with patch("code_puppy.model_factory.ClaudeCacheAsyncClient"):
+            with patch("newcode.model_factory.get_cert_bundle_path", return_value=None):
+                with patch("newcode.model_factory.get_http2", return_value=True):
+                    with patch("newcode.model_factory.ClaudeCacheAsyncClient"):
                         with patch(
-                            "code_puppy.model_factory.AsyncAnthropic"
+                            "newcode.model_factory.AsyncAnthropic"
                         ) as mock_anthropic:
                             with patch(
-                                "code_puppy.model_factory.patch_anthropic_client_messages"
+                                "newcode.model_factory.patch_anthropic_client_messages"
                             ):
-                                with patch(
-                                    "code_puppy.model_factory.AnthropicProvider"
-                                ):
-                                    with patch(
-                                        "code_puppy.model_factory.AnthropicModel"
-                                    ):
+                                with patch("newcode.model_factory.AnthropicProvider"):
+                                    with patch("newcode.model_factory.AnthropicModel"):
                                         with patch(
-                                            "code_puppy.config.get_effective_model_settings",
+                                            "newcode.config.get_effective_model_settings",
                                             return_value={
                                                 "interleaved_thinking": False
                                             },
@@ -1516,7 +1494,7 @@ class TestContext1MBetaHeader:
     """Test the _build_anthropic_beta_header helper for 1M context."""
 
     def test_1m_context_adds_beta(self):
-        from code_puppy.model_factory import (
+        from newcode.model_factory import (
             CONTEXT_1M_BETA,
             _build_anthropic_beta_header,
         )
@@ -1526,7 +1504,7 @@ class TestContext1MBetaHeader:
         assert CONTEXT_1M_BETA in header
 
     def test_200k_context_no_beta(self):
-        from code_puppy.model_factory import (
+        from newcode.model_factory import (
             _build_anthropic_beta_header,
         )
 
@@ -1534,7 +1512,7 @@ class TestContext1MBetaHeader:
         assert header is None
 
     def test_interleaved_and_1m_combined(self):
-        from code_puppy.model_factory import (
+        from newcode.model_factory import (
             CONTEXT_1M_BETA,
             _build_anthropic_beta_header,
         )
@@ -1546,7 +1524,7 @@ class TestContext1MBetaHeader:
         assert CONTEXT_1M_BETA in header
 
     def test_interleaved_only_no_1m(self):
-        from code_puppy.model_factory import (
+        from newcode.model_factory import (
             CONTEXT_1M_BETA,
             _build_anthropic_beta_header,
         )
@@ -1558,13 +1536,13 @@ class TestContext1MBetaHeader:
         assert CONTEXT_1M_BETA not in header
 
     def test_no_context_length_key(self):
-        from code_puppy.model_factory import _build_anthropic_beta_header
+        from newcode.model_factory import _build_anthropic_beta_header
 
         header = _build_anthropic_beta_header({})
         assert header is None
 
     def test_returns_none_when_nothing_needed(self):
-        from code_puppy.model_factory import _build_anthropic_beta_header
+        from newcode.model_factory import _build_anthropic_beta_header
 
         header = _build_anthropic_beta_header(
             {"context_length": 100_000}, interleaved_thinking=False
@@ -1577,7 +1555,7 @@ class TestOpenRouterEnvVarMissing:
 
     def test_openrouter_env_var_missing(self):
         """Test OpenRouter when env var API key is not found."""
-        from code_puppy.model_factory import ModelFactory
+        from newcode.model_factory import ModelFactory
 
         config = {
             "openrouter-test": {
@@ -1587,8 +1565,8 @@ class TestOpenRouterEnvVarMissing:
             }
         }
 
-        with patch("code_puppy.model_factory.get_api_key", return_value=None):
-            with patch("code_puppy.model_factory.emit_warning") as mock_warn:
+        with patch("newcode.model_factory.get_api_key", return_value=None):
+            with patch("newcode.model_factory.emit_warning") as mock_warn:
                 model = ModelFactory.get_model("openrouter-test", config)
                 assert model is None
                 mock_warn.assert_called()

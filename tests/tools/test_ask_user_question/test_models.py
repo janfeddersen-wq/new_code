@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from code_puppy.tools.ask_user_question.models import (
+from newcode.tools.ask_user_question.models import (
     AskUserQuestionInput,
     AskUserQuestionOutput,
     Question,

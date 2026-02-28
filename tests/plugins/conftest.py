@@ -51,7 +51,7 @@ class ApiClientShim:
 def mock_google_model():
     """Create a mock AntigravityModel instance for testing."""
     # Lazy import to avoid pydantic/MCP conflicts during conftest load
-    from code_puppy.plugins.antigravity_oauth.antigravity_model import AntigravityModel
+    from newcode.plugins.antigravity_oauth.antigravity_model import AntigravityModel
 
     # Create the model with required api_key
     model = AntigravityModel(

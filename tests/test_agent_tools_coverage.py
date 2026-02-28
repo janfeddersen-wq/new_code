@@ -14,7 +14,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.agent_tools import (
+from newcode.tools.agent_tools import (
     AgentInfo,
     AgentInvokeOutput,
     ListAgentsOutput,
@@ -96,20 +96,20 @@ class TestGetSubagentSessionsDir:
 
     def test_returns_path_object(self):
         """Test that function returns a Path object."""
-        with patch("code_puppy.tools.agent_tools.DATA_DIR", tempfile.gettempdir()):
+        with patch("newcode.tools.agent_tools.DATA_DIR", tempfile.gettempdir()):
             result = _get_subagent_sessions_dir()
             assert isinstance(result, Path)
 
     def test_path_ends_with_subagent_sessions(self):
         """Test that path ends with 'subagent_sessions'."""
-        with patch("code_puppy.tools.agent_tools.DATA_DIR", tempfile.gettempdir()):
+        with patch("newcode.tools.agent_tools.DATA_DIR", tempfile.gettempdir()):
             result = _get_subagent_sessions_dir()
             assert result.name == "subagent_sessions"
 
     def test_creates_directory_if_not_exists(self):
         """Test that directory is created if it doesn't exist."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.tools.agent_tools.DATA_DIR", tmpdir):
+            with patch("newcode.tools.agent_tools.DATA_DIR", tmpdir):
                 result = _get_subagent_sessions_dir()
                 assert result.exists()
                 assert result.is_dir()
@@ -117,7 +117,7 @@ class TestGetSubagentSessionsDir:
     def test_directory_has_correct_permissions(self):
         """Test that created directory has mode 0o700."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("code_puppy.tools.agent_tools.DATA_DIR", tmpdir):
+            with patch("newcode.tools.agent_tools.DATA_DIR", tmpdir):
                 result = _get_subagent_sessions_dir()
                 # Check mode (on Unix-like systems)
                 mode = result.stat().st_mode & 0o777
@@ -125,7 +125,7 @@ class TestGetSubagentSessionsDir:
 
     def test_returns_same_path_on_multiple_calls(self):
         """Test that function returns consistent path."""
-        with patch("code_puppy.tools.agent_tools.DATA_DIR", tempfile.gettempdir()):
+        with patch("newcode.tools.agent_tools.DATA_DIR", tempfile.gettempdir()):
             path1 = _get_subagent_sessions_dir()
             path2 = _get_subagent_sessions_dir()
             assert path1 == path2
@@ -279,19 +279,19 @@ class TestRegisterListAgentsExecution:
         assert registered_func is not None
 
         # Mock the agent manager functions and config
-        # Note: get_banner_color is imported from code_puppy.config inside the function
+        # Note: get_banner_color is imported from newcode.config inside the function
         with (
             patch(
-                "code_puppy.config.get_banner_color",
+                "newcode.config.get_banner_color",
                 return_value="blue",
             ),
-            patch("code_puppy.tools.agent_tools.emit_info"),
+            patch("newcode.tools.agent_tools.emit_info"),
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
-            patch("code_puppy.agents.get_available_agents") as mock_available,
-            patch("code_puppy.agents.get_agent_descriptions") as mock_descriptions,
+            patch("newcode.agents.get_available_agents") as mock_available,
+            patch("newcode.agents.get_agent_descriptions") as mock_descriptions,
         ):
             mock_available.return_value = {
                 "code-reviewer": "Code Reviewer",
@@ -333,17 +333,17 @@ class TestRegisterListAgentsExecution:
         # Mock to raise an exception
         with (
             patch(
-                "code_puppy.config.get_banner_color",
+                "newcode.config.get_banner_color",
                 return_value="blue",
             ),
-            patch("code_puppy.tools.agent_tools.emit_info"),
-            patch("code_puppy.tools.agent_tools.emit_error") as mock_emit_error,
+            patch("newcode.tools.agent_tools.emit_info"),
+            patch("newcode.tools.agent_tools.emit_error") as mock_emit_error,
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
             patch(
-                "code_puppy.agents.get_available_agents",
+                "newcode.agents.get_available_agents",
                 side_effect=RuntimeError("Database connection failed"),
             ),
         ):
@@ -372,16 +372,16 @@ class TestRegisterListAgentsExecution:
 
         with (
             patch(
-                "code_puppy.config.get_banner_color",
+                "newcode.config.get_banner_color",
                 return_value="blue",
             ),
-            patch("code_puppy.tools.agent_tools.emit_info"),
+            patch("newcode.tools.agent_tools.emit_info"),
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
-            patch("code_puppy.agents.get_available_agents") as mock_available,
-            patch("code_puppy.agents.get_agent_descriptions") as mock_descriptions,
+            patch("newcode.agents.get_available_agents") as mock_available,
+            patch("newcode.agents.get_agent_descriptions") as mock_descriptions,
         ):
             mock_available.return_value = {
                 "new-agent": "New Agent",
@@ -426,9 +426,9 @@ class TestRegisterInvokeAgentExecution:
         mock_context = MagicMock()
 
         with (
-            patch("code_puppy.tools.agent_tools.emit_error") as mock_emit_error,
+            patch("newcode.tools.agent_tools.emit_error") as mock_emit_error,
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
         ):
@@ -458,30 +458,30 @@ class TestRegisterInvokeAgentExecution:
 
         with (
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
-            patch("code_puppy.tools.agent_tools.get_message_bus") as mock_bus,
+            patch("newcode.tools.agent_tools.get_message_bus") as mock_bus,
             patch(
-                "code_puppy.tools.agent_tools.get_session_context",
+                "newcode.tools.agent_tools.get_session_context",
                 return_value="parent",
             ),
-            patch("code_puppy.tools.agent_tools.set_session_context"),
-            patch("code_puppy.tools.agent_tools.emit_error") as mock_emit_error,
+            patch("newcode.tools.agent_tools.set_session_context"),
+            patch("newcode.tools.agent_tools.emit_error") as mock_emit_error,
             patch(
-                "code_puppy.agents.agent_manager.load_agent",
+                "newcode.agents.agent_manager.load_agent",
                 return_value=mock_agent_config,
             ),
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 return_value={},  # No models configured
             ),
             patch(
-                "code_puppy.tools.agent_tools._load_session_history",
+                "newcode.tools.agent_tools._load_session_history",
                 return_value=[],
             ),
             patch(
-                "code_puppy.tools.agent_tools._generate_session_hash_suffix",
+                "newcode.tools.agent_tools._generate_session_hash_suffix",
                 return_value="abc123",
             ),
         ):
@@ -514,33 +514,33 @@ class TestRegisterInvokeAgentExecution:
 
         with (
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
-            patch("code_puppy.tools.agent_tools.get_message_bus") as mock_bus,
+            patch("newcode.tools.agent_tools.get_message_bus") as mock_bus,
             patch(
-                "code_puppy.tools.agent_tools.get_session_context",
+                "newcode.tools.agent_tools.get_session_context",
                 return_value="original-parent",
             ),
             patch(
-                "code_puppy.tools.agent_tools.set_session_context",
+                "newcode.tools.agent_tools.set_session_context",
                 side_effect=lambda x: set_context_calls.append(x),
             ),
-            patch("code_puppy.tools.agent_tools.emit_error"),
+            patch("newcode.tools.agent_tools.emit_error"),
             patch(
-                "code_puppy.agents.agent_manager.load_agent",
+                "newcode.agents.agent_manager.load_agent",
                 return_value=mock_agent_config,
             ),
             patch(
-                "code_puppy.model_factory.ModelFactory.load_config",
+                "newcode.model_factory.ModelFactory.load_config",
                 side_effect=RuntimeError("Config load failed"),
             ),
             patch(
-                "code_puppy.tools.agent_tools._load_session_history",
+                "newcode.tools.agent_tools._load_session_history",
                 return_value=[],
             ),
             patch(
-                "code_puppy.tools.agent_tools._generate_session_hash_suffix",
+                "newcode.tools.agent_tools._generate_session_hash_suffix",
                 return_value="abc123",
             ),
         ):
@@ -565,13 +565,13 @@ class TestActiveSubagentTasks:
 
     def test_active_tasks_set_exists(self):
         """Test that the active tasks set is accessible."""
-        from code_puppy.tools.agent_tools import _active_subagent_tasks
+        from newcode.tools.agent_tools import _active_subagent_tasks
 
         assert isinstance(_active_subagent_tasks, set)
 
     def test_active_tasks_initially_empty(self):
         """Test that active tasks set starts empty (or becomes empty)."""
-        from code_puppy.tools.agent_tools import _active_subagent_tasks
+        from newcode.tools.agent_tools import _active_subagent_tasks
 
         # After all tasks complete, should be empty
         # (This is testing the cleanup behavior)
@@ -586,7 +586,7 @@ class TestDBOSWorkflowCounter:
         """Test that the counter uses a thread-safe implementation."""
         import itertools
 
-        from code_puppy.tools.agent_tools import _dbos_workflow_counter
+        from newcode.tools.agent_tools import _dbos_workflow_counter
 
         # Should be an itertools.count object
         assert isinstance(_dbos_workflow_counter, type(itertools.count()))
@@ -622,9 +622,9 @@ class TestSessionIdValidationInInvokeAgent:
         mock_context = MagicMock()
 
         with (
-            patch("code_puppy.tools.agent_tools.emit_error"),
+            patch("newcode.tools.agent_tools.emit_error"),
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
         ):
@@ -645,9 +645,9 @@ class TestSessionIdValidationInInvokeAgent:
         mock_context = MagicMock()
 
         with (
-            patch("code_puppy.tools.agent_tools.emit_error"),
+            patch("newcode.tools.agent_tools.emit_error"),
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
         ):
@@ -668,9 +668,9 @@ class TestSessionIdValidationInInvokeAgent:
         mock_context = MagicMock()
 
         with (
-            patch("code_puppy.tools.agent_tools.emit_error"),
+            patch("newcode.tools.agent_tools.emit_error"),
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
         ):
@@ -691,9 +691,9 @@ class TestSessionIdValidationInInvokeAgent:
         mock_context = MagicMock()
 
         with (
-            patch("code_puppy.tools.agent_tools.emit_error"),
+            patch("newcode.tools.agent_tools.emit_error"),
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="test-group",
             ),
         ):
@@ -729,20 +729,20 @@ class TestListAgentsEmitsBannerAndInfo:
 
         with (
             patch(
-                "code_puppy.config.get_banner_color",
+                "newcode.config.get_banner_color",
                 return_value="green",
             ) as mock_banner_color,
-            patch("code_puppy.tools.agent_tools.emit_info") as mock_emit_info,
+            patch("newcode.tools.agent_tools.emit_info") as mock_emit_info,
             patch(
-                "code_puppy.tools.agent_tools.generate_group_id",
+                "newcode.tools.agent_tools.generate_group_id",
                 return_value="banner-group",
             ),
             patch(
-                "code_puppy.agents.get_available_agents",
+                "newcode.agents.get_available_agents",
                 return_value={},
             ),
             patch(
-                "code_puppy.agents.get_agent_descriptions",
+                "newcode.agents.get_agent_descriptions",
                 return_value={},
             ),
         ):

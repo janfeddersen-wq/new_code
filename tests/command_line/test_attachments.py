@@ -1,4 +1,4 @@
-"""Tests for code_puppy/command_line/attachments.py — targeting 100% coverage."""
+"""Tests for newcode/command_line/attachments.py — targeting 100% coverage."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.command_line.attachments import (
+from newcode.command_line.attachments import (
     MAX_PATH_LENGTH,
     AttachmentParsingError,
     PromptLinkAttachment,
@@ -86,7 +86,7 @@ def test_normalise_path_expands_user():
 
 def test_normalise_path_invalid():
     with patch(
-        "code_puppy.command_line.attachments.Path.absolute",
+        "newcode.command_line.attachments.Path.absolute",
         side_effect=ValueError("bad"),
     ):
         with pytest.raises(AttachmentParsingError, match="Invalid path"):
@@ -104,7 +104,7 @@ def test_determine_media_type_unknown_image_ext():
     # .webp might not be in mimetypes on all systems, but is in our set
     # Use a definitely-unknown extension that's also in our accepted set
     with patch(
-        "code_puppy.command_line.attachments.mimetypes.guess_type",
+        "newcode.command_line.attachments.mimetypes.guess_type",
         return_value=(None, None),
     ):
         # suffix in DEFAULT_ACCEPTED_IMAGE_EXTENSIONS -> "image/png"
@@ -113,7 +113,7 @@ def test_determine_media_type_unknown_image_ext():
 
 def test_determine_media_type_totally_unknown():
     with patch(
-        "code_puppy.command_line.attachments.mimetypes.guess_type",
+        "newcode.command_line.attachments.mimetypes.guess_type",
         return_value=(None, None),
     ):
         assert _determine_media_type(Path("file.xyz123")) == "application/octet-stream"
@@ -167,7 +167,7 @@ def test_tokenise_fallback_on_bad_quotes():
     assert len(tokens) >= 2
 
 
-@patch("code_puppy.command_line.attachments.os.name", "nt")
+@patch("newcode.command_line.attachments.os.name", "nt")
 def test_tokenise_windows_mode():
     tokens = list(_tokenise("hello world"))
     assert tokens == ["hello", "world"]
@@ -262,7 +262,7 @@ class TestDetectPathTokens:
     def test_path_normalise_error(self):
         # Token that looks like a path but triggers normalise error
         with patch(
-            "code_puppy.command_line.attachments._normalise_path",
+            "newcode.command_line.attachments._normalise_path",
             side_effect=AttachmentParsingError("bad"),
         ):
             detections, warnings = _detect_path_tokens("/some/path")
@@ -304,7 +304,7 @@ class TestDetectPathTokens:
             return original_normalise(token)
 
         with patch(
-            "code_puppy.command_line.attachments._normalise_path", side_effect=patched
+            "newcode.command_line.attachments._normalise_path", side_effect=patched
         ):
             detections, _ = _detect_path_tokens("/nonexistent/foo bar baz")
             # Should not crash
@@ -341,7 +341,7 @@ class TestDetectPathTokens:
             placeholder="http://x.com/img.png", url_part=MagicMock()
         )
         with patch(
-            "code_puppy.command_line.attachments._parse_link", return_value=mock_link
+            "newcode.command_line.attachments._parse_link", return_value=mock_link
         ):
             detections, _ = _detect_path_tokens("http://x.com/img.png")
             assert len(detections) == 1
@@ -362,7 +362,7 @@ class TestDetectPathTokens:
             return orig(token)
 
         with patch(
-            "code_puppy.command_line.attachments._is_probable_path", side_effect=patched
+            "newcode.command_line.attachments._is_probable_path", side_effect=patched
         ):
             detections, _ = _detect_path_tokens(long_path)
             assert detections == []
@@ -400,7 +400,7 @@ class TestDetectPathTokens:
             return orig(token)
 
         with patch(
-            "code_puppy.command_line.attachments._is_probable_path", side_effect=patched
+            "newcode.command_line.attachments._is_probable_path", side_effect=patched
         ):
             detections, _ = _detect_path_tokens(prompt)
 
@@ -442,7 +442,7 @@ class TestParsePromptAttachments:
         f = tmp_path / "pic.png"
         f.write_bytes(b"x")
         with patch(
-            "code_puppy.command_line.attachments._load_binary",
+            "newcode.command_line.attachments._load_binary",
             side_effect=AttachmentParsingError("nope"),
         ):
             result = parse_prompt_attachments(str(f))
@@ -459,7 +459,7 @@ class TestParsePromptAttachments:
             link=mock_link,
         )
         with patch(
-            "code_puppy.command_line.attachments._detect_path_tokens",
+            "newcode.command_line.attachments._detect_path_tokens",
             return_value=([fake_detection], []),
         ):
             result = parse_prompt_attachments("http://x")
@@ -474,7 +474,7 @@ class TestParsePromptAttachments:
             consumed_until=1,
         )
         with patch(
-            "code_puppy.command_line.attachments._detect_path_tokens",
+            "newcode.command_line.attachments._detect_path_tokens",
             return_value=([fake_detection], []),
         ):
             result = parse_prompt_attachments("x")
@@ -482,7 +482,7 @@ class TestParsePromptAttachments:
 
     def test_warnings_from_detection(self):
         with patch(
-            "code_puppy.command_line.attachments._detect_path_tokens",
+            "newcode.command_line.attachments._detect_path_tokens",
             return_value=([], ["some warning"]),
         ):
             result = parse_prompt_attachments("hello")

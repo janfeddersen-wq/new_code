@@ -11,7 +11,7 @@ This module tests the SystemToolDetector class which provides:
 import subprocess
 from unittest.mock import MagicMock, Mock, patch
 
-from code_puppy.mcp_.system_tools import (
+from newcode.mcp_.system_tools import (
     SystemToolDetector,
     ToolInfo,
     detector,

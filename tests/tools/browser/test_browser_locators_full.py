@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.browser.browser_locators import (
+from newcode.tools.browser.browser_locators import (
     find_buttons,
     find_by_label,
     find_by_placeholder,
@@ -23,7 +23,7 @@ from code_puppy.tools.browser.browser_locators import (
     run_xpath_query,
 )
 
-MOD = "code_puppy.tools.browser.browser_locators"
+MOD = "newcode.tools.browser.browser_locators"
 
 
 @pytest.fixture(autouse=True)

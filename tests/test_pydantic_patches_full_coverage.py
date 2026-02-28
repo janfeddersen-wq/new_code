@@ -7,22 +7,22 @@ import pytest
 
 class TestGetCodePuppyVersion:
     def test_returns_version(self):
-        from code_puppy.pydantic_patches import _get_code_puppy_version
+        from newcode.pydantic_patches import _get_newcode_version
 
-        version = _get_code_puppy_version()
+        version = _get_newcode_version()
         assert isinstance(version, str)
 
     def test_returns_dev_on_error(self):
         with patch("importlib.metadata.version", side_effect=Exception("nope")):
-            from code_puppy.pydantic_patches import _get_code_puppy_version
+            from newcode.pydantic_patches import _get_newcode_version
 
-            result = _get_code_puppy_version()
+            result = _get_newcode_version()
             assert result == "0.0.0-dev"
 
 
 class TestPatchUserAgent:
     def test_patch_user_agent_sets_function(self):
-        from code_puppy.pydantic_patches import patch_user_agent
+        from newcode.pydantic_patches import patch_user_agent
 
         patch_user_agent()
         # After patching, calling the function should return Code-Puppy/...
@@ -32,32 +32,32 @@ class TestPatchUserAgent:
         assert "NewCode" in ua or "KimiCLI" in ua
 
     def test_kimi_model_returns_kimi_ua(self):
-        from code_puppy.pydantic_patches import patch_user_agent
+        from newcode.pydantic_patches import patch_user_agent
 
         patch_user_agent()
         import pydantic_ai.models as pydantic_models
 
-        with patch("code_puppy.config.get_global_model_name", return_value="kimi-test"):
+        with patch("newcode.config.get_global_model_name", return_value="kimi-test"):
             ua = pydantic_models.get_user_agent()
             assert ua == "KimiCLI/0.63"
 
-    def test_non_kimi_returns_code_puppy_ua(self):
-        from code_puppy.pydantic_patches import patch_user_agent
+    def test_non_kimi_returns_newcode_ua(self):
+        from newcode.pydantic_patches import patch_user_agent
 
         patch_user_agent()
         import pydantic_ai.models as pydantic_models
 
-        with patch("code_puppy.config.get_global_model_name", return_value="gpt-4"):
+        with patch("newcode.config.get_global_model_name", return_value="gpt-4"):
             ua = pydantic_models.get_user_agent()
             assert "NewCode" in ua
 
     def test_get_model_name_exception(self):
-        from code_puppy.pydantic_patches import patch_user_agent
+        from newcode.pydantic_patches import patch_user_agent
 
         patch_user_agent()
         import pydantic_ai.models as pydantic_models
 
-        with patch("code_puppy.config.get_global_model_name", side_effect=Exception):
+        with patch("newcode.config.get_global_model_name", side_effect=Exception):
             ua = pydantic_models.get_user_agent()
             assert "NewCode" in ua
 
@@ -66,7 +66,7 @@ class TestPatchUserAgent:
         with patch("builtins.__import__", side_effect=ImportError):
             # This should not raise
             try:
-                from code_puppy.pydantic_patches import patch_user_agent
+                from newcode.pydantic_patches import patch_user_agent
 
                 patch_user_agent()
             except ImportError:
@@ -75,7 +75,7 @@ class TestPatchUserAgent:
 
 class TestPatchMessageHistoryCleaning:
     def test_patches_clean_message_history(self):
-        from code_puppy.pydantic_patches import patch_message_history_cleaning
+        from newcode.pydantic_patches import patch_message_history_cleaning
 
         patch_message_history_cleaning()
         # After patching, the function should be identity
@@ -88,7 +88,7 @@ class TestPatchMessageHistoryCleaning:
 class TestPatchProcessMessageHistory:
     @pytest.mark.anyio
     async def test_patched_process_runs_processors(self):
-        from code_puppy.pydantic_patches import patch_process_message_history
+        from newcode.pydantic_patches import patch_process_message_history
 
         patch_process_message_history()
         from pydantic_ai._agent_graph import _process_message_history
@@ -99,7 +99,7 @@ class TestPatchProcessMessageHistory:
 
     @pytest.mark.anyio
     async def test_patched_process_empty_raises(self):
-        from code_puppy.pydantic_patches import patch_process_message_history
+        from newcode.pydantic_patches import patch_process_message_history
 
         patch_process_message_history()
         from pydantic_ai._agent_graph import _process_message_history
@@ -113,7 +113,7 @@ class TestPatchProcessMessageHistory:
 
     @pytest.mark.anyio
     async def test_patched_process_with_async_processor(self):
-        from code_puppy.pydantic_patches import patch_process_message_history
+        from newcode.pydantic_patches import patch_process_message_history
 
         patch_process_message_history()
         from pydantic_ai._agent_graph import _process_message_history
@@ -129,7 +129,7 @@ class TestPatchProcessMessageHistory:
 
 class TestPatchToolCallJsonRepair:
     def test_patches_tool_manager(self):
-        from code_puppy.pydantic_patches import patch_tool_call_json_repair
+        from newcode.pydantic_patches import patch_tool_call_json_repair
 
         patch_tool_call_json_repair()
         # Just verify it doesn't crash
@@ -137,7 +137,7 @@ class TestPatchToolCallJsonRepair:
 
 class TestPatchToolCallCallbacks:
     def test_patches_tool_manager(self):
-        from code_puppy.pydantic_patches import patch_tool_call_callbacks
+        from newcode.pydantic_patches import patch_tool_call_callbacks
 
         patch_tool_call_callbacks()
         # Just verify it doesn't crash
@@ -145,7 +145,7 @@ class TestPatchToolCallCallbacks:
 
 class TestApplyAllPatches:
     def test_apply_all_patches(self):
-        from code_puppy.pydantic_patches import apply_all_patches
+        from newcode.pydantic_patches import apply_all_patches
 
         # Should not raise
         apply_all_patches()

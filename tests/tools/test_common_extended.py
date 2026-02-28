@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy.tools.common import (
+from newcode.tools.common import (
     DIR_IGNORE_PATTERNS,
     FILE_IGNORE_PATTERNS,
     IGNORE_PATTERNS,
@@ -16,7 +16,7 @@ from code_puppy.tools.common import (
 
 
 class TestCommonExtended:
-    """Extended tests for code_puppy.tools.common utilities."""
+    """Extended tests for newcode.tools.common utilities."""
 
     # ==================== should_ignore_path() Tests ====================
 

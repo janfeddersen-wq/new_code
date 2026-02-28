@@ -7,8 +7,8 @@ server lookup, and edge cases.
 
 from unittest.mock import ANY, Mock, patch
 
-from code_puppy.command_line.mcp.status_command import StatusCommand
-from code_puppy.mcp_.managed_server import ServerState
+from newcode.command_line.mcp.status_command import StatusCommand
+from newcode.mcp_.managed_server import ServerState
 
 
 class TestStatusCommand:
@@ -29,7 +29,7 @@ class TestStatusCommand:
         """Test executing without args shows server list."""
         command = StatusCommand()
         with patch(
-            "code_puppy.command_line.mcp.status_command.ListCommand"
+            "newcode.command_line.mcp.status_command.ListCommand"
         ) as mock_list_cmd:
             mock_instance = Mock()
             mock_list_cmd.return_value = mock_instance
@@ -43,7 +43,7 @@ class TestStatusCommand:
         """Test executing with valid server name."""
         command = StatusCommand()
         with patch(
-            "code_puppy.command_line.mcp.status_command.find_server_id_by_name"
+            "newcode.command_line.mcp.status_command.find_server_id_by_name"
         ) as mock_find:
             mock_find.return_value = "test-server-1"
 
@@ -61,12 +61,12 @@ class TestStatusCommand:
         """Test executing with non-existent server name."""
         command = StatusCommand()
         with patch(
-            "code_puppy.command_line.mcp.status_command.find_server_id_by_name"
+            "newcode.command_line.mcp.status_command.find_server_id_by_name"
         ) as mock_find:
             mock_find.return_value = None
 
             with patch(
-                "code_puppy.command_line.mcp.status_command.suggest_similar_servers"
+                "newcode.command_line.mcp.status_command.suggest_similar_servers"
             ) as mock_suggest:
                 command.execute(["nonexistent-server"])
 
@@ -78,7 +78,7 @@ class TestStatusCommand:
         """Test handling of general exceptions."""
         command = StatusCommand()
         with patch(
-            "code_puppy.command_line.mcp.status_command.find_server_id_by_name",
+            "newcode.command_line.mcp.status_command.find_server_id_by_name",
             side_effect=Exception("Random error"),
         ):
             command.execute(["test-server"])
@@ -285,7 +285,7 @@ class TestStatusCommand:
         # Check that events are displayed in some form
         assert True  # If we got here, the command executed successfully
 
-    @patch("code_puppy.mcp_.async_lifecycle.get_lifecycle_manager")
+    @patch("newcode.mcp_.async_lifecycle.get_lifecycle_manager")
     def test_show_detailed_server_status_with_lifecycle_info(
         self, mock_get_lifecycle, mock_emit_info, mock_mcp_manager
     ):
@@ -316,7 +316,7 @@ class TestStatusCommand:
         assert len(mock_emit_info.messages) > 0
 
     @patch(
-        "code_puppy.mcp_.async_lifecycle.get_lifecycle_manager",
+        "newcode.mcp_.async_lifecycle.get_lifecycle_manager",
         side_effect=Exception("Lifecycle error"),
     )
     def test_show_detailed_server_status_lifecycle_exception(
@@ -358,7 +358,7 @@ class TestStatusCommand:
             error_messages.append(str(message))
 
         with patch(
-            "code_puppy.command_line.mcp.status_command.emit_error",
+            "newcode.command_line.mcp.status_command.emit_error",
             side_effect=capture_error,
         ):
             command._show_detailed_server_status("test-1", "test-server", "group-123")

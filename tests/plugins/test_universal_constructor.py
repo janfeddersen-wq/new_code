@@ -13,8 +13,8 @@ from pathlib import Path
 
 import pytest
 
-from code_puppy.plugins.universal_constructor import USER_UC_DIR
-from code_puppy.plugins.universal_constructor.models import (
+from newcode.plugins.universal_constructor import USER_UC_DIR
+from newcode.plugins.universal_constructor.models import (
     ToolMeta,
     UCCallOutput,
     UCCreateOutput,
@@ -23,8 +23,8 @@ from code_puppy.plugins.universal_constructor.models import (
     UCToolInfo,
     UCUpdateOutput,
 )
-from code_puppy.plugins.universal_constructor.registry import UCRegistry, get_registry
-from code_puppy.plugins.universal_constructor.sandbox import (
+from newcode.plugins.universal_constructor.registry import UCRegistry, get_registry
+from newcode.plugins.universal_constructor.sandbox import (
     DANGEROUS_OPEN_MODES,
     ToolFileValidationResult,
     ValidationResult,
@@ -51,9 +51,9 @@ class TestInit:
         """Test that USER_UC_DIR is a Path object."""
         assert isinstance(USER_UC_DIR, Path)
 
-    def test_user_uc_dir_under_code_puppy(self):
-        """Test that USER_UC_DIR is under .code_puppy."""
-        assert ".code_puppy" in str(USER_UC_DIR)
+    def test_user_uc_dir_under_newcode(self):
+        """Test that USER_UC_DIR is under .newcode."""
+        assert ".newcode" in str(USER_UC_DIR)
         assert "universal_constructor" in str(USER_UC_DIR)
 
     def test_user_uc_dir_in_home(self):
@@ -664,8 +664,8 @@ class TestCallbackRegistration:
 
     def test_startup_callback_registered(self):
         """Test that startup callback is registered."""
-        from code_puppy.callbacks import get_callbacks
-        from code_puppy.plugins.universal_constructor.register_callbacks import (
+        from newcode.callbacks import get_callbacks
+        from newcode.plugins.universal_constructor.register_callbacks import (
             _on_startup,
         )
 
@@ -1136,7 +1136,7 @@ class TestHandleInfoAction:
         """Test that info action requires tool_name."""
         from unittest.mock import Mock
 
-        from code_puppy.tools.universal_constructor import _handle_info_action
+        from newcode.tools.universal_constructor import _handle_info_action
 
         context = Mock()
         result = _handle_info_action(context, None)
@@ -1148,11 +1148,11 @@ class TestHandleInfoAction:
         """Test info action with nonexistent tool."""
         from unittest.mock import Mock, patch
 
-        from code_puppy.tools.universal_constructor import _handle_info_action
+        from newcode.tools.universal_constructor import _handle_info_action
 
         context = Mock()
         with patch(
-            "code_puppy.plugins.universal_constructor.registry.get_registry"
+            "newcode.plugins.universal_constructor.registry.get_registry"
         ) as mock_get_registry:
             mock_registry = Mock()
             mock_registry.get_tool.return_value = None
@@ -1181,11 +1181,11 @@ def greet(name: str = "World") -> str:
 
             from unittest.mock import Mock, patch
 
-            from code_puppy.plugins.universal_constructor.models import (
+            from newcode.plugins.universal_constructor.models import (
                 ToolMeta,
                 UCToolInfo,
             )
-            from code_puppy.tools.universal_constructor import _handle_info_action
+            from newcode.tools.universal_constructor import _handle_info_action
 
             meta = ToolMeta(name="greet", description="A greeting tool")
             tool_info = UCToolInfo(
@@ -1198,7 +1198,7 @@ def greet(name: str = "World") -> str:
 
             context = Mock()
             with patch(
-                "code_puppy.plugins.universal_constructor.registry.get_registry"
+                "newcode.plugins.universal_constructor.registry.get_registry"
             ) as mock_get_registry:
                 mock_registry = Mock()
                 mock_registry.get_tool.return_value = tool_info
@@ -1217,8 +1217,8 @@ def greet(name: str = "World") -> str:
         """Test info when source file doesn't exist."""
         from unittest.mock import Mock, patch
 
-        from code_puppy.plugins.universal_constructor.models import ToolMeta, UCToolInfo
-        from code_puppy.tools.universal_constructor import _handle_info_action
+        from newcode.plugins.universal_constructor.models import ToolMeta, UCToolInfo
+        from newcode.tools.universal_constructor import _handle_info_action
 
         meta = ToolMeta(name="missing", description="Missing source")
         tool_info = UCToolInfo(
@@ -1229,7 +1229,7 @@ def greet(name: str = "World") -> str:
 
         context = Mock()
         with patch(
-            "code_puppy.plugins.universal_constructor.registry.get_registry"
+            "newcode.plugins.universal_constructor.registry.get_registry"
         ) as mock_get_registry:
             mock_registry = Mock()
             mock_registry.get_tool.return_value = tool_info
@@ -1247,7 +1247,7 @@ class TestHandleUpdateAction:
         """Test that update action requires tool_name."""
         from unittest.mock import Mock
 
-        from code_puppy.tools.universal_constructor import _handle_update_action
+        from newcode.tools.universal_constructor import _handle_update_action
 
         context = Mock()
         result = _handle_update_action(context, None, None, None)
@@ -1259,7 +1259,7 @@ class TestHandleUpdateAction:
         """Test that update requires python_code."""
         from unittest.mock import Mock
 
-        from code_puppy.tools.universal_constructor import _handle_update_action
+        from newcode.tools.universal_constructor import _handle_update_action
 
         context = Mock()
         result = _handle_update_action(context, "some_tool", None, None)
@@ -1270,11 +1270,11 @@ class TestHandleUpdateAction:
         """Test update action with nonexistent tool."""
         from unittest.mock import Mock, patch
 
-        from code_puppy.tools.universal_constructor import _handle_update_action
+        from newcode.tools.universal_constructor import _handle_update_action
 
         context = Mock()
         with patch(
-            "code_puppy.plugins.universal_constructor.registry.get_registry"
+            "newcode.plugins.universal_constructor.registry.get_registry"
         ) as mock_get_registry:
             mock_registry = Mock()
             mock_registry.get_tool.return_value = None
@@ -1299,11 +1299,11 @@ def test_tool(): pass
 
             from unittest.mock import Mock, patch
 
-            from code_puppy.plugins.universal_constructor.models import (
+            from newcode.plugins.universal_constructor.models import (
                 ToolMeta,
                 UCToolInfo,
             )
-            from code_puppy.tools.universal_constructor import _handle_update_action
+            from newcode.tools.universal_constructor import _handle_update_action
 
             meta = ToolMeta(name="test_tool", description="Test")
             tool_info = UCToolInfo(
@@ -1314,7 +1314,7 @@ def test_tool(): pass
 
             context = Mock()
             with patch(
-                "code_puppy.plugins.universal_constructor.registry.get_registry"
+                "newcode.plugins.universal_constructor.registry.get_registry"
             ) as mock_get_registry:
                 mock_registry = Mock()
                 mock_registry.get_tool.return_value = tool_info
@@ -1340,11 +1340,11 @@ def test_tool(): pass
 
             from unittest.mock import Mock, patch
 
-            from code_puppy.plugins.universal_constructor.models import (
+            from newcode.plugins.universal_constructor.models import (
                 ToolMeta,
                 UCToolInfo,
             )
-            from code_puppy.tools.universal_constructor import _handle_update_action
+            from newcode.tools.universal_constructor import _handle_update_action
 
             meta = ToolMeta(name="test_tool", description="Test")
             tool_info = UCToolInfo(
@@ -1355,7 +1355,7 @@ def test_tool(): pass
 
             context = Mock()
             with patch(
-                "code_puppy.plugins.universal_constructor.registry.get_registry"
+                "newcode.plugins.universal_constructor.registry.get_registry"
             ) as mock_get_registry:
                 mock_registry = Mock()
                 mock_registry.get_tool.return_value = tool_info
@@ -1381,11 +1381,11 @@ def updatable(): return "original"
 
             from unittest.mock import Mock, patch
 
-            from code_puppy.plugins.universal_constructor.models import (
+            from newcode.plugins.universal_constructor.models import (
                 ToolMeta,
                 UCToolInfo,
             )
-            from code_puppy.tools.universal_constructor import _handle_update_action
+            from newcode.tools.universal_constructor import _handle_update_action
 
             meta = ToolMeta(name="updatable", description="Original")
             tool_info = UCToolInfo(
@@ -1396,7 +1396,7 @@ def updatable(): return "original"
 
             context = Mock()
             with patch(
-                "code_puppy.plugins.universal_constructor.registry.get_registry"
+                "newcode.plugins.universal_constructor.registry.get_registry"
             ) as mock_get_registry:
                 mock_registry = Mock()
                 mock_registry.get_tool.return_value = tool_info
@@ -1422,7 +1422,7 @@ def updatable(): return "updated"
         """Test that description-only update fails (requires python_code)."""
         from unittest.mock import Mock
 
-        from code_puppy.tools.universal_constructor import _handle_update_action
+        from newcode.tools.universal_constructor import _handle_update_action
 
         context = Mock()
         # Try to update with only description, no python_code
@@ -1434,8 +1434,8 @@ def updatable(): return "updated"
         """Test update when tool has no source path."""
         from unittest.mock import Mock, patch
 
-        from code_puppy.plugins.universal_constructor.models import ToolMeta, UCToolInfo
-        from code_puppy.tools.universal_constructor import _handle_update_action
+        from newcode.plugins.universal_constructor.models import ToolMeta, UCToolInfo
+        from newcode.tools.universal_constructor import _handle_update_action
 
         meta = ToolMeta(name="no_path", description="No path")
         tool_info = UCToolInfo(
@@ -1446,7 +1446,7 @@ def updatable(): return "updated"
 
         context = Mock()
         with patch(
-            "code_puppy.plugins.universal_constructor.registry.get_registry"
+            "newcode.plugins.universal_constructor.registry.get_registry"
         ) as mock_get_registry:
             mock_registry = Mock()
             mock_registry.get_tool.return_value = tool_info
@@ -1469,7 +1469,7 @@ class TestHandleCreateAction:
 
             from unittest.mock import Mock, patch
 
-            from code_puppy.tools.universal_constructor import _handle_create_action
+            from newcode.tools.universal_constructor import _handle_create_action
 
             context = Mock()
 
@@ -1478,11 +1478,9 @@ def greet(name: str = "World") -> str:
     """Generate a greeting."""
     return f"Hello, {name}!"
 '''
-            with patch(
-                "code_puppy.plugins.universal_constructor.USER_UC_DIR", tools_dir
-            ):
+            with patch("newcode.plugins.universal_constructor.USER_UC_DIR", tools_dir):
                 with patch(
-                    "code_puppy.plugins.universal_constructor.registry.get_registry"
+                    "newcode.plugins.universal_constructor.registry.get_registry"
                 ) as mock_get_registry:
                     mock_registry = Mock()
                     mock_get_registry.return_value = mock_registry
@@ -1517,7 +1515,7 @@ def greet(name: str = "World") -> str:
 
             from unittest.mock import Mock, patch
 
-            from code_puppy.tools.universal_constructor import _handle_create_action
+            from newcode.tools.universal_constructor import _handle_create_action
 
             context = Mock()
 
@@ -1525,11 +1523,9 @@ def greet(name: str = "World") -> str:
 def my_func() -> str:
     return "result"
 """
-            with patch(
-                "code_puppy.plugins.universal_constructor.USER_UC_DIR", tools_dir
-            ):
+            with patch("newcode.plugins.universal_constructor.USER_UC_DIR", tools_dir):
                 with patch(
-                    "code_puppy.plugins.universal_constructor.registry.get_registry"
+                    "newcode.plugins.universal_constructor.registry.get_registry"
                 ) as mock_get_registry:
                     mock_registry = Mock()
                     mock_get_registry.return_value = mock_registry
@@ -1552,7 +1548,7 @@ def my_func() -> str:
 
             from unittest.mock import Mock, patch
 
-            from code_puppy.tools.universal_constructor import _handle_create_action
+            from newcode.tools.universal_constructor import _handle_create_action
 
             context = Mock()
 
@@ -1560,11 +1556,9 @@ def my_func() -> str:
 def weather(city: str) -> str:
     return f"Weather for {city}"
 """
-            with patch(
-                "code_puppy.plugins.universal_constructor.USER_UC_DIR", tools_dir
-            ):
+            with patch("newcode.plugins.universal_constructor.USER_UC_DIR", tools_dir):
                 with patch(
-                    "code_puppy.plugins.universal_constructor.registry.get_registry"
+                    "newcode.plugins.universal_constructor.registry.get_registry"
                 ) as mock_get_registry:
                     mock_registry = Mock()
                     mock_get_registry.return_value = mock_registry
@@ -1590,7 +1584,7 @@ def weather(city: str) -> str:
 
             from unittest.mock import Mock, patch
 
-            from code_puppy.tools.universal_constructor import _handle_create_action
+            from newcode.tools.universal_constructor import _handle_create_action
 
             context = Mock()
 
@@ -1604,11 +1598,9 @@ TOOL_META = {
 def calculator(a: int, b: int) -> int:
     return a + b
 """
-            with patch(
-                "code_puppy.plugins.universal_constructor.USER_UC_DIR", tools_dir
-            ):
+            with patch("newcode.plugins.universal_constructor.USER_UC_DIR", tools_dir):
                 with patch(
-                    "code_puppy.plugins.universal_constructor.registry.get_registry"
+                    "newcode.plugins.universal_constructor.registry.get_registry"
                 ) as mock_get_registry:
                     mock_registry = Mock()
                     mock_get_registry.return_value = mock_registry
@@ -1633,7 +1625,7 @@ def calculator(a: int, b: int) -> int:
         """Test error when python_code is missing."""
         from unittest.mock import Mock
 
-        from code_puppy.tools.universal_constructor import _handle_create_action
+        from newcode.tools.universal_constructor import _handle_create_action
 
         context = Mock()
 
@@ -1656,7 +1648,7 @@ def calculator(a: int, b: int) -> int:
         """Test error when code has invalid syntax."""
         from unittest.mock import Mock
 
-        from code_puppy.tools.universal_constructor import _handle_create_action
+        from newcode.tools.universal_constructor import _handle_create_action
 
         context = Mock()
 
@@ -1669,7 +1661,7 @@ def calculator(a: int, b: int) -> int:
         """Test error when code has no functions."""
         from unittest.mock import Mock
 
-        from code_puppy.tools.universal_constructor import _handle_create_action
+        from newcode.tools.universal_constructor import _handle_create_action
 
         context = Mock()
 
@@ -1694,7 +1686,7 @@ y = 2
 
             from unittest.mock import Mock, patch
 
-            from code_puppy.tools.universal_constructor import _handle_create_action
+            from newcode.tools.universal_constructor import _handle_create_action
 
             context = Mock()
 
@@ -1702,11 +1694,9 @@ y = 2
 def stocks(symbol: str) -> str:
     return f"Stock: {symbol}"
 """
-            with patch(
-                "code_puppy.plugins.universal_constructor.USER_UC_DIR", tools_dir
-            ):
+            with patch("newcode.plugins.universal_constructor.USER_UC_DIR", tools_dir):
                 with patch(
-                    "code_puppy.plugins.universal_constructor.registry.get_registry"
+                    "newcode.plugins.universal_constructor.registry.get_registry"
                 ) as mock_get_registry:
                     mock_registry = Mock()
                     mock_get_registry.return_value = mock_registry
@@ -1730,10 +1720,10 @@ class TestUniversalConstructorConfig:
         """Test get_universal_constructor_enabled returns True by default."""
         from unittest.mock import patch
 
-        from code_puppy.config import get_universal_constructor_enabled
+        from newcode.config import get_universal_constructor_enabled
 
         # When no config value is set (None), should default to True
-        with patch("code_puppy.config.get_value", return_value=None):
+        with patch("newcode.config.get_value", return_value=None):
             result = get_universal_constructor_enabled()
             assert result is True
 
@@ -1741,11 +1731,11 @@ class TestUniversalConstructorConfig:
         """Test get_universal_constructor_enabled returns True for various truthy values."""
         from unittest.mock import patch
 
-        from code_puppy.config import get_universal_constructor_enabled
+        from newcode.config import get_universal_constructor_enabled
 
         truthy_values = ["1", "true", "True", "TRUE", "yes", "Yes", "on", "ON"]
         for val in truthy_values:
-            with patch("code_puppy.config.get_value", return_value=val):
+            with patch("newcode.config.get_value", return_value=val):
                 result = get_universal_constructor_enabled()
                 assert result is True, f"Expected True for '{val}'"
 
@@ -1753,11 +1743,11 @@ class TestUniversalConstructorConfig:
         """Test get_universal_constructor_enabled returns False for various falsy values."""
         from unittest.mock import patch
 
-        from code_puppy.config import get_universal_constructor_enabled
+        from newcode.config import get_universal_constructor_enabled
 
         falsy_values = ["0", "false", "False", "no", "off", "disabled", ""]
         for val in falsy_values:
-            with patch("code_puppy.config.get_value", return_value=val):
+            with patch("newcode.config.get_value", return_value=val):
                 result = get_universal_constructor_enabled()
                 assert result is False, f"Expected False for '{val}'"
 
@@ -1765,13 +1755,13 @@ class TestUniversalConstructorConfig:
         """Test set_universal_constructor_enabled calls set_value correctly."""
         from unittest.mock import patch
 
-        from code_puppy.config import set_universal_constructor_enabled
+        from newcode.config import set_universal_constructor_enabled
 
-        with patch("code_puppy.config.set_value") as mock_set:
+        with patch("newcode.config.set_value") as mock_set:
             set_universal_constructor_enabled(True)
             mock_set.assert_called_once_with("enable_universal_constructor", "true")
 
-        with patch("code_puppy.config.set_value") as mock_set:
+        with patch("newcode.config.set_value") as mock_set:
             set_universal_constructor_enabled(False)
             mock_set.assert_called_once_with("enable_universal_constructor", "false")
 
@@ -1781,7 +1771,7 @@ class TestGeneratePreview:
 
     def test_short_code_returns_full(self):
         """Test that code shorter than max_lines is returned unchanged."""
-        from code_puppy.tools.universal_constructor import _generate_preview
+        from newcode.tools.universal_constructor import _generate_preview
 
         code = "line1\nline2\nline3"
         result = _generate_preview(code, max_lines=10)
@@ -1789,7 +1779,7 @@ class TestGeneratePreview:
 
     def test_long_code_is_truncated(self):
         """Test that code longer than max_lines is truncated with ellipsis."""
-        from code_puppy.tools.universal_constructor import _generate_preview
+        from newcode.tools.universal_constructor import _generate_preview
 
         lines = [f"line{i}" for i in range(20)]
         code = "\n".join(lines)
@@ -1802,7 +1792,7 @@ class TestGeneratePreview:
 
     def test_exact_max_lines_not_truncated(self):
         """Test that exactly max_lines is not truncated."""
-        from code_puppy.tools.universal_constructor import _generate_preview
+        from newcode.tools.universal_constructor import _generate_preview
 
         lines = [f"line{i}" for i in range(10)]
         code = "\n".join(lines)
@@ -1813,7 +1803,7 @@ class TestGeneratePreview:
 
     def test_custom_max_lines(self):
         """Test custom max_lines parameter."""
-        from code_puppy.tools.universal_constructor import _generate_preview
+        from newcode.tools.universal_constructor import _generate_preview
 
         lines = [f"line{i}" for i in range(10)]
         code = "\n".join(lines)
@@ -1825,7 +1815,7 @@ class TestGeneratePreview:
 
     def test_preview_included_in_call_output(self):
         """Test that UCCallOutput can include source_preview."""
-        from code_puppy.plugins.universal_constructor.models import UCCallOutput
+        from newcode.plugins.universal_constructor.models import UCCallOutput
 
         output = UCCallOutput(
             success=True,

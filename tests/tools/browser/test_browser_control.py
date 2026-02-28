@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from code_puppy.tools.browser.browser_control import (
+from newcode.tools.browser.browser_control import (
     close_browser,
     get_browser_status,
     initialize_browser,
@@ -30,13 +30,13 @@ class TestBrowserInitialization:
         mock_manager._initialized = True
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
             with patch(
-                "code_puppy.tools.browser.browser_control.emit_info"
+                "newcode.tools.browser.browser_control.emit_info"
             ) as mock_emit_info:
-                with patch("code_puppy.tools.browser.browser_control.emit_error"):
+                with patch("newcode.tools.browser.browser_control.emit_error"):
                     result = await initialize_browser()
 
                     # Verify result
@@ -60,10 +60,10 @@ class TestBrowserInitialization:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 result = await initialize_browser(headless=True)
 
                 assert result["success"] is True
@@ -82,10 +82,10 @@ class TestBrowserInitialization:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 result = await initialize_browser(
                     headless=True,
                     browser_type="firefox",
@@ -105,10 +105,10 @@ class TestBrowserInitialization:
         mock_manager.get_current_page.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 result = await initialize_browser()
 
                 assert result["success"] is True
@@ -124,12 +124,12 @@ class TestBrowserInitialization:
         )
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.browser_control.emit_error"
+                    "newcode.tools.browser.browser_control.emit_error"
                 ) as mock_emit_error:
                     result = await initialize_browser()
 
@@ -149,12 +149,12 @@ class TestBrowserClosing:
         mock_manager.close.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 with patch(
-                    "code_puppy.tools.browser.browser_control.emit_warning"
+                    "newcode.tools.browser.browser_control.emit_warning"
                 ) as mock_emit_warning:
                     result = await close_browser()
 
@@ -170,10 +170,10 @@ class TestBrowserClosing:
         mock_manager.close.side_effect = RuntimeError("Browser already closed")
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 result = await close_browser()
 
                 assert result["success"] is False
@@ -186,11 +186,11 @@ class TestBrowserClosing:
         mock_manager.close.return_value = None
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
-                with patch("code_puppy.tools.browser.browser_control.emit_warning"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
+                with patch("newcode.tools.browser.browser_control.emit_warning"):
                     await close_browser()
 
                     # Verify close was called on the manager
@@ -214,10 +214,10 @@ class TestBrowserStatus:
         mock_manager.get_all_pages.return_value = [mock_page]
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 result = await get_browser_status()
 
                 assert result["success"] is True
@@ -234,10 +234,10 @@ class TestBrowserStatus:
         mock_manager.headless = False
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 result = await get_browser_status()
 
                 # Should return not initialized status
@@ -252,10 +252,10 @@ class TestBrowserStatus:
         mock_manager.get_current_page.side_effect = RuntimeError("Cannot get page")
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 result = await get_browser_status()
 
                 # Should handle error gracefully
@@ -276,11 +276,11 @@ class TestBrowserIntegration:
         mock_manager._initialized = True
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
-                with patch("code_puppy.tools.browser.browser_control.emit_warning"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
+                with patch("newcode.tools.browser.browser_control.emit_warning"):
                     # Initialize
                     init_result = await initialize_browser()
                     assert init_result["success"] is True
@@ -303,10 +303,10 @@ class TestBrowserIntegration:
         mock_manager.get_current_page.return_value = mock_page
 
         with patch(
-            "code_puppy.tools.browser.browser_control.get_session_browser_manager",
+            "newcode.tools.browser.browser_control.get_session_browser_manager",
             return_value=mock_manager,
         ):
-            with patch("code_puppy.tools.browser.browser_control.emit_info"):
+            with patch("newcode.tools.browser.browser_control.emit_info"):
                 # Test different browser types
                 for browser_type in ["chromium", "firefox", "webkit"]:
                     result = await initialize_browser(browser_type=browser_type)

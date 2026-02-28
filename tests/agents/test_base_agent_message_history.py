@@ -10,7 +10,7 @@ This module tests the following message history methods in BaseAgent:
 
 import pytest
 
-from code_puppy.agents.agent_code_agent import CodeAgent
+from newcode.agents.agent_code_agent import CodeAgent
 
 
 class TestMessageHistoryManagement:

@@ -9,9 +9,9 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from code_puppy.command_line.mcp.list_command import ListCommand
-from code_puppy.command_line.mcp.search_command import SearchCommand
-from code_puppy.mcp_.managed_server import ServerState
+from newcode.command_line.mcp.list_command import ListCommand
+from newcode.command_line.mcp.search_command import SearchCommand
+from newcode.mcp_.managed_server import ServerState
 
 
 class TestListCommand:
@@ -156,7 +156,7 @@ class TestListCommand:
             error_messages.append((message, message_group))
 
         with patch(
-            "code_puppy.command_line.mcp.list_command.emit_error",
+            "newcode.command_line.mcp.list_command.emit_error",
             side_effect=capture_error,
         ):
             self.command.execute([])
@@ -415,7 +415,7 @@ class TestSearchCommand:
     def test_execute_import_error(self, mock_emit_info):
         """Test handling when server registry is not available."""
         with patch(
-            "code_puppy.mcp_.server_registry_catalog.catalog", side_effect=ImportError
+            "newcode.mcp_.server_registry_catalog.catalog", side_effect=ImportError
         ):
             self.command.execute(["test"])
 
@@ -426,7 +426,7 @@ class TestSearchCommand:
     def test_execute_general_exception(self, mock_emit_info):
         """Test handling of general exceptions."""
         with patch(
-            "code_puppy.mcp_.server_registry_catalog.catalog",
+            "newcode.mcp_.server_registry_catalog.catalog",
             side_effect=Exception("Search error"),
         ):
             self.command.execute(["test"])
@@ -498,7 +498,7 @@ class TestCommandIntegration:
 
         # Mock both to have no results for simplicity
         mock_mcp_manager.list_servers.return_value = []
-        with patch("code_puppy.mcp_.server_registry_catalog.catalog") as mock_catalog:
+        with patch("newcode.mcp_.server_registry_catalog.catalog") as mock_catalog:
             mock_catalog.get_popular.return_value = []
 
             list_cmd.execute([])
@@ -526,7 +526,7 @@ class TestCommandIntegration:
         list_cmd.execute([])
 
         with patch(
-            "code_puppy.mcp_.server_registry_catalog.catalog",
+            "newcode.mcp_.server_registry_catalog.catalog",
             side_effect=Exception("Search error"),
         ):
             search_cmd.execute(["test"])

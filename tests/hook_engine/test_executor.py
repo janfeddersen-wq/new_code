@@ -2,13 +2,13 @@
 
 import pytest
 
-from code_puppy.hook_engine.executor import (
+from newcode.hook_engine.executor import (
     _substitute_variables,
     execute_hook,
     execute_hooks_sequential,
     get_blocking_result,
 )
-from code_puppy.hook_engine.models import EventData, ExecutionResult, HookConfig
+from newcode.hook_engine.models import EventData, ExecutionResult, HookConfig
 
 
 @pytest.mark.asyncio

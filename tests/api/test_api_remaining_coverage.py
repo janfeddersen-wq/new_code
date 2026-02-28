@@ -1,4 +1,4 @@
-"""Tests targeting remaining uncovered lines in code_puppy/api/."""
+"""Tests targeting remaining uncovered lines in newcode/api/."""
 
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -11,9 +11,9 @@ import pytest
 
 
 def test_api_main_function():
-    from code_puppy.api.main import main
+    from newcode.api.main import main
 
-    with patch("code_puppy.api.main.uvicorn") as mock_uv:
+    with patch("newcode.api.main.uvicorn") as mock_uv:
         main(host="0.0.0.0", port=9999)
         mock_uv.run.assert_called_once()
 
@@ -26,18 +26,18 @@ def test_api_main_function():
 @pytest.mark.asyncio
 async def test_shutdown_pid_removal_error():
     """Cover the except branch when PID file removal fails (line 79-80)."""
-    from code_puppy.api.app import lifespan
+    from newcode.api.app import lifespan
 
     mock_app = MagicMock()
     mock_pty_manager = AsyncMock()
 
     with (
         patch(
-            "code_puppy.api.app.get_pty_manager",
+            "newcode.api.app.get_pty_manager",
             return_value=mock_pty_manager,
             create=True,
         ),
-        patch("code_puppy.api.app.Path") as mock_path_cls,
+        patch("newcode.api.app.Path") as mock_path_cls,
     ):
         mock_pid = MagicMock()
         mock_pid.exists.return_value = True
@@ -55,7 +55,7 @@ async def test_shutdown_pid_removal_error():
 
 def test_pty_manager_windows_import_branch():
     """Cover the IS_WINDOWS conditional import branch."""
-    import code_puppy.api.pty_manager as pm
+    import newcode.api.pty_manager as pm
 
     # Just verify the module loaded and has the expected attributes
     assert hasattr(pm, "IS_WINDOWS")
@@ -70,7 +70,7 @@ def test_pty_manager_windows_import_branch():
 
 def test_pty_manager_create_and_close():
     """Cover create_session, _create_unix_session, close_session."""
-    from code_puppy.api.pty_manager import IS_WINDOWS, PTYManager
+    from newcode.api.pty_manager import IS_WINDOWS, PTYManager
 
     if IS_WINDOWS:
         pytest.skip("Unix-only test")
@@ -111,7 +111,7 @@ def test_pty_manager_create_and_close():
 
 def test_pty_manager_duplicate_session():
     """Cover the duplicate session warning path (line 124)."""
-    from code_puppy.api.pty_manager import IS_WINDOWS, PTYManager
+    from newcode.api.pty_manager import IS_WINDOWS, PTYManager
 
     if IS_WINDOWS:
         pytest.skip("Unix-only test")
@@ -129,7 +129,7 @@ def test_pty_manager_duplicate_session():
 
 def test_pty_manager_close_all():
     """Cover close_all."""
-    from code_puppy.api.pty_manager import IS_WINDOWS, PTYManager
+    from newcode.api.pty_manager import IS_WINDOWS, PTYManager
 
     if IS_WINDOWS:
         pytest.skip("Unix-only test")
@@ -147,7 +147,7 @@ def test_pty_manager_close_all():
 
 def test_pty_manager_list_sessions():
     """Cover list_sessions."""
-    from code_puppy.api.pty_manager import IS_WINDOWS, PTYManager
+    from newcode.api.pty_manager import IS_WINDOWS, PTYManager
 
     if IS_WINDOWS:
         pytest.skip("Unix-only test")
@@ -165,7 +165,7 @@ def test_pty_manager_list_sessions():
 
 def test_read_unix_pty_blocking_and_eof():
     """Cover _read_unix_pty branches: BlockingIOError and OSError."""
-    from code_puppy.api.pty_manager import PTYManager
+    from newcode.api.pty_manager import PTYManager
 
     manager = PTYManager()
 
@@ -180,7 +180,7 @@ def test_read_unix_pty_blocking_and_eof():
 
 def test_unix_reader_loop_error():
     """Cover _unix_reader_loop exception handling."""
-    from code_puppy.api.pty_manager import IS_WINDOWS, PTYManager, PTYSession
+    from newcode.api.pty_manager import IS_WINDOWS, PTYManager, PTYSession
 
     if IS_WINDOWS:
         pytest.skip("Unix-only")
@@ -200,7 +200,7 @@ def test_unix_reader_loop_error():
 
 def test_unix_reader_loop_eof():
     """Cover EOF branch in _unix_reader_loop."""
-    from code_puppy.api.pty_manager import IS_WINDOWS, PTYManager, PTYSession
+    from newcode.api.pty_manager import IS_WINDOWS, PTYManager, PTYSession
 
     if IS_WINDOWS:
         pytest.skip("Unix-only")
@@ -227,7 +227,7 @@ def test_unix_reader_loop_eof():
 
 def test_unix_reader_loop_with_output():
     """Cover output callback branch in _unix_reader_loop."""
-    from code_puppy.api.pty_manager import IS_WINDOWS, PTYManager, PTYSession
+    from newcode.api.pty_manager import IS_WINDOWS, PTYManager, PTYSession
 
     if IS_WINDOWS:
         pytest.skip("Unix-only")
@@ -261,7 +261,7 @@ def test_unix_reader_loop_with_output():
 
 def test_windows_reader_loop():
     """Cover _windows_reader_loop."""
-    from code_puppy.api.pty_manager import PTYManager, PTYSession
+    from newcode.api.pty_manager import PTYManager, PTYSession
 
     manager = PTYManager()
     output = []
@@ -294,7 +294,7 @@ def test_windows_reader_loop():
 
 def test_windows_reader_loop_error():
     """Cover _windows_reader_loop exception branch."""
-    from code_puppy.api.pty_manager import PTYManager, PTYSession
+    from newcode.api.pty_manager import PTYManager, PTYSession
 
     manager = PTYManager()
     mock_proc = MagicMock()
@@ -312,14 +312,14 @@ def test_windows_reader_loop_error():
 
 def test_create_windows_session():
     """Cover _create_windows_session."""
-    from code_puppy.api.pty_manager import PTYManager
+    from newcode.api.pty_manager import PTYManager
 
     manager = PTYManager()
 
     async def _test():
         # Without winpty
-        with patch.dict("code_puppy.api.pty_manager.__dict__", {"HAS_WINPTY": False}):
-            import code_puppy.api.pty_manager as pm
+        with patch.dict("newcode.api.pty_manager.__dict__", {"HAS_WINPTY": False}):
+            import newcode.api.pty_manager as pm
 
             old = pm.HAS_WINPTY
             pm.HAS_WINPTY = False
@@ -334,7 +334,7 @@ def test_create_windows_session():
 
 def test_write_nonexistent_session():
     """Cover write to nonexistent session."""
-    from code_puppy.api.pty_manager import PTYManager
+    from newcode.api.pty_manager import PTYManager
 
     manager = PTYManager()
 
@@ -347,7 +347,7 @@ def test_write_nonexistent_session():
 
 def test_resize_nonexistent():
     """Cover resize nonexistent session."""
-    from code_puppy.api.pty_manager import PTYManager
+    from newcode.api.pty_manager import PTYManager
 
     manager = PTYManager()
 
@@ -365,7 +365,7 @@ def test_resize_nonexistent():
 
 def test_websocket_register_routes_exists():
     """Verify websocket module has setup_websocket_routes."""
-    import code_puppy.api.websocket as ws
+    import newcode.api.websocket as ws
 
     # The function might be named differently
     funcs = [x for x in dir(ws) if "route" in x.lower() or "websocket" in x.lower()]
@@ -374,7 +374,7 @@ def test_websocket_register_routes_exists():
 
 def test_websocket_on_output_error():
     """Cover on_output error branch (line 79-80)."""
-    import code_puppy.api.websocket as ws
+    import newcode.api.websocket as ws
 
     assert hasattr(ws, "setup_websocket")
 
@@ -382,7 +382,7 @@ def test_websocket_on_output_error():
 @pytest.mark.asyncio
 async def test_websocket_events_endpoint():
     """Cover events websocket flow including ping timeout."""
-    from code_puppy.api.app import create_app
+    from newcode.api.app import create_app
 
     # Just verify the app creates successfully with websocket routes
     app = create_app()

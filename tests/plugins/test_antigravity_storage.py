@@ -22,7 +22,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from code_puppy.plugins.antigravity_oauth.storage import (
+from newcode.plugins.antigravity_oauth.storage import (
     AccountMetadata,
     AccountStorage,
     RateLimitState,
@@ -43,7 +43,7 @@ def temp_storage_path(tmp_path, monkeypatch):
     """Create a temporary storage path for testing."""
     storage_file = tmp_path / "accounts.json"
     monkeypatch.setattr(
-        "code_puppy.plugins.antigravity_oauth.storage.get_accounts_storage_path",
+        "newcode.plugins.antigravity_oauth.storage.get_accounts_storage_path",
         lambda: storage_file,
     )
     return storage_file
@@ -671,7 +671,7 @@ class TestLoadAccounts:
             original_save(storage)
 
         monkeypatch.setattr(
-            "code_puppy.plugins.antigravity_oauth.storage.save_accounts",
+            "newcode.plugins.antigravity_oauth.storage.save_accounts",
             capture_save,
         )
         result = load_accounts()
@@ -702,7 +702,7 @@ class TestLoadAccounts:
             original_save(storage)
 
         monkeypatch.setattr(
-            "code_puppy.plugins.antigravity_oauth.storage.save_accounts",
+            "newcode.plugins.antigravity_oauth.storage.save_accounts",
             capture_save,
         )
         result = load_accounts()
@@ -789,7 +789,7 @@ class TestLoadAccounts:
         mock_path.exists.return_value = True
         mock_path.read_text.side_effect = mock_read
         monkeypatch.setattr(
-            "code_puppy.plugins.antigravity_oauth.storage.get_accounts_storage_path",
+            "newcode.plugins.antigravity_oauth.storage.get_accounts_storage_path",
             lambda: mock_path,
         )
         result = load_accounts()
@@ -813,7 +813,7 @@ class TestLoadAccounts:
         temp_storage_path.write_text(json.dumps(v2_data))
         # Mock save to raise an exception
         monkeypatch.setattr(
-            "code_puppy.plugins.antigravity_oauth.storage.save_accounts",
+            "newcode.plugins.antigravity_oauth.storage.save_accounts",
             MagicMock(side_effect=Exception("Save failed")),
         )
         with caplog.at_level(logging.WARNING):
@@ -947,7 +947,7 @@ class TestClearAccounts:
         mock_path.exists.return_value = True
         mock_path.unlink.side_effect = PermissionError("Permission denied")
         monkeypatch.setattr(
-            "code_puppy.plugins.antigravity_oauth.storage.get_accounts_storage_path",
+            "newcode.plugins.antigravity_oauth.storage.get_accounts_storage_path",
             lambda: mock_path,
         )
         with caplog.at_level(logging.ERROR):

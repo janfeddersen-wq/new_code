@@ -54,45 +54,45 @@ def _apply_patches(stack, patches_dict):
 def _base_main_patches():
     """Return a dict of common patches needed for main()."""
     return {
-        "code_puppy.cli_runner.find_available_port": MagicMock(return_value=8090),
-        "code_puppy.cli_runner.ensure_config_exists": MagicMock(),
-        "code_puppy.cli_runner.validate_cancel_agent_key": MagicMock(),
-        "code_puppy.cli_runner.initialize_command_history_file": MagicMock(),
-        "code_puppy.cli_runner.get_use_dbos": MagicMock(return_value=False),
-        "code_puppy.cli_runner.default_version_mismatch_behavior": MagicMock(),
-        "code_puppy.cli_runner.print_truecolor_warning": MagicMock(),
-        "code_puppy.cli_runner.reset_unix_terminal": MagicMock(),
-        "code_puppy.cli_runner.reset_windows_terminal_ansi": MagicMock(),
-        "code_puppy.cli_runner.reset_windows_terminal_full": MagicMock(),
-        "code_puppy.cli_runner.callbacks": MagicMock(
+        "newcode.cli_runner.find_available_port": MagicMock(return_value=8090),
+        "newcode.cli_runner.ensure_config_exists": MagicMock(),
+        "newcode.cli_runner.validate_cancel_agent_key": MagicMock(),
+        "newcode.cli_runner.initialize_command_history_file": MagicMock(),
+        "newcode.cli_runner.get_use_dbos": MagicMock(return_value=False),
+        "newcode.cli_runner.default_version_mismatch_behavior": MagicMock(),
+        "newcode.cli_runner.print_truecolor_warning": MagicMock(),
+        "newcode.cli_runner.reset_unix_terminal": MagicMock(),
+        "newcode.cli_runner.reset_windows_terminal_ansi": MagicMock(),
+        "newcode.cli_runner.reset_windows_terminal_full": MagicMock(),
+        "newcode.cli_runner.callbacks": MagicMock(
             on_startup=AsyncMock(),
             on_shutdown=AsyncMock(),
             on_version_check=AsyncMock(),
             get_callbacks=MagicMock(return_value=[]),
         ),
-        "code_puppy.cli_runner.plugins": MagicMock(),
-        "code_puppy.config.load_api_keys_to_environment": MagicMock(),
+        "newcode.cli_runner.plugins": MagicMock(),
+        "newcode.config.load_api_keys_to_environment": MagicMock(),
     }
 
 
 def _interactive_patches():
     return {
-        "code_puppy.cli_runner.print_truecolor_warning": MagicMock(),
-        "code_puppy.cli_runner.get_cancel_agent_display_name": MagicMock(
+        "newcode.cli_runner.print_truecolor_warning": MagicMock(),
+        "newcode.cli_runner.get_cancel_agent_display_name": MagicMock(
             return_value="Ctrl+C"
         ),
-        "code_puppy.cli_runner.reset_windows_terminal_ansi": MagicMock(),
-        "code_puppy.cli_runner.reset_windows_terminal_full": MagicMock(),
-        "code_puppy.cli_runner.save_command_to_history": MagicMock(),
-        "code_puppy.cli_runner.finalize_autosave_session": MagicMock(
+        "newcode.cli_runner.reset_windows_terminal_ansi": MagicMock(),
+        "newcode.cli_runner.reset_windows_terminal_full": MagicMock(),
+        "newcode.cli_runner.save_command_to_history": MagicMock(),
+        "newcode.cli_runner.finalize_autosave_session": MagicMock(
             return_value="session-1"
         ),
-        "code_puppy.cli_runner.COMMAND_HISTORY_FILE": "/tmp/test_history",
-        "code_puppy.command_line.motd.print_motd": MagicMock(),
-        "code_puppy.command_line.onboarding_wizard.should_show_onboarding": MagicMock(
+        "newcode.cli_runner.COMMAND_HISTORY_FILE": "/tmp/test_history",
+        "newcode.command_line.motd.print_motd": MagicMock(),
+        "newcode.command_line.onboarding_wizard.should_show_onboarding": MagicMock(
             return_value=False
         ),
-        "code_puppy.config.auto_save_session_if_enabled": MagicMock(),
+        "newcode.config.auto_save_session_if_enabled": MagicMock(),
     }
 
 
@@ -113,7 +113,7 @@ async def _run_interactive(
         _apply_patches(stack, patches_dict)
         stack.enter_context(
             patch(
-                "code_puppy.command_line.prompt_toolkit_completion.get_input_with_combined_completion",
+                "newcode.command_line.prompt_toolkit_completion.get_input_with_combined_completion",
                 side_effect=input_fn
                 if callable(input_fn) and not isinstance(input_fn, AsyncMock)
                 else input_fn,
@@ -121,20 +121,20 @@ async def _run_interactive(
         )
         stack.enter_context(
             patch(
-                "code_puppy.command_line.prompt_toolkit_completion.get_prompt_with_active_model",
+                "newcode.command_line.prompt_toolkit_completion.get_prompt_with_active_model",
                 return_value="> ",
             )
         )
         stack.enter_context(
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=agent,
             )
         )
         if extra_patches:
             _apply_patches(stack, extra_patches)
 
-        from code_puppy.cli_runner import interactive_mode
+        from newcode.cli_runner import interactive_mode
 
         await interactive_mode(renderer, initial_command=initial_command)
 
@@ -156,26 +156,26 @@ class TestMain:
             stack.enter_context(patch("sys.argv", argv))
             stack.enter_context(
                 patch(
-                    "code_puppy.messaging.SynchronousInteractiveRenderer",
+                    "newcode.messaging.SynchronousInteractiveRenderer",
                     return_value=_mock_renderer(),
                 )
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.messaging.RichConsoleRenderer",
+                    "newcode.messaging.RichConsoleRenderer",
                     return_value=_mock_renderer(),
                 )
             )
             stack.enter_context(
-                patch("code_puppy.messaging.get_global_queue", return_value=MagicMock())
+                patch("newcode.messaging.get_global_queue", return_value=MagicMock())
             )
             stack.enter_context(
-                patch("code_puppy.messaging.get_message_bus", return_value=MagicMock())
+                patch("newcode.messaging.get_message_bus", return_value=MagicMock())
             )
             _apply_patches(stack, patches)
             if extra_patches:
                 _apply_patches(stack, extra_patches)
-            from code_puppy.cli_runner import main
+            from newcode.cli_runner import main
 
             await main()
 
@@ -184,7 +184,7 @@ class TestMain:
         mock_exec = AsyncMock()
         await self._run_main(
             ["code-agent", "-p", "hello world"],
-            extra_patches={"code_puppy.cli_runner.execute_single_prompt": mock_exec},
+            extra_patches={"newcode.cli_runner.execute_single_prompt": mock_exec},
         )
         mock_exec.assert_called_once()
 
@@ -194,7 +194,7 @@ class TestMain:
         await self._run_main(
             ["code-agent"],
             extra_patches={
-                "code_puppy.cli_runner.interactive_mode": mock_inter,
+                "newcode.cli_runner.interactive_mode": mock_inter,
                 "pyfiglet.figlet_format": MagicMock(return_value="LOGO\n\n"),
             },
         )
@@ -206,7 +206,7 @@ class TestMain:
         await self._run_main(
             ["code-agent", "do", "something"],
             extra_patches={
-                "code_puppy.cli_runner.interactive_mode": mock_inter,
+                "newcode.cli_runner.interactive_mode": mock_inter,
                 "pyfiglet.figlet_format": MagicMock(return_value="LOGO\n\n"),
             },
         )
@@ -217,21 +217,19 @@ class TestMain:
         await self._run_main(
             ["code-agent", "-p", "test"],
             base_overrides={
-                "code_puppy.cli_runner.find_available_port": MagicMock(
-                    return_value=None
-                ),
+                "newcode.cli_runner.find_available_port": MagicMock(return_value=None),
             },
         )
 
     @pytest.mark.anyio
     async def test_keymap_error(self):
-        from code_puppy.keymap import KeymapError
+        from newcode.keymap import KeymapError
 
         with pytest.raises(SystemExit):
             await self._run_main(
                 ["code-agent", "-p", "test"],
                 base_overrides={
-                    "code_puppy.cli_runner.validate_cancel_agent_key": MagicMock(
+                    "newcode.cli_runner.validate_cancel_agent_key": MagicMock(
                         side_effect=KeymapError("bad key")
                     ),
                 },
@@ -243,11 +241,9 @@ class TestMain:
         await self._run_main(
             ["code-agent", "-m", "gpt-5", "-p", "hi"],
             extra_patches={
-                "code_puppy.cli_runner.execute_single_prompt": AsyncMock(),
-                "code_puppy.config.set_model_name": mock_set,
-                "code_puppy.config._validate_model_exists": MagicMock(
-                    return_value=True
-                ),
+                "newcode.cli_runner.execute_single_prompt": AsyncMock(),
+                "newcode.config.set_model_name": mock_set,
+                "newcode.config._validate_model_exists": MagicMock(return_value=True),
             },
         )
         mock_set.assert_called_with("gpt-5")
@@ -260,11 +256,11 @@ class TestMain:
             await self._run_main(
                 ["code-agent", "-m", "bad-model", "-p", "hi"],
                 extra_patches={
-                    "code_puppy.config.set_model_name": MagicMock(),
-                    "code_puppy.config._validate_model_exists": MagicMock(
+                    "newcode.config.set_model_name": MagicMock(),
+                    "newcode.config._validate_model_exists": MagicMock(
                         return_value=False
                     ),
-                    "code_puppy.model_factory.ModelFactory": mock_mf,
+                    "newcode.model_factory.ModelFactory": mock_mf,
                 },
             )
 
@@ -274,8 +270,8 @@ class TestMain:
             await self._run_main(
                 ["code-agent", "-m", "bad", "-p", "hi"],
                 extra_patches={
-                    "code_puppy.config.set_model_name": MagicMock(),
-                    "code_puppy.config._validate_model_exists": MagicMock(
+                    "newcode.config.set_model_name": MagicMock(),
+                    "newcode.config._validate_model_exists": MagicMock(
                         side_effect=RuntimeError("boom")
                     ),
                 },
@@ -287,11 +283,11 @@ class TestMain:
         await self._run_main(
             ["code-agent", "-a", "code-agent", "-p", "hi"],
             extra_patches={
-                "code_puppy.cli_runner.execute_single_prompt": AsyncMock(),
-                "code_puppy.agents.agent_manager.get_available_agents": MagicMock(
+                "newcode.cli_runner.execute_single_prompt": AsyncMock(),
+                "newcode.agents.agent_manager.get_available_agents": MagicMock(
                     return_value={"code-agent": {}}
                 ),
-                "code_puppy.agents.agent_manager.set_current_agent": mock_set,
+                "newcode.agents.agent_manager.set_current_agent": mock_set,
             },
         )
         mock_set.assert_called_with("code-agent")
@@ -302,7 +298,7 @@ class TestMain:
             await self._run_main(
                 ["code-agent", "-a", "bad-agent", "-p", "hi"],
                 extra_patches={
-                    "code_puppy.agents.agent_manager.get_available_agents": MagicMock(
+                    "newcode.agents.agent_manager.get_available_agents": MagicMock(
                         return_value={"code-agent": {}}
                     ),
                 },
@@ -314,7 +310,7 @@ class TestMain:
             await self._run_main(
                 ["code-agent", "-a", "bad", "-p", "hi"],
                 extra_patches={
-                    "code_puppy.agents.agent_manager.get_available_agents": MagicMock(
+                    "newcode.agents.agent_manager.get_available_agents": MagicMock(
                         side_effect=RuntimeError("boom")
                     ),
                 },
@@ -329,7 +325,7 @@ class TestMain:
             get_callbacks=MagicMock(return_value=[lambda: None]),
         )
         patches = _base_main_patches()
-        patches["code_puppy.cli_runner.callbacks"] = cb_mock
+        patches["newcode.cli_runner.callbacks"] = cb_mock
         with ExitStack() as stack:
             stack.enter_context(
                 patch.dict(os.environ, {"NO_VERSION_UPDATE": ""}, clear=False)
@@ -337,30 +333,30 @@ class TestMain:
             stack.enter_context(patch("sys.argv", ["code-agent", "-p", "hi"]))
             stack.enter_context(
                 patch(
-                    "code_puppy.messaging.SynchronousInteractiveRenderer",
+                    "newcode.messaging.SynchronousInteractiveRenderer",
                     return_value=_mock_renderer(),
                 )
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.messaging.RichConsoleRenderer",
+                    "newcode.messaging.RichConsoleRenderer",
                     return_value=_mock_renderer(),
                 )
             )
             stack.enter_context(
-                patch("code_puppy.messaging.get_global_queue", return_value=MagicMock())
+                patch("newcode.messaging.get_global_queue", return_value=MagicMock())
             )
             stack.enter_context(
-                patch("code_puppy.messaging.get_message_bus", return_value=MagicMock())
+                patch("newcode.messaging.get_message_bus", return_value=MagicMock())
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.cli_runner.execute_single_prompt",
+                    "newcode.cli_runner.execute_single_prompt",
                     new_callable=AsyncMock,
                 )
             )
             _apply_patches(stack, patches)
-            from code_puppy.cli_runner import main
+            from newcode.cli_runner import main
 
             await main()
             cb_mock.on_version_check.assert_called_once()
@@ -369,7 +365,7 @@ class TestMain:
     async def test_version_check_no_callbacks(self):
         """Version check falls back to default_version_mismatch_behavior."""
         patches = _base_main_patches()
-        patches["code_puppy.cli_runner.callbacks"] = MagicMock(
+        patches["newcode.cli_runner.callbacks"] = MagicMock(
             on_startup=AsyncMock(),
             on_shutdown=AsyncMock(),
             on_version_check=AsyncMock(),
@@ -382,30 +378,30 @@ class TestMain:
             stack.enter_context(patch("sys.argv", ["code-agent", "-p", "hi"]))
             stack.enter_context(
                 patch(
-                    "code_puppy.messaging.SynchronousInteractiveRenderer",
+                    "newcode.messaging.SynchronousInteractiveRenderer",
                     return_value=_mock_renderer(),
                 )
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.messaging.RichConsoleRenderer",
+                    "newcode.messaging.RichConsoleRenderer",
                     return_value=_mock_renderer(),
                 )
             )
             stack.enter_context(
-                patch("code_puppy.messaging.get_global_queue", return_value=MagicMock())
+                patch("newcode.messaging.get_global_queue", return_value=MagicMock())
             )
             stack.enter_context(
-                patch("code_puppy.messaging.get_message_bus", return_value=MagicMock())
+                patch("newcode.messaging.get_message_bus", return_value=MagicMock())
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.cli_runner.execute_single_prompt",
+                    "newcode.cli_runner.execute_single_prompt",
                     new_callable=AsyncMock,
                 )
             )
             _apply_patches(stack, patches)
-            from code_puppy.cli_runner import main
+            from newcode.cli_runner import main
 
             await main()
 
@@ -415,11 +411,11 @@ class TestMain:
         await self._run_main(
             ["code-agent", "-p", "hi"],
             base_overrides={
-                "code_puppy.cli_runner.get_use_dbos": MagicMock(return_value=True),
+                "newcode.cli_runner.get_use_dbos": MagicMock(return_value=True),
             },
             extra_patches={
-                "code_puppy.cli_runner.execute_single_prompt": AsyncMock(),
-                "code_puppy.cli_runner.DBOS": mock_dbos_cls,
+                "newcode.cli_runner.execute_single_prompt": AsyncMock(),
+                "newcode.cli_runner.DBOS": mock_dbos_cls,
             },
         )
         mock_dbos_cls.launch.assert_called_once()
@@ -431,10 +427,10 @@ class TestMain:
             await self._run_main(
                 ["code-agent", "-p", "hi"],
                 base_overrides={
-                    "code_puppy.cli_runner.get_use_dbos": MagicMock(return_value=True),
+                    "newcode.cli_runner.get_use_dbos": MagicMock(return_value=True),
                 },
                 extra_patches={
-                    "code_puppy.cli_runner.DBOS": mock_dbos_cls,
+                    "newcode.cli_runner.DBOS": mock_dbos_cls,
                 },
             )
 
@@ -452,7 +448,7 @@ class TestMain:
         await self._run_main(
             ["code-agent"],
             extra_patches={
-                "code_puppy.cli_runner.interactive_mode": AsyncMock(),
+                "newcode.cli_runner.interactive_mode": AsyncMock(),
                 "builtins.__import__": fake_import,
             },
         )
@@ -509,7 +505,7 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=False
                 ),
             },
@@ -532,10 +528,10 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=True
                 ),
-                "code_puppy.command_line.wiggum_state.stop_wiggum": mock_stop,
+                "newcode.command_line.wiggum_state.stop_wiggum": mock_stop,
             },
         )
         mock_stop.assert_called()
@@ -558,10 +554,8 @@ class TestInteractiveMode:
             fake_input,
             agent=agent,
             extra_patches={
-                "code_puppy.cli_runner.get_current_agent": MagicMock(
-                    return_value=agent
-                ),
-                "code_puppy.cli_runner.get_clipboard_manager": MagicMock(
+                "newcode.cli_runner.get_current_agent": MagicMock(return_value=agent),
+                "newcode.cli_runner.get_clipboard_manager": MagicMock(
                     return_value=_mock_clipboard([b"img"])
                 ),
             },
@@ -582,10 +576,10 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.command_line.command_handler.handle_command": MagicMock(
+                "newcode.command_line.command_handler.handle_command": MagicMock(
                     return_value=True
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("/help")
                 ),
             },
@@ -608,16 +602,16 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.command_line.command_handler.handle_command": MagicMock(
+                "newcode.command_line.command_handler.handle_command": MagicMock(
                     return_value="run this"
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("/custom")
                 ),
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(mock_result, MagicMock())
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=False
                 ),
             },
@@ -637,10 +631,10 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.command_line.command_handler.handle_command": MagicMock(
+                "newcode.command_line.command_handler.handle_command": MagicMock(
                     side_effect=RuntimeError("cmd error")
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("/bad")
                 ),
             },
@@ -663,13 +657,13 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(mock_result, MagicMock())
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=False
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
             },
@@ -689,13 +683,13 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(None, MagicMock())
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=False
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
             },
@@ -716,14 +710,14 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(None, MagicMock())
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=True
                 ),
-                "code_puppy.command_line.wiggum_state.stop_wiggum": mock_stop,
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.command_line.wiggum_state.stop_wiggum": mock_stop,
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
             },
@@ -744,16 +738,16 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     side_effect=RuntimeError("agent error")
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=False
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
-                "code_puppy.messaging.queue_console.get_queue_console": MagicMock(
+                "newcode.messaging.queue_console.get_queue_console": MagicMock(
                     return_value=MagicMock()
                 ),
             },
@@ -773,7 +767,7 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("   ")
                 ),
             },
@@ -793,10 +787,8 @@ class TestInteractiveMode:
             agent=agent,
             initial_command="do stuff",
             extra_patches={
-                "code_puppy.cli_runner.get_current_agent": MagicMock(
-                    return_value=agent
-                ),
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.get_current_agent": MagicMock(return_value=agent),
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(mock_result, MagicMock())
                 ),
             },
@@ -814,10 +806,8 @@ class TestInteractiveMode:
             agent=agent,
             initial_command="do stuff",
             extra_patches={
-                "code_puppy.cli_runner.get_current_agent": MagicMock(
-                    return_value=agent
-                ),
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.get_current_agent": MagicMock(return_value=agent),
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     side_effect=RuntimeError("fail")
                 ),
             },
@@ -835,10 +825,8 @@ class TestInteractiveMode:
             agent=agent,
             initial_command="do stuff",
             extra_patches={
-                "code_puppy.cli_runner.get_current_agent": MagicMock(
-                    return_value=agent
-                ),
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.get_current_agent": MagicMock(return_value=agent),
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(None, MagicMock())
                 ),
             },
@@ -863,15 +851,15 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.command_line.command_handler.handle_command": MagicMock(
+                "newcode.command_line.command_handler.handle_command": MagicMock(
                     return_value="__AUTOSAVE_LOAD__"
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("/autosave_load")
                 ),
                 "sys.stdin": mock_stdin,
                 "sys.stdout": mock_stdout,
-                "code_puppy.session_storage.restore_autosave_interactively": AsyncMock(),
+                "newcode.session_storage.restore_autosave_interactively": AsyncMock(),
             },
         )
 
@@ -895,15 +883,15 @@ class TestInteractiveMode:
                 _interactive_patches(),
                 fake_input,
                 extra_patches={
-                    "code_puppy.command_line.command_handler.handle_command": MagicMock(
+                    "newcode.command_line.command_handler.handle_command": MagicMock(
                         return_value="__AUTOSAVE_LOAD__"
                     ),
-                    "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                    "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                         return_value=_mock_parse_result("/autosave_load")
                     ),
                     "sys.stdin": mock_stdin,
                     "sys.stdout": mock_stdout,
-                    "code_puppy.command_line.autosave_menu.interactive_autosave_picker": AsyncMock(
+                    "newcode.command_line.autosave_menu.interactive_autosave_picker": AsyncMock(
                         return_value=None
                     ),
                 },
@@ -934,23 +922,23 @@ class TestInteractiveMode:
                 fake_input,
                 agent=agent,
                 extra_patches={
-                    "code_puppy.command_line.command_handler.handle_command": MagicMock(
+                    "newcode.command_line.command_handler.handle_command": MagicMock(
                         return_value="__AUTOSAVE_LOAD__"
                     ),
-                    "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                    "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                         return_value=_mock_parse_result("/autosave_load")
                     ),
                     "sys.stdin": mock_stdin,
                     "sys.stdout": mock_stdout,
-                    "code_puppy.command_line.autosave_menu.interactive_autosave_picker": AsyncMock(
+                    "newcode.command_line.autosave_menu.interactive_autosave_picker": AsyncMock(
                         return_value="my-session"
                     ),
-                    "code_puppy.session_storage.load_session": MagicMock(
+                    "newcode.session_storage.load_session": MagicMock(
                         return_value=[MagicMock()]
                     ),
-                    "code_puppy.config.set_current_autosave_from_session_name": MagicMock(),
-                    "code_puppy.command_line.autosave_menu.display_resumed_history": MagicMock(),
-                    "code_puppy.cli_runner.get_current_agent": MagicMock(
+                    "newcode.config.set_current_autosave_from_session_name": MagicMock(),
+                    "newcode.command_line.autosave_menu.display_resumed_history": MagicMock(),
+                    "newcode.cli_runner.get_current_agent": MagicMock(
                         return_value=agent
                     ),
                 },
@@ -975,15 +963,15 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.command_line.command_handler.handle_command": MagicMock(
+                "newcode.command_line.command_handler.handle_command": MagicMock(
                     return_value="__AUTOSAVE_LOAD__"
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("/autosave_load")
                 ),
                 "sys.stdin": mock_stdin,
                 "sys.stdout": mock_stdout,
-                "code_puppy.session_storage.restore_autosave_interactively": AsyncMock(
+                "newcode.session_storage.restore_autosave_interactively": AsyncMock(
                     side_effect=RuntimeError("fail")
                 ),
             },
@@ -1007,16 +995,16 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.command_line.command_handler.handle_command": MagicMock(
+                "newcode.command_line.command_handler.handle_command": MagicMock(
                     return_value=False
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("/unknown")
                 ),
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(mock_result, MagicMock())
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=False
                 ),
             },
@@ -1046,20 +1034,20 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(mock_result, MagicMock())
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
-                "code_puppy.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
+                "newcode.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
                     return_value="repeat"
                 ),
-                "code_puppy.command_line.wiggum_state.increment_wiggum_count": MagicMock(
+                "newcode.command_line.wiggum_state.increment_wiggum_count": MagicMock(
                     return_value=1
                 ),
-                "code_puppy.command_line.wiggum_state.stop_wiggum": MagicMock(),
+                "newcode.command_line.wiggum_state.stop_wiggum": MagicMock(),
             },
         )
 
@@ -1095,18 +1083,18 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": fake_run,
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.run_prompt_with_attachments": fake_run,
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
-                "code_puppy.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
+                "newcode.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
                     return_value="repeat"
                 ),
-                "code_puppy.command_line.wiggum_state.increment_wiggum_count": MagicMock(
+                "newcode.command_line.wiggum_state.increment_wiggum_count": MagicMock(
                     return_value=1
                 ),
-                "code_puppy.command_line.wiggum_state.stop_wiggum": MagicMock(),
+                "newcode.command_line.wiggum_state.stop_wiggum": MagicMock(),
             },
         )
 
@@ -1135,17 +1123,17 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(mock_result, MagicMock())
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
-                "code_puppy.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
+                "newcode.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
                     return_value=None
                 ),
-                "code_puppy.command_line.wiggum_state.stop_wiggum": mock_stop,
+                "newcode.command_line.wiggum_state.stop_wiggum": mock_stop,
             },
         )
         mock_stop.assert_called()
@@ -1182,25 +1170,25 @@ class TestInteractiveMode:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": fake_run,
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.run_prompt_with_attachments": fake_run,
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
-                "code_puppy.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
+                "newcode.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
                     return_value="repeat"
                 ),
-                "code_puppy.command_line.wiggum_state.increment_wiggum_count": MagicMock(
+                "newcode.command_line.wiggum_state.increment_wiggum_count": MagicMock(
                     return_value=1
                 ),
-                "code_puppy.command_line.wiggum_state.stop_wiggum": MagicMock(),
+                "newcode.command_line.wiggum_state.stop_wiggum": MagicMock(),
             },
         )
 
     @pytest.mark.anyio
     async def test_onboarding_chatgpt(self):
         patches = _interactive_patches()
-        patches["code_puppy.command_line.onboarding_wizard.should_show_onboarding"] = (
+        patches["newcode.command_line.onboarding_wizard.should_show_onboarding"] = (
             MagicMock(return_value=True)
         )
 
@@ -1220,18 +1208,18 @@ class TestInteractiveMode:
                 "concurrent.futures.ThreadPoolExecutor": MagicMock(
                     return_value=mock_executor
                 ),
-                "code_puppy.command_line.onboarding_wizard.run_onboarding_wizard": AsyncMock(
+                "newcode.command_line.onboarding_wizard.run_onboarding_wizard": AsyncMock(
                     return_value="chatgpt"
                 ),
-                "code_puppy.plugins.chatgpt_oauth.oauth_flow.run_oauth_flow": MagicMock(),
-                "code_puppy.config.set_model_name": MagicMock(),
+                "newcode.plugins.chatgpt_oauth.oauth_flow.run_oauth_flow": MagicMock(),
+                "newcode.config.set_model_name": MagicMock(),
             },
         )
 
     @pytest.mark.anyio
     async def test_onboarding_claude(self):
         patches = _interactive_patches()
-        patches["code_puppy.command_line.onboarding_wizard.should_show_onboarding"] = (
+        patches["newcode.command_line.onboarding_wizard.should_show_onboarding"] = (
             MagicMock(return_value=True)
         )
 
@@ -1251,15 +1239,15 @@ class TestInteractiveMode:
                 "concurrent.futures.ThreadPoolExecutor": MagicMock(
                     return_value=mock_executor
                 ),
-                "code_puppy.plugins.claude_code_oauth.register_callbacks._perform_authentication": MagicMock(),
-                "code_puppy.config.set_model_name": MagicMock(),
+                "newcode.plugins.claude_code_oauth.register_callbacks._perform_authentication": MagicMock(),
+                "newcode.config.set_model_name": MagicMock(),
             },
         )
 
     @pytest.mark.anyio
     async def test_onboarding_completed(self):
         patches = _interactive_patches()
-        patches["code_puppy.command_line.onboarding_wizard.should_show_onboarding"] = (
+        patches["newcode.command_line.onboarding_wizard.should_show_onboarding"] = (
             MagicMock(return_value=True)
         )
 
@@ -1285,7 +1273,7 @@ class TestInteractiveMode:
     @pytest.mark.anyio
     async def test_onboarding_skipped(self):
         patches = _interactive_patches()
-        patches["code_puppy.command_line.onboarding_wizard.should_show_onboarding"] = (
+        patches["newcode.command_line.onboarding_wizard.should_show_onboarding"] = (
             MagicMock(return_value=True)
         )
 
@@ -1311,7 +1299,7 @@ class TestInteractiveMode:
     @pytest.mark.anyio
     async def test_onboarding_exception(self):
         patches = _interactive_patches()
-        patches["code_puppy.command_line.onboarding_wizard.should_show_onboarding"] = (
+        patches["newcode.command_line.onboarding_wizard.should_show_onboarding"] = (
             MagicMock(side_effect=RuntimeError("fail"))
         )
 
@@ -1324,7 +1312,7 @@ class TestInteractiveMode:
     @pytest.mark.anyio
     async def test_motd_exception(self):
         patches = _interactive_patches()
-        patches["code_puppy.command_line.motd.print_motd"] = MagicMock(
+        patches["newcode.command_line.motd.print_motd"] = MagicMock(
             side_effect=RuntimeError("motd fail")
         )
 
@@ -1353,10 +1341,8 @@ class TestInteractiveMode:
             fake_input,
             agent=agent,
             extra_patches={
-                "code_puppy.cli_runner.get_current_agent": MagicMock(
-                    return_value=agent
-                ),
-                "code_puppy.cli_runner.get_clipboard_manager": MagicMock(
+                "newcode.cli_runner.get_current_agent": MagicMock(return_value=agent),
+                "newcode.cli_runner.get_clipboard_manager": MagicMock(
                     return_value=_mock_clipboard()
                 ),
             },
@@ -1407,11 +1393,11 @@ class TestInteractiveModeEdgeCases:
             fake_input,
             agent=agent,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": fake_run,
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.run_prompt_with_attachments": fake_run,
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("do work")
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=False
                 ),
             },
@@ -1446,11 +1432,11 @@ class TestInteractiveModeEdgeCases:
             fake_input,
             agent=agent,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": fake_run,
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.run_prompt_with_attachments": fake_run,
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("do work")
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": MagicMock(
                     return_value=False
                 ),
             },
@@ -1476,10 +1462,8 @@ class TestInteractiveModeEdgeCases:
             fake_input,
             agent=agent,
             extra_patches={
-                "code_puppy.cli_runner.get_current_agent": MagicMock(
-                    return_value=agent
-                ),
-                "code_puppy.command_line.clipboard.get_clipboard_manager": MagicMock(
+                "newcode.cli_runner.get_current_agent": MagicMock(return_value=agent),
+                "newcode.command_line.clipboard.get_clipboard_manager": MagicMock(
                     return_value=clip
                 ),
             },
@@ -1506,15 +1490,15 @@ class TestInteractiveModeEdgeCases:
                 _interactive_patches(),
                 fake_input,
                 extra_patches={
-                    "code_puppy.command_line.command_handler.handle_command": MagicMock(
+                    "newcode.command_line.command_handler.handle_command": MagicMock(
                         return_value="__AUTOSAVE_LOAD__"
                     ),
-                    "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                    "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                         return_value=_mock_parse_result("/autosave_load")
                     ),
                     "sys.stdin": mock_stdin,
                     "sys.stdout": mock_stdout,
-                    "code_puppy.session_storage.restore_autosave_interactively": AsyncMock(),
+                    "newcode.session_storage.restore_autosave_interactively": AsyncMock(),
                 },
             )
 
@@ -1551,18 +1535,18 @@ class TestInteractiveModeEdgeCases:
             _interactive_patches(),
             fake_input,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": fake_run,
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.run_prompt_with_attachments": fake_run,
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
-                "code_puppy.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
+                "newcode.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
+                "newcode.command_line.wiggum_state.get_wiggum_prompt": MagicMock(
                     return_value="repeat"
                 ),
-                "code_puppy.command_line.wiggum_state.increment_wiggum_count": MagicMock(
+                "newcode.command_line.wiggum_state.increment_wiggum_count": MagicMock(
                     return_value=1
                 ),
-                "code_puppy.command_line.wiggum_state.stop_wiggum": MagicMock(),
+                "newcode.command_line.wiggum_state.stop_wiggum": MagicMock(),
             },
         )
 
@@ -1582,25 +1566,25 @@ class TestMainUvxAndEdgeCases:
             stack.enter_context(patch("sys.argv", ["code-agent", "-p", "hi"]))
             stack.enter_context(
                 patch(
-                    "code_puppy.messaging.SynchronousInteractiveRenderer",
+                    "newcode.messaging.SynchronousInteractiveRenderer",
                     return_value=_mock_renderer(),
                 )
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.messaging.RichConsoleRenderer",
+                    "newcode.messaging.RichConsoleRenderer",
                     return_value=_mock_renderer(),
                 )
             )
             stack.enter_context(
-                patch("code_puppy.messaging.get_global_queue", return_value=MagicMock())
+                patch("newcode.messaging.get_global_queue", return_value=MagicMock())
             )
             stack.enter_context(
-                patch("code_puppy.messaging.get_message_bus", return_value=MagicMock())
+                patch("newcode.messaging.get_message_bus", return_value=MagicMock())
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.cli_runner.execute_single_prompt",
+                    "newcode.cli_runner.execute_single_prompt",
                     new_callable=AsyncMock,
                 )
             )
@@ -1608,18 +1592,16 @@ class TestMainUvxAndEdgeCases:
             # Patch the uvx detection to return True
             stack.enter_context(
                 patch(
-                    "code_puppy.uvx_detection.should_use_alternate_cancel_key",
+                    "newcode.uvx_detection.should_use_alternate_cancel_key",
                     return_value=True,
                 )
             )
+            stack.enter_context(patch("newcode.terminal_utils.disable_windows_ctrl_c"))
             stack.enter_context(
-                patch("code_puppy.terminal_utils.disable_windows_ctrl_c")
-            )
-            stack.enter_context(
-                patch("code_puppy.terminal_utils.set_keep_ctrl_c_disabled")
+                patch("newcode.terminal_utils.set_keep_ctrl_c_disabled")
             )
             stack.enter_context(patch("signal.signal"))
-            from code_puppy.cli_runner import main
+            from newcode.cli_runner import main
 
             await main()
 
@@ -1639,13 +1621,11 @@ class TestMainUvxAndEdgeCases:
             agent=agent,
             initial_command="do stuff",
             extra_patches={
-                "code_puppy.cli_runner.get_current_agent": MagicMock(
-                    return_value=agent
-                ),
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.get_current_agent": MagicMock(return_value=agent),
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(mock_result, MagicMock())
                 ),
-                "code_puppy.tools.command_runner.is_awaiting_user_input": MagicMock(
+                "newcode.tools.command_runner.is_awaiting_user_input": MagicMock(
                     return_value=True
                 ),
             },
@@ -1677,10 +1657,8 @@ class TestMainUvxAndEdgeCases:
             agent=agent,
             initial_command="do stuff",
             extra_patches={
-                "code_puppy.cli_runner.get_current_agent": MagicMock(
-                    return_value=agent
-                ),
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.get_current_agent": MagicMock(return_value=agent),
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(mock_result, MagicMock())
                 ),
             },
@@ -1723,14 +1701,14 @@ class TestRemainingEdgeCases:
             fake_input,
             agent=agent,
             extra_patches={
-                "code_puppy.cli_runner.run_prompt_with_attachments": AsyncMock(
+                "newcode.cli_runner.run_prompt_with_attachments": AsyncMock(
                     return_value=(None, MagicMock())
                 ),
-                "code_puppy.cli_runner.parse_prompt_attachments": MagicMock(
+                "newcode.cli_runner.parse_prompt_attachments": MagicMock(
                     return_value=_mock_parse_result("write hello")
                 ),
-                "code_puppy.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
-                "code_puppy.command_line.wiggum_state.stop_wiggum": mock_stop,
+                "newcode.command_line.wiggum_state.is_wiggum_active": fake_wiggum,
+                "newcode.command_line.wiggum_state.stop_wiggum": mock_stop,
             },
         )
         mock_stop.assert_called()
@@ -1738,7 +1716,7 @@ class TestRemainingEdgeCases:
     @pytest.mark.anyio
     async def test_execute_single_prompt_success_path(self):
         """Lines 1005-1015: execute_single_prompt success with .output access."""
-        from code_puppy.cli_runner import execute_single_prompt
+        from newcode.cli_runner import execute_single_prompt
 
         mock_renderer = _mock_renderer()
         # response needs .output attribute (not a tuple)
@@ -1746,15 +1724,15 @@ class TestRemainingEdgeCases:
         mock_response.output = "the response"
 
         with ExitStack() as stack:
-            stack.enter_context(patch("code_puppy.cli_runner.get_current_agent"))
+            stack.enter_context(patch("newcode.cli_runner.get_current_agent"))
             stack.enter_context(
                 patch(
-                    "code_puppy.cli_runner.run_prompt_with_attachments",
+                    "newcode.cli_runner.run_prompt_with_attachments",
                     new_callable=AsyncMock,
                     return_value=mock_response,
                 )
             )
-            stack.enter_context(patch("code_puppy.cli_runner.emit_info"))
+            stack.enter_context(patch("newcode.cli_runner.emit_info"))
             await execute_single_prompt("test", mock_renderer)
 
 
@@ -1783,7 +1761,7 @@ class TestImportErrorFallbacks:
         real_import = builtins.__import__
 
         def fake_import(name, *args, **kwargs):
-            if name == "code_puppy.tools.command_runner":
+            if name == "newcode.tools.command_runner":
                 raise ImportError("no command_runner")
             return real_import(name, *args, **kwargs)
 
@@ -1798,35 +1776,35 @@ class TestImportErrorFallbacks:
             _apply_patches(stack, patches)
             stack.enter_context(
                 patch(
-                    "code_puppy.command_line.prompt_toolkit_completion.get_input_with_combined_completion",
+                    "newcode.command_line.prompt_toolkit_completion.get_input_with_combined_completion",
                     new_callable=AsyncMock,
                     return_value="/exit",
                 )
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.command_line.prompt_toolkit_completion.get_prompt_with_active_model",
+                    "newcode.command_line.prompt_toolkit_completion.get_prompt_with_active_model",
                     return_value="> ",
                 )
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.agents.agent_manager.get_current_agent",
+                    "newcode.agents.agent_manager.get_current_agent",
                     return_value=agent,
                 )
             )
             stack.enter_context(
-                patch("code_puppy.cli_runner.get_current_agent", return_value=agent)
+                patch("newcode.cli_runner.get_current_agent", return_value=agent)
             )
             stack.enter_context(
                 patch(
-                    "code_puppy.cli_runner.run_prompt_with_attachments",
+                    "newcode.cli_runner.run_prompt_with_attachments",
                     new_callable=AsyncMock,
                     return_value=(mock_result, MagicMock()),
                 )
             )
             stack.enter_context(patch("builtins.__import__", side_effect=fake_import))
-            from code_puppy.cli_runner import interactive_mode
+            from newcode.cli_runner import interactive_mode
 
             await interactive_mode(renderer, initial_command="test")
 
@@ -1834,12 +1812,12 @@ class TestImportErrorFallbacks:
 class TestMainEntryAdditional:
     @patch("asyncio.run", side_effect=KeyboardInterrupt)
     def test_keyboard_interrupt_stderr_output(self, mock_run):
-        from code_puppy.cli_runner import main_entry
+        from newcode.cli_runner import main_entry
 
         with ExitStack() as stack:
-            stack.enter_context(patch("code_puppy.cli_runner.reset_unix_terminal"))
+            stack.enter_context(patch("newcode.cli_runner.reset_unix_terminal"))
             stack.enter_context(
-                patch("code_puppy.cli_runner.get_use_dbos", return_value=False)
+                patch("newcode.cli_runner.get_use_dbos", return_value=False)
             )
             result = main_entry()
             assert result == 0

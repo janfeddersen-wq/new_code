@@ -4,7 +4,7 @@ import subprocess
 import sys
 from unittest.mock import MagicMock
 
-from code_puppy import terminal_utils
+from newcode import terminal_utils
 
 # ── reset_windows_terminal_ansi ──
 
@@ -370,7 +370,7 @@ class TestDetectTruecolorSupport:
         mock_console_cls = MagicMock()
         mock_console_cls.return_value.color_system = "truecolor"
         monkeypatch.setattr(
-            "code_puppy.terminal_utils.Console", mock_console_cls, raising=False
+            "newcode.terminal_utils.Console", mock_console_cls, raising=False
         )
         # We need to mock the import inside the function
         import rich.console

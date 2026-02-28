@@ -2,8 +2,8 @@
 
 from datetime import datetime, timedelta
 
-from code_puppy.scheduler.config import ScheduledTask
-from code_puppy.scheduler.daemon import (
+from newcode.scheduler.config import ScheduledTask
+from newcode.scheduler.daemon import (
     parse_interval,
     should_run_task,
 )

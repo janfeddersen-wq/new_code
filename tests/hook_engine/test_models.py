@@ -2,7 +2,7 @@
 
 import pytest
 
-from code_puppy.hook_engine.models import (
+from newcode.hook_engine.models import (
     EventData,
     ExecutionResult,
     HookConfig,

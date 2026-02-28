@@ -1,4 +1,4 @@
-"""Coverage-focused tests for code_puppy.tools.command_runner.
+"""Coverage-focused tests for newcode.tools.command_runner.
 
 This module targets the 352 uncovered lines in command_runner.py, focusing on:
 - Streaming execution paths
@@ -18,8 +18,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Import the module directly
-from code_puppy.tools import command_runner
-from code_puppy.tools.command_runner import (
+from newcode.tools import command_runner
+from newcode.tools.command_runner import (
     _KEYBOARD_CONTEXT_LOCK,
     _RUNNING_PROCESSES,
     _RUNNING_PROCESSES_LOCK,
@@ -617,14 +617,14 @@ class TestSetAwaitingUserInput:
 
     def test_set_awaiting_true(self):
         """Test setting awaiting user input to true."""
-        with patch("code_puppy.messaging.spinner.pause_all_spinners"):
+        with patch("newcode.messaging.spinner.pause_all_spinners"):
             set_awaiting_user_input(True)
 
         assert is_awaiting_user_input() is True
 
     def test_set_awaiting_false(self):
         """Test setting awaiting user input to false."""
-        with patch("code_puppy.messaging.spinner.resume_all_spinners"):
+        with patch("newcode.messaging.spinner.resume_all_spinners"):
             set_awaiting_user_input(False)
 
         assert is_awaiting_user_input() is False
@@ -632,7 +632,7 @@ class TestSetAwaitingUserInput:
     def test_set_awaiting_handles_import_error(self):
         """Test that set_awaiting_user_input handles ImportError gracefully."""
         # This should not raise even if spinner module is not available
-        with patch.dict("sys.modules", {"code_puppy.messaging.spinner": None}):
+        with patch.dict("sys.modules", {"newcode.messaging.spinner": None}):
             set_awaiting_user_input(True)
             set_awaiting_user_input(False)
 
@@ -782,7 +782,7 @@ class TestWindowsSpecificCode:
     @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows only")
     def test_win32_pipe_has_data_real(self):
         """Test _win32_pipe_has_data on Windows."""
-        from code_puppy.tools.command_runner import _win32_pipe_has_data
+        from newcode.tools.command_runner import _win32_pipe_has_data
 
         proc = subprocess.Popen(
             [sys.executable, "-c", "print('test')"],
@@ -798,7 +798,7 @@ class TestWindowsSpecificCode:
     @pytest.mark.skipif(sys.platform.startswith("win"), reason="POSIX only")
     def test_win32_pipe_has_data_posix_stub(self):
         """Test that POSIX stub returns False."""
-        from code_puppy.tools.command_runner import _win32_pipe_has_data
+        from newcode.tools.command_runner import _win32_pipe_has_data
 
         mock_pipe = MagicMock()
         result = _win32_pipe_has_data(mock_pipe)

@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from code_puppy.tools.browser.browser_navigation import (
+from newcode.tools.browser.browser_navigation import (
     get_page_info,
     go_back,
     go_forward,
@@ -19,7 +19,7 @@ from code_puppy.tools.browser.browser_navigation import (
     wait_for_load_state,
 )
 
-MOD = "code_puppy.tools.browser.browser_navigation"
+MOD = "newcode.tools.browser.browser_navigation"
 
 
 @pytest.fixture(autouse=True)

@@ -8,31 +8,30 @@ from unittest.mock import Mock, patch
 
 import pytest
 from rich.console import Console
-from rich.markdown import Markdown
 from rich.markup import escape as escape_rich_markup
 from rich.panel import Panel
 from rich.rule import Rule
 from rich.text import Text
 
 ROOT = Path(__file__).resolve().parents[1]
-MESSAGING_PATH = ROOT / "code_puppy" / "messaging"
-TOOLS_PATH = ROOT / "code_puppy" / "tools"
+MESSAGING_PATH = ROOT / "newcode" / "messaging"
+TOOLS_PATH = ROOT / "newcode" / "tools"
 
-messaging_pkg = types.ModuleType("code_puppy.messaging")
+messaging_pkg = types.ModuleType("newcode.messaging")
 messaging_pkg.__path__ = [str(MESSAGING_PATH)]
-sys.modules.setdefault("code_puppy.messaging", messaging_pkg)
+sys.modules.setdefault("newcode.messaging", messaging_pkg)
 
-tools_pkg = types.ModuleType("code_puppy.tools")
+tools_pkg = types.ModuleType("newcode.tools")
 tools_pkg.__path__ = [str(TOOLS_PATH)]
-sys.modules.setdefault("code_puppy.tools", tools_pkg)
+sys.modules.setdefault("newcode.tools", tools_pkg)
 
-common_stub = types.ModuleType("code_puppy.tools.common")
+common_stub = types.ModuleType("newcode.tools.common")
 common_stub.format_diff_with_colors = lambda diff_text: diff_text
-sys.modules.setdefault("code_puppy.tools.common", common_stub)
+sys.modules.setdefault("newcode.tools.common", common_stub)
 
-from code_puppy.messaging import rich_renderer as rich_renderer_module  # noqa: E402
-from code_puppy.messaging.bus import MessageBus  # noqa: E402
-from code_puppy.messaging.messages import (  # noqa: E402
+from newcode.messaging import rich_renderer as rich_renderer_module  # noqa: E402
+from newcode.messaging.bus import MessageBus  # noqa: E402
+from newcode.messaging.messages import (  # noqa: E402
     ConfirmationRequest,
     DiffLine,
     DiffMessage,
@@ -55,7 +54,7 @@ from code_puppy.messaging.messages import (  # noqa: E402
     UserInputRequest,
     VersionCheckMessage,
 )
-from code_puppy.messaging.rich_renderer import RichConsoleRenderer  # noqa: E402
+from newcode.messaging.rich_renderer import RichConsoleRenderer  # noqa: E402
 
 
 def _make_renderer() -> tuple[RichConsoleRenderer, Mock]:
@@ -120,7 +119,7 @@ def test_render_diff_uses_formatter(monkeypatch: pytest.MonkeyPatch) -> None:
         ],
     )
 
-    with patch("code_puppy.config.get_show_diffs", return_value=True):
+    with patch("newcode.config.get_show_diffs", return_value=True):
         renderer._render_diff(message)
 
     printed = "".join(
@@ -273,7 +272,7 @@ def test_markdown_rendering_to_real_console() -> None:
     console = Console(file=output)
     renderer = RichConsoleRenderer(bus, console=console)
 
-    from code_puppy.messaging.messages import TextMessage, MessageLevel
+    from newcode.messaging.messages import MessageLevel, TextMessage
 
     message = TextMessage(level=MessageLevel.INFO, text="# Title")
     renderer._render_text(message)
@@ -465,7 +464,9 @@ def test_consecutive_file_content_groups_under_single_banner() -> None:
 
     # Should have exactly THREE tree-child lines (containing "│")
     # Exclude banner lines (which also contain │) by checking for file paths
-    tree_lines = [p for p in printed if "│" in p and "READ FILE" not in p and ".ts" in p]
+    tree_lines = [
+        p for p in printed if "│" in p and "READ FILE" not in p and ".ts" in p
+    ]
     assert len(tree_lines) == 3, (
         f"Expected 3 tree lines, got {len(tree_lines)}: {tree_lines}"
     )
@@ -586,7 +587,9 @@ def test_spinner_does_not_break_grouping() -> None:
     )
 
     # Should have TWO tree-child lines (containing │ and .py file paths)
-    tree_lines = [p for p in printed if "│" in p and "READ FILE" not in p and ".py" in p]
+    tree_lines = [
+        p for p in printed if "│" in p and "READ FILE" not in p and ".py" in p
+    ]
     assert len(tree_lines) == 2, (
         f"Expected 2 tree lines, got {len(tree_lines)}: {tree_lines}"
     )
@@ -621,7 +624,9 @@ def test_consecutive_diff_groups() -> None:
     )
 
     # Tree lines contain │ and file paths but not the banner text
-    tree_lines = [p for p in printed if "│" in p and "EDIT FILE" not in p and ".py" in p]
+    tree_lines = [
+        p for p in printed if "│" in p and "EDIT FILE" not in p and ".py" in p
+    ]
     assert len(tree_lines) == 3, (
         f"Expected 3 tree lines, got {len(tree_lines)}: {tree_lines}"
     )
@@ -652,7 +657,9 @@ def test_consecutive_shell_start_groups() -> None:
     )
 
     # Tree lines contain │ and $ but not the banner text
-    tree_lines = [p for p in printed if "│" in p and "SHELL COMMAND" not in p and "$ echo" in p]
+    tree_lines = [
+        p for p in printed if "│" in p and "SHELL COMMAND" not in p and "$ echo" in p
+    ]
     assert len(tree_lines) == 3, (
         f"Expected 3 tree lines, got {len(tree_lines)}: {tree_lines}"
     )
@@ -708,7 +715,7 @@ def test_render_diff_compact_when_show_diffs_false() -> None:
         ],
     )
 
-    with patch("code_puppy.config.get_show_diffs", return_value=False):
+    with patch("newcode.config.get_show_diffs", return_value=False):
         renderer._render_diff(msg)
 
     printed_args = [
@@ -737,7 +744,7 @@ def test_render_diff_full_when_show_diffs_true() -> None:
         ],
     )
 
-    with patch("code_puppy.config.get_show_diffs", return_value=True):
+    with patch("newcode.config.get_show_diffs", return_value=True):
         renderer._render_diff(msg)
 
     printed_args = [
@@ -747,6 +754,7 @@ def test_render_diff_full_when_show_diffs_true() -> None:
     ]
     # Full diff content should be rendered (format_diff_with_colors output)
     assert any("old line" in p or "new line" in p for p in printed_args)
+
 
 @pytest.mark.asyncio
 async def test_async_render_grouping_resets_across_different_groupable_types() -> None:

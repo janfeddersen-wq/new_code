@@ -16,18 +16,18 @@ from unittest.mock import patch
 
 import pytest
 
-from code_puppy import callbacks, session_storage
-from code_puppy import config as cp_config
+from newcode import callbacks, session_storage
+from newcode import config as cp_config
 
 
 @pytest.fixture
 def mock_config_paths(monkeypatch, tmp_path):
     """Mock XDG paths for isolated testing."""
-    mock_config_dir = str(tmp_path / ".config" / "code_puppy")
+    mock_config_dir = str(tmp_path / ".config" / "newcode")
     mock_config_file = os.path.join(mock_config_dir, "puppy.cfg")
-    mock_data_dir = str(tmp_path / ".local" / "share" / "code_puppy")
-    mock_cache_dir = str(tmp_path / ".cache" / "code_puppy")
-    mock_state_dir = str(tmp_path / ".local" / "state" / "code_puppy")
+    mock_data_dir = str(tmp_path / ".local" / "share" / "newcode")
+    mock_cache_dir = str(tmp_path / ".cache" / "newcode")
+    mock_state_dir = str(tmp_path / ".local" / "state" / "newcode")
 
     monkeypatch.setattr(cp_config, "CONFIG_DIR", mock_config_dir)
     monkeypatch.setattr(cp_config, "CONFIG_FILE", mock_config_file)
@@ -237,15 +237,15 @@ class TestXDGDirectoryHandling:
         """Test that explicit XDG env var is respected."""
         with patch.dict(os.environ, {"XDG_CONFIG_HOME": "/custom/config"}):
             result = cp_config._get_xdg_dir("XDG_CONFIG_HOME", ".config")
-            assert result == "/custom/config/code_puppy"
+            assert result == "/custom/config/newcode"
 
     def test_get_xdg_dir_defaults_to_home_when_no_env_var(self):
-        """Test fallback to ~/.code_puppy when env var not set."""
+        """Test fallback to ~/.newcode when env var not set."""
         with patch.dict(os.environ, {}, clear=True):
             with patch("os.path.expanduser") as mock_expand:
                 mock_expand.return_value = "/home/user"
                 result = cp_config._get_xdg_dir("XDG_CONFIG_HOME", ".config")
-                assert result == "/home/user/.code_puppy"
+                assert result == "/home/user/.newcode"
 
 
 class TestConfigKeys:

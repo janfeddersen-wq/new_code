@@ -1,4 +1,4 @@
-"""Tests for code_puppy/messaging/spinner/__init__.py module.
+"""Tests for newcode/messaging/spinner/__init__.py module.
 
 Tests the global spinner management functions including registration,
 pausing/resuming, and context info updates.
@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from code_puppy.messaging.spinner import (
+from newcode.messaging.spinner import (
     _active_spinners,
     clear_spinner_context,
     pause_all_spinners,
@@ -17,7 +17,7 @@ from code_puppy.messaging.spinner import (
     unregister_spinner,
     update_spinner_context,
 )
-from code_puppy.messaging.spinner.spinner_base import SpinnerBase
+from newcode.messaging.spinner.spinner_base import SpinnerBase
 
 
 @pytest.fixture(autouse=True)
@@ -105,7 +105,7 @@ class TestUnregisterSpinner:
 class TestPauseAllSpinners:
     """Tests for pause_all_spinners function."""
 
-    @patch("code_puppy.tools.subagent_context.is_subagent", return_value=False)
+    @patch("newcode.tools.subagent_context.is_subagent", return_value=False)
     def test_pause_calls_pause_on_all_spinners(self, mock_is_subagent, mock_spinner):
         """Test that pause_all_spinners calls pause on each active spinner."""
         spinner2 = MagicMock()
@@ -117,7 +117,7 @@ class TestPauseAllSpinners:
         mock_spinner.pause.assert_called_once()
         spinner2.pause.assert_called_once()
 
-    @patch("code_puppy.tools.subagent_context.is_subagent", return_value=True)
+    @patch("newcode.tools.subagent_context.is_subagent", return_value=True)
     def test_pause_is_noop_when_subagent(self, mock_is_subagent, mock_spinner):
         """Test that pause_all_spinners is a no-op in subagent context."""
         register_spinner(mock_spinner)
@@ -126,7 +126,7 @@ class TestPauseAllSpinners:
 
         mock_spinner.pause.assert_not_called()
 
-    @patch("code_puppy.tools.subagent_context.is_subagent", return_value=False)
+    @patch("newcode.tools.subagent_context.is_subagent", return_value=False)
     def test_pause_handles_spinner_exception(self, mock_is_subagent):
         """Test that exceptions during pause are caught and ignored."""
         failing_spinner = MagicMock()
@@ -142,7 +142,7 @@ class TestPauseAllSpinners:
         failing_spinner.pause.assert_called_once()
         working_spinner.pause.assert_called_once()
 
-    @patch("code_puppy.tools.subagent_context.is_subagent", return_value=False)
+    @patch("newcode.tools.subagent_context.is_subagent", return_value=False)
     def test_pause_with_empty_spinner_list(self, mock_is_subagent):
         """Test that pause_all_spinners works with no active spinners."""
         assert len(_active_spinners) == 0
@@ -154,7 +154,7 @@ class TestPauseAllSpinners:
 class TestResumeAllSpinners:
     """Tests for resume_all_spinners function."""
 
-    @patch("code_puppy.tools.subagent_context.is_subagent", return_value=False)
+    @patch("newcode.tools.subagent_context.is_subagent", return_value=False)
     def test_resume_calls_resume_on_all_spinners(self, mock_is_subagent, mock_spinner):
         """Test that resume_all_spinners calls resume on each active spinner."""
         spinner2 = MagicMock()
@@ -166,7 +166,7 @@ class TestResumeAllSpinners:
         mock_spinner.resume.assert_called_once()
         spinner2.resume.assert_called_once()
 
-    @patch("code_puppy.tools.subagent_context.is_subagent", return_value=True)
+    @patch("newcode.tools.subagent_context.is_subagent", return_value=True)
     def test_resume_is_noop_when_subagent(self, mock_is_subagent, mock_spinner):
         """Test that resume_all_spinners is a no-op in subagent context."""
         register_spinner(mock_spinner)
@@ -175,7 +175,7 @@ class TestResumeAllSpinners:
 
         mock_spinner.resume.assert_not_called()
 
-    @patch("code_puppy.tools.subagent_context.is_subagent", return_value=False)
+    @patch("newcode.tools.subagent_context.is_subagent", return_value=False)
     def test_resume_handles_spinner_exception(self, mock_is_subagent):
         """Test that exceptions during resume are caught and ignored."""
         failing_spinner = MagicMock()
@@ -191,7 +191,7 @@ class TestResumeAllSpinners:
         failing_spinner.resume.assert_called_once()
         working_spinner.resume.assert_called_once()
 
-    @patch("code_puppy.tools.subagent_context.is_subagent", return_value=False)
+    @patch("newcode.tools.subagent_context.is_subagent", return_value=False)
     def test_resume_with_empty_spinner_list(self, mock_is_subagent):
         """Test that resume_all_spinners works with no active spinners."""
         assert len(_active_spinners) == 0

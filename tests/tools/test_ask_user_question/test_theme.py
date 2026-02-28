@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 
-from code_puppy.tools.ask_user_question.theme import (
+from newcode.tools.ask_user_question.theme import (
     RichColors,
     TUIColors,
     _apply_config_overrides,
@@ -56,13 +56,13 @@ class TestGetConfigValue:
     """Tests for _get_config_value."""
 
     def test_import_error_returns_none(self):
-        import code_puppy.tools.ask_user_question.theme as theme_mod
+        import newcode.tools.ask_user_question.theme as theme_mod
 
         # Reset cached getter
         old = theme_mod._config_getter
         theme_mod._config_getter = None
         try:
-            with patch.dict("sys.modules", {"code_puppy.config": None}):
+            with patch.dict("sys.modules", {"newcode.config": None}):
                 # Force re-import failure
                 theme_mod._config_getter = None
                 result = _get_config_value("anything")
@@ -71,7 +71,7 @@ class TestGetConfigValue:
             theme_mod._config_getter = old
 
     def test_uses_config_get_value(self):
-        import code_puppy.tools.ask_user_question.theme as theme_mod
+        import newcode.tools.ask_user_question.theme as theme_mod
 
         old = theme_mod._config_getter
         theme_mod._config_getter = None
@@ -80,8 +80,8 @@ class TestGetConfigValue:
             def mock_get(key):
                 return f"val_{key}"
 
-            with patch("code_puppy.tools.ask_user_question.theme._config_getter", None):
-                with patch("code_puppy.config.get_value", mock_get):
+            with patch("newcode.tools.ask_user_question.theme._config_getter", None):
+                with patch("newcode.config.get_value", mock_get):
                     theme_mod._config_getter = None
                     result = _get_config_value("test_key")
                     assert result == "val_test_key"
@@ -95,7 +95,7 @@ class TestApplyConfigOverrides:
     def test_no_overrides_returns_default(self):
         default = TUIColors()
         with patch(
-            "code_puppy.tools.ask_user_question.theme._get_config_value",
+            "newcode.tools.ask_user_question.theme._get_config_value",
             return_value=None,
         ):
             result = _apply_config_overrides(default, {"header_bold": "some_key"})
@@ -104,7 +104,7 @@ class TestApplyConfigOverrides:
     def test_with_overrides(self):
         default = TUIColors()
         with patch(
-            "code_puppy.tools.ask_user_question.theme._get_config_value",
+            "newcode.tools.ask_user_question.theme._get_config_value",
             return_value="red bold",
         ):
             result = _apply_config_overrides(default, {"header_bold": "some_key"})
@@ -115,7 +115,7 @@ class TestApplyConfigOverrides:
         """Empty string is falsy, so it should not override."""
         default = TUIColors()
         with patch(
-            "code_puppy.tools.ask_user_question.theme._get_config_value",
+            "newcode.tools.ask_user_question.theme._get_config_value",
             return_value="",
         ):
             result = _apply_config_overrides(default, {"header_bold": "key"})
@@ -125,7 +125,7 @@ class TestApplyConfigOverrides:
 class TestGetTuiColors:
     def test_returns_tui_colors(self):
         with patch(
-            "code_puppy.tools.ask_user_question.theme._get_config_value",
+            "newcode.tools.ask_user_question.theme._get_config_value",
             return_value=None,
         ):
             result = get_tui_colors()
@@ -138,7 +138,7 @@ class TestGetTuiColors:
             return None
 
         with patch(
-            "code_puppy.tools.ask_user_question.theme._get_config_value",
+            "newcode.tools.ask_user_question.theme._get_config_value",
             side_effect=fake_config,
         ):
             result = get_tui_colors()
@@ -148,7 +148,7 @@ class TestGetTuiColors:
 class TestGetRichColors:
     def test_returns_rich_colors(self):
         with patch(
-            "code_puppy.tools.ask_user_question.theme._get_config_value",
+            "newcode.tools.ask_user_question.theme._get_config_value",
             return_value=None,
         ):
             result = get_rich_colors()
@@ -161,7 +161,7 @@ class TestGetRichColors:
             return None
 
         with patch(
-            "code_puppy.tools.ask_user_question.theme._get_config_value",
+            "newcode.tools.ask_user_question.theme._get_config_value",
             side_effect=fake_config,
         ):
             result = get_rich_colors()

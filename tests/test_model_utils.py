@@ -1,6 +1,6 @@
 """Tests for the model_utils module."""
 
-from code_puppy.model_utils import (
+from newcode.model_utils import (
     CLAUDE_CODE_INSTRUCTIONS,
     PreparedPrompt,
     get_claude_code_instructions,
