@@ -32,7 +32,6 @@ def handle_show_command(command: str) -> bool:
     from newcode.agents import get_current_agent
     from newcode.command_line.model_picker_completion import get_active_model
     from newcode.config import (
-        get_agent_name,
         get_auto_save_session,
         get_compaction_strategy,
         get_compaction_threshold,
@@ -40,7 +39,6 @@ def handle_show_command(command: str) -> bool:
         get_effective_temperature,
         get_openai_reasoning_effort,
         get_openai_verbosity,
-        get_owner_name,
         get_protected_token_count,
         get_resume_message_count,
         get_temperature,
@@ -52,8 +50,6 @@ def handle_show_command(command: str) -> bool:
     )
     from newcode.messaging import emit_info
 
-    agent_name = get_agent_name()
-    owner_name = get_owner_name()
     model = get_active_model()
     yolo_mode = get_yolo_mode()
     auto_save = get_auto_save_session()
@@ -69,8 +65,6 @@ def handle_show_command(command: str) -> bool:
 
     status_msg = f"""[bold magenta]Configuration Status[/bold magenta]
 
-[bold]agent_name:[/bold]            [cyan]{agent_name}[/cyan]
-[bold]owner_name:[/bold]            [cyan]{owner_name}[/cyan]
 [bold]current_agent:[/bold]         [magenta]{current_agent.display_name}[/magenta]
 [bold]default_agent:[/bold]        [cyan]{default_agent}[/cyan]
 [bold]model:[/bold]                 [green]{model}[/green]

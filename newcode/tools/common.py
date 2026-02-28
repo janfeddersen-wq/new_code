@@ -1051,9 +1051,7 @@ def get_user_approval(
     from newcode.tools.command_runner import set_awaiting_user_input
 
     if agent_name is None:
-        from newcode.config import get_agent_name
-
-        agent_name = get_agent_name().title()
+        agent_name = "Agent"
 
     # Build panel content
     if isinstance(content, str):
@@ -1218,9 +1216,7 @@ async def get_user_approval_async(
     from newcode.tools.command_runner import set_awaiting_user_input
 
     if agent_name is None:
-        from newcode.config import get_agent_name
-
-        agent_name = get_agent_name().title()
+        agent_name = "Agent"
 
     # Build panel content
     if isinstance(content, str):

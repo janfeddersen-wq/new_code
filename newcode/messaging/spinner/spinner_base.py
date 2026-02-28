@@ -5,8 +5,6 @@ Base spinner implementation to be extended for different UI modes.
 from abc import ABC, abstractmethod
 from threading import Lock
 
-from newcode.config import get_agent_name
-
 
 class SpinnerBase(ABC):
     """Abstract base class for spinner implementations."""
@@ -24,13 +22,12 @@ class SpinnerBase(ABC):
         "(  ●   ) ",
         "( ●    ) ",
     ]
-    agent_name = get_agent_name().title()
 
     # Default message when processing
-    THINKING_MESSAGE = f"{agent_name} is thinking... "
+    THINKING_MESSAGE = "Thinking... "
 
     # Message when waiting for user input
-    WAITING_MESSAGE = f"{agent_name} is waiting... "
+    WAITING_MESSAGE = "Waiting... "
 
     # Current message - starts with thinking by default
     MESSAGE = THINKING_MESSAGE

@@ -416,10 +416,6 @@ class TestGetPromptWithActiveModel:
                 return_value=mock_agent,
             ),
             patch(
-                "newcode.command_line.prompt_toolkit_completion.get_agent_name",
-                return_value="Biscuit",
-            ),
-            patch(
                 "newcode.command_line.prompt_toolkit_completion.get_active_model",
                 return_value="gpt-4",
             ),
@@ -440,10 +436,6 @@ class TestGetPromptWithActiveModel:
             patch(
                 "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
-            ),
-            patch(
-                "newcode.command_line.prompt_toolkit_completion.get_agent_name",
-                return_value="Biscuit",
             ),
             patch(
                 "newcode.command_line.prompt_toolkit_completion.get_active_model",
@@ -470,10 +462,6 @@ class TestGetPromptWithActiveModel:
                 return_value=mock_agent,
             ),
             patch(
-                "newcode.command_line.prompt_toolkit_completion.get_agent_name",
-                return_value="Biscuit",
-            ),
-            patch(
                 "newcode.command_line.prompt_toolkit_completion.get_active_model",
                 return_value="gpt-4",
             ),
@@ -491,10 +479,6 @@ class TestGetPromptWithActiveModel:
             patch(
                 "newcode.agents.agent_manager.get_current_agent",
                 return_value=None,
-            ),
-            patch(
-                "newcode.command_line.prompt_toolkit_completion.get_agent_name",
-                return_value="Biscuit",
             ),
             patch(
                 "newcode.command_line.prompt_toolkit_completion.get_active_model",
@@ -519,10 +503,6 @@ class TestGetPromptWithActiveModel:
             patch(
                 "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
-            ),
-            patch(
-                "newcode.command_line.prompt_toolkit_completion.get_agent_name",
-                return_value="B",
             ),
             patch(
                 "newcode.command_line.prompt_toolkit_completion.get_active_model",

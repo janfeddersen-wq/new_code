@@ -1078,10 +1078,7 @@ async def run_shell_command(
                 error="Another command is currently awaiting confirmation",
             )
 
-        # Get agent name for personalized messages
-        from newcode.config import get_agent_name
-
-        agent_name = get_agent_name().title()
+        agent_name = "Agent"
 
         # Build panel content
         panel_content = Text()

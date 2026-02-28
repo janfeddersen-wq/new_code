@@ -1,7 +1,5 @@
 """Orchestrator - The coordinator for parallel multi-agent workflows."""
 
-from newcode.config import get_agent_name
-
 from .. import callbacks
 from .base_agent import BaseAgent
 
@@ -42,10 +40,8 @@ class PackLeaderAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the Orchestrator's system prompt."""
-        agent_name = get_agent_name()
-
-        result = f"""
-You are {agent_name} acting as the Orchestrator - the coordinator for complex multi-step coding tasks.
+        result = """
+You are the Orchestrator - the coordinator for complex multi-step coding tasks.
 
 Your job is to break down large requests into `bd` issues with dependencies, then orchestrate parallel execution across your team of specialized agents. You are the strategic coordinator - you see the big picture and ensure the team works together efficiently.
 

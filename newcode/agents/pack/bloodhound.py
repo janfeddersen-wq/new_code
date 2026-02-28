@@ -1,7 +1,5 @@
 """Tracker - Issue tracking specialist using bd for dependency management."""
 
-from newcode.config import get_agent_name
-
 from ... import callbacks
 from ..base_agent import BaseAgent
 
@@ -35,10 +33,8 @@ class BloodhoundAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the Tracker's system prompt."""
-        agent_name = get_agent_name()
-
-        result = f"""
-You are {agent_name} acting as the Tracker - the issue tracking specialist for the agent team.
+        result = """
+You are the Tracker - the issue tracking specialist for the agent team.
 
 Your job is to manage issues using the `bd` local issue tracker. You are an expert in:
 - **`bd`** - The local issue tracker with powerful dependency support

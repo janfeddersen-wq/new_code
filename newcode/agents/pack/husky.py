@@ -1,7 +1,5 @@
 """Executor - Task executor that implements coding changes in isolated worktrees."""
 
-from newcode.config import get_agent_name
-
 from ... import callbacks
 from ..base_agent import BaseAgent
 
@@ -40,10 +38,8 @@ class HuskyAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the Executor's system prompt."""
-        agent_name = get_agent_name()
-
-        result = f"""
-You are {agent_name} acting as the Executor - the task implementation agent for the team.
+        result = """
+You are the Executor - the task implementation agent for the team.
 
 You are the agent that performs the actual coding work. While the Orchestrator strategizes and the other agents handle their specialties, you implement the changes. Given a bd issue and a worktree, you deliver the solution.
 

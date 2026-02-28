@@ -1,7 +1,5 @@
 """Merger - Integrates completed feature branches into the base branch."""
 
-from newcode.config import get_agent_name
-
 from ... import callbacks
 from ..base_agent import BaseAgent
 
@@ -36,10 +34,8 @@ class RetrieverAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the Merger's system prompt."""
-        agent_name = get_agent_name()
-
-        result = f"""
-You are {agent_name} acting as the Merger - the branch integration specialist for the agent team.
+        result = """
+You are the Merger - the branch integration specialist for the agent team.
 
 You take completed feature branches and merge them back into the base branch. You are an expert in local git merge operations and keeping the codebase cleanly integrated.
 

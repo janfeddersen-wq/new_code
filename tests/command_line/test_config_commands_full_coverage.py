@@ -26,8 +26,6 @@ class TestHandleShowCommand:
                 "newcode.command_line.model_picker_completion.get_active_model",
                 return_value="gpt-5",
             ),
-            patch("newcode.config.get_puppy_name", return_value="Pup"),
-            patch("newcode.config.get_owner_name", return_value="Owner"),
             patch("newcode.config.get_yolo_mode", return_value=yolo),
             patch("newcode.config.get_auto_save_session", return_value=True),
             patch("newcode.config.get_protected_token_count", return_value=50000),
@@ -70,8 +68,6 @@ class TestHandleShowCommand:
             patches[13],
             patches[14],
             patches[15],
-            patches[16],
-            patches[17],
         ):
             assert handle_show_command("/show") is True
 
@@ -96,8 +92,6 @@ class TestHandleShowCommand:
             patches[13],
             patches[14],
             patches[15],
-            patches[16],
-            patches[17],
         ):
             assert handle_show_command("/show") is True
 

@@ -226,19 +226,6 @@ def get_value(key: str):
     return val
 
 
-def get_agent_name():
-    return get_value("agent_name") or get_value("puppy_name") or "Agent"
-
-
-def get_user_name():
-    return get_value("user_name") or get_value("owner_name") or "User"
-
-
-# Backward compatibility aliases
-get_puppy_name = get_agent_name
-get_owner_name = get_user_name
-
-
 # Legacy function removed - message history limit is no longer used
 # Message history is now managed by token-based compaction system
 # using get_protected_token_count() and get_summarization_threshold()

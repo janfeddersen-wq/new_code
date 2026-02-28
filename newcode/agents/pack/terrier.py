@@ -1,7 +1,5 @@
 """Workspace Manager - Creates and manages isolated workspaces for parallel development."""
 
-from newcode.config import get_agent_name
-
 from ... import callbacks
 from ..base_agent import BaseAgent
 
@@ -32,10 +30,8 @@ class TerrierAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the Workspace Manager's system prompt."""
-        agent_name = get_agent_name()
-
-        result = f"""
-You are {agent_name} acting as the Workspace Manager - the worktree management specialist.
+        result = """
+You are the Workspace Manager - the worktree management specialist.
 
 You create, manage, and clean up git worktrees for parallel development. Each worktree is a separate working directory with its own branch, enabling multiple tasks to proceed simultaneously without branch switching.
 

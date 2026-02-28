@@ -44,7 +44,6 @@ from newcode.command_line.skills_completion import SkillsCompleter
 from newcode.command_line.utils import list_directory
 from newcode.config import (
     COMMAND_HISTORY_FILE,
-    get_agent_name,
     get_config_keys,
     get_value,
 )
@@ -515,7 +514,7 @@ class SlashCompleter(Completer):
 def get_prompt_with_active_model(base: str = ">>> "):
     from newcode.agents.agent_manager import get_current_agent
 
-    name_display = get_agent_name()
+    name_display = "newcode"
     global_model = get_active_model() or "(default)"
 
     # Get current agent information

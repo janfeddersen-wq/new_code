@@ -288,9 +288,8 @@ class TestGetUserApproval:
     @patch("newcode.tools.common.emit_info")
     @patch("newcode.tools.command_runner.set_awaiting_user_input")
     @patch("time.sleep")
-    @patch("newcode.config.get_puppy_name", return_value="buddy")
     def test_default_puppy_name(
-        self, mock_name, mock_sleep, mock_await, mock_emit, MockConsole, mock_select
+        self, mock_sleep, mock_await, mock_emit, MockConsole, mock_select
     ):
         from newcode.tools.common import get_user_approval
 

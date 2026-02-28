@@ -174,34 +174,6 @@ class TestGetValue:
         assert val is None
 
 
-class TestSimpleGetters:
-    @patch("newcode.config.get_value")
-    def test_get_puppy_name_exists(self, mock_get_value):
-        mock_get_value.return_value = "MyPuppy"
-        assert cp_config.get_puppy_name() == "MyPuppy"
-        mock_get_value.assert_called_once_with("agent_name")
-
-    @patch("newcode.config.get_value")
-    def test_get_puppy_name_not_exists_uses_default(self, mock_get_value):
-        mock_get_value.return_value = None
-        assert cp_config.get_puppy_name() == "Agent"  # Default value
-        # get_agent_name calls get_value("agent_name") then get_value("puppy_name")
-        assert mock_get_value.call_count == 2
-
-    @patch("newcode.config.get_value")
-    def test_get_owner_name_exists(self, mock_get_value):
-        mock_get_value.return_value = "MyOwner"
-        assert cp_config.get_owner_name() == "MyOwner"
-        mock_get_value.assert_called_once_with("user_name")
-
-    @patch("newcode.config.get_value")
-    def test_get_owner_name_not_exists_uses_default(self, mock_get_value):
-        mock_get_value.return_value = None
-        assert cp_config.get_owner_name() == "User"  # Default value
-        # get_user_name calls get_value("user_name") then get_value("owner_name")
-        assert mock_get_value.call_count == 2
-
-
 class TestGetConfigKeys:
     @patch("configparser.ConfigParser")
     def test_get_config_keys_with_existing_keys(

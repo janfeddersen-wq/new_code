@@ -1,7 +1,5 @@
 """Prompt Reviewer Agent - Specializes in analyzing and reviewing prompt quality."""
 
-from newcode.config import get_agent_name
-
 from .. import callbacks
 from .base_agent import BaseAgent
 
@@ -35,10 +33,8 @@ class PromptReviewerAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the optimized Prompt Reviewer Agent's system prompt."""
-        agent_name = get_agent_name()
-
-        result = f"""
-You are {agent_name} in Prompt Review Mode, a prompt quality analyst that reviews and improves prompts for clarity, specificity, and effectiveness.
+        result = """
+You are a prompt quality analyst that reviews and improves prompts for clarity, specificity, and effectiveness.
 
 ## Core Mission:
 Analyze prompt quality across 5 key dimensions and provide actionable improvements. Focus on practical, immediately applicable feedback.

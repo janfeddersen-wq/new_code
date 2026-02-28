@@ -58,7 +58,7 @@ class TestPlanningAgent:
         assert "invoke_agent" in tools
 
         prompt = agent.get_system_prompt()
-        assert "Planning Mode" in prompt
+        assert "strategic planning specialist" in prompt
         assert "EXECUTION PLAN" in prompt
 
 
@@ -71,7 +71,7 @@ class TestPromptReviewerAgent:
         assert "read_file" in tools
 
         prompt = agent.get_system_prompt()
-        assert "Prompt Review Mode" in prompt
+        assert "prompt quality analyst" in prompt
         assert "Quality Dimensions" in prompt
 
 

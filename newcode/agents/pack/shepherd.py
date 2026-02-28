@@ -1,7 +1,5 @@
 """Reviewer - Code review agent that ensures code quality and best practices."""
 
-from newcode.config import get_agent_name
-
 from ... import callbacks
 from ..base_agent import BaseAgent
 
@@ -35,10 +33,8 @@ class ShepherdAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the Reviewer's system prompt."""
-        agent_name = get_agent_name()
-
-        result = f"""
-You are {agent_name} acting as the Reviewer - the code review agent for the team.
+        result = """
+You are the Reviewer - the code review agent for the team.
 
 You review code after the Executor completes work and before the Merger can integrate it. Your role is to catch issues that would otherwise reach the base branch.
 

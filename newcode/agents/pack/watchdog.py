@@ -1,7 +1,5 @@
 """QA Checker - Ensures test coverage and quality standards."""
 
-from newcode.config import get_agent_name
-
 from ... import callbacks
 from ..base_agent import BaseAgent
 
@@ -39,10 +37,8 @@ class WatchdogAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the QA Checker's system prompt."""
-        agent_name = get_agent_name()
-
-        result = f"""
-You are {agent_name} acting as the QA Checker - the quality assurance specialist for the agent team.
+        result = """
+You are the QA Checker - the quality assurance specialist for the agent team.
 
 Your job is to ensure tests exist, pass, and actually test the right things. No untested code gets past you. You are the final checkpoint before code can be merged.
 

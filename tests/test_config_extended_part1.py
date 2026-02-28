@@ -13,9 +13,7 @@ from newcode.config import (
     get_diff_context_lines,
     get_global_model_name,
     get_message_limit,
-    get_owner_name,
     get_protected_token_count,
-    get_puppy_name,
     get_use_dbos,
     get_value,
     get_yolo_mode,
@@ -223,34 +221,6 @@ class TestConfigExtendedPart1:
         set_config_value("diff_context_lines", "")
         result = get_diff_context_lines()
         assert result == 6  # Default should be 6
-
-    def test_get_puppy_name_default(self, temp_config_dir):
-        """Test get_puppy_name returns default when not set"""
-        temp_dir, config_file = temp_config_dir
-
-        # Create config without agent_name
-        config = configparser.ConfigParser()
-        config[DEFAULT_SECTION] = {}
-        with open(config_file, "w") as f:
-            config.write(f)
-
-        with patch("newcode.config.CONFIG_FILE", config_file):
-            result = get_puppy_name()
-            assert result == "Agent"  # Default should be "Agent"
-
-    def test_get_owner_name_default(self, temp_config_dir):
-        """Test get_owner_name returns default when not set"""
-        temp_dir, config_file = temp_config_dir
-
-        # Create config without user_name
-        config = configparser.ConfigParser()
-        config[DEFAULT_SECTION] = {}
-        with open(config_file, "w") as f:
-            config.write(f)
-
-        with patch("newcode.config.CONFIG_FILE", config_file):
-            result = get_owner_name()
-            assert result == "User"  # Default should be "User"
 
     @patch("newcode.config._validate_model_exists")
     @patch("newcode.config._default_model_from_models_json")

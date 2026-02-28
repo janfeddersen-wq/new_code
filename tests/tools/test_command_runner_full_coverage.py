@@ -667,12 +667,7 @@ class TestRunShellCommand:
                             new_callable=AsyncMock,
                             return_value=(False, None),
                         ):
-                            with patch(
-                                "newcode.config.get_puppy_name", return_value="buddy"
-                            ):
-                                result = await run_shell_command(
-                                    ctx, "echo hi", timeout=10
-                                )
+                            result = await run_shell_command(ctx, "echo hi", timeout=10)
 
         assert result.success is False
         assert "rejected" in result.error.lower()
@@ -699,12 +694,7 @@ class TestRunShellCommand:
                             new_callable=AsyncMock,
                             return_value=(False, "use ls instead"),
                         ):
-                            with patch(
-                                "newcode.config.get_puppy_name", return_value="buddy"
-                            ):
-                                result = await run_shell_command(
-                                    ctx, "echo hi", timeout=10
-                                )
+                            result = await run_shell_command(ctx, "echo hi", timeout=10)
 
         assert result.success is False
         assert result.user_feedback == "use ls instead"

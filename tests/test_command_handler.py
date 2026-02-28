@@ -215,18 +215,13 @@ def test_show_status():
                 "newcode.command_line.model_picker_completion.get_active_model",
                 return_value="MODEL-X",
             ),
-            patch("newcode.config.get_owner_name", return_value="Ivan"),
-            patch("newcode.config.get_agent_name", return_value="Biscuit"),
             patch("newcode.config.get_yolo_mode", return_value=True),
         ):
             result = handle_command("/show")
             assert result is True
             mock_emit_info.assert_called()
             assert any(
-                "Configuration Status" in str(call)
-                and "Ivan" in str(call)
-                and "Biscuit" in str(call)
-                and "MODEL-X" in str(call)
+                "Configuration Status" in str(call) and "MODEL-X" in str(call)
                 for call in mock_emit_info.call_args_list
             )
     finally:

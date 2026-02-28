@@ -779,7 +779,7 @@ class TestGetUserApproval:
                             )
         assert confirmed is True
 
-    def test_default_puppy_name(self):
+    def test_default_agent_name(self):
         from newcode.tools.common import get_user_approval
 
         with patch("newcode.tools.common.arrow_select", return_value="✓ Approve"):
@@ -787,10 +787,7 @@ class TestGetUserApproval:
                 with patch("newcode.tools.command_runner.set_awaiting_user_input"):
                     with patch("newcode.tools.common.emit_info"):
                         with patch("newcode.tools.common.emit_success"):
-                            with patch(
-                                "newcode.config.get_puppy_name", return_value="buddy"
-                            ):
-                                confirmed, _ = get_user_approval("Test", "content")
+                            confirmed, _ = get_user_approval("Test", "content")
         assert confirmed is True
 
 
@@ -942,7 +939,7 @@ class TestGetUserApprovalAsync:
         assert confirmed is True
 
     @pytest.mark.asyncio
-    async def test_default_puppy_name(self):
+    async def test_default_agent_name(self):
         from newcode.tools.common import get_user_approval_async
 
         with patch(
@@ -954,12 +951,9 @@ class TestGetUserApprovalAsync:
                 with patch("newcode.tools.command_runner.set_awaiting_user_input"):
                     with patch("newcode.tools.common.emit_info"):
                         with patch("newcode.tools.common.emit_success"):
-                            with patch(
-                                "newcode.config.get_puppy_name", return_value="buddy"
-                            ):
-                                confirmed, _ = await get_user_approval_async(
-                                    "Test", "content"
-                                )
+                            confirmed, _ = await get_user_approval_async(
+                                "Test", "content"
+                            )
         assert confirmed is True
 
 

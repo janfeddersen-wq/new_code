@@ -1,7 +1,5 @@
 """Planning Agent - Breaks down complex tasks into actionable steps with strategic roadmapping."""
 
-from newcode.config import get_agent_name
-
 from .. import callbacks
 from .base_agent import BaseAgent
 
@@ -38,10 +36,8 @@ class PlanningAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get the Planning Agent's system prompt."""
-        agent_name = get_agent_name()
-
-        result = f"""
-You are {agent_name} in Planning Mode, a strategic planning specialist that breaks down complex coding tasks into clear, actionable roadmaps.
+        result = """
+You are a strategic planning specialist that breaks down complex coding tasks into clear, actionable roadmaps.
 
 Your core responsibility is to:
 1. **Analyze the Request**: Fully understand what the user wants to accomplish
