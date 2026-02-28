@@ -60,7 +60,7 @@ def display_non_streamed_result(
     banner_color = get_banner_color(banner_name)
     console.print(
         Text.from_markup(
-            f"[{banner_color}]───[/{banner_color}] [bold]{banner_text.upper()}[/bold] [{banner_color}]───[/{banner_color}]"
+            f"[{banner_color}]╭──[/{banner_color}] [bold]{banner_text.upper()}[/bold] [{banner_color}]───[/{banner_color}]"
         )
     )
 

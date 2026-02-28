@@ -419,7 +419,7 @@ def _get_preview_text_for_prompt_toolkit(config: ColorConfiguration) -> ANSI:
 
         # Print the banner with its configured color (left-border style)
         icon_str = f" {icon}" if icon else ""
-        banner_text = f"[{color}]───[/{color}] [bold]{display_name.upper()}[/bold] [{color}]───[/{color}]{icon_str}"
+        banner_text = f"[{color}]╭──[/{color}] [bold]{display_name.upper()}[/bold] [{color}]───[/{color}]{icon_str}"
         console.print(banner_text)
 
         # Print sample content (dimmed)
@@ -504,7 +504,7 @@ def _get_single_banner_preview(config: ColorConfiguration) -> ANSI:
 
     # Show the banner large (left-border style)
     icon_str = f" {icon}" if icon else ""
-    banner_text = f"[{color}]───[/{color}] [bold]{display_name.upper()}[/bold] [{color}]───[/{color}]{icon_str}"
+    banner_text = f"[{color}]╭──[/{color}] [bold]{display_name.upper()}[/bold] [{color}]───[/{color}]{icon_str}"
     console.print(banner_text)
     console.print()
 

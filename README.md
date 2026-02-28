@@ -4,10 +4,23 @@ An AI-powered code generation and modification agent for the terminal.
 
 NewCode is a fork of [code-puppy](https://github.com/mpfaffenberger/newcode) by Michael Pfaffenberger, customized for the fedstew workflow. We wanted a clean, professional CLI agent with opinionated defaults, streamlined prompts, and a focus on practical code generation without the playful branding.
 
+## Table of Contents
+
+- [What changed from code-puppy](#what-changed-from-code-puppy)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Requirements](#requirements)
+- [Features](#features)
+- [Configuration](#configuration)
+- [Agents](#agents)
+- [Development](#development)
+- [Credits](#credits)
+- [License](#license)
+
 ## What changed from code-puppy
 
 - Removed all dog/puppy-themed branding and emojis in favor of a clean, professional interface
-- Renamed "Pack" multi-agent system to use functional names (Orchestrator, Tracker, Executor, Reviewer, etc.)
+- Renamed the "Pack" multi-agent system to functional names (Orchestrator, Tracker, Executor, Reviewer, etc.)
 - Rewrote all agent system prompts for clarity and professionalism
 - Increased output validation retries from 3 to 10 for more robust model interactions
 - Updated configuration keys and display names throughout
@@ -15,11 +28,13 @@ NewCode is a fork of [code-puppy](https://github.com/mpfaffenberger/newcode) by 
 
 ## Installation
 
+Install with `pip`:
+
 ```bash
 pip install newcode
 ```
 
-Or with [uv](https://docs.astral.sh/uv/):
+Or install with [uv](https://docs.astral.sh/uv/):
 
 ```bash
 uv pip install newcode
@@ -27,15 +42,19 @@ uv pip install newcode
 
 ## Quick Start
 
-```bash
-# Run the agent
-newcode
+Run the agent:
 
-# Or use the short alias
+```bash
+newcode
+```
+
+Or use the short alias:
+
+```bash
 nc
 ```
 
-On first run, you'll be guided through a setup wizard to configure your API keys and preferences.
+On first run, NewCode opens a setup wizard to help you configure API keys and preferences.
 
 ## Requirements
 
@@ -44,23 +63,37 @@ On first run, you'll be guided through a setup wizard to configure your API keys
 
 ## Features
 
+### Model and agent capabilities
+
 - Multi-model support: OpenAI, Anthropic Claude, Google Gemini, Cerebras, and more
 - Multi-agent workflows with specialized agents (Orchestrator, Tracker, Executor, Reviewer, QA Checker, Workspace Manager, Merger)
+- MCP (Model Context Protocol) server support
+
+### Core workflow tools
+
 - File operations: read, write, edit, delete with diff previews and permission prompts
 - Shell command execution with safety controls
-- Browser-based terminal via built-in API server
+- Session auto-save and restore
+
+### Automation and extensibility
+
 - Scheduled task execution with a background daemon
 - Plugin system with lifecycle callbacks and event-based hooks
+
+### Interface and UX
+
 - Interactive TUI menus for configuration, model selection, and task management
-- Session auto-save and restore
-- MCP (Model Context Protocol) server support
+- Browser-based terminal via built-in API server
 
 ## Configuration
 
-Configuration is stored in `~/.config/newcode/puppy.cfg` (XDG-compliant paths). The setup wizard handles initial configuration. You can also use CLI commands:
+NewCode stores configuration at:
+
+- `~/.config/newcode/puppy.cfg` (XDG-compliant path)
+
+The first-run setup wizard creates and populates this file automatically. After setup, you can manage configuration from inside the agent REPL:
 
 ```bash
-# Inside the agent REPL:
 /config          # Show current configuration
 /model           # Switch models
 /agent           # Switch agents
@@ -70,35 +103,37 @@ Configuration is stored in `~/.config/newcode/puppy.cfg` (XDG-compliant paths). 
 
 ## Agents
 
-| Agent | Purpose |
-|-------|---------|
+| Agent | Primary responsibility |
+|-------|------------------------|
 | Code Agent | General-purpose code generation and modification (default) |
-| Orchestrator | Multi-agent workflow coordination |
-| Tracker | Code search and navigation |
-| Executor | Shell command execution |
-| Reviewer | Code review and quality checks |
-| QA Checker | Testing and validation |
-| Workspace Manager | File system operations |
-| Merger | Result integration |
-| Python Reviewer | Python-specific code review |
-| QA Expert | Testing strategy and quality assurance |
-| Security Auditor | Security analysis |
+| Orchestrator | Coordinates multi-agent workflows |
+| Tracker | Performs code search and navigation |
+| Executor | Runs shell commands |
+| Reviewer | Performs code review and quality checks |
+| QA Checker | Handles testing and validation |
+| Workspace Manager | Manages file system operations |
+| Merger | Integrates outputs from multiple agents |
+| Python Reviewer | Provides Python-specific code review |
+| QA Expert | Defines testing strategy and quality assurance |
+| Security Auditor | Performs security analysis |
 
 ## Development
 
 ```bash
-# Clone the repo
+# Clone the repository
 git clone https://github.com/janfeddersen-wq/new_code.git
 cd new_code
 
-# Install with dev dependencies
+# Install in editable mode with development dependencies
 uv pip install -e ".[dev]"
 
-# Run tests
+# Run the test suite
 uv run pytest tests/ -v
 
-# Lint
+# Run lint checks
 ruff check .
+
+# Verify formatting
 ruff format --check .
 ```
 

@@ -181,7 +181,7 @@ class RichConsoleRenderer:
         """
         color = self._get_banner_color(banner_name)
         return (
-            f"[{color}]───[/{color}] [bold]{text.upper()}[/bold] [{color}]───[/{color}]"
+            f"[{color}]╭──[/{color}] [bold]{text.upper()}[/bold] [{color}]───[/{color}]"
         )
 
     def _should_suppress_subagent_output(self) -> bool:
@@ -666,19 +666,23 @@ class RichConsoleRenderer:
             banner = self._format_banner("edit_file", "EDIT FILE")
             self._console.print(f"\n{banner}")
 
+        # Compute line counts for the summary
+        stats_suffix = ""
+        if msg.diff_lines:
+            added = sum(1 for line in msg.diff_lines if line.type == "add")
+            removed = sum(1 for line in msg.diff_lines if line.type == "remove")
+            stats_suffix = f" ([green]+{added}[/green] / [red]-{removed}[/red])"
+
         self._console.print(
             f"{bar}  [{op_color}]{msg.operation.upper()}[/{op_color}] "
-            f"[bold cyan]{msg.path}[/bold cyan]"
+            f"[bold cyan]{msg.path}[/bold cyan]{stats_suffix}"
         )
 
         if not msg.diff_lines:
             return
 
-        # Compact mode: show only line counts, skip diff content
+        # Compact mode: show only line counts (already shown inline), skip diff content
         if not get_show_diffs():
-            added = sum(1 for line in msg.diff_lines if line.type == "add")
-            removed = sum(1 for line in msg.diff_lines if line.type == "remove")
-            self._console.print(f"{bar}  [dim](+{added} / -{removed})[/dim]")
             return
 
         # Reconstruct unified diff text from diff_lines for format_diff_with_colors
