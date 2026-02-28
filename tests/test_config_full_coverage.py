@@ -917,7 +917,7 @@ class TestAutosaveSession:
 # Ensure config exists
 # ---------------------------------------------------------------------------
 class TestEnsureConfigExists:
-    def test_creates_dirs_and_prompts(self, monkeypatch, tmp_path):
+    def test_creates_dirs_without_prompts(self, monkeypatch, tmp_path):
         cfg_dir = str(tmp_path / "config")
         cfg_file = os.path.join(cfg_dir, "puppy.cfg")
         monkeypatch.setattr(cp_config, "CONFIG_DIR", cfg_dir)
@@ -926,12 +926,11 @@ class TestEnsureConfigExists:
         monkeypatch.setattr(cp_config, "CACHE_DIR", str(tmp_path / "cache"))
         monkeypatch.setattr(cp_config, "STATE_DIR", str(tmp_path / "state"))
 
-        inputs = iter(["TestPup", "TestOwner"])
-        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        mock_input = MagicMock()
+        monkeypatch.setattr("builtins.input", mock_input)
 
-        config = cp_config.ensure_config_exists()
-        assert config["agent"]["agent_name"] == "TestPup"
-        assert config["agent"]["user_name"] == "TestOwner"
+        cp_config.ensure_config_exists()
+        mock_input.assert_not_called()
         assert os.path.exists(cfg_file)
 
     def test_existing_config_no_prompt(self, tmp_path, monkeypatch):

@@ -195,7 +195,6 @@ class TestMain:
             ["code-agent"],
             extra_patches={
                 "newcode.cli_runner.interactive_mode": mock_inter,
-                "pyfiglet.figlet_format": MagicMock(return_value="LOGO\n\n"),
             },
         )
         mock_inter.assert_called_once()
@@ -207,7 +206,6 @@ class TestMain:
             ["code-agent", "do", "something"],
             extra_patches={
                 "newcode.cli_runner.interactive_mode": mock_inter,
-                "pyfiglet.figlet_format": MagicMock(return_value="LOGO\n\n"),
             },
         )
         assert mock_inter.call_args[1]["initial_command"] == "do something"
@@ -435,21 +433,12 @@ class TestMain:
             )
 
     @pytest.mark.anyio
-    async def test_pyfiglet_import_error(self):
-        import builtins
-
-        real_import = builtins.__import__
-
-        def fake_import(name, *args, **kwargs):
-            if name == "pyfiglet":
-                raise ImportError("no pyfiglet")
-            return real_import(name, *args, **kwargs)
-
+    async def test_banner_displays_without_pyfiglet(self):
+        """Banner is now hardcoded, no pyfiglet dependency needed."""
         await self._run_main(
             ["code-agent"],
             extra_patches={
                 "newcode.cli_runner.interactive_mode": AsyncMock(),
-                "builtins.__import__": fake_import,
             },
         )
 

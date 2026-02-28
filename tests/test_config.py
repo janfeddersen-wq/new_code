@@ -40,99 +40,79 @@ def mock_config_paths(monkeypatch):
 
 
 class TestEnsureConfigExists:
-    def test_no_config_dir_or_file_prompts_and_creates(
+    def test_no_config_dir_or_file_creates_without_prompting(
         self, mock_config_paths, monkeypatch
     ):
         mock_cfg_dir, mock_cfg_file = mock_config_paths
 
-        # All 4 XDG directories don't exist
+        # All XDG directories don't exist
         mock_os_path_exists = MagicMock(return_value=False)
         monkeypatch.setattr(os.path, "exists", mock_os_path_exists)
 
-        mock_os_path_isfile = MagicMock(return_value=False)  # CONFIG_FILE not exists
+        mock_os_path_isfile = MagicMock(return_value=False)
         monkeypatch.setattr(os.path, "isfile", mock_os_path_isfile)
 
         mock_makedirs = MagicMock()
         monkeypatch.setattr(os, "makedirs", mock_makedirs)
 
-        mock_input_values = {
-            "Enter a name for the agent: ": "TestPuppy",
-            "Enter your name: ": "TestOwner",
-        }
-        mock_input = MagicMock(side_effect=lambda prompt: mock_input_values[prompt])
+        mock_input = MagicMock()
         monkeypatch.setattr("builtins.input", mock_input)
 
         m_open = mock_open()
         with patch("builtins.open", m_open):
             config_parser = cp_config.ensure_config_exists()
 
-        # Now 5 directories are created (CONFIG, DATA, CACHE, STATE, SKILLS)
+        # 5 directories are created (CONFIG, DATA, CACHE, STATE, SKILLS)
         assert mock_makedirs.call_count == 5
         m_open.assert_called_once_with(mock_cfg_file, "w", encoding="utf-8")
 
-        # Check what was written to file
-        # The configparser object's write method is called with a file-like object
-        # We can inspect the calls to that file-like object (m_open())
-        # However, it's easier to check the returned config_parser object
+        # No prompting should occur
+        mock_input.assert_not_called()
         assert config_parser.sections() == [DEFAULT_SECTION_NAME]
-        assert config_parser.get(DEFAULT_SECTION_NAME, "agent_name") == "TestPuppy"
-        assert config_parser.get(DEFAULT_SECTION_NAME, "user_name") == "TestOwner"
 
-    def test_config_dir_exists_file_does_not_prompts_and_creates(
+    def test_config_dir_exists_file_does_not_creates_without_prompting(
         self, mock_config_paths, monkeypatch
     ):
         mock_cfg_dir, mock_cfg_file = mock_config_paths
 
-        # All XDG directories already exist
         mock_os_path_exists = MagicMock(return_value=True)
         monkeypatch.setattr(os.path, "exists", mock_os_path_exists)
 
-        mock_os_path_isfile = MagicMock(return_value=False)  # CONFIG_FILE not exists
+        mock_os_path_isfile = MagicMock(return_value=False)
         monkeypatch.setattr(os.path, "isfile", mock_os_path_isfile)
 
         mock_makedirs = MagicMock()
         monkeypatch.setattr(os, "makedirs", mock_makedirs)
 
-        mock_input_values = {
-            "Enter a name for the agent: ": "DirExistsPuppy",
-            "Enter your name: ": "DirExistsOwner",
-        }
-        mock_input = MagicMock(side_effect=lambda prompt: mock_input_values[prompt])
+        mock_input = MagicMock()
         monkeypatch.setattr("builtins.input", mock_input)
 
         m_open = mock_open()
         with patch("builtins.open", m_open):
             config_parser = cp_config.ensure_config_exists()
 
-        mock_makedirs.assert_not_called()  # All dirs already exist
+        mock_makedirs.assert_not_called()
         m_open.assert_called_once_with(mock_cfg_file, "w", encoding="utf-8")
 
+        # No prompting should occur
+        mock_input.assert_not_called()
         assert config_parser.sections() == [DEFAULT_SECTION_NAME]
-        assert config_parser.get(DEFAULT_SECTION_NAME, "agent_name") == "DirExistsPuppy"
-        assert config_parser.get(DEFAULT_SECTION_NAME, "user_name") == "DirExistsOwner"
 
     def test_config_file_exists_and_complete_no_prompt_no_write(
         self, mock_config_paths, monkeypatch
     ):
         mock_cfg_dir, mock_cfg_file = mock_config_paths
 
-        monkeypatch.setattr(
-            os.path, "exists", MagicMock(return_value=True)
-        )  # CONFIG_DIR exists
-        monkeypatch.setattr(
-            os.path, "isfile", MagicMock(return_value=True)
-        )  # CONFIG_FILE exists
+        monkeypatch.setattr(os.path, "exists", MagicMock(return_value=True))
+        monkeypatch.setattr(os.path, "isfile", MagicMock(return_value=True))
 
-        # Mock configparser.ConfigParser instance and its methods
         mock_config_instance = configparser.ConfigParser()
         mock_config_instance[DEFAULT_SECTION_NAME] = {
-            "agent_name": "ExistingPuppy",
-            "user_name": "ExistingOwner",
+            "agent_name": "ExistingAgent",
+            "user_name": "ExistingUser",
         }
 
         def mock_read(file_path):
-            # Simulate reading by populating the mock_config_instance if it were empty
-            # For this test, we assume it's already populated as if read from file
             pass
 
         mock_cp = MagicMock(return_value=mock_config_instance)
@@ -147,56 +127,10 @@ class TestEnsureConfigExists:
             returned_config_parser = cp_config.ensure_config_exists()
 
         mock_input.assert_not_called()
-        m_open.assert_not_called()  # No write should occur
+        m_open.assert_not_called()
         mock_config_instance.read.assert_called_once_with(mock_cfg_file)
 
         assert returned_config_parser == mock_config_instance
-        assert (
-            returned_config_parser.get(DEFAULT_SECTION_NAME, "agent_name")
-            == "ExistingPuppy"
-        )
-
-    def test_config_file_exists_missing_one_key_prompts_and_writes(
-        self, mock_config_paths, monkeypatch
-    ):
-        mock_cfg_dir, mock_cfg_file = mock_config_paths
-
-        monkeypatch.setattr(os.path, "exists", MagicMock(return_value=True))
-        monkeypatch.setattr(os.path, "isfile", MagicMock(return_value=True))
-
-        mock_config_instance = configparser.ConfigParser()
-        mock_config_instance[DEFAULT_SECTION_NAME] = {
-            "agent_name": "PartialPuppy"
-        }  # user_name is missing
-
-        def mock_read(file_path):
-            pass
-
-        mock_cp = MagicMock(return_value=mock_config_instance)
-        mock_config_instance.read = MagicMock(side_effect=mock_read)
-        monkeypatch.setattr(configparser, "ConfigParser", mock_cp)
-
-        mock_input_values = {"Enter your name: ": "PartialOwnerFilled"}
-        # Only user_name should be prompted
-        mock_input = MagicMock(side_effect=lambda prompt: mock_input_values[prompt])
-        monkeypatch.setattr("builtins.input", mock_input)
-
-        m_open = mock_open()
-        with patch("builtins.open", m_open):
-            returned_config_parser = cp_config.ensure_config_exists()
-
-        mock_input.assert_called_once()  # Only called for the missing key
-        m_open.assert_called_once_with(mock_cfg_file, "w", encoding="utf-8")
-        mock_config_instance.read.assert_called_once_with(mock_cfg_file)
-
-        assert (
-            returned_config_parser.get(DEFAULT_SECTION_NAME, "agent_name")
-            == "PartialPuppy"
-        )
-        assert (
-            returned_config_parser.get(DEFAULT_SECTION_NAME, "user_name")
-            == "PartialOwnerFilled"
-        )
 
 
 class TestGetValue:

@@ -202,15 +202,14 @@ class TestLogoDisplay:
         prompt_arg = "write hello world"
         assert prompt_arg is not None  # args.prompt is not None
 
-    def test_pyfiglet_available(self):
-        """Test that pyfiglet can be imported when available."""
-        try:
-            import pyfiglet
+    def test_banner_lines_defined(self):
+        """Test that banner lines are used in cli_runner."""
+        import inspect
 
-            assert pyfiglet is not None
-        except ImportError:
-            # pyfiglet may not always be available
-            pass
+        import newcode.cli_runner as mod
+
+        source = inspect.getsource(mod)
+        assert "banner_lines" in source
 
 
 class TestAPIKeyLoading:

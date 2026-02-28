@@ -42,20 +42,21 @@ def get_nav_footer() -> str:
 
 
 def get_gradient_banner() -> str:
-    """Generate the gradient CODE AGENT banner."""
-    try:
-        import pyfiglet
-
-        lines = pyfiglet.figlet_format("CODE AGENT", font="ansi_shadow").split("\n")
-        colors = ["bright_blue", "bright_cyan", "bright_green"]
-        result = []
-        for i, line in enumerate(lines):
-            if line.strip():
-                color = colors[min(i // 2, len(colors) - 1)]
-                result.append(f"[{color}]{line}[/{color}]")
-        return "\n".join(result)
-    except ImportError:
-        return "[bold bright_cyan]═══ CODE AGENT ═══[/bold bright_cyan]"
+    """Generate the gradient newcode banner."""
+    banner_lines = [
+        r"▓░░                                                          ▓░░           ",
+        r"▓░░ ▓░░      ▓░░     ▓░░     ▓░░░    ▓░░░    ▓░░          ▓░░    ▓░░    ",
+        r" ▓░░  ▓░░  ▓░   ▓░░   ▓░░  ░  ▓░░  ▓░░     ▓░░  ▓░░   ▓░░ ▓░░  ▓░   ▓░░ ",
+        r" ▓░░  ▓░░ ▓░░░░░ ▓░░  ▓░░ ▓░  ▓░░ ▓░░     ▓░░    ▓░░ ▓░   ▓░░ ▓░░░░░ ▓░░",
+        r" ▓░░  ▓░░ ▓░          ▓░ ▓░ ▓░▓░░  ▓░░     ▓░░  ▓░░  ▓░   ▓░░ ▓░        ",
+        r"▓░░░  ▓░░   ▓░░░░    ▓░░░    ▓░░░    ▓░░░    ▓░░      ▓░░ ▓░░   ▓░░░░  ",
+    ]
+    colors = ["bright_blue", "bright_cyan", "bright_green"]
+    result = []
+    for i, line in enumerate(banner_lines):
+        color = colors[min(i // 2, len(colors) - 1)]
+        result.append(f"[{color}]{line}[/{color}]")
+    return "\n".join(result)
 
 
 # ============================================================================

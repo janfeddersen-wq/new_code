@@ -116,31 +116,22 @@ async def main():
     # Show the banner when entering interactive mode
     # This happens when: no -p flag (prompt-only mode) is used
     if not args.prompt:
-        try:
-            import pyfiglet
-
-            intro_lines = pyfiglet.figlet_format(
-                "CODE AGENT", font="ansi_shadow"
-            ).split("\n")
-
-            # Simple blue to green gradient (top to bottom)
-            gradient_colors = ["bright_blue", "bright_cyan", "bright_green"]
-            display_console.print("\n")
-
-            lines = []
-            # Apply gradient line by line
-            for line_num, line in enumerate(intro_lines):
-                if line.strip():
-                    # Use line position to determine color (top blue, middle cyan, bottom green)
-                    color_idx = min(line_num // 2, len(gradient_colors) - 1)
-                    color = gradient_colors[color_idx]
-                    lines.append(f"[{color}]{line}[/{color}]")
-                else:
-                    lines.append("")
-            # Print directly to console to avoid the 'dim' style from emit_system_message
-            display_console.print("\n".join(lines))
-        except ImportError:
-            emit_system_message("Loading...")
+        banner_lines = [
+            r"▓░░                                                          ▓░░           ",
+            r"▓░░ ▓░░      ▓░░     ▓░░     ▓░░░    ▓░░░    ▓░░          ▓░░    ▓░░    ",
+            r" ▓░░  ▓░░  ▓░   ▓░░   ▓░░  ░  ▓░░  ▓░░     ▓░░  ▓░░   ▓░░ ▓░░  ▓░   ▓░░ ",
+            r" ▓░░  ▓░░ ▓░░░░░ ▓░░  ▓░░ ▓░  ▓░░ ▓░░     ▓░░    ▓░░ ▓░   ▓░░ ▓░░░░░ ▓░░",
+            r" ▓░░  ▓░░ ▓░          ▓░ ▓░ ▓░▓░░  ▓░░     ▓░░  ▓░░  ▓░   ▓░░ ▓░        ",
+            r"▓░░░  ▓░░   ▓░░░░    ▓░░░    ▓░░░    ▓░░░    ▓░░      ▓░░ ▓░░   ▓░░░░  ",
+        ]
+        gradient_colors = ["bright_blue", "bright_cyan", "bright_green"]
+        display_console.print("\n")
+        lines = []
+        for line_num, line in enumerate(banner_lines):
+            color_idx = min(line_num // 2, len(gradient_colors) - 1)
+            color = gradient_colors[color_idx]
+            lines.append(f"[{color}]{line}[/{color}]")
+        display_console.print("\n".join(lines))
 
         # Truecolor warning moved to interactive_mode() so it prints LAST
         # after all the help stuff - max visibility for the ugly red box!

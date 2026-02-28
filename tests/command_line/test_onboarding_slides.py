@@ -30,21 +30,21 @@ class TestGetNavFooter:
 
 
 class TestGetGradientBanner:
-    def test_with_pyfiglet(self):
+    def test_returns_banner(self):
         from newcode.command_line.onboarding_slides import get_gradient_banner
 
         result = get_gradient_banner()
         assert isinstance(result, str)
-        # Should contain some content
         assert len(result) > 0
+        # Should contain the block characters from the hardcoded banner
+        assert "▓" in result
 
-    def test_without_pyfiglet(self):
-        """Test fallback when pyfiglet is unavailable."""
-        import newcode.command_line.onboarding_slides as mod
+    def test_has_gradient_colors(self):
+        from newcode.command_line.onboarding_slides import get_gradient_banner
 
-        # pyfiglet is available in this env, so normal path works
-        result = mod.get_gradient_banner()
-        assert len(result) > 0
+        result = get_gradient_banner()
+        assert "bright_blue" in result
+        assert "bright_green" in result
 
 
 class TestSlideWelcome:
