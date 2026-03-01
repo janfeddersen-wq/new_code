@@ -371,10 +371,12 @@ class ClaudeCacheAsyncClient(httpx.AsyncClient):
                 is_auth_error = response.status_code in (401, 403)
 
                 if response.status_code == 400:
-                    is_auth_error = self._is_cloudflare_html_error(response)
+                    is_auth_error = self._is_cloudflare_html_error(
+                        response
+                    ) or self._is_token_expired_error(response)
                     if is_auth_error:
                         logger.info(
-                            "Detected Cloudflare 400 error (likely auth-related), attempting token refresh"
+                            "Detected 400 auth/token error, attempting token refresh"
                         )
 
                 if is_auth_error:
@@ -560,6 +562,53 @@ class ClaudeCacheAsyncClient(httpx.AsyncClient):
         except Exception as exc:
             logger.debug("Error checking for Cloudflare error: %s", exc)
             return False
+
+    @staticmethod
+    def _is_token_expired_error(response: httpx.Response) -> bool:
+        """Check if a 400 response indicates an expired or invalid OAuth token.
+
+        The Anthropic API returns JSON 400 errors when the token is expired.
+        Also checks stored token expiry as a heuristic.
+        """
+        try:
+            # Check if the JSON body mentions auth/token issues
+            body = None
+            if hasattr(response, "_content") and response._content:
+                body = response._content.decode("utf-8", errors="ignore")
+            else:
+                try:
+                    body = response.text
+                except Exception:
+                    pass
+
+            if body:
+                body_lower = body.lower()
+                auth_markers = (
+                    "expired",
+                    "invalid_token",
+                    "invalid_grant",
+                    "token",
+                    "unauthorized",
+                    "authentication",
+                )
+                if any(marker in body_lower for marker in auth_markers):
+                    return True
+
+            # Fallback: check if our stored token is actually expired
+            from newcode.plugins.claude_code_oauth.utils import (
+                is_token_expired,
+                load_stored_tokens,
+            )
+
+            tokens = load_stored_tokens()
+            if tokens and is_token_expired(tokens):
+                logger.info("Stored token is expired, treating 400 as auth error")
+                return True
+
+        except Exception as exc:
+            logger.debug("Error checking for token expired error: %s", exc)
+
+        return False
 
     def _refresh_claude_oauth_token(self) -> str | None:
         try:
