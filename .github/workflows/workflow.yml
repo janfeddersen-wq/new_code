@@ -9,8 +9,42 @@ on:
       - main
 
 jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Check next version is available on PyPI
+        run: |
+          # Get current version from pyproject.toml
+          CURRENT=$(grep '^version' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+          echo "Current version: $CURRENT"
+
+          # Calculate next patch version
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          echo "Next version after bump: $NEXT"
+
+          # Check if it already exists on PyPI
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/newcode/${NEXT}/json")
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "::error::Version $NEXT already exists on PyPI! Bump the version in pyproject.toml first."
+            exit 1
+          fi
+          echo "Version $NEXT is available on PyPI"
+
   test:
     runs-on: ${{ matrix.os }}
+    needs: check-version
     strategy:
       fail-fast: false
       matrix:
