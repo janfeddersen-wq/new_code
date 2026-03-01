@@ -559,7 +559,7 @@ class ClaudeCacheAsyncClient(httpx.AsyncClient):
                 return False
 
             body_lower = body.lower()
-            return "<html" in body_lower and "cloudflare" in body_lower
+            return "cloudflare" in body_lower and "400 bad request" in body_lower
         except Exception as exc:
             logger.debug("Error checking for Cloudflare error: %s", exc)
             return False
