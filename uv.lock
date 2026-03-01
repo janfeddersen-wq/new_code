@@ -188,6 +188,81 @@ wheels = [
 ]
 
 [[package]]
+name = "code-puppy"
+version = "0.0.425"
+source = { editable = "." }
+dependencies = [
+    { name = "anthropic" },
+    { name = "dbos" },
+    { name = "fastapi" },
+    { name = "httpx", extra = ["http2"] },
+    { name = "json-repair" },
+    { name = "mcp" },
+    { name = "openai" },
+    { name = "pillow" },
+    { name = "playwright" },
+    { name = "prompt-toolkit" },
+    { name = "pydantic" },
+    { name = "pydantic-ai-slim", extra = ["anthropic", "mcp", "openai"] },
+    { name = "pyfiglet" },
+    { name = "python-dotenv" },
+    { name = "rapidfuzz" },
+    { name = "requests" },
+    { name = "rich" },
+    { name = "ripgrep" },
+    { name = "tenacity" },
+    { name = "termflow-md" },
+    { name = "typer" },
+    { name = "uvicorn", extra = ["standard"] },
+    { name = "websockets" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pexpect" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-cov" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", specifier = "==0.79.0" },
+    { name = "dbos", specifier = ">=2.11.0" },
+    { name = "fastapi", specifier = ">=0.109.0" },
+    { name = "httpx", extras = ["http2"], specifier = ">=0.24.1" },
+    { name = "json-repair", specifier = ">=0.46.2" },
+    { name = "mcp", specifier = ">=1.9.4" },
+    { name = "openai", specifier = ">=1.99.1" },
+    { name = "pillow", specifier = ">=10.0.0" },
+    { name = "playwright", specifier = ">=1.40.0" },
+    { name = "prompt-toolkit", specifier = ">=3.0.52" },
+    { name = "pydantic", specifier = ">=2.4.0" },
+    { name = "pydantic-ai-slim", extras = ["openai", "anthropic", "mcp"], specifier = "==1.56.0" },
+    { name = "pyfiglet", specifier = ">=0.8.post1" },
+    { name = "python-dotenv", specifier = ">=1.0.0" },
+    { name = "rapidfuzz", specifier = ">=3.13.0" },
+    { name = "requests", specifier = ">=2.28.0" },
+    { name = "rich", specifier = ">=13.4.2" },
+    { name = "ripgrep", specifier = "==14.1.0" },
+    { name = "tenacity", specifier = ">=8.2.0" },
+    { name = "termflow-md", specifier = ">=0.1.8" },
+    { name = "typer", specifier = ">=0.12.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.27.0" },
+    { name = "websockets", specifier = ">=12.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pexpect", specifier = ">=4.9.0" },
+    { name = "pytest", specifier = ">=8.3.4" },
+    { name = "pytest-asyncio", specifier = ">=0.23.1" },
+    { name = "pytest-cov", specifier = ">=6.1.1" },
+    { name = "ruff", specifier = ">=0.11.11" },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -342,15 +417,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b2/9d/c3b43da9515bd270df0f80548d9944e389870713cc1fe2b8fb35fe2bcefd/docstring_parser-0.17.0.tar.gz", hash = "sha256:583de4a309722b3315439bb31d64ba3eebada841f2e2cee23b99df001434c912", size = 27442, upload-time = "2025-07-21T07:35:01.868Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/55/e2/2537ebcff11c1ee1ff17d8d0b6f4db75873e3b0fb32c2d4a2ee31ecb310a/docstring_parser-0.17.0-py3-none-any.whl", hash = "sha256:cf2569abd23dce8099b300f9b4fa8191e9582dda731fd533daf54c4551658708", size = 36896, upload-time = "2025-07-21T07:35:00.684Z" },
-]
-
-[[package]]
-name = "execnet"
-version = "2.1.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/bf/89/780e11f9588d9e7128a3f87788354c7946a9cbb1401ad38a48c4db9a4f07/execnet-2.1.2.tar.gz", hash = "sha256:63d83bfdd9a23e35b9c6a3261412324f964c2ec8dcd8d3c6916ee9373e0befcd", size = 166622, upload-time = "2025-11-12T09:56:37.75Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ab/84/02fc1827e8cdded4aa65baef11296a9bbe595c474f0d6d758af082d849fd/execnet-2.1.2-py3-none-any.whl", hash = "sha256:67fba928dd5a544b783f6056f449e5e3931a5c378b128bc18501f7ea79e296ec", size = 40708, upload-time = "2025-11-12T09:56:36.333Z" },
 ]
 
 [[package]]
@@ -715,81 +781,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
-]
-
-[[package]]
-name = "newcode"
-version = "0.2.5"
-source = { editable = "." }
-dependencies = [
-    { name = "anthropic" },
-    { name = "dbos" },
-    { name = "fastapi" },
-    { name = "httpx", extra = ["http2"] },
-    { name = "json-repair" },
-    { name = "mcp" },
-    { name = "openai" },
-    { name = "pillow" },
-    { name = "playwright" },
-    { name = "prompt-toolkit" },
-    { name = "pydantic" },
-    { name = "pydantic-ai-slim", extra = ["anthropic", "mcp", "openai"] },
-    { name = "python-dotenv" },
-    { name = "rapidfuzz" },
-    { name = "requests" },
-    { name = "rich" },
-    { name = "ripgrep" },
-    { name = "tenacity" },
-    { name = "termflow-md" },
-    { name = "typer" },
-    { name = "uvicorn", extra = ["standard"] },
-    { name = "websockets" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pexpect" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
-    { name = "pytest-xdist" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "anthropic", specifier = "==0.79.0" },
-    { name = "dbos", specifier = ">=2.11.0" },
-    { name = "fastapi", specifier = ">=0.109.0" },
-    { name = "httpx", extras = ["http2"], specifier = ">=0.24.1" },
-    { name = "json-repair", specifier = ">=0.46.2" },
-    { name = "mcp", specifier = ">=1.9.4" },
-    { name = "openai", specifier = ">=1.99.1" },
-    { name = "pillow", specifier = ">=10.0.0" },
-    { name = "playwright", specifier = ">=1.40.0" },
-    { name = "prompt-toolkit", specifier = ">=3.0.52" },
-    { name = "pydantic", specifier = ">=2.4.0" },
-    { name = "pydantic-ai-slim", extras = ["openai", "anthropic", "mcp"], specifier = "==1.56.0" },
-    { name = "python-dotenv", specifier = ">=1.0.0" },
-    { name = "rapidfuzz", specifier = ">=3.13.0" },
-    { name = "requests", specifier = ">=2.28.0" },
-    { name = "rich", specifier = ">=13.4.2" },
-    { name = "ripgrep", specifier = "==14.1.0" },
-    { name = "tenacity", specifier = ">=8.2.0" },
-    { name = "termflow-md", specifier = ">=0.1.8" },
-    { name = "typer", specifier = ">=0.12.0" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.27.0" },
-    { name = "websockets", specifier = ">=12.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pexpect", specifier = ">=4.9.0" },
-    { name = "pytest", specifier = ">=8.3.4" },
-    { name = "pytest-asyncio", specifier = ">=0.23.1" },
-    { name = "pytest-cov", specifier = ">=6.1.1" },
-    { name = "pytest-xdist", specifier = ">=3.5.0" },
-    { name = "ruff", specifier = ">=0.11.11" },
 ]
 
 [[package]]
@@ -1179,6 +1170,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pyfiglet"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c8/e3/0a86276ad2c383ce08d76110a8eec2fe22e7051c4b8ba3fa163a0b08c428/pyfiglet-1.0.4.tar.gz", hash = "sha256:db9c9940ed1bf3048deff534ed52ff2dafbbc2cd7610b17bb5eca1df6d4278ef", size = 1560615, upload-time = "2025-08-15T18:32:47.302Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9f/5c/fe9f95abd5eaedfa69f31e450f7e2768bef121dbdf25bcddee2cd3087a16/pyfiglet-1.0.4-py3-none-any.whl", hash = "sha256:65b57b7a8e1dff8a67dc8e940a117238661d5e14c3e49121032bd404d9b2b39f", size = 1806118, upload-time = "2025-08-15T18:32:45.556Z" },
+]
+
+[[package]]
 name = "pygments"
 version = "2.19.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1242,19 +1242,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5e/f7/c933acc76f5208b3b00089573cf6a2bc26dc80a8aece8f52bb7d6b1855ca/pytest_cov-7.0.0.tar.gz", hash = "sha256:33c97eda2e049a0c5298e91f519302a1334c26ac65c1a483d6206fd458361af1", size = 54328, upload-time = "2025-09-09T10:57:02.113Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ee/49/1377b49de7d0c1ce41292161ea0f721913fa8722c19fb9c1e3aa0367eecb/pytest_cov-7.0.0-py3-none-any.whl", hash = "sha256:3b8e9558b16cc1479da72058bdecf8073661c7f57f7d3c5f22a1c23507f2d861", size = 22424, upload-time = "2025-09-09T10:57:00.695Z" },
-]
-
-[[package]]
-name = "pytest-xdist"
-version = "3.8.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "execnet" },
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/78/b4/439b179d1ff526791eb921115fca8e44e596a13efeda518b9d845a619450/pytest_xdist-3.8.0.tar.gz", hash = "sha256:7e578125ec9bc6050861aa93f2d59f1d8d085595d6551c2c90b6f4fad8d3a9f1", size = 88069, upload-time = "2025-07-01T13:30:59.346Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ca/31/d4e37e9e550c2b92a9cbc2e4d0b7420a27224968580b5a447f420847c975/pytest_xdist-3.8.0-py3-none-any.whl", hash = "sha256:202ca578cfeb7370784a8c33d6d05bc6e13b4f25b5053c30a152269fd10f0b88", size = 46396, upload-time = "2025-07-01T13:30:56.632Z" },
 ]
 
 [[package]]
