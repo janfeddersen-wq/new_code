@@ -15,7 +15,7 @@ NewCode is designed for practical software workflows in the terminal: inspect fi
 - Built-in agent system with a default coding agent and optional specialist workflows
 - MCP (Model Context Protocol) integration and server management
 - Interactive command-driven UX for model, agent, and settings management
-- Session autosave/restore and scheduler utilities
+- Session autosave/restore utilities
 - Plugin/callback extensibility hooks
 
 ## Quick start
@@ -52,7 +52,6 @@ On first run, NewCode starts onboarding to help configure API keys and defaults.
 /config         # Show current configuration
 /model          # Select or switch model
 /agent          # Select or switch agent
-/scheduler      # Manage scheduled tasks
 /colors         # Customize terminal UI colors
 /api            # Manage built-in API server (start|stop|status)
 ```

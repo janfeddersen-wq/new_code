@@ -95,6 +95,20 @@ _delayed_compaction_requested = False
 _reload_count = 0
 
 
+def _is_cloudflare_auth_error(exc: Exception) -> bool:
+    """Detect Cloudflare 400 auth failures from exception text."""
+    message = str(exc)
+    if not message:
+        return False
+
+    message_lower = message.lower()
+    return (
+        "cloudflare" in message_lower
+        and "400" in message_lower
+        and "bad request" in message_lower
+    )
+
+
 def _log_error_to_file(exc: Exception) -> Optional[str]:
     """Log detailed error information to ~/.newcode/error_logs/log_{timestamp}.txt.
 
@@ -1849,41 +1863,58 @@ class BaseAgent(ABC):
             prompt_payload = prompt
 
         async def run_agent_task():
-            try:
-                self.set_message_history(
-                    self.prune_interrupted_tool_calls(self.get_message_history())
-                )
+            _cloudflare_retry_attempted = False
 
-                # DELAYED COMPACTION: Check if we should attempt delayed compaction
-                if self.should_attempt_delayed_compaction():
-                    emit_info(
-                        "🔄 Attempting delayed compaction (tool calls completed)",
-                        message_group="token_context_status",
+            while True:
+                _retry_after_cloudflare_refresh = False
+                try:
+                    self.set_message_history(
+                        self.prune_interrupted_tool_calls(self.get_message_history())
                     )
-                    current_messages = self.get_message_history()
-                    compacted_messages, _ = self.compact_messages(current_messages)
-                    if compacted_messages != current_messages:
-                        self.set_message_history(compacted_messages)
+
+                    # DELAYED COMPACTION: Check if we should attempt delayed compaction
+                    if self.should_attempt_delayed_compaction():
                         emit_info(
-                            "✅ Delayed compaction completed successfully",
+                            "🔄 Attempting delayed compaction (tool calls completed)",
                             message_group="token_context_status",
                         )
+                        current_messages = self.get_message_history()
+                        compacted_messages, _ = self.compact_messages(current_messages)
+                        if compacted_messages != current_messages:
+                            self.set_message_history(compacted_messages)
+                            emit_info(
+                                "✅ Delayed compaction completed successfully",
+                                message_group="token_context_status",
+                            )
 
-                usage_limits = UsageLimits(request_limit=get_message_limit())
+                    usage_limits = UsageLimits(request_limit=get_message_limit())
 
-                # Handle MCP servers - add them temporarily when using DBOS
-                if (
-                    get_use_dbos()
-                    and hasattr(self, "_mcp_servers")
-                    and self._mcp_servers
-                ):
-                    # Temporarily add MCP servers to the DBOS agent using internal _toolsets
-                    original_toolsets = pydantic_agent._toolsets
-                    pydantic_agent._toolsets = original_toolsets + self._mcp_servers
-                    pydantic_agent._toolsets = original_toolsets + self._mcp_servers
+                    # Handle MCP servers - add them temporarily when using DBOS
+                    if (
+                        get_use_dbos()
+                        and hasattr(self, "_mcp_servers")
+                        and self._mcp_servers
+                    ):
+                        # Temporarily add MCP servers to the DBOS agent using internal _toolsets
+                        original_toolsets = pydantic_agent._toolsets
+                        pydantic_agent._toolsets = original_toolsets + self._mcp_servers
+                        pydantic_agent._toolsets = original_toolsets + self._mcp_servers
 
-                    try:
-                        # Set the workflow ID for DBOS context so DBOS and the agent ID match
+                        try:
+                            # Set the workflow ID for DBOS context so DBOS and the agent ID match
+                            with SetWorkflowID(group_id):
+                                result_ = await pydantic_agent.run(
+                                    prompt_payload,
+                                    message_history=self.get_message_history(),
+                                    usage_limits=usage_limits,
+                                    event_stream_handler=event_stream_handler,
+                                    **kwargs,
+                                )
+                                return result_
+                        finally:
+                            # Always restore original toolsets
+                            pydantic_agent._toolsets = original_toolsets
+                    elif get_use_dbos():
                         with SetWorkflowID(group_id):
                             result_ = await pydantic_agent.run(
                                 prompt_payload,
@@ -1893,11 +1924,8 @@ class BaseAgent(ABC):
                                 **kwargs,
                             )
                             return result_
-                    finally:
-                        # Always restore original toolsets
-                        pydantic_agent._toolsets = original_toolsets
-                elif get_use_dbos():
-                    with SetWorkflowID(group_id):
+                    else:
+                        # Non-DBOS path (MCP servers are already included)
                         result_ = await pydantic_agent.run(
                             prompt_payload,
                             message_history=self.get_message_history(),
@@ -1906,74 +1934,111 @@ class BaseAgent(ABC):
                             **kwargs,
                         )
                         return result_
-                else:
-                    # Non-DBOS path (MCP servers are already included)
-                    result_ = await pydantic_agent.run(
-                        prompt_payload,
-                        message_history=self.get_message_history(),
-                        usage_limits=usage_limits,
-                        event_stream_handler=event_stream_handler,
-                        **kwargs,
+                except* UsageLimitExceeded as ule:
+                    emit_info(f"Usage limit exceeded: {str(ule)}", group_id=group_id)
+                    emit_info(
+                        "The agent has reached its usage limit. You can ask it to continue by saying 'please continue' or similar.",
+                        group_id=group_id,
                     )
-                    return result_
-            except* UsageLimitExceeded as ule:
-                emit_info(f"Usage limit exceeded: {str(ule)}", group_id=group_id)
-                emit_info(
-                    "The agent has reached its usage limit. You can ask it to continue by saying 'please continue' or similar.",
-                    group_id=group_id,
-                )
-            except* mcp.shared.exceptions.McpError as mcp_error:
-                emit_info(f"MCP server error: {str(mcp_error)}", group_id=group_id)
-                emit_info(f"{str(mcp_error)}", group_id=group_id)
-                emit_info(
-                    "Try disabling any malfunctioning MCP servers", group_id=group_id
-                )
-            except* asyncio.exceptions.CancelledError:
-                emit_info("Cancelled")
-                if get_use_dbos():
-                    await DBOS.cancel_workflow_async(group_id)
-            except* InterruptedError as ie:
-                emit_info(f"Interrupted: {str(ie)}")
-                if get_use_dbos():
-                    await DBOS.cancel_workflow_async(group_id)
-            except* Exception as other_error:
-                # Filter out CancelledError and UsageLimitExceeded from the exception group - let it propagate
-                remaining_exceptions = []
+                except* mcp.shared.exceptions.McpError as mcp_error:
+                    emit_info(f"MCP server error: {str(mcp_error)}", group_id=group_id)
+                    emit_info(f"{str(mcp_error)}", group_id=group_id)
+                    emit_info(
+                        "Try disabling any malfunctioning MCP servers",
+                        group_id=group_id,
+                    )
+                except* asyncio.exceptions.CancelledError:
+                    emit_info("Cancelled")
+                    if get_use_dbos():
+                        await DBOS.cancel_workflow_async(group_id)
+                except* InterruptedError as ie:
+                    emit_info(f"Interrupted: {str(ie)}")
+                    if get_use_dbos():
+                        await DBOS.cancel_workflow_async(group_id)
+                except* Exception as other_error:
 
-                def collect_non_cancelled_exceptions(exc):
-                    if isinstance(exc, ExceptionGroup):
-                        for sub_exc in exc.exceptions:
-                            collect_non_cancelled_exceptions(sub_exc)
-                    elif not isinstance(
-                        exc, (asyncio.CancelledError, UsageLimitExceeded)
+                    def contains_cloudflare_auth_error(exc: Exception) -> bool:
+                        if isinstance(exc, ExceptionGroup):
+                            return any(
+                                contains_cloudflare_auth_error(sub_exc)
+                                for sub_exc in exc.exceptions
+                            )
+                        return _is_cloudflare_auth_error(exc)
+
+                    if (
+                        not _cloudflare_retry_attempted
+                        and contains_cloudflare_auth_error(other_error)
                     ):
-                        remaining_exceptions.append(exc)
-                        emit_info(f"Unexpected error: {str(exc)}", group_id=group_id)
-                        emit_info(f"{str(exc.args)}", group_id=group_id)
-                        # Log to file for debugging
-                        log_error(
-                            exc,
-                            context=f"Agent run (group_id={group_id})",
-                            include_traceback=True,
+                        _cloudflare_retry_attempted = True
+                        emit_info(
+                            "Detected Cloudflare 400 error (likely expired token), attempting refresh...",
+                            group_id=group_id,
                         )
+                        refreshed_token = None
+                        try:
+                            from newcode.plugins.claude_code_oauth.utils import (
+                                refresh_access_token,
+                            )
 
-                collect_non_cancelled_exceptions(other_error)
+                            refreshed_token = refresh_access_token(force=True)
+                        except Exception as refresh_error:
+                            emit_info(
+                                f"Token refresh failed: {str(refresh_error)}",
+                                group_id=group_id,
+                            )
 
-                # If there are CancelledError exceptions in the group, re-raise them
-                cancelled_exceptions = []
+                        if refreshed_token:
+                            emit_info(
+                                "Token refresh successful, retrying request...",
+                                group_id=group_id,
+                            )
+                            _retry_after_cloudflare_refresh = True
 
-                def collect_cancelled_exceptions(exc):
-                    if isinstance(exc, ExceptionGroup):
-                        for sub_exc in exc.exceptions:
-                            collect_cancelled_exceptions(sub_exc)
-                    elif isinstance(exc, asyncio.CancelledError):
-                        cancelled_exceptions.append(exc)
+                    if not _retry_after_cloudflare_refresh:
+                        # Filter out CancelledError and UsageLimitExceeded from the exception group - let it propagate
+                        remaining_exceptions = []
 
-                collect_cancelled_exceptions(other_error)
-            finally:
-                self.set_message_history(
-                    self.prune_interrupted_tool_calls(self.get_message_history())
-                )
+                        def collect_non_cancelled_exceptions(exc):
+                            if isinstance(exc, ExceptionGroup):
+                                for sub_exc in exc.exceptions:
+                                    collect_non_cancelled_exceptions(sub_exc)
+                            elif not isinstance(
+                                exc, (asyncio.CancelledError, UsageLimitExceeded)
+                            ):
+                                remaining_exceptions.append(exc)
+                                emit_info(
+                                    f"Unexpected error: {str(exc)}", group_id=group_id
+                                )
+                                emit_info(f"{str(exc.args)}", group_id=group_id)
+                                # Log to file for debugging
+                                log_error(
+                                    exc,
+                                    context=f"Agent run (group_id={group_id})",
+                                    include_traceback=True,
+                                )
+
+                        collect_non_cancelled_exceptions(other_error)
+
+                        # If there are CancelledError exceptions in the group, re-raise them
+                        cancelled_exceptions = []
+
+                        def collect_cancelled_exceptions(exc):
+                            if isinstance(exc, ExceptionGroup):
+                                for sub_exc in exc.exceptions:
+                                    collect_cancelled_exceptions(sub_exc)
+                            elif isinstance(exc, asyncio.CancelledError):
+                                cancelled_exceptions.append(exc)
+
+                        collect_cancelled_exceptions(other_error)
+                finally:
+                    self.set_message_history(
+                        self.prune_interrupted_tool_calls(self.get_message_history())
+                    )
+
+                if _retry_after_cloudflare_refresh:
+                    continue
+
+                break
 
         # Create the task FIRST
         agent_task = asyncio.create_task(run_agent_task())

@@ -79,10 +79,6 @@ def test_qa_browser():
     assert isinstance(prompt, str)
 
 
-def test_scheduler_agent():
-    _test_reviewer_agent("newcode.agents.agent_scheduler", "SchedulerAgent")
-
-
 def test_python_programmer():
     from newcode.agents.agent_python_programmer import PythonProgrammerAgent
 

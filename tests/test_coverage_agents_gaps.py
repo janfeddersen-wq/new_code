@@ -75,18 +75,6 @@ class TestPromptReviewerAgent:
         assert "Quality Dimensions" in prompt
 
 
-class TestSchedulerAgent:
-    def test_tools_and_prompt(self):
-        from newcode.agents.agent_scheduler import SchedulerAgent
-
-        agent = SchedulerAgent()
-        tools = agent.get_available_tools()
-        assert "scheduler_list_tasks" in tools
-
-        prompt = agent.get_system_prompt()
-        assert "Scheduler Agent" in prompt
-
-
 class TestCodeAgentTools:
     def test_get_available_tools(self):
         from newcode.agents.agent_code_agent import CodeAgent
