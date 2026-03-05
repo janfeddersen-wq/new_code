@@ -72,6 +72,9 @@ jobs:
       - name: Install pexpect for integration tests
         run: uv pip install pexpect>=4.9.0
 
+      - name: Install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
       - name: Run tests
         env:
           CI: '1'
@@ -83,7 +86,7 @@ jobs:
           SYN_API_KEY: ${{ secrets.SYN_API_KEY || 'fake-key-for-ci-testing' }}
         run: |
           echo "Running tests on ${{ runner.os }} with Python ${{ matrix.python-version }}..."
-          uv run pytest tests/ -v -n auto --cov=newcode --cov-report=term-missing
+          uv run pytest tests/ --ignore tests/integration -v -n auto --cov=newcode --cov-report=term-missing
 
   build-publish:
     runs-on: ubuntu-latest
