@@ -1326,11 +1326,11 @@ class TestMaxImageSizeConstant:
 
         assert MAX_IMAGE_SIZE_BYTES == 10 * 1024 * 1024
 
-    def test_max_dimension_is_4096(self):
-        """Test that max dimension is 4096."""
+    def test_max_dimension_is_1920(self):
+        """Test that max dimension is 1920."""
         from newcode.command_line.clipboard import MAX_IMAGE_DIMENSION
 
-        assert MAX_IMAGE_DIMENSION == 4096
+        assert MAX_IMAGE_DIMENSION == 1920
 
 
 class TestPILAvailableFlag:
