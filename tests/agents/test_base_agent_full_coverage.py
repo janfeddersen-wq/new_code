@@ -977,7 +977,6 @@ class TestReloadCodeGenerationAgent:
                 return_value=MagicMock(_tools={}),
             ),
             patch("newcode.tools.register_tools_for_agent"),
-            patch("newcode.tools.has_extended_thinking_active", return_value=False),
             patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.agents.base_agent.make_model_settings", return_value={}),
         ):
