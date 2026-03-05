@@ -645,7 +645,7 @@ class TestRunOAuthFlow:
                 mock_add.return_value = True
 
                 with patch(
-                    "code_puppy.plugins.chatgpt_oauth.utils.fetch_chatgpt_models",
+                    "newcode.plugins.chatgpt_oauth.utils.fetch_chatgpt_models",
                     return_value=["gpt-5.4", "gpt-5.3-instant", "gpt-5.3-codex"],
                 ):
                     with patch("threading.Thread"):

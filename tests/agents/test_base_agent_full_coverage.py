@@ -930,66 +930,66 @@ class TestReloadCodeGenerationAgent:
         agent.reload_code_generation_agent()
         mock_dbos_agent.assert_called()
 
-    def test_reload_clears_puppy_rules_cache(self, agent):
-        """reload_code_generation_agent must invalidate the _puppy_rules cache.
+    def test_reload_clears_agent_rules_cache(self, agent):
+        """reload_code_generation_agent must invalidate the _agent_rules cache.
 
         This ensures that /cd picks up the new project's AGENT.md rules instead
         of keeping the old directory's rules baked in for the session.
         """
         # Seed a stale cached value as if a previous directory's AGENT.md was loaded.
         stale_rules = "old project rules"
-        agent._puppy_rules = stale_rules
+        agent._agent_rules = stale_rules
 
-        # Capture the _puppy_rules value at the moment load_puppy_rules() is
+        # Capture the _agent_rules value at the moment load_agent_rules() is
         # entered to prove it was cleared *before* the fresh read.
         value_at_load_time = []
-        original_load = agent.load_puppy_rules
+        original_load = agent.load_agent_rules
 
         def spy_load():
-            # _puppy_rules should already be None when we arrive here
-            value_at_load_time.append(agent._puppy_rules)
+            # _agent_rules should already be None when we arrive here
+            value_at_load_time.append(agent._agent_rules)
             return original_load()
 
         with (
-            patch.object(agent, "load_puppy_rules", side_effect=spy_load),
+            patch.object(agent, "load_agent_rules", side_effect=spy_load),
             patch.object(agent, "get_model_name", return_value="model"),
             patch(
-                "code_puppy.agents.base_agent.ModelFactory.load_config",
+                "newcode.agents.base_agent.ModelFactory.load_config",
                 return_value={"model": {}},
             ),
             patch(
-                "code_puppy.agents.base_agent.ModelFactory.get_model",
+                "newcode.agents.base_agent.ModelFactory.get_model",
                 return_value=MagicMock(),
             ),
             patch(
-                "code_puppy.agents.base_agent.get_agent_pinned_model",
+                "newcode.agents.base_agent.get_agent_pinned_model",
                 return_value=None,
             ),
             patch(
-                "code_puppy.agents.base_agent.get_mcp_manager",
+                "newcode.agents.base_agent.get_mcp_manager",
             ) as mock_mcp,
             patch(
-                "code_puppy.model_utils.prepare_prompt_for_model",
+                "newcode.model_utils.prepare_prompt_for_model",
                 return_value=MagicMock(instructions="test"),
             ),
             patch(
-                "code_puppy.agents.base_agent.PydanticAgent",
+                "newcode.agents.base_agent.PydanticAgent",
                 return_value=MagicMock(_tools={}),
             ),
-            patch("code_puppy.tools.register_tools_for_agent"),
-            patch("code_puppy.tools.has_extended_thinking_active", return_value=False),
-            patch("code_puppy.agents.base_agent.get_use_dbos", return_value=False),
-            patch("code_puppy.agents.base_agent.make_model_settings", return_value={}),
+            patch("newcode.tools.register_tools_for_agent"),
+            patch("newcode.tools.has_extended_thinking_active", return_value=False),
+            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
+            patch("newcode.agents.base_agent.make_model_settings", return_value={}),
         ):
             mock_mcp.return_value.get_servers_for_agent.return_value = []
             agent.reload_code_generation_agent()
 
-        # The spy must have been called (load_puppy_rules was invoked during reload).
-        assert value_at_load_time, "load_puppy_rules was never called during reload"
-        # Crucially, _puppy_rules must have been None at entry to load_puppy_rules,
+        # The spy must have been called (load_agent_rules was invoked during reload).
+        assert value_at_load_time, "load_agent_rules was never called during reload"
+        # Crucially, _agent_rules must have been None at entry to load_agent_rules,
         # proving the cache was cleared before the fresh disk read.
         assert value_at_load_time[0] is None, (
-            f"_puppy_rules was not cleared before re-loading rules; "
+            f"_agent_rules was not cleared before re-loading rules; "
             f"got: {value_at_load_time[0]!r}"
         )
 

@@ -1320,10 +1320,10 @@ class BaseAgent(ABC):
         from newcode.tools import register_tools_for_agent
 
         # Invalidate the project-local rules cache so a fresh read from the
-        # current working directory is performed on the next load_puppy_rules()
+        # current working directory is performed on the next load_agent_rules()
         # call.  This is critical for /cd: the user may have switched to a
         # different project that has its own AGENT.md (or none at all).
-        self._puppy_rules = None
+        self._agent_rules = None
 
         if message_group is None:
             message_group = str(uuid.uuid4())

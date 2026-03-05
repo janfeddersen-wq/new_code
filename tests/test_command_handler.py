@@ -71,7 +71,7 @@ def test_cd_valid_change():
             patch("os.path.isdir", return_value=True),
             patch("os.chdir") as mock_chdir,
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
             ),
         ):
@@ -101,7 +101,7 @@ def test_cd_valid_change_reload_failure_is_nonfatal():
             patch("os.path.isdir", return_value=True),
             patch("os.chdir") as mock_chdir,
             patch(
-                "code_puppy.agents.agent_manager.get_current_agent",
+                "newcode.agents.agent_manager.get_current_agent",
                 return_value=mock_agent,
             ),
         ):
