@@ -11,6 +11,8 @@ from typing import Iterable, List, Sequence
 
 from pydantic_ai import BinaryContent, DocumentUrl, ImageUrl
 
+from newcode.image_utils import constrain_image_dimensions
+
 SUPPORTED_INLINE_SCHEMES = {"http", "https"}
 
 # Maximum path length to consider - conservative limit to avoid OS errors
@@ -341,6 +343,8 @@ def parse_prompt_attachments(prompt: str) -> ProcessedPrompt:
         except AttachmentParsingError:
             # Silently ignore unreadable attachments to reduce prompt noise
             continue
+        # Constrain image dimensions for API compliance (Claude max 2000px for many-image requests)
+        data = constrain_image_dimensions(data, media_type=media_type)
         attachments.append(
             PromptAttachment(
                 placeholder=detection.placeholder,

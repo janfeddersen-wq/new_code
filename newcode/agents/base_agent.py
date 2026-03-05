@@ -71,6 +71,7 @@ from newcode.config import (
     get_value,
 )
 from newcode.error_logging import log_error
+from newcode.image_utils import constrain_image_dimensions
 from newcode.keymap import cancel_agent_uses_signal, get_cancel_agent_char_code
 from newcode.mcp_ import get_mcp_manager
 from newcode.messaging import (
@@ -1850,7 +1851,25 @@ class BaseAgent(ABC):
         # Build combined prompt payload when attachments are provided.
         attachment_parts: List[Any] = []
         if attachments:
-            attachment_parts.extend(list(attachments))
+            # Constrain image dimensions for API compliance (Claude max 2000px for many-image requests)
+            constrained = []
+            for att in attachments:
+                if (
+                    isinstance(att, BinaryContent)
+                    and hasattr(att, "media_type")
+                    and hasattr(att, "data")
+                ):
+                    media_type = getattr(att, "media_type", "") or ""
+                    if media_type.startswith("image/"):
+                        new_data = constrain_image_dimensions(
+                            att.data, media_type=media_type
+                        )
+                        if new_data is not att.data:
+                            att = BinaryContent(data=new_data, media_type=media_type)
+                    constrained.append(att)
+                else:
+                    constrained.append(att)
+            attachment_parts.extend(constrained)
         if link_attachments:
             attachment_parts.extend(list(link_attachments))
 

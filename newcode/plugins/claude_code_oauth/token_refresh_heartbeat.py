@@ -28,6 +28,10 @@ HEARTBEAT_INTERVAL_SECONDS = 120
 # Minimum time between refresh attempts to avoid hammering the endpoint
 MIN_REFRESH_INTERVAL_SECONDS = 60
 
+# Session-level heartbeat interval - refresh token once per hour during idle sessions
+# This prevents tokens from expiring when the app is open but no agent is running
+SESSION_HEARTBEAT_INTERVAL_SECONDS = 3600
+
 # Global tracking of last refresh time to coordinate across heartbeats
 _last_refresh_time: float = 0.0
 

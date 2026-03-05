@@ -12,6 +12,7 @@ from typing import Any, Dict, Optional, Union
 
 from pydantic_ai import BinaryContent, RunContext, ToolReturn
 
+from newcode.image_utils import constrain_image_dimensions
 from newcode.messaging import emit_error, emit_info, emit_success
 from newcode.tools.common import generate_group_id
 
@@ -122,13 +123,16 @@ async def take_screenshot(
 
         screenshot_path = result.get("screenshot_path", "(not saved)")
 
+        # Constrain dimensions for API compliance (Claude max 2000px for many-image requests)
+        constrained_bytes = constrain_image_dimensions(result["screenshot_bytes"])
+
         # Return as ToolReturn with BinaryContent so the model can SEE the image!
         return ToolReturn(
             return_value=f"Screenshot captured successfully. Saved to: {screenshot_path}",
             content=[
                 f"Here's the browser screenshot ({target}):",
                 BinaryContent(
-                    data=result["screenshot_bytes"],
+                    data=constrained_bytes,
                     media_type="image/png",
                 ),
                 "Please analyze what you see and describe any relevant details.",

@@ -16,6 +16,8 @@ import threading
 import time
 from typing import Optional
 
+from newcode.image_utils import constrain_image_dimensions
+
 # Try to import PIL - it's optional but needed for clipboard image support
 try:
     from PIL import Image, ImageGrab
@@ -42,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 # Constants
 MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024  # 10MB
-MAX_IMAGE_DIMENSION = 4096  # Max width/height for resize
+MAX_IMAGE_DIMENSION = 1920  # Max width/height for resize
 MAX_PENDING_IMAGES = (
     10  # SEC-CLIP-001: Limit pending images to prevent memory exhaustion
 )
@@ -317,6 +319,7 @@ def get_clipboard_image() -> Optional[bytes]:
                     )
                     return None
 
+        image_bytes = constrain_image_dimensions(image_bytes)
         return image_bytes
 
     # Windows/macOS path - use PIL
@@ -356,6 +359,7 @@ def get_clipboard_image() -> Optional[bytes]:
         image_bytes = buffer.getvalue()
 
         logger.info(f"Clipboard image size: {len(image_bytes) / 1024:.1f}KB")
+        image_bytes = constrain_image_dimensions(image_bytes)
         return image_bytes
 
     except Exception as e:

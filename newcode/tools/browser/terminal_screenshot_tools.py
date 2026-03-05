@@ -23,6 +23,7 @@ from PIL import Image
 from pydantic_ai import BinaryContent, RunContext, ToolReturn
 from rich.text import Text
 
+from newcode.image_utils import constrain_image_dimensions
 from newcode.messaging import emit_error, emit_info, emit_success
 from newcode.tools.browser import format_terminal_banner
 from newcode.tools.common import generate_group_id
@@ -117,7 +118,8 @@ def _resize_image(image_bytes: bytes, max_height: int = DEFAULT_MAX_HEIGHT) -> b
 
         # Only resize if image is taller than max_height
         if img.height <= max_height:
-            return image_bytes
+            # Still constrain width for API dimension limits
+            return constrain_image_dimensions(image_bytes)
 
         # Calculate new dimensions maintaining aspect ratio
         ratio = max_height / img.height
@@ -135,7 +137,9 @@ def _resize_image(image_bytes: bytes, max_height: int = DEFAULT_MAX_HEIGHT) -> b
         logger.debug(
             f"Resized image from {img.width}x{img.height} to {new_width}x{new_height}"
         )
-        return output.read()
+        resized_bytes = output.read()
+        # Additional constraint for API dimension limits
+        return constrain_image_dimensions(resized_bytes)
 
     except Exception as e:
         logger.warning(f"Failed to resize image: {e}, using original")

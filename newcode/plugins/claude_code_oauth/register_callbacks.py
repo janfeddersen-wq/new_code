@@ -380,6 +380,55 @@ def _register_model_types() -> List[Dict[str, Any]]:
 # Using a dict to allow multiple concurrent agent runs (keyed by session_id)
 _active_heartbeats: Dict[str, Any] = {}
 
+# Persistent session-level heartbeat that runs for the entire app lifetime
+_session_heartbeat: Optional[Any] = None
+
+
+async def _on_startup() -> None:
+    """Start a persistent token refresh heartbeat for idle sessions."""
+    global _session_heartbeat
+
+    try:
+        if _session_heartbeat is not None:
+            return
+
+        tokens = load_stored_tokens()
+        if not tokens:
+            return
+
+        from .token_refresh_heartbeat import (
+            SESSION_HEARTBEAT_INTERVAL_SECONDS,
+            TokenRefreshHeartbeat,
+        )
+
+        heartbeat = TokenRefreshHeartbeat(interval=SESSION_HEARTBEAT_INTERVAL_SECONDS)
+        await heartbeat.start()
+        _session_heartbeat = heartbeat
+        logger.debug(
+            "Started persistent session-level token refresh heartbeat (interval: 1h)"
+        )
+    except Exception as exc:
+        logger.debug(
+            "Failed to start persistent session-level token refresh heartbeat: %s", exc
+        )
+
+
+async def _on_shutdown() -> None:
+    """Stop the persistent session-level token refresh heartbeat."""
+    global _session_heartbeat
+
+    try:
+        if _session_heartbeat is None:
+            return
+
+        await _session_heartbeat.stop()
+        _session_heartbeat = None
+        logger.debug("Stopped persistent session-level token refresh heartbeat")
+    except Exception as exc:
+        logger.debug(
+            "Failed to stop persistent session-level token refresh heartbeat: %s", exc
+        )
+
 
 async def _on_agent_run_start(
     agent_name: str,
@@ -449,5 +498,7 @@ async def _on_agent_run_end(
 register_callback("custom_command_help", _custom_help)
 register_callback("custom_command", _handle_custom_command)
 register_callback("register_model_type", _register_model_types)
+register_callback("startup", _on_startup)
+register_callback("shutdown", _on_shutdown)
 register_callback("agent_run_start", _on_agent_run_start)
 register_callback("agent_run_end", _on_agent_run_end)
