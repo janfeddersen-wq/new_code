@@ -60,10 +60,20 @@ class TestAskUserQuestionValidation:
 
     @pytest.fixture(autouse=True)
     def mock_interactive(self):
-        """Mock is_interactive to return True for all validation tests."""
-        with patch(
-            "newcode.tools.ask_user_question.handler.is_interactive",
-            return_value=True,
+        """Mock environment checks to bypass non-interactive/sub-agent/wiggum guards."""
+        with (
+            patch(
+                "newcode.tools.ask_user_question.handler.is_interactive",
+                return_value=True,
+            ),
+            patch(
+                "newcode.tools.ask_user_question.handler.is_subagent",
+                return_value=False,
+            ),
+            patch(
+                "newcode.tools.ask_user_question.handler.is_wiggum_active",
+                return_value=False,
+            ),
         ):
             yield
 
