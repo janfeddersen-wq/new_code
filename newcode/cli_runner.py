@@ -12,10 +12,8 @@ import argparse
 import asyncio
 import os
 import sys
-import time
 from pathlib import Path
 
-from dbos import DBOS, DBOSConfig
 from rich.console import Console
 
 from newcode import __version__, callbacks, plugins
@@ -25,10 +23,8 @@ from newcode.command_line.clipboard import get_clipboard_manager
 from newcode.config import (
     AUTOSAVE_DIR,
     COMMAND_HISTORY_FILE,
-    DBOS_DATABASE_URL,
     ensure_config_exists,
     finalize_autosave_session,
-    get_use_dbos,
     initialize_command_history_file,
     save_command_to_history,
 )
@@ -271,33 +267,6 @@ async def main():
 
     await callbacks.on_startup()
 
-    # Initialize DBOS if not disabled
-    if get_use_dbos():
-        # Append a Unix timestamp in ms to the version for uniqueness
-        dbos_app_version = os.environ.get(
-            "DBOS_APP_VERSION", f"{current_version}-{int(time.time() * 1000)}"
-        )
-        dbos_config: DBOSConfig = {
-            "name": "dbos-code-agent",
-            "system_database_url": DBOS_DATABASE_URL,
-            "run_admin_server": False,
-            "conductor_key": os.environ.get(
-                "DBOS_CONDUCTOR_KEY"
-            ),  # Optional, if set in env, connect to conductor
-            "log_level": os.environ.get(
-                "DBOS_LOG_LEVEL", "ERROR"
-            ),  # Default to ERROR level to suppress verbose logs
-            "application_version": dbos_app_version,  # Match DBOS app version
-        }
-        try:
-            DBOS(config=dbos_config)
-            DBOS.launch()
-        except Exception as e:
-            emit_error(f"Error initializing DBOS: {e}")
-            sys.exit(1)
-    else:
-        pass
-
     global shutdown_flag
     shutdown_flag = False
     try:
@@ -322,8 +291,6 @@ async def main():
         if bus_renderer:
             bus_renderer.stop()
         await callbacks.on_shutdown()
-        if get_use_dbos():
-            DBOS.destroy()
 
 
 async def interactive_mode(message_renderer, initial_command: str = None) -> None:
@@ -981,8 +948,6 @@ def main_entry():
         asyncio.run(main())
     except KeyboardInterrupt:
         # Normal exit via Ctrl+C – not a crash, so just clean up quietly
-        if get_use_dbos():
-            DBOS.destroy()
         return 0
     finally:
         # Reset terminal on Unix-like systems (not Windows)

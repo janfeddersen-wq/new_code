@@ -5,12 +5,10 @@ with the quirks we learned (\r line endings, tiny delays, optional stdout
 capture). Includes fixtures for pytest.
 """
 
-import json
 import os
 import pathlib
 import random
 import shutil
-import sqlite3
 import sys
 import tempfile
 import time
@@ -27,7 +25,6 @@ owner_name = CodePuppyTester
 auto_save_session = true
 max_saved_sessions = 5
 model = synthetic-GLM-4.7
-enable_dbos = true
 """
 
 MOTD_TEMPLATE: Final[str] = """2025-08-24
@@ -92,89 +89,31 @@ class SpawnResult:
             self._log_file.close()
 
 
-# ---------------------------------------------------------------------------
-# DBOS report collection
-# ---------------------------------------------------------------------------
-_dbos_reports: list[str] = []
-
-
-def _safe_json(val):
-    try:
-        json.dumps(val)
-        return val
-    except Exception:
-        return str(val)
-
-
 def _capture_initial_files(temp_home: pathlib.Path) -> set[pathlib.Path]:
-    """Capture all files that exist before the test starts.
-
-    Returns a set of absolute file paths that were present at test start.
-    """
+    """Capture all files that exist before the test starts."""
     initial_files = set()
     try:
-        for root, dirs, files in os.walk(temp_home):
+        for root, _dirs, files in os.walk(temp_home):
             for file in files:
                 initial_files.add(pathlib.Path(root) / file)
     except (OSError, PermissionError):
-        # If we can't walk the directory, just return empty set
         pass
     return initial_files
-
-
-def _cleanup_test_only_files(
-    temp_home: pathlib.Path, initial_files: set[pathlib.Path]
-) -> None:
-    """Delete only files that were created during the test run.
-
-    This is more selective than removing the entire temp directory.
-    """
-    try:
-        # Walk current files and delete those not in initial set
-        current_files = set()
-        for root, dirs, files in os.walk(temp_home):
-            for file in files:
-                current_files.add(pathlib.Path(root) / file)
-
-        # Files to delete are those that exist now but didn't initially
-        files_to_delete = current_files - initial_files
-
-        # Delete files in reverse order (deepest first) to avoid path issues
-        for file_path in sorted(
-            files_to_delete, key=lambda p: len(p.parts), reverse=True
-        ):
-            try:
-                file_path.unlink()
-            except (OSError, PermissionError):
-                # Best effort cleanup
-                pass
-
-        # Try to remove empty directories
-        _cleanup_empty_directories(temp_home, initial_files)
-
-    except (OSError, PermissionError):
-        # Fallback to full cleanup if selective cleanup fails
-        shutil.rmtree(temp_home, ignore_errors=True)
 
 
 def _cleanup_empty_directories(
     temp_home: pathlib.Path, initial_files: set[pathlib.Path]
 ) -> None:
-    """Remove empty directories that weren't present initially."""
+    """Remove empty directories that were created during the test."""
     try:
-        # Get all current directories
         current_dirs = set()
-        for root, dirs, files in os.walk(temp_home):
+        for root, dirs, _files in os.walk(temp_home):
             for dir_name in dirs:
                 current_dirs.add(pathlib.Path(root) / dir_name)
 
-        # Get initial directories (just the parent dirs of initial files)
-        initial_dirs = set()
-        for file_path in initial_files:
-            initial_dirs.add(file_path.parent)
-
-        # Remove empty directories that weren't there initially
+        initial_dirs = {file_path.parent for file_path in initial_files}
         dirs_to_remove = current_dirs - initial_dirs
+
         for dir_path in sorted(
             dirs_to_remove, key=lambda p: len(p.parts), reverse=True
         ):
@@ -187,55 +126,29 @@ def _cleanup_empty_directories(
         pass
 
 
-def dump_dbos_report(temp_home: pathlib.Path) -> None:
-    """Collect a summary of DBOS SQLite contents for this temp HOME.
-
-    - Lists tables and row counts
-    - Samples up to 2 rows per table
-    Appends human-readable text to a global report buffer.
-    """
+def _cleanup_test_only_files(
+    temp_home: pathlib.Path, initial_files: set[pathlib.Path]
+) -> None:
+    """Delete only files created during test run."""
     try:
-        db_path = temp_home / ".newcode" / "dbos_store.sqlite"
-        if not db_path.exists():
-            return
-        conn = sqlite3.connect(str(db_path))
-        try:
-            cur = conn.cursor()
-            cur.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
-            )
-            tables = [r[0] for r in cur.fetchall()]
-            lines: list[str] = []
-            lines.append(f"DBOS Report for: {db_path}")
-            if not tables:
-                lines.append("- No user tables found")
-            for t in tables:
-                try:
-                    cur.execute(f"SELECT COUNT(*) FROM {t}")
-                    count = cur.fetchone()[0]
-                    lines.append(f"- {t}: {count} rows")
-                    # Sample up to 2 rows for context
-                    cur.execute(f"SELECT * FROM {t} LIMIT 2")
-                    rows = cur.fetchall()
-                    colnames = (
-                        [d[0] for d in cur.description] if cur.description else []
-                    )
-                    for row in rows:
-                        obj = {colnames[i]: _safe_json(row[i]) for i in range(len(row))}
-                        lines.append(f"  • sample: {obj}")
-                except Exception as te:
-                    lines.append(f"- {t}: error reading table: {te}")
-            lines.append("")
-            _dbos_reports.append("\n".join(lines))
-        finally:
-            conn.close()
-    except Exception:
-        # Silent: reporting should never fail tests
-        pass
+        current_files = set()
+        for root, _dirs, files in os.walk(temp_home):
+            for file in files:
+                current_files.add(pathlib.Path(root) / file)
 
+        files_to_delete = current_files - initial_files
 
-def get_dbos_reports() -> str:
-    return "\n".join(_dbos_reports)
+        for file_path in sorted(
+            files_to_delete, key=lambda p: len(p.parts), reverse=True
+        ):
+            try:
+                file_path.unlink()
+            except (OSError, PermissionError):
+                pass
+
+        _cleanup_empty_directories(temp_home, initial_files)
+    except (OSError, PermissionError):
+        shutil.rmtree(temp_home, ignore_errors=True)
 
 
 class CliHarness:
@@ -293,10 +206,6 @@ class CliHarness:
         spawn_env.pop("XDG_DATA_HOME", None)
         spawn_env.pop("XDG_CACHE_HOME", None)
         spawn_env.pop("XDG_STATE_HOME", None)
-        # Ensure DBOS uses a temp sqlite under this HOME
-        dbos_sqlite = newcode_dir / "dbos_store.sqlite"
-        spawn_env["DBOS_SYSTEM_DATABASE_URL"] = f"sqlite:///{dbos_sqlite}"
-        spawn_env.setdefault("DBOS_LOG_LEVEL", "ERROR")
         # Skip the interactive tutorial wizard in tests
         spawn_env["CODE_PUPPY_SKIP_TUTORIAL"] = "1"
 
@@ -344,7 +253,7 @@ class CliHarness:
         )
 
     def cleanup(self, result: SpawnResult) -> None:
-        """Terminate the child, dump DBOS report, then remove test-created files unless kept."""
+        """Terminate the child, then remove test-created files unless kept."""
         keep_home = os.getenv("CODE_PUPPY_KEEP_TEMP_HOME") in {
             "1",
             "true",
@@ -359,8 +268,6 @@ class CliHarness:
             if result.child.isalive():
                 result.child.terminate(force=True)
         finally:
-            # Dump DBOS report before cleanup
-            dump_dbos_report(result.temp_home)
             if not keep_home:
                 # Use selective cleanup - only delete files created during test
                 use_selective_cleanup = os.getenv(

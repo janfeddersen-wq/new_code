@@ -16,7 +16,7 @@ class TestGetCommandsHelp:
 
 
 class TestHandleShowCommand:
-    def _show_patches(self, effective_temp=0.7, global_temp=0.7, yolo=True, dbos=False):
+    def _show_patches(self, effective_temp=0.7, global_temp=0.7, yolo=True):
         """Return a context manager patching all lazy imports in handle_show_command."""
         mock_agent = MagicMock()
         mock_agent.display_name = "Test Agent"
@@ -37,7 +37,6 @@ class TestHandleShowCommand:
                 return_value=effective_temp,
             ),
             patch("newcode.config.get_default_agent", return_value="code-agent"),
-            patch("newcode.config.get_use_dbos", return_value=dbos),
             patch("newcode.config.get_resume_message_count", return_value=50),
             patch("newcode.config.get_openai_reasoning_effort", return_value="medium"),
             patch("newcode.config.get_openai_verbosity", return_value="medium"),
@@ -67,14 +66,13 @@ class TestHandleShowCommand:
             patches[12],
             patches[13],
             patches[14],
-            patches[15],
         ):
             assert handle_show_command("/show") is True
 
     def test_show_effective_temp_none(self):
         from newcode.command_line.config_commands import handle_show_command
 
-        patches = self._show_patches(effective_temp=None, global_temp=None, dbos=True)
+        patches = self._show_patches(effective_temp=None, global_temp=None)
         with (
             patches[0],
             patches[1],
@@ -91,7 +89,6 @@ class TestHandleShowCommand:
             patches[12],
             patches[13],
             patches[14],
-            patches[15],
         ):
             assert handle_show_command("/show") is True
 
@@ -207,18 +204,6 @@ class TestHandleSetCommand:
             patch("newcode.agents.get_current_agent", return_value=mock_agent),
         ):
             assert handle_set_command("/set key") is True
-
-    def test_enable_dbos(self):
-        from newcode.command_line.config_commands import handle_set_command
-
-        mock_agent = MagicMock()
-        with (
-            patch("newcode.config.set_config_value"),
-            patch("newcode.messaging.emit_success"),
-            patch("newcode.messaging.emit_info"),
-            patch("newcode.agents.get_current_agent", return_value=mock_agent),
-        ):
-            assert handle_set_command("/set enable_dbos true") is True
 
     def test_cancel_agent_key_valid(self):
         from newcode.command_line.config_commands import handle_set_command

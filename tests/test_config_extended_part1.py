@@ -14,7 +14,6 @@ from newcode.config import (
     get_global_model_name,
     get_message_limit,
     get_protected_token_count,
-    get_use_dbos,
     get_value,
     get_yolo_mode,
     set_config_value,
@@ -42,7 +41,6 @@ class TestConfigExtendedPart1:
                 "protected_token_count": "25000",
                 "compaction_threshold": "0.8",
                 "diff_context_lines": "10",
-                "enable_dbos": "true",
                 "auto_save_session": "false",
             }
             with open(config_file, "w") as f:
@@ -165,20 +163,6 @@ class TestConfigExtendedPart1:
 
         with patch("newcode.config.CONFIG_FILE", config_file):
             result = get_auto_save_session()
-            assert result is True  # Default should be True
-
-    def test_get_use_dbos_default(self, temp_config_dir):
-        """Test get_use_dbos returns True when not set (DBOS enabled by default)"""
-        temp_dir, config_file = temp_config_dir
-
-        # Create config without enable_dbos key
-        config = configparser.ConfigParser()
-        config[DEFAULT_SECTION] = {"agent_name": "Test"}
-        with open(config_file, "w") as f:
-            config.write(f)
-
-        with patch("newcode.config.CONFIG_FILE", config_file):
-            result = get_use_dbos()
             assert result is True  # Default should be True
 
     def test_integer_conversion_message_limit(self, mock_config_file):

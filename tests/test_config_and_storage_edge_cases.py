@@ -1,7 +1,6 @@
 """Edge case tests for config.py, callbacks.py, and session_storage.py.
 
 Focuses on areas that don't require complex mocking:
-- DBOS configuration testing
 - Allow recursion testing
 - Temperature configuration
 - Config key management
@@ -36,55 +35,6 @@ def mock_config_paths(monkeypatch, tmp_path):
     monkeypatch.setattr(cp_config, "STATE_DIR", mock_state_dir)
 
     return mock_config_dir, mock_config_file, mock_data_dir
-
-
-class TestDBOSConfiguration:
-    """Test DBOS (Database Operating System) configuration."""
-
-    def test_get_use_dbos_returns_true_by_default(self, mock_config_paths):
-        """Test that DBOS is enabled by default."""
-        mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
-
-        config = configparser.ConfigParser()
-        config["agent"] = {}
-        os.makedirs(mock_cfg_dir, exist_ok=True)
-        with open(mock_cfg_file, "w") as f:
-            config.write(f)
-
-        result = cp_config.get_use_dbos()
-        assert result is True
-
-    @pytest.mark.parametrize("truthy_value", ["1", "true", "True", "yes", "on"])
-    def test_get_use_dbos_returns_true_for_truthy_values(
-        self, mock_config_paths, truthy_value
-    ):
-        """Test that various truthy values enable DBOS."""
-        mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
-
-        os.makedirs(mock_cfg_dir, exist_ok=True)
-        config = configparser.ConfigParser()
-        config["agent"] = {"enable_dbos": truthy_value}
-        with open(mock_cfg_file, "w") as f:
-            config.write(f)
-
-        result = cp_config.get_use_dbos()
-        assert result is True, f"Failed for value: {truthy_value}"
-
-    @pytest.mark.parametrize("falsy_value", ["0", "false", "no", "off", ""])
-    def test_get_use_dbos_returns_false_for_falsy_values(
-        self, mock_config_paths, falsy_value
-    ):
-        """Test that falsy values disable DBOS."""
-        mock_cfg_dir, mock_cfg_file, _ = mock_config_paths
-
-        os.makedirs(mock_cfg_dir, exist_ok=True)
-        config = configparser.ConfigParser()
-        config["agent"] = {"enable_dbos": falsy_value}
-        with open(mock_cfg_file, "w") as f:
-            config.write(f)
-
-        result = cp_config.get_use_dbos()
-        assert result is False, f"Failed for value: {falsy_value}"
 
 
 class TestSubagentVerbose:
@@ -268,7 +218,6 @@ class TestConfigKeys:
             "yolo_mode",
             "model",
             "auto_save_session",
-            "enable_dbos",
             "cancel_agent_key",
         ]
         for key in expected_keys:

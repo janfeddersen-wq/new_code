@@ -1,6 +1,6 @@
 """Tests for BaseAgent message_history_accumulator method.
 
-This module tests the message_history_accumulator() DBOS step that deduplicates
+This module tests the message_history_accumulator() deduplication step.
 and filters messages in the BaseAgent class.
 
 Key functionality tested:

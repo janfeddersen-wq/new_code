@@ -1,7 +1,6 @@
 # agent_tools.py
 import asyncio
 import hashlib
-import itertools
 import json
 import pickle
 import re
@@ -11,7 +10,6 @@ from functools import partial
 from pathlib import Path
 from typing import List, Set
 
-from dbos import DBOS, SetWorkflowID
 from pydantic import BaseModel
 
 # Import Agent from pydantic_ai to create temporary agents for invocation
@@ -21,7 +19,6 @@ from pydantic_ai.messages import ModelMessage
 from newcode.config import (
     DATA_DIR,
     get_message_limit,
-    get_use_dbos,
     get_value,
 )
 from newcode.messaging import (
@@ -39,27 +36,6 @@ from newcode.tools.subagent_context import subagent_context
 
 # Set to track active subagent invocation tasks
 _active_subagent_tasks: Set[asyncio.Task] = set()
-
-# Atomic counter for DBOS workflow IDs - ensures uniqueness even in rapid back-to-back calls
-# itertools.count() is thread-safe for next() calls
-_dbos_workflow_counter = itertools.count()
-
-
-def _generate_dbos_workflow_id(base_id: str) -> str:
-    """Generate a unique DBOS workflow ID by appending an atomic counter.
-
-    DBOS requires workflow IDs to be unique across all executions.
-    This function ensures uniqueness by combining the base_id with
-    an atomically incrementing counter.
-
-    Args:
-        base_id: The base identifier (e.g., group_id from generate_group_id)
-
-    Returns:
-        A unique workflow ID in format: {base_id}-wf-{counter}
-    """
-    counter = next(_dbos_workflow_counter)
-    return f"{base_id}-wf-{counter}"
 
 
 def _generate_session_hash_suffix() -> str:
@@ -495,9 +471,6 @@ def register_invoke_agent(agent):
             instructions = prepared.instructions
             prompt = prepared.user_prompt
 
-            import uuid as _uuid
-
-            subagent_name = f"temp-invoke-agent-{session_id}-{_uuid.uuid4().hex[:8]}"
             model_settings = make_model_settings(model_name)
 
             # Get MCP servers for sub-agents (same as main agent)
@@ -511,59 +484,24 @@ def register_invoke_agent(agent):
                 manager = get_mcp_manager()
                 mcp_servers = manager.get_servers_for_agent()
 
-            if get_use_dbos():
-                from pydantic_ai.durable_exec.dbos import DBOSAgent
+            temp_agent = Agent(
+                model=model,
+                instructions=instructions,
+                output_type=str,
+                retries=10,
+                toolsets=mcp_servers,
+                history_processors=[agent_config.message_history_accumulator],
+                model_settings=model_settings,
+            )
 
-                # For DBOS, create agent without MCP servers (to avoid serialization issues)
-                # and add them at runtime
-                temp_agent = Agent(
-                    model=model,
-                    instructions=instructions,
-                    output_type=str,
-                    retries=10,
-                    toolsets=[],  # MCP servers added separately for DBOS
-                    history_processors=[agent_config.message_history_accumulator],
-                    model_settings=model_settings,
-                )
+            # Register the tools that the agent needs
+            from newcode.tools import register_tools_for_agent
 
-                # Register the tools that the agent needs
-                from newcode.tools import register_tools_for_agent
-
-                agent_tools = agent_config.get_available_tools()
-                register_tools_for_agent(temp_agent, agent_tools, model_name=model_name)
-
-                # Wrap with DBOS - no streaming for sub-agents
-                dbos_agent = DBOSAgent(
-                    temp_agent,
-                    name=subagent_name,
-                )
-                temp_agent = dbos_agent
-
-                # Store MCP servers to add at runtime
-                subagent_mcp_servers = mcp_servers
-            else:
-                # Non-DBOS path - include MCP servers directly in the agent
-                temp_agent = Agent(
-                    model=model,
-                    instructions=instructions,
-                    output_type=str,
-                    retries=10,
-                    toolsets=mcp_servers,
-                    history_processors=[agent_config.message_history_accumulator],
-                    model_settings=model_settings,
-                )
-
-                # Register the tools that the agent needs
-                from newcode.tools import register_tools_for_agent
-
-                agent_tools = agent_config.get_available_tools()
-                register_tools_for_agent(temp_agent, agent_tools, model_name=model_name)
-
-                subagent_mcp_servers = None
+            agent_tools = agent_config.get_available_tools()
+            register_tools_for_agent(temp_agent, agent_tools, model_name=model_name)
 
             # Run the temporary agent with the provided prompt as an asyncio task
             # Pass the message_history from the session to continue the conversation
-            workflow_id = None  # Track for potential cancellation
 
             # Always use subagent_stream_handler to silence output and update console manager
             # This ensures all sub-agent output goes through the aggregated dashboard
@@ -571,47 +509,20 @@ def register_invoke_agent(agent):
 
             # Wrap the agent run in subagent context for tracking
             with subagent_context(agent_name):
-                if get_use_dbos():
-                    # Generate a unique workflow ID for DBOS - ensures no collisions in back-to-back calls
-                    workflow_id = _generate_dbos_workflow_id(group_id)
-
-                    # Add MCP servers to the DBOS agent's toolsets
-                    # (temp_agent is discarded after this invocation, so no need to restore)
-                    if subagent_mcp_servers:
-                        temp_agent._toolsets = (
-                            temp_agent._toolsets + subagent_mcp_servers
-                        )
-
-                    with SetWorkflowID(workflow_id):
-                        task = asyncio.create_task(
-                            temp_agent.run(
-                                prompt,
-                                message_history=message_history,
-                                usage_limits=UsageLimits(
-                                    request_limit=get_message_limit()
-                                ),
-                                event_stream_handler=stream_handler,
-                            )
-                        )
-                        _active_subagent_tasks.add(task)
-                else:
-                    task = asyncio.create_task(
-                        temp_agent.run(
-                            prompt,
-                            message_history=message_history,
-                            usage_limits=UsageLimits(request_limit=get_message_limit()),
-                            event_stream_handler=stream_handler,
-                        )
+                task = asyncio.create_task(
+                    temp_agent.run(
+                        prompt,
+                        message_history=message_history,
+                        usage_limits=UsageLimits(request_limit=get_message_limit()),
+                        event_stream_handler=stream_handler,
                     )
-                    _active_subagent_tasks.add(task)
+                )
+                _active_subagent_tasks.add(task)
 
                 try:
                     result = await task
                 finally:
                     _active_subagent_tasks.discard(task)
-                    if task.cancelled():
-                        if get_use_dbos() and workflow_id:
-                            await DBOS.cancel_workflow_async(workflow_id)
 
             # Extract the response from the result
             response = result.output

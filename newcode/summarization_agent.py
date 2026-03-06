@@ -82,7 +82,7 @@ def run_summarization_sync(prompt: str, message_history: List) -> List:
         """
         Run the async agent in a dedicated thread with its own event loop.
         Uses run_until_complete instead of asyncio.run to avoid shutting down
-        the default executor (which breaks DBOS in the main thread).
+        the default executor (which can break in the main thread).
         Does NOT touch global event loop state.
         """
         loop = asyncio.new_event_loop()
@@ -158,9 +158,9 @@ def reload_summarization_agent():
         retries=1,  # Fewer retries for summarization
         model_settings=model_settings,
     )
-    # NOTE: We intentionally DON'T wrap in DBOSAgent here.
+    # NOTE: We intentionally avoid additional durable wrappers here.
     # Summarization is a simple one-shot call that doesn't need durable execution,
-    # and DBOSAgent causes async event loop conflicts with run_sync().
+    # because durable wrappers can cause async event loop conflicts with run_sync().
     return agent
 
 

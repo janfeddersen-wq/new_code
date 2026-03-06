@@ -21,7 +21,6 @@ class TestBaseAgentReload:
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=["test_tool"]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             # Setup mocks
@@ -62,7 +61,6 @@ class TestBaseAgentReload:
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "get_model_context_length", return_value=200000),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
@@ -93,7 +91,6 @@ class TestBaseAgentReload:
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "get_model_context_length", return_value=200000),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.config.get_openai_reasoning_effort", return_value="medium"),
             patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
@@ -126,7 +123,6 @@ class TestBaseAgentReload:
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
             patch.object(agent, "get_model_name", return_value="test-model"),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
@@ -156,7 +152,6 @@ class TestBaseAgentReload:
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=test_tools),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
@@ -191,7 +186,6 @@ class TestBaseAgentReload:
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
@@ -214,40 +208,6 @@ class TestBaseAgentReload:
 
             assert result == mock_agent_instance
 
-    def test_reload_with_dbos_enabled(self, agent):
-        """Test reload behavior when DBOS is enabled."""
-        with (
-            patch("newcode.model_factory.ModelFactory.load_config"),
-            patch("newcode.model_factory.ModelFactory.get_model"),
-            patch("newcode.tools.register_tools_for_agent"),
-            patch.object(agent, "load_agent_rules", return_value=""),
-            patch.object(agent, "load_mcp_servers", return_value=[]),
-            patch.object(agent, "get_available_tools", return_value=[]),
-            patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=True),
-            patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
-            patch("newcode.agents.base_agent.DBOSAgent") as mock_dbos_agent_class,
-        ):
-            mock_model = MagicMock()
-            mock_load_fallback.return_value = (mock_model, "test-model")
-            mock_agent_instance = MagicMock()
-            mock_agent_class.return_value = mock_agent_instance
-            mock_dbos_instance = MagicMock()
-            mock_dbos_agent_class.return_value = mock_dbos_instance
-
-            result = agent.reload_code_generation_agent()
-
-            # Verify DBOSAgent is used when DBOS is enabled
-            # The DBOSAgent might not be called if the conditional isn't reached
-            # Let's check if the result is what we expect
-            assert agent._code_generation_agent is not None
-
-            # Verify MCP servers are stored separately when using DBOS
-            assert hasattr(agent, "_mcp_servers")
-            # The result might be the PydanticAgent if DBOS path isn't taken,
-            # let's just check that an agent was created
-            assert result is not None
-
     def test_reload_message_group_generation(self, agent):
         """Test that message group is generated when not provided."""
         with (
@@ -258,7 +218,6 @@ class TestBaseAgentReload:
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_model = MagicMock()
@@ -290,7 +249,6 @@ class TestBaseAgentReload:
             patch.object(agent, "load_mcp_servers", return_value=[]),
             patch.object(agent, "get_available_tools", return_value=[]),
             patch.object(agent, "_load_model_with_fallback") as mock_load_fallback,
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.agents.base_agent.PydanticAgent") as mock_agent_class,
         ):
             mock_load_config.return_value = {"test-model": {"context_length": 128000}}

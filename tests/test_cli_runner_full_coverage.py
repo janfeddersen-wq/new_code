@@ -58,7 +58,6 @@ def _base_main_patches():
         "newcode.cli_runner.ensure_config_exists": MagicMock(),
         "newcode.cli_runner.validate_cancel_agent_key": MagicMock(),
         "newcode.cli_runner.initialize_command_history_file": MagicMock(),
-        "newcode.cli_runner.get_use_dbos": MagicMock(return_value=False),
         "newcode.cli_runner.default_version_mismatch_behavior": MagicMock(),
         "newcode.cli_runner.print_truecolor_warning": MagicMock(),
         "newcode.cli_runner.reset_unix_terminal": MagicMock(),
@@ -399,35 +398,6 @@ class TestMain:
             from newcode.cli_runner import main
 
             await main()
-
-    @pytest.mark.anyio
-    async def test_dbos_enabled(self):
-        mock_dbos_cls = MagicMock()
-        await self._run_main(
-            ["code-agent", "-p", "hi"],
-            base_overrides={
-                "newcode.cli_runner.get_use_dbos": MagicMock(return_value=True),
-            },
-            extra_patches={
-                "newcode.cli_runner.execute_single_prompt": AsyncMock(),
-                "newcode.cli_runner.DBOS": mock_dbos_cls,
-            },
-        )
-        mock_dbos_cls.launch.assert_called_once()
-
-    @pytest.mark.anyio
-    async def test_dbos_init_error(self):
-        mock_dbos_cls = MagicMock(side_effect=RuntimeError("db fail"))
-        with pytest.raises(SystemExit):
-            await self._run_main(
-                ["code-agent", "-p", "hi"],
-                base_overrides={
-                    "newcode.cli_runner.get_use_dbos": MagicMock(return_value=True),
-                },
-                extra_patches={
-                    "newcode.cli_runner.DBOS": mock_dbos_cls,
-                },
-            )
 
     @pytest.mark.anyio
     async def test_banner_displays_without_pyfiglet(self):
@@ -1802,8 +1772,5 @@ class TestMainEntryAdditional:
 
         with ExitStack() as stack:
             stack.enter_context(patch("newcode.cli_runner.reset_unix_terminal"))
-            stack.enter_context(
-                patch("newcode.cli_runner.get_use_dbos", return_value=False)
-            )
             result = main_entry()
             assert result == 0

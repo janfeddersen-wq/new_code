@@ -263,20 +263,6 @@ class TestMainEntry:
 
         with (
             patch("newcode.cli_runner.reset_unix_terminal"),
-            patch("newcode.cli_runner.get_use_dbos", return_value=False),
         ):
             result = main_entry()
         assert result == 0
-
-    @patch("asyncio.run", side_effect=KeyboardInterrupt)
-    def test_keyboard_interrupt_with_dbos(self, mock_run):
-        from newcode.cli_runner import main_entry
-
-        with (
-            patch("newcode.cli_runner.reset_unix_terminal"),
-            patch("newcode.cli_runner.get_use_dbos", return_value=True),
-            patch("newcode.cli_runner.DBOS") as mock_dbos,
-        ):
-            result = main_entry()
-        assert result == 0
-        mock_dbos.destroy.assert_called_once()

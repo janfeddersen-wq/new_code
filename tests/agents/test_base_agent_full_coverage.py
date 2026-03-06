@@ -861,7 +861,6 @@ class TestLoadModelWithFallback:
 class TestReloadCodeGenerationAgent:
     """Tests for reload_code_generation_agent (lines 1487-1556)."""
 
-    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
     @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
         "newcode.agents.base_agent.ModelFactory.load_config",
@@ -883,7 +882,6 @@ class TestReloadCodeGenerationAgent:
         mock_get_model,
         mock_config,
         mock_settings,
-        mock_dbos,
         agent,
     ):
         mock_get_model.return_value = MagicMock()
@@ -893,42 +891,6 @@ class TestReloadCodeGenerationAgent:
 
         agent.reload_code_generation_agent()
         assert agent._code_generation_agent is not None
-
-    @patch("newcode.agents.base_agent.get_use_dbos", return_value=True)
-    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
-    @patch(
-        "newcode.agents.base_agent.ModelFactory.load_config",
-        return_value={"model": {}},
-    )
-    @patch("newcode.agents.base_agent.ModelFactory.get_model")
-    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("newcode.agents.base_agent.get_mcp_manager")
-    @patch("newcode.model_utils.prepare_prompt_for_model")
-    @patch("newcode.agents.base_agent.PydanticAgent")
-    @patch("newcode.tools.register_tools_for_agent")
-    @patch("newcode.agents.base_agent.DBOSAgent")
-    def test_dbos_reload(
-        self,
-        mock_dbos_agent,
-        mock_register,
-        mock_pagent,
-        mock_prep,
-        mock_mcp_mgr,
-        mock_pinned,
-        mock_get_model,
-        mock_config,
-        mock_settings,
-        mock_dbos,
-        agent,
-    ):
-        mock_get_model.return_value = MagicMock()
-        mock_prep.return_value = MagicMock(instructions="test")
-        mock_mcp_mgr.return_value.get_servers_for_agent.return_value = []
-        mock_pagent.return_value = MagicMock(_tools={})
-        mock_dbos_agent.return_value = MagicMock()
-
-        agent.reload_code_generation_agent()
-        mock_dbos_agent.assert_called()
 
     def test_reload_clears_agent_rules_cache(self, agent):
         """reload_code_generation_agent must invalidate the _agent_rules cache.
@@ -977,7 +939,6 @@ class TestReloadCodeGenerationAgent:
                 return_value=MagicMock(_tools={}),
             ),
             patch("newcode.tools.register_tools_for_agent"),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch("newcode.agents.base_agent.make_model_settings", return_value={}),
         ):
             mock_mcp.return_value.get_servers_for_agent.return_value = []
@@ -996,7 +957,6 @@ class TestReloadCodeGenerationAgent:
 class TestCreateAgentWithOutputType:
     """Tests for _create_agent_with_output_type (lines 1603-1657)."""
 
-    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
     @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
         "newcode.agents.base_agent.ModelFactory.load_config",
@@ -1016,7 +976,6 @@ class TestCreateAgentWithOutputType:
         mock_get_model,
         mock_config,
         mock_settings,
-        mock_dbos,
         agent,
     ):
         mock_get_model.return_value = MagicMock()
@@ -1025,39 +984,6 @@ class TestCreateAgentWithOutputType:
 
         result = agent._create_agent_with_output_type(dict)
         assert result is not None
-
-    @patch("newcode.agents.base_agent.get_use_dbos", return_value=True)
-    @patch("newcode.agents.base_agent.make_model_settings", return_value={})
-    @patch(
-        "newcode.agents.base_agent.ModelFactory.load_config",
-        return_value={"model": {}},
-    )
-    @patch("newcode.agents.base_agent.ModelFactory.get_model")
-    @patch("newcode.agents.base_agent.get_agent_pinned_model", return_value="model")
-    @patch("newcode.model_utils.prepare_prompt_for_model")
-    @patch("newcode.agents.base_agent.PydanticAgent")
-    @patch("newcode.tools.register_tools_for_agent")
-    @patch("newcode.agents.base_agent.DBOSAgent")
-    def test_creates_dbos_agent(
-        self,
-        mock_dbos_agent,
-        mock_register,
-        mock_pagent,
-        mock_prep,
-        mock_pinned,
-        mock_get_model,
-        mock_config,
-        mock_settings,
-        mock_dbos,
-        agent,
-    ):
-        mock_get_model.return_value = MagicMock()
-        mock_prep.return_value = MagicMock(instructions="test")
-        mock_pagent.return_value = MagicMock()
-        mock_dbos_agent.return_value = MagicMock()
-
-        agent._create_agent_with_output_type(dict)
-        mock_dbos_agent.assert_called()
 
 
 class TestMessageHistoryAccumulator:
@@ -1175,7 +1101,6 @@ class TestRunWithMcp:
         with (
             patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
             patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
                 "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
@@ -1214,7 +1139,6 @@ class TestRunWithMcp:
         with (
             patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
             patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
                 "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
@@ -1244,7 +1168,6 @@ class TestRunWithMcp:
         with (
             patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
             patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
                 "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
@@ -1276,7 +1199,6 @@ class TestRunWithMcp:
             ),
             patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
             patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
                 "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
@@ -1303,7 +1225,6 @@ class TestRunWithMcp:
         with (
             patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
             patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
             patch(
                 "newcode.agents.base_agent.on_agent_run_start",
                 new_callable=AsyncMock,
@@ -1318,177 +1239,6 @@ class TestRunWithMcp:
         ):
             mock_prep.return_value = MagicMock(user_prompt="prompt")
             # CancelledError is caught internally
-            await agent.run_with_mcp("test")
-
-    @pytest.mark.asyncio
-    async def test_with_dbos_and_mcp_servers(self, agent):
-        """Test DBOS path with MCP servers."""
-        agent._code_generation_agent = MagicMock()
-        mock_result = MagicMock()
-        mock_result.data = "response"
-        agent._code_generation_agent.run = AsyncMock(return_value=mock_result)
-        agent._code_generation_agent._toolsets = []
-        agent._mcp_servers = [MagicMock()]
-        agent._message_history = []
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=True),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-            patch("newcode.agents.base_agent.SetWorkflowID"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
-            await agent.run_with_mcp("test")
-
-    @pytest.mark.asyncio
-    async def test_delayed_compaction_in_run(self, agent):
-        """Test that delayed compaction runs during run_with_mcp."""
-        agent._code_generation_agent = MagicMock()
-        mock_result = MagicMock()
-        mock_result.data = "ok"
-        agent._code_generation_agent.run = AsyncMock(return_value=mock_result)
-        agent._message_history = [ModelRequest(parts=[TextPart(content="msg")])]
-        base_agent_module._delayed_compaction_requested = True
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-            patch("newcode.agents.base_agent.emit_info"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
-            await agent.run_with_mcp("test")
-
-    @pytest.mark.asyncio
-    async def test_result_with_output_attr(self, agent):
-        """Test extracting response from result.output."""
-        agent._code_generation_agent = MagicMock()
-        mock_result = MagicMock(spec=[])
-        mock_result.output = "output_val"
-        agent._code_generation_agent.run = AsyncMock(return_value=mock_result)
-        agent._message_history = []
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
-            await agent.run_with_mcp("test")
-
-    @pytest.mark.asyncio
-    async def test_result_str_fallback(self, agent):
-        """Test extracting response text via str() fallback."""
-        agent._code_generation_agent = MagicMock()
-        agent._code_generation_agent.run = AsyncMock(return_value="plain string")
-        agent._message_history = []
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
-            await agent.run_with_mcp("test")
-
-    @pytest.mark.asyncio
-    async def test_mcp_cache_update_on_success(self, agent):
-        """Test MCP cache is updated after successful run."""
-        agent._code_generation_agent = MagicMock()
-        mock_result = MagicMock()
-        mock_result.data = "ok"
-        agent._code_generation_agent.run = AsyncMock(return_value=mock_result)
-        agent._mcp_servers = [MagicMock()]
-        agent._message_history = []
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-            patch.object(
-                agent, "_update_mcp_tool_cache", new_callable=AsyncMock
-            ) as mock_cache,
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
-            await agent.run_with_mcp("test")
-            mock_cache.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_keyboard_cancel_key_listener_path(self, agent):
-        """Test the non-signal cancel path."""
-        agent._code_generation_agent = MagicMock()
-        mock_result = MagicMock()
-        mock_result.data = "ok"
-        agent._code_generation_agent.run = AsyncMock(return_value=mock_result)
-        agent._message_history = []
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=False,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-            patch.object(agent, "_spawn_ctrl_x_key_listener", return_value=None),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
             await agent.run_with_mcp("test")
 
 
@@ -1608,7 +1358,6 @@ class TestMessageHistoryProcessorCompaction:
 class TestReloadWithMcpFiltering:
     """Tests for reload_code_generation_agent MCP filtering (lines 1366-1407)."""
 
-    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
     @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
         "newcode.agents.base_agent.ModelFactory.load_config",
@@ -1630,7 +1379,6 @@ class TestReloadWithMcpFiltering:
         mock_get_model,
         mock_config,
         mock_settings,
-        mock_dbos,
         agent,
     ):
         mock_get_model.return_value = MagicMock()
@@ -1649,7 +1397,6 @@ class TestReloadWithMcpFiltering:
         with patch("newcode.agents.base_agent.emit_info"):
             agent.reload_code_generation_agent()
 
-    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
     @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
         "newcode.agents.base_agent.ModelFactory.load_config",
@@ -1671,7 +1418,6 @@ class TestReloadWithMcpFiltering:
         mock_get_model,
         mock_config,
         mock_settings,
-        mock_dbos,
         agent,
     ):
         mock_get_model.return_value = MagicMock()
@@ -1687,7 +1433,6 @@ class TestReloadWithMcpFiltering:
 
         agent.reload_code_generation_agent()
 
-    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
     @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
         "newcode.agents.base_agent.ModelFactory.load_config",
@@ -1709,7 +1454,6 @@ class TestReloadWithMcpFiltering:
         mock_get_model,
         mock_config,
         mock_settings,
-        mock_dbos,
         agent,
     ):
         mock_get_model.return_value = MagicMock()
@@ -1726,7 +1470,6 @@ class TestReloadWithMcpFiltering:
 
         agent.reload_code_generation_agent()
 
-    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
     @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
         "newcode.agents.base_agent.ModelFactory.load_config",
@@ -1748,7 +1491,6 @@ class TestReloadWithMcpFiltering:
         mock_get_model,
         mock_config,
         mock_settings,
-        mock_dbos,
         agent,
     ):
         mock_get_model.return_value = MagicMock()
@@ -1766,7 +1508,6 @@ class TestReloadWithMcpFiltering:
         with patch("newcode.agents.base_agent.emit_info"):
             agent.reload_code_generation_agent()
 
-    @patch("newcode.agents.base_agent.get_use_dbos", return_value=False)
     @patch("newcode.agents.base_agent.make_model_settings", return_value={})
     @patch(
         "newcode.agents.base_agent.ModelFactory.load_config",
@@ -1788,7 +1529,6 @@ class TestReloadWithMcpFiltering:
         mock_get_model,
         mock_config,
         mock_settings,
-        mock_dbos,
         agent,
     ):
         mock_get_model.return_value = MagicMock()
@@ -1822,175 +1562,6 @@ class TestListenForCtrlXPosix:
 
 class TestRunWithMcpAdditional:
     """Additional run_with_mcp tests for uncovered paths."""
-
-    @pytest.mark.asyncio
-    async def test_dbos_without_mcp(self, agent):
-        """Test DBOS path without MCP servers."""
-        agent._code_generation_agent = MagicMock()
-        mock_result = MagicMock()
-        mock_result.data = "response"
-        agent._code_generation_agent.run = AsyncMock(return_value=mock_result)
-        agent._message_history = []
-        agent._mcp_servers = []
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=True),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-            patch("newcode.agents.base_agent.SetWorkflowID"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
-            await agent.run_with_mcp("test")
-
-    @pytest.mark.asyncio
-    async def test_first_message_prepends_system(self, agent):
-        """Test system prompt prepending on first message."""
-        agent._code_generation_agent = MagicMock()
-        mock_result = MagicMock()
-        mock_result.data = "ok"
-        agent._code_generation_agent.run = AsyncMock(return_value=mock_result)
-        agent._message_history = []  # Empty = first message
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="modified prompt")
-            await agent.run_with_mcp("hello")
-            # prepare_prompt_for_model should be called with prepend_system_to_user=True
-            mock_prep.assert_called()
-
-    @pytest.mark.asyncio
-    async def test_exception_handling(self, agent):
-        """Test run_with_mcp exception path."""
-        agent._code_generation_agent = MagicMock()
-        agent._code_generation_agent.run = AsyncMock(side_effect=RuntimeError("boom"))
-        agent._message_history = []
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-            patch("newcode.agents.base_agent.emit_info"),
-            patch("newcode.agents.base_agent.log_error"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
-            # The exception is caught inside run_agent_task via except*
-            await agent.run_with_mcp("test")
-
-    @pytest.mark.asyncio
-    async def test_none_result(self, agent):
-        """Test when agent run returns None."""
-        agent._code_generation_agent = MagicMock()
-        agent._code_generation_agent.run = AsyncMock(return_value=None)
-        agent._message_history = []
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
-            await agent.run_with_mcp("test")
-
-    @pytest.mark.asyncio
-    async def test_empty_prompt(self, agent):
-        """Test with empty prompt."""
-        agent._code_generation_agent = MagicMock()
-        mock_result = MagicMock()
-        mock_result.data = "ok"
-        agent._code_generation_agent.run = AsyncMock(return_value=mock_result)
-        agent._message_history = [ModelRequest(parts=[TextPart(content="existing")])]
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="")
-            await agent.run_with_mcp("")
-
-    @pytest.mark.asyncio
-    async def test_with_link_attachments(self, agent):
-        """Test with link attachments."""
-        from pydantic_ai import ImageUrl
-
-        agent._code_generation_agent = MagicMock()
-        mock_result = MagicMock()
-        mock_result.data = "ok"
-        agent._code_generation_agent.run = AsyncMock(return_value=mock_result)
-        agent._message_history = []
-
-        img = ImageUrl(url="https://example.com/img.png")
-
-        with (
-            patch("newcode.model_utils.prepare_prompt_for_model") as mock_prep,
-            patch("newcode.agents.base_agent.get_message_limit", return_value=100),
-            patch("newcode.agents.base_agent.get_use_dbos", return_value=False),
-            patch(
-                "newcode.agents.base_agent.on_agent_run_start",
-                new_callable=AsyncMock,
-            ),
-            patch("newcode.agents.base_agent.on_agent_run_end", new_callable=AsyncMock),
-            patch(
-                "newcode.agents.base_agent.cancel_agent_uses_signal",
-                return_value=True,
-            ),
-            patch("newcode.agents.base_agent.event_stream_handler"),
-        ):
-            mock_prep.return_value = MagicMock(user_prompt="prompt")
-            await agent.run_with_mcp("describe", link_attachments=[img])
 
 
 class TestCleanBinariesListContent:

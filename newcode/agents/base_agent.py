@@ -27,7 +27,6 @@ from typing import (
 import mcp
 import pydantic
 import pydantic_ai.models
-from dbos import DBOS, SetWorkflowID
 from pydantic_ai import Agent as PydanticAgent
 from pydantic_ai import (
     BinaryContent,
@@ -37,7 +36,6 @@ from pydantic_ai import (
     UsageLimitExceeded,
     UsageLimits,
 )
-from pydantic_ai.durable_exec.dbos import DBOSAgent
 from pydantic_ai.messages import (
     ModelMessage,
     ModelRequest,
@@ -67,7 +65,6 @@ from newcode.config import (
     get_global_model_name,
     get_message_limit,
     get_protected_token_count,
-    get_use_dbos,
     get_value,
 )
 from newcode.error_logging import log_error
@@ -1423,64 +1420,25 @@ class BaseAgent(ABC):
             )
 
         self._last_model_name = resolved_model_name
-        # expose for run_with_mcp
-        # Wrap it with DBOS, but handle MCP servers separately to avoid serialization issues
         global _reload_count
         _reload_count += 1
-        if get_use_dbos():
-            # Don't pass MCP servers to the agent constructor when using DBOS
-            # This prevents the "cannot pickle async_generator object" error
-            # MCP servers will be handled separately in run_with_mcp
-            agent_without_mcp = PydanticAgent(
-                model=model,
-                instructions=instructions,
-                output_type=str,
-                retries=10,
-                toolsets=[],  # Don't include MCP servers here
-                history_processors=[self.message_history_accumulator],
-                model_settings=model_settings,
-            )
 
-            # Register regular tools (non-MCP) on the new agent
-            agent_tools = self.get_available_tools()
-            register_tools_for_agent(
-                agent_without_mcp, agent_tools, model_name=resolved_model_name
-            )
+        p_agent = PydanticAgent(
+            model=model,
+            instructions=instructions,
+            output_type=str,
+            retries=10,
+            toolsets=filtered_mcp_servers,
+            history_processors=[self.message_history_accumulator],
+            model_settings=model_settings,
+        )
+        # Register regular tools on the agent
+        agent_tools = self.get_available_tools()
+        register_tools_for_agent(p_agent, agent_tools, model_name=resolved_model_name)
 
-            # Wrap with DBOS - pass event_stream_handler at construction time
-            # so DBOSModel gets the handler for streaming output
-            dbos_agent = DBOSAgent(
-                agent_without_mcp,
-                name=f"{self.name}-{_reload_count}",
-                event_stream_handler=event_stream_handler,
-            )
-            self.pydantic_agent = dbos_agent
-            self._code_generation_agent = dbos_agent
-
-            # Store filtered MCP servers separately for runtime use
-            self._mcp_servers = filtered_mcp_servers
-        else:
-            # Normal path without DBOS - include filtered MCP servers in the agent
-            # Re-create agent with filtered MCP servers
-            p_agent = PydanticAgent(
-                model=model,
-                instructions=instructions,
-                output_type=str,
-                retries=10,
-                toolsets=filtered_mcp_servers,
-                history_processors=[self.message_history_accumulator],
-                model_settings=model_settings,
-            )
-            # Register regular tools on the agent
-            agent_tools = self.get_available_tools()
-            register_tools_for_agent(
-                p_agent, agent_tools, model_name=resolved_model_name
-            )
-
-            self.pydantic_agent = p_agent
-            self._code_generation_agent = p_agent
-            self._mcp_servers = filtered_mcp_servers
-            self._mcp_servers = mcp_servers
+        self.pydantic_agent = p_agent
+        self._code_generation_agent = p_agent
+        self._mcp_servers = filtered_mcp_servers
         return self._code_generation_agent
 
     def _create_agent_with_output_type(self, output_type: Type[Any]) -> PydanticAgent:
@@ -1494,7 +1452,7 @@ class BaseAgent(ABC):
             output_type: The Pydantic model or type for structured output.
 
         Returns:
-            A configured PydanticAgent (or DBOSAgent wrapper) with the custom output_type.
+            A configured PydanticAgent with the custom output_type.
         """
         from newcode.model_utils import prepare_prompt_for_model
         from newcode.tools import register_tools_for_agent
@@ -1521,45 +1479,21 @@ class BaseAgent(ABC):
         global _reload_count
         _reload_count += 1
 
-        if get_use_dbos():
-            temp_agent = PydanticAgent(
-                model=model,
-                instructions=instructions,
-                output_type=output_type,
-                retries=10,
-                toolsets=[],
-                history_processors=[self.message_history_accumulator],
-                model_settings=model_settings,
-            )
-            agent_tools = self.get_available_tools()
-            register_tools_for_agent(
-                temp_agent, agent_tools, model_name=resolved_model_name
-            )
-            # Pass event_stream_handler at construction time for streaming output
-            dbos_agent = DBOSAgent(
-                temp_agent,
-                name=f"{self.name}-structured-{_reload_count}",
-                event_stream_handler=event_stream_handler,
-            )
-            return dbos_agent
-        else:
-            temp_agent = PydanticAgent(
-                model=model,
-                instructions=instructions,
-                output_type=output_type,
-                retries=10,
-                toolsets=mcp_servers,
-                history_processors=[self.message_history_accumulator],
-                model_settings=model_settings,
-            )
-            agent_tools = self.get_available_tools()
-            register_tools_for_agent(
-                temp_agent, agent_tools, model_name=resolved_model_name
-            )
-            return temp_agent
+        temp_agent = PydanticAgent(
+            model=model,
+            instructions=instructions,
+            output_type=output_type,
+            retries=10,
+            toolsets=mcp_servers,
+            history_processors=[self.message_history_accumulator],
+            model_settings=model_settings,
+        )
+        agent_tools = self.get_available_tools()
+        register_tools_for_agent(
+            temp_agent, agent_tools, model_name=resolved_model_name
+        )
+        return temp_agent
 
-    # It's okay to decorate it with DBOS.step even if not using DBOS; the decorator is a no-op in that case.
-    @DBOS.step()
     def message_history_accumulator(self, ctx: RunContext, messages: List[Any]):
         _message_history = self.get_message_history()
 
@@ -1914,51 +1848,14 @@ class BaseAgent(ABC):
 
                     usage_limits = UsageLimits(request_limit=get_message_limit())
 
-                    # Handle MCP servers - add them temporarily when using DBOS
-                    if (
-                        get_use_dbos()
-                        and hasattr(self, "_mcp_servers")
-                        and self._mcp_servers
-                    ):
-                        # Temporarily add MCP servers to the DBOS agent using internal _toolsets
-                        original_toolsets = pydantic_agent._toolsets
-                        pydantic_agent._toolsets = original_toolsets + self._mcp_servers
-                        pydantic_agent._toolsets = original_toolsets + self._mcp_servers
-
-                        try:
-                            # Set the workflow ID for DBOS context so DBOS and the agent ID match
-                            with SetWorkflowID(group_id):
-                                result_ = await pydantic_agent.run(
-                                    prompt_payload,
-                                    message_history=self.get_message_history(),
-                                    usage_limits=usage_limits,
-                                    event_stream_handler=event_stream_handler,
-                                    **kwargs,
-                                )
-                                return result_
-                        finally:
-                            # Always restore original toolsets
-                            pydantic_agent._toolsets = original_toolsets
-                    elif get_use_dbos():
-                        with SetWorkflowID(group_id):
-                            result_ = await pydantic_agent.run(
-                                prompt_payload,
-                                message_history=self.get_message_history(),
-                                usage_limits=usage_limits,
-                                event_stream_handler=event_stream_handler,
-                                **kwargs,
-                            )
-                            return result_
-                    else:
-                        # Non-DBOS path (MCP servers are already included)
-                        result_ = await pydantic_agent.run(
-                            prompt_payload,
-                            message_history=self.get_message_history(),
-                            usage_limits=usage_limits,
-                            event_stream_handler=event_stream_handler,
-                            **kwargs,
-                        )
-                        return result_
+                    result_ = await pydantic_agent.run(
+                        prompt_payload,
+                        message_history=self.get_message_history(),
+                        usage_limits=usage_limits,
+                        event_stream_handler=event_stream_handler,
+                        **kwargs,
+                    )
+                    return result_
                 except* UsageLimitExceeded as ule:
                     emit_info(f"Usage limit exceeded: {str(ule)}", group_id=group_id)
                     emit_info(
@@ -1974,12 +1871,8 @@ class BaseAgent(ABC):
                     )
                 except* asyncio.exceptions.CancelledError:
                     emit_info("Cancelled")
-                    if get_use_dbos():
-                        await DBOS.cancel_workflow_async(group_id)
                 except* InterruptedError as ie:
                     emit_info(f"Interrupted: {str(ie)}")
-                    if get_use_dbos():
-                        await DBOS.cancel_workflow_async(group_id)
                 except* Exception as other_error:
 
                     def contains_cloudflare_auth_error(exc: Exception) -> bool:
