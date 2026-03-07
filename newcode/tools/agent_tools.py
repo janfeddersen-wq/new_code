@@ -4,7 +4,6 @@ import hashlib
 import json
 import pickle
 import re
-import traceback
 from datetime import datetime
 from functools import partial
 from pathlib import Path
@@ -21,6 +20,7 @@ from newcode.config import (
     get_message_limit,
     get_value,
 )
+from newcode.error_logging import log_error
 from newcode.messaging import (
     SubAgentInvocationMessage,
     SubAgentResponseMessage,
@@ -180,6 +180,15 @@ def _load_session_history(session_id: str) -> List[ModelMessage]:
     except Exception:
         # If pickle is corrupted or incompatible, return empty history
         return []
+
+
+def _format_exception_summary(error: Exception) -> str:
+    """Return a concise exception summary for user-facing messages."""
+    error_type = type(error).__name__
+    error_message = " ".join(str(error).split())
+    if error_message:
+        return f"{error_type}: {error_message}"
+    return error_type
 
 
 class AgentInfo(BaseModel):
@@ -559,18 +568,19 @@ def register_invoke_agent(agent):
             )
 
         except Exception as e:
-            # Emit clean failure summary
-            emit_error(f"✗ {agent_name} failed: {str(e)}", message_group=group_id)
+            error_summary = _format_exception_summary(e)
+            log_error(e, context=f"invoke_agent:{agent_name}")
 
-            # Full traceback for debugging
-            error_msg = f"Error invoking agent '{agent_name}': {traceback.format_exc()}"
-            emit_error(error_msg, message_group=group_id)
+            # Emit a concise, user-safe failure summary only.
+            emit_error(
+                f"✗ {agent_name} failed: {error_summary}", message_group=group_id
+            )
 
             return AgentInvokeOutput(
                 response=None,
                 agent_name=agent_name,
                 session_id=session_id,
-                error=error_msg,
+                error=f"Error invoking agent '{agent_name}': {error_summary}",
             )
 
         finally:

@@ -9,7 +9,8 @@ This module focuses on testing uncovered code paths including:
 
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -400,6 +401,7 @@ class TestRegisterInvokeAgentExecution:
             ),
             patch("newcode.tools.agent_tools.set_session_context"),
             patch("newcode.tools.agent_tools.emit_error") as mock_emit_error,
+            patch("newcode.tools.agent_tools.log_error") as mock_log_error,
             patch(
                 "newcode.agents.agent_manager.load_agent",
                 return_value=mock_agent_config,
@@ -429,7 +431,104 @@ class TestRegisterInvokeAgentExecution:
             # Should return error
             assert result.error is not None
             assert "nonexistent-model" in result.error
+            assert "ValueError:" in result.error
             assert mock_emit_error.called
+            mock_log_error.assert_called_once()
+            emitted_messages = [call.args[0] for call in mock_emit_error.call_args_list]
+            assert all("Traceback" not in msg for msg in emitted_messages)
+            assert all('File "' not in msg for msg in emitted_messages)
+
+    @pytest.mark.asyncio
+    async def test_invoke_agent_run_failure_hides_traceback_details(self):
+        """Test that invocation failures return concise errors without raw tracebacks."""
+        invoke_agent = self._get_registered_invoke_agent()
+        mock_context = MagicMock()
+
+        class FakeReadError(Exception):
+            pass
+
+        mock_agent_config = MagicMock()
+        mock_agent_config.get_model_name.return_value = "test-model"
+        mock_agent_config.get_full_system_prompt.return_value = "System prompt"
+        mock_agent_config.load_agent_rules.return_value = None
+        mock_agent_config.get_available_tools.return_value = []
+        mock_agent_config.message_history_accumulator = MagicMock()
+
+        mock_temp_agent = MagicMock()
+        mock_temp_agent.run = AsyncMock(side_effect=FakeReadError("connection lost"))
+
+        mock_manager = MagicMock()
+        mock_manager.get_servers_for_agent.return_value = []
+
+        with (
+            patch(
+                "newcode.tools.agent_tools.generate_group_id",
+                return_value="test-group",
+            ),
+            patch("newcode.tools.agent_tools.get_message_bus") as mock_bus,
+            patch(
+                "newcode.tools.agent_tools.get_session_context",
+                return_value="parent",
+            ),
+            patch("newcode.tools.agent_tools.set_session_context"),
+            patch("newcode.tools.agent_tools.emit_error") as mock_emit_error,
+            patch("newcode.tools.agent_tools.log_error") as mock_log_error,
+            patch(
+                "newcode.agents.agent_manager.load_agent",
+                return_value=mock_agent_config,
+            ),
+            patch(
+                "newcode.model_factory.ModelFactory.load_config",
+                return_value={"test-model": object()},
+            ),
+            patch(
+                "newcode.model_factory.ModelFactory.get_model",
+                return_value=MagicMock(name="model"),
+            ),
+            patch(
+                "newcode.model_factory.make_model_settings",
+                return_value={},
+            ),
+            patch("newcode.callbacks.on_load_prompt", return_value=[]),
+            patch(
+                "newcode.model_utils.prepare_prompt_for_model",
+                return_value=SimpleNamespace(
+                    instructions="System prompt", user_prompt="Hello"
+                ),
+            ),
+            patch("newcode.tools.agent_tools.get_value", return_value=None),
+            patch("newcode.mcp_.get_mcp_manager", return_value=mock_manager),
+            patch("newcode.tools.agent_tools.Agent", return_value=mock_temp_agent),
+            patch("newcode.tools.register_tools_for_agent"),
+            patch(
+                "newcode.tools.agent_tools._load_session_history",
+                return_value=[],
+            ),
+            patch(
+                "newcode.tools.agent_tools._generate_session_hash_suffix",
+                return_value="abc123",
+            ),
+        ):
+            mock_bus.return_value.emit = MagicMock()
+
+            result = await invoke_agent(
+                mock_context,
+                agent_name="test-agent",
+                prompt="Hello",
+                session_id=None,
+            )
+
+            assert result.error == (
+                "Error invoking agent 'test-agent': FakeReadError: connection lost"
+            )
+            mock_log_error.assert_called_once()
+            assert mock_emit_error.call_count == 1
+            emitted_messages = [call.args[0] for call in mock_emit_error.call_args_list]
+            assert emitted_messages == [
+                "✗ test-agent failed: FakeReadError: connection lost"
+            ]
+            assert all("Traceback" not in msg for msg in emitted_messages)
+            assert all('File "' not in msg for msg in emitted_messages)
 
     @pytest.mark.asyncio
     async def test_invoke_agent_session_context_restored_on_error(self):
@@ -459,6 +558,7 @@ class TestRegisterInvokeAgentExecution:
                 side_effect=lambda x: set_context_calls.append(x),
             ),
             patch("newcode.tools.agent_tools.emit_error"),
+            patch("newcode.tools.agent_tools.log_error") as mock_log_error,
             patch(
                 "newcode.agents.agent_manager.load_agent",
                 return_value=mock_agent_config,
@@ -487,6 +587,7 @@ class TestRegisterInvokeAgentExecution:
 
             # Should have error
             assert result.error is not None
+            mock_log_error.assert_called_once()
 
             # Session context should still be restored
             assert "original-parent" in set_context_calls
