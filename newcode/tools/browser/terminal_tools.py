@@ -317,7 +317,7 @@ async def start_api_server(port: int = 8765) -> Dict[str, Any]:
 
     This starts the API server that provides the terminal endpoint for
     browser-based terminal testing. The server runs in the background
-    and persists until stopped with /api stop or the process is killed.
+    and persists until the process is killed.
 
     Args:
         port: The port to run the server on (default: 8765).

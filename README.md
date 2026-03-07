@@ -53,7 +53,6 @@ On first run, NewCode starts onboarding to help configure API keys and defaults.
 /model          # Select or switch model
 /agent          # Select or switch agent
 /colors         # Customize terminal UI colors
-/api            # Manage built-in API server (start|stop|status)
 ```
 
 ## Requirements
