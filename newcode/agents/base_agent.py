@@ -1441,6 +1441,28 @@ class BaseAgent(ABC):
         self._mcp_servers = filtered_mcp_servers
         return self._code_generation_agent
 
+    def _reload_live_agent_after_token_refresh(
+        self,
+        *,
+        output_type: Optional[Type[Any]] = None,
+        message_group: Optional[str] = None,
+    ) -> Optional[PydanticAgent]:
+        """Rebuild the live agent so refreshed OAuth tokens take effect immediately."""
+        try:
+            self.reload_code_generation_agent(message_group=message_group)
+            if output_type is not None:
+                return self._create_agent_with_output_type(output_type)
+            return self._code_generation_agent
+        except Exception as exc:
+            emit_warning(
+                (
+                    "Token refresh succeeded, but rebuilding the live model client "
+                    f"failed: {exc}"
+                ),
+                group_id=message_group,
+            )
+            return None
+
     def _create_agent_with_output_type(self, output_type: Type[Any]) -> PydanticAgent:
         """Create a temporary agent configured with a custom output_type.
 
@@ -1763,10 +1785,11 @@ class BaseAgent(ABC):
         pydantic_agent = (
             self._code_generation_agent or self.reload_code_generation_agent()
         )
+        current_output_type = output_type
 
         # If a custom output_type is specified, create a temporary agent with that type
-        if output_type is not None:
-            pydantic_agent = self._create_agent_with_output_type(output_type)
+        if current_output_type is not None:
+            pydantic_agent = self._create_agent_with_output_type(current_output_type)
 
         # Handle model-specific prompt transformations via prepare_prompt_for_model()
         # This uses the get_model_system_prompt hook, so plugins can register their own handlers
@@ -1822,6 +1845,7 @@ class BaseAgent(ABC):
             prompt_payload = prompt
 
         async def run_agent_task():
+            nonlocal pydantic_agent
             _cloudflare_retry_attempted = False
 
             while True:
@@ -1906,11 +1930,22 @@ class BaseAgent(ABC):
                             )
 
                         if refreshed_token:
-                            emit_info(
-                                "Token refresh successful, retrying request...",
-                                group_id=group_id,
+                            rebuilt_agent = self._reload_live_agent_after_token_refresh(
+                                output_type=current_output_type,
+                                message_group=group_id,
                             )
-                            _retry_after_cloudflare_refresh = True
+                            if rebuilt_agent is not None:
+                                pydantic_agent = rebuilt_agent
+                                emit_info(
+                                    "Token refresh successful, rebuilt Claude Code client, retrying request...",
+                                    group_id=group_id,
+                                )
+                                _retry_after_cloudflare_refresh = True
+                            else:
+                                emit_info(
+                                    "Token refresh succeeded, but retry aborted because the live Claude Code client could not be rebuilt.",
+                                    group_id=group_id,
+                                )
 
                     if not _retry_after_cloudflare_refresh:
                         # Filter out CancelledError and UsageLimitExceeded from the exception group - let it propagate

@@ -359,3 +359,44 @@ class TestBaseAgentRunMCP:
             assert "Empty attachments" in str(call_args)
             # Should be a string, not a list
             assert isinstance(call_args, str)
+
+    @pytest.mark.asyncio
+    @patch.object(CodeAgent, "get_model_name", return_value="claude-code-test")
+    async def test_run_with_mcp_rebuilds_client_after_cloudflare_refresh(
+        self, mock_get_model_name, agent
+    ):
+        """Test expired-token retries rebuild the live Claude Code client in-process."""
+        stale_agent = MagicMock()
+        stale_agent.run = AsyncMock(side_effect=Exception("cloudflare 400 bad request"))
+
+        fresh_result = MagicMock(data="fresh response")
+        fresh_agent = MagicMock()
+        fresh_agent.run = AsyncMock(return_value=fresh_result)
+
+        agent._code_generation_agent = stale_agent
+
+        def reload_side_effect(message_group=None):
+            agent._code_generation_agent = fresh_agent
+            return fresh_agent
+
+        with (
+            patch.object(
+                agent,
+                "reload_code_generation_agent",
+                side_effect=reload_side_effect,
+            ) as mock_reload,
+            patch(
+                "newcode.plugins.claude_code_oauth.utils.refresh_access_token",
+                return_value="fresh-token",
+            ) as mock_refresh,
+            patch("newcode.agents.base_agent.on_agent_run_start", new=AsyncMock()),
+            patch("newcode.agents.base_agent.on_agent_run_end", new=AsyncMock()),
+        ):
+            result = await agent.run_with_mcp("Retry without restart")
+
+        assert result is fresh_result
+        assert stale_agent.run.await_count == 1
+        assert fresh_agent.run.await_count == 1
+        mock_refresh.assert_called_once_with(force=True)
+        mock_reload.assert_called_once()
+        assert agent._code_generation_agent is fresh_agent
