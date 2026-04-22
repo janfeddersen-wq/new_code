@@ -25,8 +25,8 @@ from newcode import __version__  # noqa: E402
 
 # Import command registry and ensure commands are registered
 # This import triggers the registration of all commands via decorators
-from newcode.command_line import (
-    command_handler,  # noqa: F401, E402 - triggers registration
+from newcode.command_line import (  # noqa: E402
+    command_handler,  # noqa: F401 - triggers registration
 )
 from newcode.command_line.command_registry import (  # noqa: E402
     get_all_commands,

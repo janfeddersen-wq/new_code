@@ -73,6 +73,9 @@ packages = ["newcode"]
 [[tool.hatch.build.targets.sdist.include]]
 path = "newcode/models.json"
 
+[tool.ruff]
+exclude = ["tests/_retired", "newcode/agents/_retired", "newcode/tools/browser/_retired"]
+
 [tool.ruff.lint.per-file-ignores]
 "newcode/main.py" = ["E402"]
 "newcode/cli_runner.py" = ["E402"]
@@ -82,6 +85,7 @@ path = "newcode/models.json"
 addopts = "--cov=newcode --cov-report=term-missing"
 testpaths = ["tests"]
 asyncio_mode = "auto"
+norecursedirs = ["tests/_retired"]
 
 [tool.coverage.run]
 omit = ["newcode/main.py"]

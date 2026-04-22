@@ -38,7 +38,9 @@ from newcode.tools.browser.terminal_tools import (
     register_start_api_server,
 )
 from newcode.tools.command_runner import register_agent_run_shell_command
-from newcode.tools.display import display_non_streamed_result
+from newcode.tools.display import (
+    display_non_streamed_result as display_non_streamed_result,  # noqa: F401 - exported
+)
 from newcode.tools.file_modifications import register_delete_file, register_edit_file
 from newcode.tools.file_operations import (
     register_grep,

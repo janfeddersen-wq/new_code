@@ -535,7 +535,7 @@ async def find_links(
         links = (
             await runtime.evaluate(js, return_by_value=True, await_promise=False) or []
         )
-        visible_links = [l for l in links if l.get("visible")]
+        visible_links = [link for link in links if link.get("visible")]
 
         emit_success(
             f"Found {len(visible_links)} links"
