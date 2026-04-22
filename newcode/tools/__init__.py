@@ -1,62 +1,25 @@
+"""Tools module - CDP-based browser automation tools.
+
+This module provides tool registration for the agent system.
+All browser automation tools now use Chrome DevTools Protocol (CDP)
+instead of Playwright for direct browser control.
+
+Note: CDP-based tools require the 'websockets' package to be installed.
+Install with: pip install websockets
+"""
+
 from newcode.callbacks import on_register_tools
 from newcode.messaging import emit_warning
 from newcode.tools.agent_tools import register_invoke_agent, register_list_agents
 from newcode.tools.ask_user_question import register_ask_user_question
-
-# Browser automation tools
-from newcode.tools.browser.browser_control import (
-    register_close_browser,
-    register_create_new_page,
-    register_get_browser_status,
-    register_initialize_browser,
-    register_list_pages,
-)
-from newcode.tools.browser.browser_interactions import (
-    register_browser_check,
-    register_browser_uncheck,
-    register_click_element,
-    register_double_click_element,
-    register_get_element_text,
-    register_get_element_value,
-    register_hover_element,
-    register_select_option,
-    register_set_element_text,
-)
-from newcode.tools.browser.browser_locators import (
-    register_find_buttons,
-    register_find_by_label,
-    register_find_by_placeholder,
-    register_find_by_role,
-    register_find_by_test_id,
-    register_find_by_text,
-    register_find_links,
-    register_run_xpath_query,
-)
-from newcode.tools.browser.browser_navigation import (
-    register_browser_go_back,
-    register_browser_go_forward,
-    register_get_page_info,
-    register_navigate_to_url,
-    register_reload_page,
-    register_wait_for_load_state,
-)
-from newcode.tools.browser.browser_screenshot import (
-    register_take_screenshot_and_analyze,
-)
-from newcode.tools.browser.browser_scripts import (
-    register_browser_clear_highlights,
-    register_browser_highlight_element,
-    register_execute_javascript,
-    register_scroll_page,
-    register_scroll_to_element,
-    register_set_viewport_size,
-    register_wait_for_element,
-)
 from newcode.tools.browser.browser_workflows import (
     register_list_workflows,
     register_read_workflow,
     register_save_workflow,
 )
+
+# Terminal automation tools
+# Terminal automation tools (not browser-specific, separate from CDP)
 from newcode.tools.browser.terminal_command_tools import (
     register_run_terminal_command,
     register_send_terminal_keys,
@@ -68,20 +31,14 @@ from newcode.tools.browser.terminal_screenshot_tools import (
     register_terminal_read_output,
     register_terminal_screenshot,
 )
-
-# Terminal automation tools
 from newcode.tools.browser.terminal_tools import (
     register_check_terminal_server,
     register_close_terminal,
     register_open_terminal,
     register_start_api_server,
 )
-from newcode.tools.command_runner import (
-    register_agent_run_shell_command,
-)
-from newcode.tools.display import (
-    display_non_streamed_result as display_non_streamed_result,
-)
+from newcode.tools.command_runner import register_agent_run_shell_command
+from newcode.tools.display import display_non_streamed_result
 from newcode.tools.file_modifications import register_delete_file, register_edit_file
 from newcode.tools.file_operations import (
     register_grep,
@@ -94,7 +51,205 @@ from newcode.tools.skills_tools import (
 )
 from newcode.tools.universal_constructor import register_universal_constructor
 
+# Try to import CDP-based browser tools (requires websockets)
+try:
+    # Browser automation tools (CDP-based, replacing Playwright)
+    from newcode.tools.browser.cdp_control import (
+        register_close_browser as register_browser_close,
+    )
+    from newcode.tools.browser.cdp_control import (
+        register_create_new_page as register_browser_new_page,
+    )
+    from newcode.tools.browser.cdp_control import (
+        register_get_browser_status as register_browser_status,
+    )
+    from newcode.tools.browser.cdp_control import (
+        register_initialize_browser as register_browser_initialize,
+    )
+    from newcode.tools.browser.cdp_control import (
+        register_list_pages as register_browser_list_pages,
+    )
+    from newcode.tools.browser.cdp_interactions import (
+        register_browser_check,
+        register_browser_uncheck,
+    )
+    from newcode.tools.browser.cdp_interactions import (
+        register_click_element as register_browser_click,
+    )
+    from newcode.tools.browser.cdp_interactions import (
+        register_double_click_element as register_browser_double_click,
+    )
+    from newcode.tools.browser.cdp_interactions import (
+        register_get_element_text as register_browser_get_text,
+    )
+    from newcode.tools.browser.cdp_interactions import (
+        register_get_element_value as register_browser_get_value,
+    )
+    from newcode.tools.browser.cdp_interactions import (
+        register_hover_element as register_browser_hover,
+    )
+    from newcode.tools.browser.cdp_interactions import (
+        register_select_option as register_browser_select_option,
+    )
+    from newcode.tools.browser.cdp_interactions import (
+        register_set_element_text as register_browser_set_text,
+    )
+    from newcode.tools.browser.cdp_locators import (
+        register_find_buttons as register_browser_find_buttons,
+    )
+    from newcode.tools.browser.cdp_locators import (
+        register_find_by_label as register_browser_find_by_label,
+    )
+    from newcode.tools.browser.cdp_locators import (
+        register_find_by_placeholder as register_browser_find_by_placeholder,
+    )
+    from newcode.tools.browser.cdp_locators import (
+        register_find_by_role as register_browser_find_by_role,
+    )
+    from newcode.tools.browser.cdp_locators import (
+        register_find_by_test_id as register_browser_find_by_test_id,
+    )
+    from newcode.tools.browser.cdp_locators import (
+        register_find_by_text as register_browser_find_by_text,
+    )
+    from newcode.tools.browser.cdp_locators import (
+        register_find_links as register_browser_find_links,
+    )
+    from newcode.tools.browser.cdp_locators import (
+        register_run_xpath_query as register_browser_xpath_query,
+    )
+    from newcode.tools.browser.cdp_navigation import (
+        register_browser_go_back,
+        register_browser_go_forward,
+    )
+    from newcode.tools.browser.cdp_navigation import (
+        register_get_page_info as register_browser_get_page_info,
+    )
+    from newcode.tools.browser.cdp_navigation import (
+        register_navigate_to_url as register_browser_navigate,
+    )
+    from newcode.tools.browser.cdp_navigation import (
+        register_reload_page as register_browser_reload,
+    )
+    from newcode.tools.browser.cdp_navigation import (
+        register_wait_for_load_state as register_browser_wait_for_load,
+    )
+    from newcode.tools.browser.cdp_screenshot import (
+        register_take_screenshot_and_analyze as register_browser_screenshot_analyze,
+    )
+    from newcode.tools.browser.cdp_scripts import (
+        register_browser_clear_highlights,
+        register_browser_highlight_element,
+    )
+    from newcode.tools.browser.cdp_scripts import (
+        register_execute_javascript as register_browser_execute_js,
+    )
+    from newcode.tools.browser.cdp_scripts import (
+        register_scroll_page as register_browser_scroll,
+    )
+    from newcode.tools.browser.cdp_scripts import (
+        register_scroll_to_element as register_browser_scroll_to_element,
+    )
+    from newcode.tools.browser.cdp_scripts import (
+        register_set_viewport_size as register_browser_set_viewport,
+    )
+    from newcode.tools.browser.cdp_scripts import (
+        register_wait_for_element as register_browser_wait_for_element,
+    )
+
+    _CDP_AVAILABLE = True
+except ImportError:
+    # websockets not installed - CDP tools unavailable
+    _CDP_AVAILABLE = False
+    emit_warning(
+        "CDP browser automation unavailable - 'websockets' package not installed. "
+        "Install with: pip install websockets"
+    )
+
+    # Define stub functions that raise ImportError when called
+    def _make_stub_function(name: str):
+        def stub(*args, **kwargs):
+            raise ImportError(
+                "Browser automation requires 'websockets' package. "
+                "Install with: pip install websockets"
+            )
+
+        stub.__name__ = name
+        return stub
+
+    # Browser Control stubs
+    register_browser_initialize = _make_stub_function("register_browser_initialize")
+    register_browser_close = _make_stub_function("register_browser_close")
+    register_browser_status = _make_stub_function("register_browser_status")
+    register_browser_new_page = _make_stub_function("register_browser_new_page")
+    register_browser_list_pages = _make_stub_function("register_browser_list_pages")
+
+    # Browser Navigation stubs
+    register_browser_navigate = _make_stub_function("register_browser_navigate")
+    register_browser_get_page_info = _make_stub_function(
+        "register_browser_get_page_info"
+    )
+    register_browser_go_back = _make_stub_function("register_browser_go_back")
+    register_browser_go_forward = _make_stub_function("register_browser_go_forward")
+    register_browser_reload = _make_stub_function("register_browser_reload")
+    register_browser_wait_for_load = _make_stub_function(
+        "register_browser_wait_for_load"
+    )
+
+    # Browser Locators stubs
+    register_browser_find_by_role = _make_stub_function("register_browser_find_by_role")
+    register_browser_find_by_text = _make_stub_function("register_browser_find_by_text")
+    register_browser_find_by_label = _make_stub_function(
+        "register_browser_find_by_label"
+    )
+    register_browser_find_by_placeholder = _make_stub_function(
+        "register_browser_find_by_placeholder"
+    )
+    register_browser_find_by_test_id = _make_stub_function(
+        "register_browser_find_by_test_id"
+    )
+    register_browser_xpath_query = _make_stub_function("register_browser_xpath_query")
+    register_browser_find_buttons = _make_stub_function("register_browser_find_buttons")
+    register_browser_find_links = _make_stub_function("register_browser_find_links")
+
+    # Browser Interactions stubs
+    register_browser_click = _make_stub_function("register_browser_click")
+    register_browser_double_click = _make_stub_function("register_browser_double_click")
+    register_browser_hover = _make_stub_function("register_browser_hover")
+    register_browser_set_text = _make_stub_function("register_browser_set_text")
+    register_browser_get_text = _make_stub_function("register_browser_get_text")
+    register_browser_get_value = _make_stub_function("register_browser_get_value")
+    register_browser_select_option = _make_stub_function(
+        "register_browser_select_option"
+    )
+    register_browser_check = _make_stub_function("register_browser_check")
+    register_browser_uncheck = _make_stub_function("register_browser_uncheck")
+
+    # Browser Scripts stubs
+    register_browser_execute_js = _make_stub_function("register_browser_execute_js")
+    register_browser_scroll = _make_stub_function("register_browser_scroll")
+    register_browser_scroll_to_element = _make_stub_function(
+        "register_browser_scroll_to_element"
+    )
+    register_browser_set_viewport = _make_stub_function("register_browser_set_viewport")
+    register_browser_wait_for_element = _make_stub_function(
+        "register_browser_wait_for_element"
+    )
+    register_browser_highlight_element = _make_stub_function(
+        "register_browser_highlight_element"
+    )
+    register_browser_clear_highlights = _make_stub_function(
+        "register_browser_clear_highlights"
+    )
+
+    # Browser Screenshot stubs
+    register_browser_screenshot_analyze = _make_stub_function(
+        "register_browser_screenshot_analyze"
+    )
+
+
 # Map of tool names to their individual registration functions
+# These are the user-facing tool names that agents use
 TOOL_REGISTRY = {
     # Agent Tools
     "list_agents": register_list_agents,
@@ -111,47 +266,47 @@ TOOL_REGISTRY = {
     # User Interaction
     "ask_user_question": register_ask_user_question,
     # Browser Control
-    "browser_initialize": register_initialize_browser,
-    "browser_close": register_close_browser,
-    "browser_status": register_get_browser_status,
-    "browser_new_page": register_create_new_page,
-    "browser_list_pages": register_list_pages,
+    "browser_initialize": register_browser_initialize,
+    "browser_close": register_browser_close,
+    "browser_status": register_browser_status,
+    "browser_new_page": register_browser_new_page,
+    "browser_list_pages": register_browser_list_pages,
     # Browser Navigation
-    "browser_navigate": register_navigate_to_url,
-    "browser_get_page_info": register_get_page_info,
+    "browser_navigate": register_browser_navigate,
+    "browser_get_page_info": register_browser_get_page_info,
     "browser_go_back": register_browser_go_back,
     "browser_go_forward": register_browser_go_forward,
-    "browser_reload": register_reload_page,
-    "browser_wait_for_load": register_wait_for_load_state,
+    "browser_reload": register_browser_reload,
+    "browser_wait_for_load": register_browser_wait_for_load,
     # Browser Element Discovery
-    "browser_find_by_role": register_find_by_role,
-    "browser_find_by_text": register_find_by_text,
-    "browser_find_by_label": register_find_by_label,
-    "browser_find_by_placeholder": register_find_by_placeholder,
-    "browser_find_by_test_id": register_find_by_test_id,
-    "browser_xpath_query": register_run_xpath_query,
-    "browser_find_buttons": register_find_buttons,
-    "browser_find_links": register_find_links,
+    "browser_find_by_role": register_browser_find_by_role,
+    "browser_find_by_text": register_browser_find_by_text,
+    "browser_find_by_label": register_browser_find_by_label,
+    "browser_find_by_placeholder": register_browser_find_by_placeholder,
+    "browser_find_by_test_id": register_browser_find_by_test_id,
+    "browser_xpath_query": register_browser_xpath_query,
+    "browser_find_buttons": register_browser_find_buttons,
+    "browser_find_links": register_browser_find_links,
     # Browser Element Interactions
-    "browser_click": register_click_element,
-    "browser_double_click": register_double_click_element,
-    "browser_hover": register_hover_element,
-    "browser_set_text": register_set_element_text,
-    "browser_get_text": register_get_element_text,
-    "browser_get_value": register_get_element_value,
-    "browser_select_option": register_select_option,
+    "browser_click": register_browser_click,
+    "browser_double_click": register_browser_double_click,
+    "browser_hover": register_browser_hover,
+    "browser_set_text": register_browser_set_text,
+    "browser_get_text": register_browser_get_text,
+    "browser_get_value": register_browser_get_value,
+    "browser_select_option": register_browser_select_option,
     "browser_check": register_browser_check,
     "browser_uncheck": register_browser_uncheck,
     # Browser Scripts and Advanced Features
-    "browser_execute_js": register_execute_javascript,
-    "browser_scroll": register_scroll_page,
-    "browser_scroll_to_element": register_scroll_to_element,
-    "browser_set_viewport": register_set_viewport_size,
-    "browser_wait_for_element": register_wait_for_element,
+    "browser_execute_js": register_browser_execute_js,
+    "browser_scroll": register_browser_scroll,
+    "browser_scroll_to_element": register_browser_scroll_to_element,
+    "browser_set_viewport": register_browser_set_viewport,
+    "browser_wait_for_element": register_browser_wait_for_element,
     "browser_highlight_element": register_browser_highlight_element,
     "browser_clear_highlights": register_browser_clear_highlights,
     # Browser Screenshots
-    "browser_screenshot_analyze": register_take_screenshot_and_analyze,
+    "browser_screenshot_analyze": register_browser_screenshot_analyze,
     # Browser Workflows
     "browser_save_workflow": register_save_workflow,
     "browser_list_workflows": register_list_workflows,

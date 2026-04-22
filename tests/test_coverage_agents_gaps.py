@@ -16,17 +16,17 @@ import pytest
 
 
 _REVIEWER_AGENTS = [
-    ("newcode.agents.agent_c_reviewer", "CReviewerAgent"),
-    ("newcode.agents.agent_code_reviewer", "CodeQualityReviewerAgent"),
-    ("newcode.agents.agent_cpp_reviewer", "CppReviewerAgent"),
-    ("newcode.agents.agent_golang_reviewer", "GolangReviewerAgent"),
-    ("newcode.agents.agent_javascript_reviewer", "JavaScriptReviewerAgent"),
-    ("newcode.agents.agent_python_reviewer", "PythonReviewerAgent"),
-    ("newcode.agents.agent_python_programmer", "PythonProgrammerAgent"),
-    ("newcode.agents.agent_qa_expert", "QAExpertAgent"),
-    ("newcode.agents.agent_qa_browser", "QABrowserAgent"),
-    ("newcode.agents.agent_security_auditor", "SecurityAuditorAgent"),
-    ("newcode.agents.agent_typescript_reviewer", "TypeScriptReviewerAgent"),
+    ("newcode.agents._retired.agent_c_reviewer", "CReviewerAgent"),
+    ("newcode.agents._retired.agent_code_reviewer", "CodeQualityReviewerAgent"),
+    ("newcode.agents._retired.agent_cpp_reviewer", "CppReviewerAgent"),
+    ("newcode.agents._retired.agent_golang_reviewer", "GolangReviewerAgent"),
+    ("newcode.agents._retired.agent_javascript_reviewer", "JavaScriptReviewerAgent"),
+    ("newcode.agents._retired.agent_python_reviewer", "PythonReviewerAgent"),
+    ("newcode.agents._retired.agent_python_programmer", "PythonProgrammerAgent"),
+    ("newcode.agents._retired.agent_qa_expert", "QAExpertAgent"),
+    ("newcode.agents._retired.agent_qa_browser", "QABrowserAgent"),
+    ("newcode.agents._retired.agent_security_auditor", "SecurityAuditorAgent"),
+    ("newcode.agents._retired.agent_typescript_reviewer", "TypeScriptReviewerAgent"),
 ]
 
 
@@ -64,7 +64,7 @@ class TestPlanningAgent:
 
 class TestPromptReviewerAgent:
     def test_tools_and_prompt(self):
-        from newcode.agents.prompt_reviewer import PromptReviewerAgent
+        from newcode.agents._retired.prompt_reviewer import PromptReviewerAgent
 
         agent = PromptReviewerAgent()
         tools = agent.get_available_tools()

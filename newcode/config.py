@@ -91,6 +91,9 @@ PACK_AGENT_NAMES = frozenset(
 # Agents that require Universal Constructor to be enabled
 UC_AGENT_NAMES = frozenset()
 
+# Browser agent - requires Chrome/Chromium to be available
+BROWSER_AGENT_NAMES = frozenset(["browser-agent"])
+
 
 def get_pack_agents_enabled() -> bool:
     """Return True if pack agents are enabled (default False).
@@ -298,6 +301,10 @@ def get_config_keys():
     default_keys.append("suppress_thinking_messages")
     default_keys.append("suppress_informational_messages")
     default_keys.append("debug")
+    # Add browser agent configuration keys
+    default_keys.append("browser_agent_enabled")
+    default_keys.append("browser_headless")
+    default_keys.append("browser_chrome_path")
 
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
@@ -1770,3 +1777,122 @@ def get_frontend_emitter_queue_size() -> int:
         return int(val)
     except ValueError:
         return 100
+
+
+# --- BROWSER AGENT CONFIGURATION ---
+def refresh_browser_agent_status() -> bool:
+    """Refresh the browser agent enabled status by detecting Chrome availability.
+
+    This function checks for Chrome/Chromium installation using the OS-agnostic
+    chrome_detector module and updates the browser_agent_enabled config value
+    based on the detection result.
+
+    Returns:
+        True if Chrome/Chromium was detected and browser agent is enabled,
+        False otherwise.
+
+    Example:
+        >>> if refresh_browser_agent_status():
+        ...     print("Browser agent is available")
+        ... else:
+        ...     print("Chrome not found - browser agent disabled")
+    """
+    # Import here to avoid circular imports at module load time
+    from newcode.tools.browser.chrome_detector import is_chrome_available
+
+    try:
+        chrome_available = is_chrome_available()
+        set_config_value(
+            "browser_agent_enabled", "true" if chrome_available else "false"
+        )
+        return chrome_available
+    except Exception:
+        # If detection fails, disable browser agent for safety
+        set_config_value("browser_agent_enabled", "false")
+        return False
+
+
+def get_browser_agent_enabled() -> bool:
+    """Return True if browser agent is enabled (auto-detected).
+
+    The browser agent requires Chrome/Chromium to be available.
+    This is automatically detected at startup based on whether
+    Playwright's Chromium or system Chrome is installed.
+
+    Returns:
+        True if browser agent is enabled, False otherwise.
+
+    Example:
+        >>> if get_browser_agent_enabled():
+        ...     # Browser agent is available for use
+        ...     pass
+    """
+    cfg_val = get_value("browser_agent_enabled")
+    if cfg_val is None:
+        # Auto-detect on first call if not already set
+        return refresh_browser_agent_status()
+    return str(cfg_val).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def get_browser_headless() -> bool:
+    """Return True if browser should run in headless mode.
+
+    When False (default), browser automation runs with a visible
+    browser window. Set to True for headless operation.
+
+    Returns:
+        True if headless mode is enabled, False for visible browser (default).
+
+    Example:
+        >>> if get_browser_headless():
+        ...     print("Running browser in headless mode")
+        ... else:
+        ...     print("Browser window will be visible")
+    """
+    cfg_val = get_value("browser_headless")
+    if cfg_val is None:
+        return False  # Default to visible browser
+    return str(cfg_val).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def set_browser_headless(enabled: bool) -> None:
+    """Enable or disable headless browser mode.
+
+    Args:
+        enabled: True for headless, False for visible browser
+
+    Example:
+        >>> set_browser_headless(True)  # Enable headless mode
+        >>> set_browser_headless(False)  # Show browser window
+    """
+    set_config_value("browser_headless", "true" if enabled else "false")
+
+
+def get_browser_chrome_path() -> Optional[str]:
+    """Get custom Chrome/Chromium executable path if configured.
+
+    Returns:
+        Path to custom Chrome executable, or None to use auto-detected Chrome.
+
+    Example:
+        >>> path = get_browser_chrome_path()
+        >>> if path:
+        ...     print(f"Using custom Chrome at: {path}")
+    """
+    return get_value("browser_chrome_path")
+
+
+def set_browser_chrome_path(path: Optional[str]) -> None:
+    """Set custom Chrome/Chromium executable path.
+
+    Args:
+        path: Path to Chrome executable, or None/empty to use auto-detection.
+
+    Example:
+        >>> set_browser_chrome_path("/usr/bin/chromium")
+        >>> set_browser_chrome_path(None)  # Reset to auto-detection
+    """
+    if path:
+        set_config_value("browser_chrome_path", path)
+    else:
+        reset_value("browser_chrome_path")

@@ -8,7 +8,7 @@ from newcode.config import get_user_agents_directory
 from newcode.model_factory import ModelFactory
 from newcode.tools import get_available_tool_names
 
-from .base_agent import BaseAgent
+from ..base_agent import BaseAgent
 
 
 class AgentCreatorAgent(BaseAgent):

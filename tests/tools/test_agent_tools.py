@@ -275,7 +275,8 @@ class TestRegisterInvokeAgent:
                 fake_browser_var,
             ),
             patch(
-                "newcode.agents.load_agent", side_effect=Exception("Agent not found")
+                "newcode.agents.agent_manager.load_agent",
+                side_effect=Exception("Agent not found"),
             ),
         ):
             result = await captured["fn"](ctx, agent_name="nonexistent", prompt="hi")

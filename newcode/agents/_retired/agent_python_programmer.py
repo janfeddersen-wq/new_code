@@ -1,6 +1,6 @@
 """Python programmer agent for modern Python development."""
 
-from .base_agent import BaseAgent
+from ..base_agent import BaseAgent
 
 
 class PythonProgrammerAgent(BaseAgent):

@@ -145,6 +145,40 @@ async def main():
 
     ensure_config_exists()
 
+    # Detect browser availability and update browser agent status
+    from newcode.config import (
+        get_browser_headless,
+        refresh_browser_agent_status,
+    )
+    from newcode.tools.browser.chrome_detector import (
+        get_chrome_info,
+    )
+
+    chrome_available = refresh_browser_agent_status()
+    if not chrome_available:
+        from newcode.messaging import emit_warning
+
+        emit_warning(
+            "⚠️  Chrome/Chromium not found. Browser automation tools are disabled.\n"
+            "   Install Chrome/Chromium or run 'playwright install chromium' to enable browser-agent."
+        )
+    else:
+        # Show Chrome detection info
+        chrome_info = get_chrome_info()
+        chrome_path = chrome_info.get("path", "unknown")
+        chrome_version = chrome_info.get("version", "unknown")
+        is_playwright = chrome_info.get("is_playwright", False)
+
+        source = "Playwright bundled" if is_playwright else "System"
+        emit_info(f"✓ Chrome detected ({source}): {chrome_path} (v{chrome_version})")
+
+        # Show headless mode status
+        headless = get_browser_headless()
+        if headless:
+            emit_info("  Browser headless mode: enabled (no visible window)")
+        else:
+            emit_info("  Browser headless mode: disabled (visible window)")
+
     # Validate cancel_agent_key configuration early
     try:
         validate_cancel_agent_key()

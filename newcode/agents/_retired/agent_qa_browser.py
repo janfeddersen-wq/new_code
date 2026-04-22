@@ -1,6 +1,6 @@
 """QA Browser - Playwright-powered browser automation agent."""
 
-from .base_agent import BaseAgent
+from ..base_agent import BaseAgent
 
 
 class QABrowserAgent(BaseAgent):

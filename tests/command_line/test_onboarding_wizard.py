@@ -185,15 +185,15 @@ class TestOnboardingWizard:
         w.handle_option_select()
         assert w.trigger_oauth == "claude"
 
-    def test_handle_option_select_api_keys(self):
+    def test_handle_option_select_skip(self):
         w = self._make_wizard()
         w.current_slide = 1
         opts = w.get_options_for_slide()
-        idx = next(i for i, (id_, _) in enumerate(opts) if id_ == "api_keys")
+        idx = next(i for i, (id_, _) in enumerate(opts) if id_ == "skip")
         w.selected_option = idx
         w.handle_option_select()
         assert w.trigger_oauth is None
-        assert w.model_choice == "api_keys"
+        assert w.model_choice == "skip"
 
     def test_handle_option_select_no_options(self):
         w = self._make_wizard()

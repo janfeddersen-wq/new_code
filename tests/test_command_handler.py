@@ -909,7 +909,7 @@ class TestGetCommandsHelp:
 
         help_text = str(get_commands_help())
         assert "help" in help_text.lower() or "Help" in help_text
-        assert "session" in help_text.lower() or "Session" in help_text
+        assert "agent" in help_text.lower() or "Agent" in help_text
 
     def test_help_includes_categories(self):
         """Test that help organizes into Core and Custom sections."""

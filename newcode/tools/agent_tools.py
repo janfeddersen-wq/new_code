@@ -429,13 +429,11 @@ def register_invoke_agent(agent):
 
         terminal_session_token = set_terminal_session(f"terminal-{session_id}")
 
-        # Set browser session for browser tools (qa-browser, etc.)
-        # This allows parallel agent invocations to each have their own browser
-        from newcode.tools.browser.browser_manager import (
-            set_browser_session,
-        )
+        # Set browser session for browser tools.
+        # CDP-based browser tooling uses its own contextvar session manager.
+        from newcode.tools.browser.cdp_manager import set_cdp_session
 
-        browser_session_token = set_browser_session(f"browser-{session_id}")
+        browser_session_token = set_cdp_session(f"browser-{session_id}")
 
         try:
             # Lazy import to break circular dependency with messaging module
@@ -589,10 +587,8 @@ def register_invoke_agent(agent):
             # Reset terminal session context
             _terminal_session_var.reset(terminal_session_token)
             # Reset browser session context
-            from newcode.tools.browser.browser_manager import (
-                _browser_session_var,
-            )
+            from newcode.tools.browser.cdp_manager import _cdp_session_var
 
-            _browser_session_var.reset(browser_session_token)
+            _cdp_session_var.reset(browser_session_token)
 
     return invoke_agent

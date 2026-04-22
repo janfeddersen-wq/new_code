@@ -202,9 +202,16 @@ def handle_set_command(command: str) -> bool:
             "\n[yellow]Keyboard Shortcuts[/yellow]"
             "\n  [cyan]cancel_agent_key[/cyan]     Key to cancel agent tasks (ctrl+c, ctrl+k, or ctrl+q)"
         )
+        browser_help = (
+            "\n[yellow]Browser Agent Configuration[/yellow]"
+            "\n  [cyan]browser_headless[/cyan]       Run browser in headless mode (true/false, default: false)"
+            "\n  [cyan]browser_chrome_path[/cyan]    Custom Chrome/Chromium executable path (optional)"
+            "\n  [dim]The browser-agent is auto-enabled when Chrome is detected.[/dim]"
+            "\n  [dim]Run 'playwright install chromium' if Chrome is not found.[/dim]"
+        )
         emit_warning(
             Text.from_markup(
-                f"Usage: /set KEY=VALUE or /set KEY VALUE\nConfig keys: {', '.join(config_keys)}\n[dim]Note: compaction_strategy can be 'summarization' or 'truncation'[/dim]{session_help}{keymap_help}"
+                f"Usage: /set KEY=VALUE or /set KEY VALUE\nConfig keys: {', '.join(config_keys)}\n[dim]Note: compaction_strategy can be 'summarization' or 'truncation'[/dim]{session_help}{keymap_help}{browser_help}"
             )
         )
         return True

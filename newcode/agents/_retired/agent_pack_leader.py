@@ -1,7 +1,7 @@
 """Orchestrator - The coordinator for parallel multi-agent workflows."""
 
-from .. import callbacks
-from .base_agent import BaseAgent
+from ... import callbacks
+from ..base_agent import BaseAgent
 
 
 class PackLeaderAgent(BaseAgent):

@@ -1,7 +1,7 @@
 """Prompt Reviewer Agent - Specializes in analyzing and reviewing prompt quality."""
 
-from .. import callbacks
-from .base_agent import BaseAgent
+from ... import callbacks
+from ..base_agent import BaseAgent
 
 
 class PromptReviewerAgent(BaseAgent):

@@ -1,6 +1,6 @@
 """Security audit agent."""
 
-from .base_agent import BaseAgent
+from ..base_agent import BaseAgent
 
 
 class SecurityAuditorAgent(BaseAgent):

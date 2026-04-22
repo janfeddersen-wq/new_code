@@ -339,8 +339,10 @@ def get_available_agents() -> Dict[str, str]:
         Dict mapping agent names to display names.
     """
     from ..config import (
+        BROWSER_AGENT_NAMES,
         PACK_AGENT_NAMES,
         UC_AGENT_NAMES,
+        get_browser_agent_enabled,
         get_pack_agents_enabled,
         get_universal_constructor_enabled,
     )
@@ -355,6 +357,9 @@ def get_available_agents() -> Dict[str, str]:
     # Check if UC is enabled
     uc_enabled = get_universal_constructor_enabled()
 
+    # Check if browser agent is enabled (Chrome available)
+    browser_agent_enabled = get_browser_agent_enabled()
+
     agents = {}
     for name, agent_ref in _AGENT_REGISTRY.items():
         # Filter out pack agents if disabled
@@ -363,6 +368,10 @@ def get_available_agents() -> Dict[str, str]:
 
         # Filter out UC-dependent agents if UC is disabled
         if not uc_enabled and name in UC_AGENT_NAMES:
+            continue
+
+        # Filter out browser agent if Chrome not available
+        if not browser_agent_enabled and name in BROWSER_AGENT_NAMES:
             continue
 
         try:
@@ -491,8 +500,10 @@ def get_agent_descriptions() -> Dict[str, str]:
         Dict mapping agent names to their descriptions.
     """
     from ..config import (
+        BROWSER_AGENT_NAMES,
         PACK_AGENT_NAMES,
         UC_AGENT_NAMES,
+        get_browser_agent_enabled,
         get_pack_agents_enabled,
         get_universal_constructor_enabled,
     )
@@ -507,6 +518,9 @@ def get_agent_descriptions() -> Dict[str, str]:
     # Check if UC is enabled
     uc_enabled = get_universal_constructor_enabled()
 
+    # Check if browser agent is enabled (Chrome available)
+    browser_agent_enabled = get_browser_agent_enabled()
+
     descriptions = {}
     for name, agent_ref in _AGENT_REGISTRY.items():
         # Filter out pack agents if disabled
@@ -515,6 +529,10 @@ def get_agent_descriptions() -> Dict[str, str]:
 
         # Filter out UC-dependent agents if UC is disabled
         if not uc_enabled and name in UC_AGENT_NAMES:
+            continue
+
+        # Filter out browser agent if Chrome not available
+        if not browser_agent_enabled and name in BROWSER_AGENT_NAMES:
             continue
 
         try:

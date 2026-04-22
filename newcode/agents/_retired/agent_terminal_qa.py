@@ -1,6 +1,6 @@
 """Terminal QA Agent - Terminal and TUI application testing with visual analysis."""
 
-from .base_agent import BaseAgent
+from ..base_agent import BaseAgent
 
 
 class TerminalQAAgent(BaseAgent):

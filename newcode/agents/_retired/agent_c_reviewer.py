@@ -1,6 +1,6 @@
 """C99/C11 systems code reviewer agent."""
 
-from .base_agent import BaseAgent
+from ..base_agent import BaseAgent
 
 
 class CReviewerAgent(BaseAgent):
