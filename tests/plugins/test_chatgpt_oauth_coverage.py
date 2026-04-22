@@ -11,8 +11,8 @@ class TestChatgptCustomHelp:
         from newcode.plugins.chatgpt_oauth.register_callbacks import _custom_help
 
         entries = _custom_help()
-        names = [n for n, _ in entries]
-        assert "chatgpt-auth" in names
+        names = [n for n, _, _ in entries]
+        # Note: chatgpt-auth is no longer available - use /model-setup instead
         assert "chatgpt-status" in names
         assert "chatgpt-logout" in names
 
@@ -144,19 +144,6 @@ class TestHandleCustomCommand:
         )
 
         assert _handle_custom_command("/x", "unknown") is None
-
-    def test_auth(self):
-        from newcode.plugins.chatgpt_oauth.register_callbacks import (
-            _handle_custom_command,
-        )
-
-        with (
-            patch("newcode.plugins.chatgpt_oauth.register_callbacks.run_oauth_flow"),
-            patch(
-                "newcode.plugins.chatgpt_oauth.register_callbacks.set_model_and_reload_agent"
-            ),
-        ):
-            assert _handle_custom_command("/chatgpt-auth", "chatgpt-auth") is True
 
     def test_status(self):
         from newcode.plugins.chatgpt_oauth.register_callbacks import (

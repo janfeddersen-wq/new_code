@@ -32,9 +32,9 @@ def test_help_outputs_help():
         result = handle_command("/help")
         assert result is True
         mock_emit_info.assert_called()
-        # Check that help was displayed (look for "Built-in Commands" section)
+        # Check that help was displayed (look for "Core Commands" section)
         assert any(
-            "Built-in Commands" in str(call) for call in (mock_emit_info.call_args_list)
+            "Core Commands" in str(call) for call in (mock_emit_info.call_args_list)
         )
     finally:
         mocks["emit_info"].stop()
@@ -912,12 +912,12 @@ class TestGetCommandsHelp:
         assert "session" in help_text.lower() or "Session" in help_text
 
     def test_help_includes_categories(self):
-        """Test that help organizes into Built-in and Custom sections."""
+        """Test that help organizes into Core and Custom sections."""
         from newcode.command_line.command_handler import get_commands_help
 
         help_text = str(get_commands_help())
-        # Should have Built-in Commands section
-        assert "Built-in Commands" in help_text or "built-in" in help_text.lower()
+        # Should have Core Commands section
+        assert "Core Commands" in help_text or "core" in help_text.lower()
         # Should be well-organized with content
         assert len(help_text) > 0
 

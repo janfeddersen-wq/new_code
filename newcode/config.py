@@ -54,7 +54,6 @@ CONTEXTS_DIR = os.path.join(DATA_DIR, "contexts")
 GEMINI_MODELS_FILE = os.path.join(DATA_DIR, "gemini_models.json")
 CHATGPT_MODELS_FILE = os.path.join(DATA_DIR, "chatgpt_models.json")
 CLAUDE_MODELS_FILE = os.path.join(DATA_DIR, "claude_models.json")
-ANTIGRAVITY_MODELS_FILE = os.path.join(DATA_DIR, "antigravity_models.json")
 
 # Cache files (XDG_CACHE_HOME)
 AUTOSAVE_DIR = os.path.join(CACHE_DIR, "autosaves")
@@ -1692,6 +1691,7 @@ def load_api_keys_to_environment():
         "ANTHROPIC_API_KEY",
         "CEREBRAS_API_KEY",
         "SYN_API_KEY",
+        "FIREPASS_API_KEY",
         "AZURE_OPENAI_API_KEY",
         "AZURE_OPENAI_ENDPOINT",
         "OPENROUTER_API_KEY",

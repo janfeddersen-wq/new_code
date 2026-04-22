@@ -165,6 +165,52 @@ class TestHandlePasteCommand:
             assert handle_paste_command("/paste") is True
 
 
+class TestRunFirepassSetupFlow:
+    def test_success(self):
+        from newcode.command_line.core_commands import _run_firepass_setup_flow
+
+        with (
+            patch(
+                "newcode.command_line.core_commands.safe_input",
+                return_value="fp-key",
+            ),
+            patch("newcode.config.set_config_value") as set_config,
+            patch("newcode.model_switching.set_model_and_reload_agent") as set_model,
+            patch("newcode.command_line.core_commands.emit_success"),
+            patch("newcode.command_line.core_commands.emit_info"),
+            patch.dict(os.environ, {}, clear=False),
+        ):
+            assert _run_firepass_setup_flow() is True
+            set_config.assert_called_once_with("FIREPASS_API_KEY", "fp-key")
+            assert os.environ.get("FIREPASS_API_KEY") == "fp-key"
+            set_model.assert_called_once_with("firepass-kimi-k2p5-turbo")
+
+    def test_cancel_keyboard_interrupt(self):
+        from newcode.command_line.core_commands import _run_firepass_setup_flow
+
+        with (
+            patch(
+                "newcode.command_line.core_commands.safe_input",
+                side_effect=KeyboardInterrupt,
+            ),
+            patch("newcode.command_line.core_commands.emit_warning") as warn,
+        ):
+            assert _run_firepass_setup_flow() is False
+            warn.assert_called()
+
+    def test_empty_key(self):
+        from newcode.command_line.core_commands import _run_firepass_setup_flow
+
+        with (
+            patch("newcode.command_line.core_commands.safe_input", return_value=""),
+            patch("newcode.command_line.core_commands.emit_warning") as warn,
+            patch("newcode.config.set_config_value") as set_config,
+        ):
+            assert _run_firepass_setup_flow() is False
+            warn.assert_called()
+            set_config.assert_not_called()
+
+
 class TestHandleTutorialCommand:
     def test_chatgpt(self):
         from newcode.command_line.core_commands import handle_tutorial_command
@@ -201,6 +247,25 @@ class TestHandleTutorialCommand:
             pool.return_value.__exit__ = MagicMock(return_value=False)
             pool.return_value.submit.return_value = mock_future
             assert handle_tutorial_command("/tutorial") is True
+
+    def test_firepass(self):
+        from newcode.command_line.core_commands import handle_tutorial_command
+
+        with (
+            patch("newcode.command_line.onboarding_wizard.reset_onboarding"),
+            patch("concurrent.futures.ThreadPoolExecutor") as pool,
+            patch(
+                "newcode.command_line.core_commands._run_firepass_setup_flow",
+                return_value=True,
+            ) as run_setup,
+        ):
+            mock_future = MagicMock()
+            mock_future.result.return_value = "firepass"
+            pool.return_value.__enter__ = MagicMock(return_value=pool.return_value)
+            pool.return_value.__exit__ = MagicMock(return_value=False)
+            pool.return_value.submit.return_value = mock_future
+            assert handle_tutorial_command("/tutorial") is True
+            run_setup.assert_called_once()
 
     def test_completed(self):
         from newcode.command_line.core_commands import handle_tutorial_command
@@ -523,51 +588,6 @@ class TestHandleModelCommand:
             patch("newcode.messaging.emit_success"),
         ):
             assert handle_model_command("/m gpt-5") is True
-
-
-class TestHandleAddModelCommand:
-    def test_success(self):
-        from newcode.command_line.core_commands import handle_add_model_command
-
-        with (
-            patch("newcode.tools.command_runner.set_awaiting_user_input"),
-            patch(
-                "newcode.command_line.add_model_menu.interactive_model_picker",
-                return_value=True,
-            ),
-            patch("newcode.messaging.emit_info"),
-        ):
-            # Need to patch the correct interactive_model_picker
-            with patch(
-                "newcode.command_line.add_model_menu.interactive_model_picker",
-                return_value=True,
-            ):
-                assert handle_add_model_command("/add_model") is True
-
-    def test_keyboard_interrupt(self):
-        from newcode.command_line.core_commands import handle_add_model_command
-
-        with (
-            patch("newcode.tools.command_runner.set_awaiting_user_input"),
-            patch(
-                "newcode.command_line.add_model_menu.interactive_model_picker",
-                side_effect=KeyboardInterrupt,
-            ),
-        ):
-            assert handle_add_model_command("/add_model") is True
-
-    def test_error(self):
-        from newcode.command_line.core_commands import handle_add_model_command
-
-        with (
-            patch("newcode.tools.command_runner.set_awaiting_user_input"),
-            patch(
-                "newcode.command_line.add_model_menu.interactive_model_picker",
-                side_effect=Exception("fail"),
-            ),
-            patch("newcode.messaging.emit_error"),
-        ):
-            assert handle_add_model_command("/add_model") is False
 
 
 class TestHandleModelSettingsCommand:

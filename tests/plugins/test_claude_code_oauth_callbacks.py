@@ -352,9 +352,8 @@ class TestCustomHelpCommands:
         from newcode.plugins.claude_code_oauth.register_callbacks import _custom_help
 
         commands = _custom_help()
-        assert len(commands) == 3
-        names = [n for n, _ in commands]
-        assert "claude-code-auth" in names
+        assert len(commands) == 2  # status and logout only (auth via /model-setup)
+        names = [n for n, _, _ in commands]
         assert "claude-code-status" in names
         assert "claude-code-logout" in names
 
@@ -373,21 +372,6 @@ class TestHandleCustomCommand:
         )
 
         assert _handle_custom_command("/x", "") is None
-
-    @patch(f"{MOD}.load_stored_tokens", return_value={"access_token": "old"})
-    @patch(f"{MOD}._perform_authentication")
-    @patch(f"{MOD}.set_model_and_reload_agent")
-    @patch(f"{MOD}.emit_info")
-    @patch(f"{MOD}.emit_warning")
-    def test_auth_with_existing_tokens(
-        self, mock_warn, mock_info, mock_set, mock_auth, mock_tokens
-    ):
-        from newcode.plugins.claude_code_oauth.register_callbacks import (
-            _handle_custom_command,
-        )
-
-        assert _handle_custom_command("/claude-code-auth", "claude-code-auth") is True
-        mock_warn.assert_called()  # warns about overwriting
 
     @patch(
         f"{MOD}.load_stored_tokens",

@@ -1201,6 +1201,32 @@ class TestInteractiveMode:
         )
 
     @pytest.mark.anyio
+    async def test_onboarding_firepass(self):
+        patches = _interactive_patches()
+        patches["newcode.command_line.onboarding_wizard.should_show_onboarding"] = (
+            MagicMock(return_value=True)
+        )
+
+        mock_future = MagicMock()
+        mock_future.result.return_value = "firepass"
+        mock_pool = MagicMock()
+        mock_pool.submit.return_value = mock_future
+        mock_executor = MagicMock()
+        mock_executor.__enter__ = MagicMock(return_value=mock_pool)
+        mock_executor.__exit__ = MagicMock(return_value=False)
+
+        await _run_interactive(
+            _mock_renderer(),
+            patches,
+            AsyncMock(return_value="/exit"),
+            extra_patches={
+                "concurrent.futures.ThreadPoolExecutor": MagicMock(
+                    return_value=mock_executor
+                ),
+                "newcode.command_line.core_commands._run_firepass_setup_flow": MagicMock(),
+            },
+        )
+
     async def test_onboarding_completed(self):
         patches = _interactive_patches()
         patches["newcode.command_line.onboarding_wizard.should_show_onboarding"] = (

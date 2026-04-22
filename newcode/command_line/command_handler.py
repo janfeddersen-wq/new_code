@@ -12,7 +12,7 @@ def get_commands_help():
     """Generate aligned commands help using Rich Text for safe markup.
 
     Now dynamically generates help from the command registry!
-    Only shows two sections: Built-in Commands and Custom Commands.
+    Shows commands in sections: Core Commands, Setup Commands, Custom Commands.
     """
     from rich.text import Text
 
@@ -24,16 +24,22 @@ def get_commands_help():
     lines: list[Text] = []
     # No global header needed - user already knows they're viewing help
 
-    # Collect all built-in commands (registered + legacy)
-    builtin_cmds: list[tuple[str, str]] = []
-
-    # Get registered commands (all categories are built-in)
+    # Get registered commands and filter by category
     registered_commands = get_unique_commands()
+
+    # Filter commands by category
+    core_cmds: list[tuple[str, str]] = []
+    setup_cmds: list[tuple[str, str]] = []
+
     for cmd_info in sorted(registered_commands, key=lambda c: c.name):
-        builtin_cmds.append((cmd_info.usage, cmd_info.description))
+        if cmd_info.category == "core":
+            core_cmds.append((cmd_info.usage, cmd_info.description))
+        elif cmd_info.category == "setup":
+            setup_cmds.append((cmd_info.usage, cmd_info.description))
 
     # Get custom commands from plugins
     custom_entries: list[tuple[str, str]] = []
+    custom_setup_entries: list[tuple[str, str]] = []
     try:
         from newcode import callbacks
 
@@ -41,18 +47,31 @@ def get_commands_help():
         for res in custom_help_results:
             if not res:
                 continue
-            # Format 1: Tuple with (command_name, description)
-            if isinstance(res, tuple) and len(res) == 2:
-                cmd_name = str(res[0])
-                custom_entries.append((f"/{cmd_name}", str(res[1])))
+            # Format 1: Tuple with (command_name, description) or (command_name, description, category)
+            if isinstance(res, tuple):
+                if len(res) >= 2:
+                    cmd_name = str(res[0])
+                    description = str(res[1])
+                    entry = (f"/{cmd_name}", description)
+                    # Check if it's a 3-tuple with category
+                    if len(res) == 3 and str(res[2]).lower() == "setup":
+                        custom_setup_entries.append(entry)
+                    else:
+                        custom_entries.append(entry)
             # Format 2: List of tuples or strings
             elif isinstance(res, list):
                 # Check if it's a list of tuples (preferred format)
-                if res and isinstance(res[0], tuple) and len(res[0]) == 2:
+                if res and isinstance(res[0], tuple):
                     for item in res:
-                        if isinstance(item, tuple) and len(item) == 2:
+                        if isinstance(item, tuple) and len(item) >= 2:
                             cmd_name = str(item[0])
-                            custom_entries.append((f"/{cmd_name}", str(item[1])))
+                            description = str(item[1])
+                            entry = (f"/{cmd_name}", description)
+                            # Check if it's a 3-tuple with category
+                            if len(item) == 3 and str(item[2]).lower() == "setup":
+                                custom_setup_entries.append(entry)
+                            else:
+                                custom_entries.append(entry)
                 # Format 3: List of strings (legacy format)
                 # Extract command from first line like "/command_name - Description"
                 elif res and isinstance(res[0], str) and res[0].startswith("/"):
@@ -66,7 +85,7 @@ def get_commands_help():
         pass
 
     # Calculate global column width (longest command across ALL sections + padding)
-    all_commands = builtin_cmds + custom_entries
+    all_commands = core_cmds + setup_cmds + custom_entries + custom_setup_entries
     if all_commands:
         max_cmd_width = max(len(cmd) for cmd, _ in all_commands)
         column_width = max_cmd_width + 4  # Add 4 spaces padding
@@ -82,9 +101,9 @@ def get_commands_help():
             return desc
         return desc[: max_width - 3] + "..."
 
-    # Display Built-in Commands section (starts immediately, no blank line)
-    lines.append(Text("Built-in Commands", style="bold magenta"))
-    for cmd, desc in sorted(builtin_cmds, key=lambda x: x[0]):
+    # Display Core Commands section (starts immediately, no blank line)
+    lines.append(Text("Core Commands", style="bold magenta"))
+    for cmd, desc in sorted(core_cmds, key=lambda x: x[0]):
         truncated_desc = truncate_desc(desc, max_desc_width)
         left = Text(cmd.ljust(column_width), style="cyan")
         right = Text(truncated_desc)
@@ -92,6 +111,21 @@ def get_commands_help():
         line.append_text(left)
         line.append_text(right)
         lines.append(line)
+
+    # Display Setup Commands section (if any)
+    if setup_cmds or custom_setup_entries:
+        lines.append(Text(""))
+        lines.append(Text("Setup Commands", style="bold magenta"))
+        # Combine built-in and custom setup commands
+        all_setup_cmds = setup_cmds + custom_setup_entries
+        for cmd, desc in sorted(all_setup_cmds, key=lambda x: x[0]):
+            truncated_desc = truncate_desc(desc, max_desc_width)
+            left = Text(cmd.ljust(column_width), style="cyan")
+            right = Text(truncated_desc)
+            line = Text()
+            line.append_text(left)
+            line.append_text(right)
+            lines.append(line)
 
     # Display Custom Commands section (if any)
     if custom_entries:

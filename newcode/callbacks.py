@@ -414,7 +414,7 @@ def on_register_model_types() -> List[Dict[str, Any]]:
 
     This hook allows plugins to register custom model types that can be used
     in model configurations. Each callback should return a list of dicts with:
-    - "type": str - the model type name (e.g., "antigravity", "claude_code")
+    - "type": str - the model type name (e.g., "claude_code")
     - "handler": callable - function(model_name, model_config, config) -> model instance
 
     The handler function receives:
@@ -431,7 +431,7 @@ def on_register_model_types() -> List[Dict[str, Any]]:
                 "handler": create_my_custom_model,
             }]
 
-    Example return: [{"type": "antigravity", "handler": create_antigravity_model}]
+    Example return: [{"type": "my_custom_type", "handler": create_my_model}]
     """
     return _trigger_callbacks_sync("register_model_type")
 
@@ -442,7 +442,7 @@ def on_get_model_system_prompt(
     """Allow plugins to provide custom system prompts for specific model types.
 
     This hook allows plugins to override the system prompt handling for custom
-    model types (like claude_code or antigravity models). Each callback receives
+    model types (like claude_code models). Each callback receives
     the model name and should return a dict if it handles that model type, or None.
 
     Args:

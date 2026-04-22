@@ -271,7 +271,7 @@ def main() -> bool:
         print("✅ All sanity checks passed!")
         print("Next steps:")
         print("1. Restart the application if it was running")
-        print("2. Run /claude-code-auth")
+        print("2. Run /model-setup and select Claude Code")
         print("3. Paste the Claude Console authorization code when prompted")
         return True
 

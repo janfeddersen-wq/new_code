@@ -16,7 +16,6 @@ from urllib.parse import parse_qs, urlparse
 
 from newcode.callbacks import register_callback
 from newcode.messaging import emit_error, emit_info, emit_success, emit_warning
-from newcode.model_switching import set_model_and_reload_agent
 
 from ..oauth_puppy_html import oauth_failure_html, oauth_success_html
 from .config import CLAUDE_CODE_OAUTH_CONFIG, get_token_storage_path
@@ -171,17 +170,18 @@ def _await_callback(context: OAuthContext) -> Optional[str]:
     return result.code
 
 
-def _custom_help() -> List[Tuple[str, str]]:
+def _custom_help() -> List[Tuple[str, str, str]]:
     return [
-        (
-            "claude-code-auth",
-            "Authenticate with Claude Code via OAuth and import available models",
-        ),
         (
             "claude-code-status",
             "Check Claude Code OAuth authentication status and configured models",
+            "setup",
         ),
-        ("claude-code-logout", "Remove Claude Code OAuth tokens and imported models"),
+        (
+            "claude-code-logout",
+            "Remove Claude Code OAuth tokens and imported models",
+            "setup",
+        ),
     ]
 
 
@@ -229,17 +229,6 @@ def _handle_custom_command(command: str, name: str) -> Optional[bool]:
     if not name:
         return None
 
-    if name == "claude-code-auth":
-        emit_info("Starting Claude Code OAuth authentication…")
-        tokens = load_stored_tokens()
-        if tokens and tokens.get("access_token"):
-            emit_warning(
-                "Existing Claude Code tokens found. Continuing will overwrite them."
-            )
-        _perform_authentication()
-        set_model_and_reload_agent("claude-code-claude-opus-4-6")
-        return True
-
     if name == "claude-code-status":
         tokens = load_stored_tokens()
         if tokens and tokens.get("access_token"):
@@ -261,7 +250,9 @@ def _handle_custom_command(command: str, name: str) -> Optional[bool]:
                 emit_warning("No Claude Code models configured yet.")
         else:
             emit_warning("Claude Code OAuth: Not authenticated")
-            emit_info("Run /claude-code-auth to begin the browser sign-in flow.")
+            emit_info(
+                "Run /model-setup and select Claude Code to begin the browser sign-in flow."
+            )
         return True
 
     if name == "claude-code-logout":

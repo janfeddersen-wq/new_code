@@ -10,9 +10,9 @@ from newcode.command_line.agent_menu import interactive_agent_picker
 from newcode.command_line.command_registry import register_command
 from newcode.command_line.model_picker_completion import update_model_in_input
 from newcode.command_line.motd import print_motd
-from newcode.command_line.utils import make_directory_table
+from newcode.command_line.utils import make_directory_table, safe_input
 from newcode.config import finalize_autosave_session
-from newcode.messaging import emit_error, emit_info
+from newcode.messaging import emit_error, emit_info, emit_success, emit_warning
 from newcode.tools.tools_content import tools_content
 
 
@@ -164,6 +164,33 @@ def handle_paste_command(command: str) -> bool:
     return True
 
 
+def _run_firepass_setup_flow() -> bool:
+    """Prompt for Firepass API key, persist it, and switch to Firepass model."""
+    from newcode.config import set_config_value
+    from newcode.model_switching import set_model_and_reload_agent
+
+    emit_info("🔥 Firepass setup")
+    emit_info("Enter your Firepass API key. It will be saved to your config.")
+
+    try:
+        api_key = safe_input("FIREPASS_API_KEY: ")
+    except (EOFError, KeyboardInterrupt):
+        emit_warning("Firepass setup cancelled")
+        return False
+
+    if not api_key:
+        emit_warning("No API key entered. Firepass setup was not completed.")
+        return False
+
+    set_config_value("FIREPASS_API_KEY", api_key)
+    os.environ["FIREPASS_API_KEY"] = api_key
+
+    emit_success("FIREPASS_API_KEY saved")
+    set_model_and_reload_agent("firepass-kimi-k2p5-turbo")
+    emit_success("Active model switched to firepass-kimi-k2p5-turbo")
+    return True
+
+
 @register_command(
     name="tutorial",
     description="Run the interactive tutorial wizard",
@@ -207,6 +234,8 @@ def handle_tutorial_command(command: str) -> bool:
 
         _perform_authentication()
         set_model_and_reload_agent("claude-code-claude-opus-4-6")
+    elif result == "firepass":
+        _run_firepass_setup_flow()
     elif result == "completed":
         emit_info("🎉 Tutorial complete! Happy coding!")
     elif result == "skipped":
@@ -575,35 +604,6 @@ def handle_model_command(command: str) -> bool:
 
 
 @register_command(
-    name="add_model",
-    description="Browse and add models from models.dev catalog",
-    usage="/add_model",
-    category="core",
-)
-def handle_add_model_command(command: str) -> bool:
-    """Launch interactive model browser TUI."""
-    from newcode.command_line.add_model_menu import interactive_model_picker
-    from newcode.tools.command_runner import set_awaiting_user_input
-
-    set_awaiting_user_input(True)
-    try:
-        # interactive_model_picker is now synchronous - no async complications!
-        result = interactive_model_picker()
-
-        if result:
-            emit_info("Successfully added model configuration")
-        return True
-    except KeyboardInterrupt:
-        # User cancelled - this is expected behavior
-        return True
-    except Exception as e:
-        emit_error(f"Failed to launch model browser: {e}")
-        return False
-    finally:
-        set_awaiting_user_input(False)
-
-
-@register_command(
     name="model_settings",
     description="Configure per-model settings (temperature, seed, etc.)",
     usage="/model_settings [--show [model_name]]",
@@ -662,6 +662,144 @@ def handle_model_settings_command(command: str) -> bool:
         return False
     finally:
         set_awaiting_user_input(False)
+
+
+async def interactive_model_setup() -> str | None:
+    """Show an interactive arrow-key selector for model authentication setup.
+
+    Returns:
+        The selected provider ("claude", "chatgpt", "firepass"), or None if cancelled
+    """
+    import asyncio
+    import sys
+
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.text import Text
+
+    from newcode.tools.command_runner import set_awaiting_user_input
+    from newcode.tools.common import arrow_select_async
+
+    choices = [
+        "🎯 Claude Code - OAuth authentication",
+        "💬 ChatGPT - OAuth authentication",
+        "🔥 Firepass - API key setup",
+    ]
+
+    # Create panel content
+    panel_content = Text()
+    panel_content.append("🔐 Configure Model Authentication\n", style="bold cyan")
+    panel_content.append("Select a provider to set up:\n", style="dim")
+    panel_content.append("• Claude Code: OAuth with Anthropic\n", style="dim")
+    panel_content.append("• ChatGPT: OAuth with OpenAI\n", style="dim")
+    panel_content.append("• Firepass: API key authentication", style="dim")
+
+    # Display panel
+    panel = Panel(
+        panel_content,
+        title="[bold white]Model Setup[/bold white]",
+        border_style="cyan",
+        padding=(1, 2),
+    )
+
+    # Pause spinners BEFORE showing panel
+    set_awaiting_user_input(True)
+    await asyncio.sleep(0.3)  # Let spinners fully stop
+
+    local_console = Console()
+    emit_info("")
+    local_console.print(panel)
+    emit_info("")
+
+    # Flush output before prompt_toolkit takes control
+    sys.stdout.flush()
+    sys.stderr.flush()
+    await asyncio.sleep(0.1)
+
+    selected_provider = None
+
+    try:
+        # Final flush
+        sys.stdout.flush()
+
+        # Show arrow-key selector (async version)
+        choice = await arrow_select_async(
+            "Select authentication provider:",
+            choices,
+        )
+
+        # Map choice to provider identifier
+        if choice:
+            if "Claude Code" in choice:
+                selected_provider = "claude"
+            elif "ChatGPT" in choice:
+                selected_provider = "chatgpt"
+            elif "Firepass" in choice:
+                selected_provider = "firepass"
+
+    except (KeyboardInterrupt, EOFError):
+        emit_error("Cancelled by user")
+        selected_provider = None
+
+    finally:
+        set_awaiting_user_input(False)
+
+    return selected_provider
+
+
+@register_command(
+    name="model-setup",
+    description="Configure model authentication and setup",
+    usage="/model-setup",
+    category="setup",
+    aliases=["setup"],
+)
+def handle_model_setup_command(command: str) -> bool:
+    """Handle model setup flow with interactive provider selection."""
+    import asyncio
+    import concurrent.futures
+
+    from newcode.model_switching import set_model_and_reload_agent
+
+    try:
+        # Run the async picker using asyncio utilities
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(lambda: asyncio.run(interactive_model_setup()))
+            selected_provider = future.result(timeout=300)  # 5 min timeout
+
+        if not selected_provider:
+            emit_warning("Model setup cancelled")
+            return True
+
+        if selected_provider == "claude":
+            emit_info("🔐 Starting Claude Code OAuth flow...")
+            from newcode.plugins.claude_code_oauth.register_callbacks import (
+                _perform_authentication,
+            )
+
+            _perform_authentication()
+            set_model_and_reload_agent("claude-code-claude-opus-4-6")
+            emit_success("Claude Code authentication complete!")
+
+        elif selected_provider == "chatgpt":
+            emit_info("🔐 Starting ChatGPT OAuth flow...")
+            from newcode.plugins.chatgpt_oauth.oauth_flow import run_oauth_flow
+
+            run_oauth_flow()
+            set_model_and_reload_agent("chatgpt-gpt-5.3-codex")
+            emit_success("ChatGPT authentication complete!")
+
+        elif selected_provider == "firepass":
+            _run_firepass_setup_flow()
+
+        return True
+
+    except Exception as e:
+        import traceback
+
+        emit_error(f"Model setup failed: {e}")
+        emit_error(f"Traceback: {traceback.format_exc()}")
+        return False
 
 
 @register_command(

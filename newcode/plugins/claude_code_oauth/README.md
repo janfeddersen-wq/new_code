@@ -13,8 +13,8 @@ This plugin adds OAuth authentication for Claude Code, automatically importing a
 
 ## Commands
 
-### `/claude-code-auth`
-Authenticate with Claude Code via OAuth and import available models.
+### Authentication via `/model-setup`
+Authenticate with Claude Code via OAuth using the `/model-setup` command. Select Claude Code to import available models.
 
 This will:
 1. Launch the Claude OAuth consent flow in your browser
@@ -76,8 +76,8 @@ After authentication, the models will reference:
 ## Usage Example
 
 ```bash
-# Authenticate with Claude Code
-/claude-code-auth
+# Authenticate with Claude Code via model-setup
+/model-setup
 
 # Check status
 /claude-code-status
@@ -128,7 +128,7 @@ After authentication, models will be added to `extra_models.json` in the applica
 
 ### Models not showing up
 - Claude may not return the model list for your account; verify access manually
-- Check `/claude-code-status` to confirm authentication succeeded
+- Check `/claude-code-status` to confirm authentication succeeded after running `/model-setup`
 
 ## Development
 

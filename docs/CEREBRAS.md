@@ -13,7 +13,7 @@ Copy and paste these commands one by one to set up your keys, authentication, an
 /set cerebras_api_key = "YOUR_API_KEY_HERE"
 /set yolo_mode = true
 
-/claude-code-auth 
+/model-setup 
 ```
 *(Follow the browser instructions to authenticate Claude)*
 

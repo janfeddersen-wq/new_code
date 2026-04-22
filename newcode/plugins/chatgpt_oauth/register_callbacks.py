@@ -11,10 +11,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from newcode.callbacks import register_callback
 from newcode.messaging import emit_info, emit_success, emit_warning
-from newcode.model_switching import set_model_and_reload_agent
 
 from .config import CHATGPT_OAUTH_CONFIG, get_token_storage_path
-from .oauth_flow import run_oauth_flow
 from .utils import (
     get_valid_access_token,
     load_chatgpt_models,
@@ -23,17 +21,10 @@ from .utils import (
 )
 
 
-def _custom_help() -> List[Tuple[str, str]]:
+def _custom_help() -> List[Tuple[str, str, str]]:
     return [
-        (
-            "chatgpt-auth",
-            "Authenticate with ChatGPT via OAuth and import available models",
-        ),
-        (
-            "chatgpt-status",
-            "Check ChatGPT OAuth authentication status and configured models",
-        ),
-        ("chatgpt-logout", "Remove ChatGPT OAuth tokens and imported models"),
+        ("chatgpt-status", "Show ChatGPT OAuth status", "setup"),
+        ("chatgpt-logout", "Logout from ChatGPT OAuth", "setup"),
     ]
 
 
@@ -60,7 +51,9 @@ def _handle_chatgpt_status() -> None:
             emit_warning("⚠️ No ChatGPT models configured yet.")
     else:
         emit_warning("🔓 ChatGPT OAuth: Not authenticated")
-        emit_info("🌐 Run /chatgpt-auth to launch the browser sign-in flow.")
+        emit_info(
+            "🌐 Run /model-setup and select ChatGPT to launch the browser sign-in flow."
+        )
 
 
 def _handle_chatgpt_logout() -> None:
@@ -82,11 +75,6 @@ def _handle_chatgpt_logout() -> None:
 def _handle_custom_command(command: str, name: str) -> Optional[bool]:
     if not name:
         return None
-
-    if name == "chatgpt-auth":
-        run_oauth_flow()
-        set_model_and_reload_agent("chatgpt-gpt-5.3-codex")
-        return True
 
     if name == "chatgpt-status":
         _handle_chatgpt_status()
@@ -118,7 +106,7 @@ def _create_chatgpt_oauth_model(
     if not access_token:
         emit_warning(
             f"Failed to get valid ChatGPT OAuth token; skipping model '{model_config.get('name')}'. "
-            "Run /chatgpt-auth to authenticate."
+            "Run /model-setup and select ChatGPT to authenticate."
         )
         return None
 
@@ -128,7 +116,7 @@ def _create_chatgpt_oauth_model(
     if not account_id:
         emit_warning(
             f"No account_id found in ChatGPT OAuth tokens; skipping model '{model_config.get('name')}'. "
-            "Run /chatgpt-auth to re-authenticate."
+            "Run /model-setup and select ChatGPT to re-authenticate."
         )
         return None
 

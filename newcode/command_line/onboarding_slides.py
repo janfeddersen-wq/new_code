@@ -13,9 +13,8 @@ from typing import List, Tuple
 MODEL_OPTIONS: List[Tuple[str, str, str]] = [
     ("chatgpt", "ChatGPT Plus/Pro/Max", "OAuth login - no API key needed"),
     ("claude", "Claude Code Pro/Max", "OAuth login - no API key needed"),
-    ("api_keys", "API Keys", "OpenAI, Anthropic, Google, etc."),
-    ("openrouter", "OpenRouter", "Single key for 100+ models"),
-    ("skip", "Skip for now", "Configure later with /set or /add_model"),
+    ("firepass", "Firepass", "Bring your Firepass API key"),
+    ("skip", "Skip for now", "Configure later with /set"),
 ]
 
 
@@ -102,16 +101,12 @@ def slide_models(selected_option: int, options: List[Tuple[str, str]]) -> str:
         content += "[yellow]💡 Claude OAuth[/yellow]\n"
         content += "  Uses your existing subscription\n"
         content += "  Opus/Sonnet/Haiku 4.5\n"
-    elif opt == "api_keys":
-        content += "[yellow]💡 API Keys[/yellow]\n"
-        content += "  [cyan]/set OPENAI_API_KEY=sk-...[/cyan]\n"
-        content += "  [cyan]/add_model[/cyan] to browse 1500+ models\n"
-    elif opt == "openrouter":
-        content += "[yellow]💡 OpenRouter[/yellow]\n"
-        content += "  One API key, all providers\n"
-        content += "  [cyan]/set OPENROUTER_API_KEY=...[/cyan]\n"
+    elif opt == "firepass":
+        content += "[yellow]💡 Firepass[/yellow]\n"
+        content += "  Prompt for FIREPASS_API_KEY only\n"
+        content += "  Switches model to firepass-kimi-k2p5-turbo\n"
     else:
-        content += "[dim]No worries! Use /set or /add_model later[/dim]\n"
+        content += "[dim]No worries! Use /set later[/dim]\n"
 
     content += get_nav_footer()
     return content
@@ -172,7 +167,12 @@ def slide_done(trigger_oauth: str | None) -> str:
     content += "  • @ for file path completion\n\n"
 
     if trigger_oauth:
-        content += f"[bold cyan]→ {trigger_oauth.title()} OAuth next![/bold cyan]\n\n"
+        if trigger_oauth == "firepass":
+            content += "[bold cyan]→ Firepass setup next![/bold cyan]\n\n"
+        else:
+            content += (
+                f"[bold cyan]→ {trigger_oauth.title()} OAuth next![/bold cyan]\n\n"
+            )
 
     content += "[dim]Re-run anytime: [/dim][cyan]/tutorial[/cyan]\n"
     content += "\n[bold yellow]Press Enter to start coding![/bold yellow]"

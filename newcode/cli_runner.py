@@ -40,7 +40,6 @@ from newcode.terminal_utils import (
     reset_windows_terminal_ansi,
     reset_windows_terminal_full,
 )
-from newcode.tools.common import console
 from newcode.version_checker import default_version_mismatch_behavior
 
 plugins.load_plugin_callbacks()
@@ -301,14 +300,15 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
     from newcode.messaging import emit_info, emit_system_message
 
     emit_system_message("Type /help for commands and shortcuts.")
-    try:
-        from newcode.command_line.motd import print_motd
-
-        print_motd(console, force=False)
-    except Exception as e:
-        from newcode.messaging import emit_warning
-
-        emit_warning(f"MOTD error: {e}")
+    # MOTD display on startup disabled
+    # try:
+    #     from newcode.command_line.motd import print_motd
+    #
+    #     print_motd(console, force=False)
+    # except Exception as e:
+    #     from newcode.messaging import emit_warning
+    #
+    #     emit_warning(f"MOTD error: {e}")
 
     # Print truecolor warning LAST so it's the most visible thing on startup
     # Big ugly red box should be impossible to miss! 🔴
@@ -403,6 +403,7 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
         if should_show_onboarding():
             import concurrent.futures
 
+            from newcode.command_line.core_commands import _run_firepass_setup_flow
             from newcode.command_line.onboarding_wizard import run_onboarding_wizard
             from newcode.config import set_model_name
             from newcode.messaging import emit_info
@@ -425,6 +426,8 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
 
                 _perform_authentication()
                 set_model_name("claude-code-claude-opus-4-6")
+            elif result == "firepass":
+                _run_firepass_setup_flow()
             elif result == "completed":
                 emit_info("🎉 Tutorial complete! Happy coding!")
             elif result == "skipped":

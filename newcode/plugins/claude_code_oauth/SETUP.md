@@ -6,7 +6,7 @@ This guide walks you through using the Claude Code OAuth plugin.
 
 1. Ensure the plugin files live under `newcode/plugins/claude_code_oauth/`
 2. Restart the application so it loads the plugin
-3. Run `/claude-code-auth` and follow the prompts
+3. Run `/model-setup`, select Claude Code, and follow the prompts
 
 ## Why No Client Registration?
 
@@ -17,7 +17,7 @@ Anthropic exposes a shared **public client** (`claude-cli`) for command-line too
 
 ## Authentication Flow
 
-1. Call `/claude-code-auth`
+1. Run `/model-setup` and select Claude Code
 2. Your browser opens the Claude OAuth consent flow at `https://claude.ai/oauth/authorize`
 3. Sign in (or pick an account) and approve the "Claude CLI" access request
 4. The browser closes automatically after the redirect is captured
@@ -26,7 +26,7 @@ Anthropic exposes a shared **public client** (`claude-cli`) for command-line too
 
 ## Commands Recap
 
-- `/claude-code-auth` – Authenticate and sync models
+- Run `/model-setup` – Select Claude Code to authenticate and sync models
 - `/claude-code-status` – Show auth status, expiry, configured models
 - `/claude-code-logout` – Remove tokens and any models added by the plugin
 
@@ -63,7 +63,7 @@ Change these only if Anthropic updates their endpoints or scopes.
 
 - **Browser did not open** – Copy the displayed URL into your browser manually
 - **Invalid code** – The code expires quickly; generate a new one in Claude Console
-- **State mismatch** – Rare, but rerun `/claude-code-auth` if the browser reports a mismatch
+- **State mismatch** – Rare, but rerun `/model-setup` and select Claude Code if the browser reports a mismatch
 - **No models added** – Your account might lack Claude Code access; tokens are still stored for later use
 
 ## Files Created

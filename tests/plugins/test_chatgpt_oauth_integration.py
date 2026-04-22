@@ -218,11 +218,11 @@ class TestCustomCommands:
         help_items = _custom_help()
 
         assert isinstance(help_items, list)
-        assert len(help_items) >= 3
+        assert len(help_items) == 2  # status and logout only (auth via /model-setup)
 
-        # Check expected commands
+        # Check expected commands (chatgpt-auth removed - use /model-setup instead)
         commands = {item[0] for item in help_items}
-        assert "chatgpt-auth" in commands
+        # Note: chatgpt-auth removed - use /model-setup instead
         assert "chatgpt-status" in commands
         assert "chatgpt-logout" in commands
 
@@ -279,18 +279,6 @@ class TestCustomCommands:
         token_file.unlink.assert_called_once()
         mock_info.assert_called()
         mock_success.assert_called()
-
-    @patch("newcode.plugins.chatgpt_oauth.register_callbacks.run_oauth_flow")
-    @patch(
-        "newcode.plugins.chatgpt_oauth.register_callbacks.set_model_and_reload_agent"
-    )
-    def test_handle_custom_command_auth(self, mock_set_model, mock_oauth):
-        """Test chatgpt-auth command triggers OAuth flow."""
-        result = _handle_custom_command("custom_command", "chatgpt-auth")
-
-        assert result is True
-        mock_oauth.assert_called_once()
-        mock_set_model.assert_called_once_with("chatgpt-gpt-5.3-codex")
 
     @patch("newcode.plugins.chatgpt_oauth.register_callbacks.load_stored_tokens")
     def test_handle_custom_command_status(self, mock_load):

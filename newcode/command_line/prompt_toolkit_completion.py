@@ -456,7 +456,7 @@ class SlashCompleter(Completer):
                         }
                     )
 
-        # Also include custom commands from plugins (like claude-code-auth)
+        # Also include custom commands from plugins (like claude-code-status, claude-code-logout)
         try:
             from newcode import callbacks, plugins
 

@@ -501,7 +501,7 @@ class BaseAgent(ABC):
 
         # 1. Estimate tokens for system prompt / instructions
         # Use prepare_prompt_for_model() to get the correct instructions for token counting.
-        # For models that prepend system prompt to user message (claude-code, antigravity),
+        # For models that prepend system prompt to user message (e.g. claude-code),
         # this returns the short fixed instructions. For other models, returns full prompt.
         try:
             from newcode.model_utils import prepare_prompt_for_model

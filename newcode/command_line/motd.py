@@ -8,19 +8,18 @@ import os
 from newcode.config import CONFIG_DIR
 from newcode.messaging import emit_info
 
-MOTD_VERSION = "2026-01-01"
+MOTD_VERSION = "2026-01-02"
 MOTD_MESSAGE = """
-# Happy New Year! January 1st, 2026
-Reminder that the application supports three different OAuth subscriptions:
+Reminder that the application supports these model setups:
 
-### Claude Code - `/claude-code-auth`
+### Claude Code - Via `/model-setup`
 - Opus / Haiku / Sonnet
 
-### ChatGPT Pro/Plus - `/chatgpt-auth`
+### ChatGPT - Via `/model-setup`
 - gpt-5.2 and gpt-5.2 codex
 
-### Google Antigravity - `/antigravity-auth`
-- Gemini 3 Pro, Flash, and Anthropic models including Opus and Sonnet.
+### Firepass - Via `/model-setup`
+- Kimi K2.5 Turbo via Fireworks router.
 """
 MOTD_TRACK_FILE = os.path.join(CONFIG_DIR, "motd.txt")
 

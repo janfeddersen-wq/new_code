@@ -9,8 +9,7 @@ import pytest
 from pydantic_ai.models import ModelRequestParameters
 
 
-# Workaround for pydantic/MCP compatibility issue during pytest collection:
-# Skip antigravity tests if pydantic/MCP conflict is detected
+# Workaround for pydantic/MCP compatibility issue during pytest collection
 def pytest_configure(config):
     """Configure pytest with compatibility workarounds."""
     # Pre-patch sys.modules to provide a mock mcp.types during collection
@@ -45,28 +44,6 @@ class ApiClientShim:
     @_async_httpx_client.setter
     def _async_httpx_client(self, value):
         self._model._http_client = value
-
-
-@pytest.fixture
-def mock_google_model():
-    """Create a mock AntigravityModel instance for testing."""
-    # Lazy import to avoid pydantic/MCP conflicts during conftest load
-    from newcode.plugins.antigravity_oauth.antigravity_model import AntigravityModel
-
-    # Create the model with required api_key
-    model = AntigravityModel(
-        model_name="gemini-1.5-pro",
-        api_key="test-api-key",
-        base_url="https://generativelanguage.googleapis.com/v1beta",
-    )
-
-    # Set up an initial mock HTTP client
-    model._http_client = AsyncMock()
-
-    # Create a shim that keeps client._api_client._async_httpx_client in sync with _http_client
-    model.client = ClientShim(model)
-
-    return model
 
 
 @pytest.fixture

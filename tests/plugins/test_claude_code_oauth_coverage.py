@@ -349,8 +349,8 @@ class TestCustomHelp:
         )
 
         entries = _custom_help()
-        names = [n for n, _ in entries]
-        assert "claude-code-auth" in names
+        names = [n for n, _, _ in entries]
+        # Note: claude-code-auth is no longer available - use /model-setup instead
         assert "claude-code-status" in names
         assert "claude-code-logout" in names
 
@@ -527,51 +527,6 @@ class TestHandleCustomCommand:
         )
 
         assert _handle_custom_command("/x", "unknown") is None
-
-    def test_auth(self):
-        from newcode.plugins.claude_code_oauth.register_callbacks import (
-            _handle_custom_command,
-        )
-
-        with (
-            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_warning"),
-            patch(
-                "newcode.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
-                return_value={"access_token": "at"},
-            ),
-            patch(
-                "newcode.plugins.claude_code_oauth.register_callbacks._perform_authentication"
-            ),
-            patch(
-                "newcode.plugins.claude_code_oauth.register_callbacks.set_model_and_reload_agent"
-            ),
-        ):
-            assert (
-                _handle_custom_command("/claude-code-auth", "claude-code-auth") is True
-            )
-
-    def test_auth_no_existing_tokens(self):
-        from newcode.plugins.claude_code_oauth.register_callbacks import (
-            _handle_custom_command,
-        )
-
-        with (
-            patch("newcode.plugins.claude_code_oauth.register_callbacks.emit_info"),
-            patch(
-                "newcode.plugins.claude_code_oauth.register_callbacks.load_stored_tokens",
-                return_value=None,
-            ),
-            patch(
-                "newcode.plugins.claude_code_oauth.register_callbacks._perform_authentication"
-            ),
-            patch(
-                "newcode.plugins.claude_code_oauth.register_callbacks.set_model_and_reload_agent"
-            ),
-        ):
-            assert (
-                _handle_custom_command("/claude-code-auth", "claude-code-auth") is True
-            )
 
     def test_status_authenticated(self):
         from newcode.plugins.claude_code_oauth.register_callbacks import (

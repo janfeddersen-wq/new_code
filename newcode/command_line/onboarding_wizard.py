@@ -9,7 +9,7 @@ Usage:
     )
 
     result = await run_onboarding_wizard()
-    # result: "chatgpt", "claude", "completed", "skipped", or None
+    # result: "chatgpt", "claude", "firepass", "completed", "skipped", or None
 """
 
 import asyncio
@@ -140,6 +140,8 @@ class OnboardingWizard:
                     self.trigger_oauth = "chatgpt"
                 elif choice_id == "claude":
                     self.trigger_oauth = "claude"
+                elif choice_id == "firepass":
+                    self.trigger_oauth = "firepass"
 
     def next_slide(self) -> bool:
         """Move to next slide."""
@@ -212,6 +214,7 @@ async def run_onboarding_wizard() -> Optional[str]:
     Returns:
         - "chatgpt" if user wants ChatGPT OAuth
         - "claude" if user wants Claude OAuth
+        - "firepass" if user wants Firepass setup
         - "completed" if finished normally
         - "skipped" if user pressed ESC
         - None on error
