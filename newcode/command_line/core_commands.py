@@ -786,7 +786,7 @@ def handle_model_setup_command(command: str) -> bool:
             from newcode.plugins.chatgpt_oauth.oauth_flow import run_oauth_flow
 
             run_oauth_flow()
-            set_model_and_reload_agent("chatgpt-gpt-5.3-codex")
+            set_model_and_reload_agent("chatgpt-gpt-5.4")
             emit_success("ChatGPT authentication complete!")
 
         elif selected_provider == "firepass":

@@ -451,7 +451,7 @@ async def interactive_mode(message_renderer, initial_command: str = None) -> Non
                 from newcode.plugins.chatgpt_oauth.oauth_flow import run_oauth_flow
 
                 run_oauth_flow()
-                set_model_name("chatgpt-gpt-5.3-codex")
+                set_model_name("chatgpt-gpt-5.4")
             elif result == "claude":
                 emit_info("🔐 Starting Claude Code OAuth flow...")
                 from newcode.plugins.claude_code_oauth.register_callbacks import (
